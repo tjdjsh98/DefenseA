@@ -9,12 +9,12 @@ public class Managers : MonoBehaviour
 
 
     // Core
-    static Dictionary<Define.CoreManagers, Manager>  _coreManagers = new Dictionary<Define.CoreManagers, Manager>();
+    static Dictionary<Define.CoreManagers, ManagerBase>  _coreManagers = new Dictionary<Define.CoreManagers, ManagerBase>();
 
     // Content
-    static Dictionary<Define.ContentManagers, Manager> _contentManagers = new Dictionary<Define.ContentManagers, Manager>();
+    static Dictionary<Define.ContentManagers, ManagerBase> _contentManagers = new Dictionary<Define.ContentManagers, ManagerBase>();
 
-    public static T GetManager<T>() where T : Manager
+    public static T GetManager<T>() where T : ManagerBase
     {
         if (_instance == null)
             Init();
@@ -65,7 +65,7 @@ public class Managers : MonoBehaviour
 
     static void AddCoreManager(Define.CoreManagers managerName)
     {
-        Manager manager = null;
+        ManagerBase manager = null;
         switch (managerName)
         {
             case Define.CoreManagers.Data:
@@ -84,13 +84,16 @@ public class Managers : MonoBehaviour
     }
     static void AddContentManager(Define.ContentManagers managerName)
     {
-        Manager manager = null;
+        ManagerBase manager = null;
         switch (managerName)
         {
             case Define.ContentManagers.None:
                 break;
             case Define.ContentManagers.Game:
                 manager = _instance.gameObject.GetOrAddComponent<GameManager>();
+                break;
+            case Define.ContentManagers.UI:
+                manager = _instance.gameObject.GetOrAddComponent<UIManager>();
                 break;
             case Define.ContentManagers.END:
                 break;

@@ -3,13 +3,14 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class InputManager : Manager
+public class InputManager : ManagerBase
 {
     Camera _mainCamera;
     public Vector3 MouseWorldPosition { get { return _mainCamera.ScreenToWorldPoint(Input.mousePosition); } }
 
     public Action MouseButtonDown;
-
+    public Action Num1KeyDown;
+    public Action Num2KeyDown;
     public override void Init()
     {
         _mainCamera= Camera.main;
@@ -21,6 +22,9 @@ public class InputManager : Manager
         {
             MouseButtonDown?.Invoke();
         }
-
+        if(Input.GetKeyDown(KeyCode.Alpha1))
+            Num1KeyDown?.Invoke();
+        if(Input.GetKeyDown(KeyCode.Alpha2))
+            Num2KeyDown?.Invoke();
     }
 }

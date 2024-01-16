@@ -11,7 +11,10 @@ public class Character : MonoBehaviour
     [SerializeField] Define.CharacterType _characterType;
     public Define.CharacterType CharacterType=>_characterType;
     [SerializeField] int _maxHp;
+    public int MaxHp => _maxHp;
     [SerializeField] int _hp;
+    public int Hp => _hp;
+
     [SerializeField] float _speed;
 
     float _stunTime;

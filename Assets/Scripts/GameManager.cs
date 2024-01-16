@@ -4,15 +4,20 @@ using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class GameManager : Manager
+public class GameManager : ManagerBase
 {
     [SerializeField] GameObject _enemyOrigin;
     [SerializeField] GameObject _enemySpawnPoint;
 
     List<GameObject> _enemySpawnList = new List<GameObject>();
+
+    int _currentWave = 0;
+    public int CurrentWave => _currentWave;
+
     int _spawnCount;
     int _maxSpawnCount = 5;
     bool _isStartWave;
+    public bool IsStartWave => _isStartWave;
     float _time;
 
     public override void Init()
@@ -36,6 +41,8 @@ public class GameManager : Manager
     void StartWave()
     {
         if (_isStartWave) return;
+
+        _currentWave++;
         _isStartWave= true;
         Debug.Log("StartWave");
     }

@@ -18,6 +18,7 @@ public static class Define
     {
         None = -1,
         Game,
+        UI,
         END,
     }
     public static int CONTENT_MANAGER_COUNT = (int)ContentManagers.END;

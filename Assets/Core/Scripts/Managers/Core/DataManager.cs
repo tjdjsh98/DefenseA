@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DataManager : Manager
+public class DataManager : ManagerBase
 {
     Dictionary<Type,Dictionary<int, MonoBehaviour>> _data = new Dictionary<Type, Dictionary<int, MonoBehaviour>>();
 

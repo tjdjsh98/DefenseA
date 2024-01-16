@@ -6,12 +6,19 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     Character _character;
-    [SerializeField] Weapon _weapon;
+    public Character Character=> _character;
+    WeaponSwaper _weaponSwaper;
+    public WeaponSwaper WeaponSwaper => _weaponSwaper;
 
     private void Awake()
     {
-        Managers.GetManager<InputManager>().MouseButtonDown += UseWeapon;
         _character= GetComponent<Character>();
+        _weaponSwaper = GetComponent<WeaponSwaper>();
+
+
+
+        Managers.GetManager<InputManager>().MouseButtonDown += UseWeapon;
+        Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
     }
 
     public void Update()
@@ -21,15 +28,15 @@ public class Player : MonoBehaviour
 
     private void RotateWeapon()
     {
-        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _weapon.transform.position;
+        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _weaponSwaper.CurrentWeapon.transform.position;
 
         float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
-         
-        _weapon.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        _weaponSwaper.CurrentWeapon.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     void UseWeapon()
     {
-        _weapon.Fire(_character);
+        _weaponSwaper.CurrentWeapon.Fire(_character);
     }
 }
