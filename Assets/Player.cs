@@ -7,6 +7,9 @@ public class Player : MonoBehaviour
 {
     Character _character;
     public Character Character=> _character;
+
+    [SerializeField] GameObject _arm;
+
     WeaponSwaper _weaponSwaper;
     public WeaponSwaper WeaponSwaper => _weaponSwaper;
 
@@ -22,16 +25,16 @@ public class Player : MonoBehaviour
 
     public void Update()
     {
-        RotateWeapon();
+        RotateArm();
     }
 
-    private void RotateWeapon()
+    private void RotateArm()
     {
-        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _weaponSwaper.CurrentWeapon.transform.position;
+        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _arm.transform.position;
 
         float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
 
-        _weaponSwaper.CurrentWeapon.transform.rotation = Quaternion.Euler(0, 0, angle);
+        _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
     void UseWeapon()
