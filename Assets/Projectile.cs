@@ -24,6 +24,8 @@ public class Projectile : MonoBehaviour
         Character character = null;
         if (character = collision.gameObject.GetComponent<Character>())
         {
+            _direction.y = 0;
+            _direction = _direction.normalized;
             character.Damage(_attacker, _damage, _power, _direction);
             Destroy(gameObject);
             _isAttack = true;

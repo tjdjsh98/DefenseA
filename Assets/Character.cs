@@ -25,6 +25,8 @@ public class Character : MonoBehaviour
     Character _attackTarget;
     public Action<Character> CharacterAttack;
 
+    public Action CharacterDead;
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -54,6 +56,12 @@ public class Character : MonoBehaviour
         }
     }
 
+    public void SetHp(int hp)
+    {
+        _maxHp = hp;
+        _hp = hp;
+    }
+
     public void Damage(Character attacker, int damage, float power, Vector3 direction)
     {
         _hp -= damage;
@@ -61,7 +69,10 @@ public class Character : MonoBehaviour
         _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Force);
 
         if (_hp <= 0)
+        {
+            CharacterDead?.Invoke();
             Destroy(gameObject);
+        }
 
         IsStun = true;
     }

@@ -29,4 +29,15 @@ public class Weapon : MonoBehaviour
 
         projectile.Fire(fireCharacter, direction.normalized);
     }
+
+    public void SetPower(float power)
+    {
+        _power = power;
+    }
+
+    public void SetDamage(int damage)
+    {
+        _damage = damage;
+    }
+
 }
