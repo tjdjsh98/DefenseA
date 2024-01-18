@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using UnityEngine;
 
 public static class Define 
@@ -19,6 +20,7 @@ public static class Define
         None = -1,
         Game,
         UI,
+        Effect,
         END,
     }
     public static int CONTENT_MANAGER_COUNT = (int)ContentManagers.END;
@@ -28,6 +30,11 @@ public static class Define
     {
         Player,
         Enemy,
+    }
+    public enum EffectName
+    {
+        None,
+        Damage,
     }
 
     [System.Serializable]

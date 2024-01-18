@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.VFX;
 
 public class DataManager : ManagerBase
 {
@@ -9,7 +10,7 @@ public class DataManager : ManagerBase
 
     public override void Init()
     {
-        
+        LoadData<Effect>("Prefabs/Effect");
     }
 
     public override void ManagerUpdate()
@@ -28,5 +29,18 @@ public class DataManager : ManagerBase
         {
             _data[typeof(T)].Add(t.GetEnumToInt(), t);
         }
+    }
+
+    public T GetData<T>(int type) where T : MonoBehaviour, TypeDefine
+    {
+        if (_data.ContainsKey(typeof(T)))
+        {
+            if(_data[typeof(T)].ContainsKey(type))
+            {
+                return _data[typeof(T)][type] as T;
+            }
+        }
+        
+        return null;
     }
 }

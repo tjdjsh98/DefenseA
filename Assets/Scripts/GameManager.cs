@@ -26,6 +26,19 @@ public class GameManager : ManagerBase
     public bool IsStartWave => _isStartWave;
     float _time;
 
+    private int _money;
+    public int Money
+    {
+        set
+        {
+            _money = value;
+        }
+        get
+        {
+            return _money;
+        }
+    }
+
     public override void Init()
     {
     }
@@ -86,7 +99,6 @@ public class GameManager : ManagerBase
 
     void EndWave()
     {
-        Debug.Log("EndWave");
         _isStartWave = false;
         _time = 0;
         _spawnCount = 0;
