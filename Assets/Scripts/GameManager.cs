@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.Http.Headers;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -17,6 +18,7 @@ public class GameManager : ManagerBase
 
     List<GameObject> _enemySpawnList = new List<GameObject>();
 
+    [SerializeField] List<Wave> _waveList;
     int _currentWave = 0;
     public int CurrentWave => _currentWave;
 
@@ -49,7 +51,7 @@ public class GameManager : ManagerBase
     }
     public override void ManagerUpdate()
     {
-        if (!_isStartWave)
+        if (!_isStartWave && !Managers.GetManager<UIManager>().GetUI<UIShop>().gameObject.activeSelf)
         {
             _time += Time.time;
             if (_time > 3.0f)
@@ -77,16 +79,22 @@ public class GameManager : ManagerBase
 
         if(_time > 2f && _spawnCount < _maxSpawnCount)
         {
-            GameObject go = Instantiate(_enemyOrigin);
-            go.transform.position = _enemySpawnPoint.transform.position;
-            Character character = go.GetComponent<Character>();
-            character.SetHp((_currentWave+1)*3);
+            Wave wave = null;
+
+            if (_waveList.Count > _currentWave)
+                wave = _waveList[_currentWave];
+            else
+                wave = _waveList[0];
+
+            Character character = Instantiate(wave.characterList[_spawnCount]);
+            character.transform.position = _enemySpawnPoint.transform.position;
+            character.SetHp((_currentWave + 1) * 3);
 
             character.CharacterDead += () =>
             {
-                _enemySpawnList.Remove(go);
+                _enemySpawnList.Remove(character.gameObject);
             };
-            _enemySpawnList.Add(go);
+            _enemySpawnList.Add(character.gameObject);
             _spawnCount++;
             _time = 0;
         }
@@ -102,6 +110,12 @@ public class GameManager : ManagerBase
         _isStartWave = false;
         _time = 0;
         _spawnCount = 0;
-        Managers.GetManager<UIManager>().GetUI<UISelectCard>().Open();
+        Managers.GetManager<UIManager>().GetUI<UIShop>().Open();
     }
+}
+
+[System.Serializable]
+class Wave
+{
+    public List<Character> characterList;
 }

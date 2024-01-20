@@ -13,6 +13,7 @@ public class UIInGame : UIBase
 
     [SerializeField] Image _weapon1Image;
     [SerializeField] Image _weapon2Image;
+    [SerializeField] Image _weapon3Image;
 
     Player _player;
 
@@ -52,11 +53,19 @@ public class UIInGame : UIBase
         {
             _weapon1Image.color = Color.green;
             _weapon2Image.color = Color.white;
+            _weapon3Image.color = Color.white;
         }
         if (weaponSwaper.WeaponIndex == 1 && _weapon2Image)
         {
             _weapon1Image.color = Color.white;
             _weapon2Image.color = Color.green;
+            _weapon3Image.color = Color.white;
+        }
+        if (weaponSwaper.WeaponIndex == 2 && _weapon3Image)
+        {
+            _weapon1Image.color = Color.white;
+            _weapon2Image.color = Color.white;
+            _weapon3Image.color = Color.green;
         }
     }
 

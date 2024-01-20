@@ -9,6 +9,7 @@ public class InputManager : ManagerBase
     public Vector3 MouseWorldPosition { get { return _mainCamera.ScreenToWorldPoint(Input.mousePosition); } }
 
     public Action MouseButtonDown;
+    public Action MouseButtonHold;
     public Action Num1KeyDown;
     public Action Num2KeyDown;
     public Action Num3KeyDown;
@@ -21,10 +22,10 @@ public class InputManager : ManagerBase
     public override void ManagerUpdate()
     {
         if (Input.GetMouseButtonDown(0))
-        {
             MouseButtonDown?.Invoke();
-        }
-        if(Input.GetKeyDown(KeyCode.Alpha1))
+        if (Input.GetMouseButton(0))
+            MouseButtonHold?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Alpha1))
             Num1KeyDown?.Invoke();
         if(Input.GetKeyDown(KeyCode.Alpha2))
             Num2KeyDown?.Invoke();

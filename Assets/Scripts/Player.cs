@@ -19,7 +19,7 @@ public class Player : MonoBehaviour
         _weaponSwaper = GetComponent<WeaponSwaper>();
 
         Managers.GetManager<GameManager>().SetPlayer(this);
-        Managers.GetManager<InputManager>().MouseButtonDown += UseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
     }
 

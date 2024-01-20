@@ -2,13 +2,17 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class EnemyAI : MonoBehaviour
 {
-    Character _character;
-    [SerializeField]Define.Range _attackRange;
+    protected Character _character;
+    [SerializeField]protected Define.Range _attackRange;
 
-    Character _target;
+    [SerializeField] protected Character _target;
+
+    [SerializeField] protected float _attackDelay = 1;
+    protected  float _attackElapsed;
 
     private void Awake()
     {
@@ -40,7 +44,7 @@ public class EnemyAI : MonoBehaviour
         _character.Move(Vector2.left);
     }
 
-    private void CheckTarget()
+    protected virtual void CheckTarget()
     {
         GameObject[] gameObjects = Util.BoxcastAll2D(gameObject,_attackRange);
 
@@ -63,11 +67,19 @@ public class EnemyAI : MonoBehaviour
         _target = null;
     }
 
-    private void PlayAttack()
+    protected virtual void PlayAttack()
     {
-        if (_target == null) return;
+        if (_attackElapsed < _attackDelay)
+        {
+            _attackElapsed += Time.deltaTime;
+        }
+        else
+        {
+            if (_target == null) return;
 
-        _character.Attack(_target);
+            _attackElapsed = 0;
+            _character.Attack(_target);
+        }
     }
 
     public void Attack(Character character)

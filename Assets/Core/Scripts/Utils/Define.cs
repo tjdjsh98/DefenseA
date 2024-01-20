@@ -30,6 +30,7 @@ public static class Define
     {
         Player,
         Enemy,
+        Building
     }
     public enum EffectName
     {

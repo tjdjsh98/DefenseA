@@ -58,6 +58,8 @@ public class Weapon : MonoBehaviour
             return;
         }
 
+        if (_fireElapsed < _fireDelay) return;
+
         _currentAmmo--;
         _fireElapsed = 0;
         
@@ -68,7 +70,7 @@ public class Weapon : MonoBehaviour
             GameObject go = Instantiate(_projectile);
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
-            projectile.Init(_power, _bulletSpeed, _damage);
+            projectile.Init(_power, _bulletSpeed, _damage,Define.CharacterType.Enemy);
 
 
             projectile.Fire(fireCharacter, direction.normalized);
@@ -133,4 +135,13 @@ public class Weapon : MonoBehaviour
         _damage = damage;
     }
 
+    public void IncreaseMaxAmmo(int count)
+    {
+        _maxAmmo += count;
+    }
+
+    public void DecreaseReloadDelay(float delay)
+    {
+        _reloadDelay -= delay;
+    }
 }

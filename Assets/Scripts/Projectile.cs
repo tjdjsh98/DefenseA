@@ -17,27 +17,32 @@ public class Projectile : MonoBehaviour
 
     bool _isAttack;
 
+    Define.CharacterType _enableAttackCharacterType;
+
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (_isAttack) return;
-
         Character character = null;
         if (character = collision.gameObject.GetComponent<Character>())
         {
-            _direction.y = 0;
-            _direction = _direction.normalized;
-            character.Damage(_attacker, _damage, _power, _direction);
-            Destroy(gameObject);
-            _isAttack = true;
+            if (character.CharacterType == _enableAttackCharacterType)
+            {
+                _direction.y = 0;
+                _direction = _direction.normalized;
+                character.Damage(_attacker, _damage, _power, _direction);
+                Destroy(gameObject);
+                _isAttack = true;
+            }
         }
     }
 
-    public void Init(float power, float speed, int damage)
+    public void Init(float power, float speed, int damage,Define.CharacterType enableAttackCharacterType)
     {
         _rigid = GetComponent<Rigidbody2D>();
         _power = power;
         _speed = speed;
         _damage = damage;
+        _enableAttackCharacterType = enableAttackCharacterType;
     }
 
     private void Update()
@@ -49,7 +54,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    public void Fire(Character attacker, Vector3 direction)
+    public virtual void Fire(Character attacker, Vector3 direction)
     {
         direction.z = 0;    
         _attacker = attacker;
