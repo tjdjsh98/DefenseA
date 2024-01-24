@@ -68,6 +68,9 @@ public class GameManager : ManagerBase
         if (_isStartWave) return;
 
         _currentWave++;
+        if (_currentWave >= _waveList.Count)
+            _currentWave = 0;
+        _maxSpawnCount = _waveList[_currentWave].characterList.Count;
         _isStartWave= true;
     }
 
