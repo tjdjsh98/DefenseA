@@ -15,6 +15,10 @@ public class UIInGame : UIBase
     [SerializeField] Image _weapon2Image;
     [SerializeField] Image _weapon3Image;
 
+    [SerializeField] Image _expMaxImage;
+    [SerializeField] Image _expCurrentImage;
+    [SerializeField] TextMeshProUGUI _levelText;
+
     Player _player;
 
     public override void Init()
@@ -66,6 +70,16 @@ public class UIInGame : UIBase
             _weapon1Image.color = Color.white;
             _weapon2Image.color = Color.white;
             _weapon3Image.color = Color.green;
+        }
+
+        if(_expMaxImage && _expCurrentImage)
+        {
+            int maxExp = Managers.GetManager<GameManager>().MaxExp; 
+            int exp = Managers.GetManager<GameManager>().Exp; 
+            _expCurrentImage.rectTransform.sizeDelta
+                = new Vector2(_expMaxImage.rectTransform.sizeDelta.x * exp/maxExp, _expMaxImage.rectTransform.sizeDelta.y);
+
+            _levelText.text = Managers.GetManager<GameManager>().Level.ToString();
         }
     }
 

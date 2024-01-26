@@ -25,6 +25,8 @@ public class Player : MonoBehaviour
 
         Managers.GetManager<GameManager>().SetPlayer(this);
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
+        Managers.GetManager<InputManager>().Num1KeyDown += UseWeapon;
+        HandleMove();
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
 
         _initCameraPosition = Camera.main.transform.position;
@@ -33,7 +35,7 @@ public class Player : MonoBehaviour
     public void Update()
     {
         RotateArm();
-        ExpandMap();
+        HandleMove();
     }
 
     private void RotateArm()
@@ -45,8 +47,20 @@ public class Player : MonoBehaviour
         _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
     }
 
-    private void ExpandMap()
+    private void HandleMove()
     {
+        Managers.GetManager<InputManager>().RightArrowPressed += OnRightArrowPressed;
+        Managers.GetManager<InputManager>().LeftArrowPressed += OnLeftArrowPressed;
+
+    }
+
+    void OnRightArrowPressed()
+    {
+        _character.Move(Vector2.right);
+    }
+    void OnLeftArrowPressed()
+    {
+        _character.Move(Vector2.left);
     }
 
     void UseWeapon()

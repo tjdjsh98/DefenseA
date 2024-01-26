@@ -122,7 +122,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 22
+  _maxHp: 2
   _hp: 0
   _speed: 3
   _hpBar: {fileID: 0}
@@ -141,6 +141,8 @@ MonoBehaviour:
   _attackRange:
     center: {x: 0.64, y: 0, z: 0}
     size: {x: 1.42, y: 1.21, z: 0}
+  _target: {fileID: 0}
+  _attackDelay: 1
 --- !u!114 &-1994508215923185140
 MonoBehaviour:
   m_ObjectHideFlags: 0

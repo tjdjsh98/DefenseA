@@ -18,6 +18,10 @@ public class EnemyAI : MonoBehaviour
         _character = GetComponent<Character>();
 
         _character.CharacterAttack += Attack;
+        _character.CharacterDead += () =>
+        {
+            Managers.GetManager<GameManager>().Exp += 1;
+        };
     }
 
     private void OnDrawGizmosSelected()

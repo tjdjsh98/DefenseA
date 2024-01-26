@@ -1,32 +1,66 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.Http.Headers;
-using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : ManagerBase
 {
     Player _player;
-    public Player Player=>_player;
+    public Player Player => _player;
 
-    [SerializeField]Character _building;
+    [SerializeField] Character _building;
     public Character Building => _building;
 
-    [SerializeField] GameObject _enemyOrigin;
+    // 플레이 경험 관련
+    [Header("경험치")]
+    [SerializeField] int _exp;
+    public int Exp {
+        set
+        {
+            _exp = value;
+            if (_maxExpList.Count > Level)
+            {
+                if (_exp >= _maxExpList[Level])
+                {
+                    _exp = _exp - _maxExpList[Level];
+                    Level++;
+                }
+            }
+        }
+        get { return _exp; }
+    }
+
+    public int MaxExp
+    {
+        get
+        {
+            int maxExp = 9999999;
+            if (_maxExpList.Count > Level)
+            {
+                maxExp = _maxExpList[Level];
+            }
+
+            return maxExp;
+        }
+    }
+    [SerializeField] List<int> _maxExpList;
+    public int Level { set; get; }
+
+    // 적 소환 관련 변수
+    [Header("적관련변수")]
     [SerializeField] GameObject _enemySpawnPoint;
-
+    [SerializeField] bool _isEndless;
     List<GameObject> _enemySpawnList = new List<GameObject>();
-
     [SerializeField] List<Wave> _waveList;
     int _currentWave = 0;
     public int CurrentWave => _currentWave;
-
     int _spawnCount;
     int _maxSpawnCount = 5;
     bool _isStartWave;
     public bool IsStartWave => _isStartWave;
-    float _time;
+    float _totalTime;
+    float _genTime;
+
+
 
     private int _money;
     public int Money
@@ -41,8 +75,13 @@ public class GameManager : ManagerBase
         }
     }
 
+    // 땅과 관련변수
+    Map _map;
+
     public override void Init()
     {
+        _map = new Map(90f);
+        _map.SetCenterGround(GameObject.Find("Ground"));
     }
 
     public void SetPlayer(Player player)
@@ -51,16 +90,35 @@ public class GameManager : ManagerBase
     }
     public override void ManagerUpdate()
     {
-        if (!_isStartWave && !Managers.GetManager<UIManager>().GetUI<UIShop>().gameObject.activeSelf)
+        _totalTime += Time.deltaTime;
+        HandleGround();
+        if (!_isEndless)
         {
-            _time += Time.time;
-            if (_time > 3.0f)
+            if (!_isStartWave && !Managers.GetManager<UIManager>().GetUI<UIShop>().gameObject.activeSelf)
             {
-                StartWave();
-                _time = 0;
+                _genTime += Time.time;
+                if (_genTime > 3.0f)
+                {
+                    StartWave();
+                    _genTime = 0;
+                }
             }
+            PlayWave();
         }
-        PlayWave();
+        else
+        {
+            EndlessWave();
+        }
+    }
+
+    void HandleGround()
+    {
+        if (Player == null) return;
+
+        float playerX = Player.transform.position.x;
+        int index = _map.GetIndex(playerX);
+
+        _map.SetGround(index);
     }
 
     void StartWave()
@@ -78,9 +136,9 @@ public class GameManager : ManagerBase
     {
         if (!_isStartWave) return;
 
-        _time += Time.deltaTime;
+        _genTime += Time.deltaTime;
 
-        if(_time > 2f && _spawnCount < _maxSpawnCount)
+        if(_genTime > 2f && _spawnCount < _maxSpawnCount)
         {
             Wave wave = null;
 
@@ -99,7 +157,7 @@ public class GameManager : ManagerBase
             };
             _enemySpawnList.Add(character.gameObject);
             _spawnCount++;
-            _time = 0;
+            _genTime = 0;
         }
 
         if(_spawnCount == _maxSpawnCount && _enemySpawnList.Count <= 0)
@@ -111,9 +169,37 @@ public class GameManager : ManagerBase
     void EndWave()
     {
         _isStartWave = false;
-        _time = 0;
+        _genTime = 0;
         _spawnCount = 0;
         Managers.GetManager<UIManager>().GetUI<UIShop>().Open();
+    }
+
+    void EndlessWave()
+    {
+        float genTime = 100;
+        if (_totalTime < 30)
+            genTime = 2f;
+        else if (_totalTime < 120)
+            genTime = 1.5f;
+        else if (_totalTime < 240)
+            genTime = 1.1f;
+
+        if (_genTime > genTime)
+        {
+            int count = Random.Range(1, 4);
+
+            for(int i = 0; i < count; i++)
+            {
+                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("Enemy");
+                enemy.transform.position = _enemySpawnPoint.transform.position.GetRandom(-1,1);
+            }
+
+            _genTime = 0;
+        }
+        else
+        {
+            _genTime += Time.deltaTime;
+        }
     }
 }
 
@@ -121,4 +207,61 @@ public class GameManager : ManagerBase
 class Wave
 {
     public List<Character> characterList;
+}
+
+class Map
+{
+    int currentIndex = -10002;
+
+    GameObject left;
+    GameObject center;
+    GameObject right;
+
+
+    float groundTerm;
+    float yPosision = -11.4f;
+
+    public Map(float groundTenm)
+    {
+        this.groundTerm = groundTenm;
+    }
+
+  
+    public void SetGround(int index)
+    {
+        if (index == currentIndex) return;
+
+        if(index > currentIndex)
+        {
+            GameObject temp = left;
+            left = center;
+            center = right;
+            right = temp;
+        }
+        else
+        {
+            GameObject temp = right;
+            right = center;
+            center = left;
+            left = temp;
+        }
+        currentIndex= index;
+
+        center.transform.position = new Vector3(index * groundTerm, yPosision, 0);
+        right.transform.position = new Vector3((index+1) * groundTerm, yPosision, 0);
+        left.transform.position = new Vector3((index -1)* groundTerm, yPosision, 0);
+        
+    }
+
+    public void SetCenterGround(GameObject ground)
+    {
+        center= ground;
+        left = Managers.GetManager<ResourceManager>().Instantiate("Ground");
+        right = Managers.GetManager<ResourceManager>().Instantiate("Ground");
+    }
+    public int GetIndex(float x)
+    {
+        int index = (int)(x / (groundTerm / 2));
+        return index;
+    }
 }

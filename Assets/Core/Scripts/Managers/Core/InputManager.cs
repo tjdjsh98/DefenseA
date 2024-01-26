@@ -14,6 +14,10 @@ public class InputManager : ManagerBase
     public Action Num2KeyDown;
     public Action Num3KeyDown;
 
+    public Action RightArrowPressed;
+    public Action LeftArrowPressed;
+
+
     public override void Init()
     {
         _mainCamera= Camera.main;
@@ -31,5 +35,10 @@ public class InputManager : ManagerBase
             Num2KeyDown?.Invoke();
         if (Input.GetKeyDown(KeyCode.Alpha3))
             Num3KeyDown?.Invoke();
+
+        if(Input.GetKey(KeyCode.D))
+            RightArrowPressed?.Invoke();
+        if (Input.GetKey(KeyCode.A))
+            LeftArrowPressed?.Invoke();
     }
 }

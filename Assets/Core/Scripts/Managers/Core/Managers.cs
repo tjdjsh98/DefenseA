@@ -74,6 +74,9 @@ public class Managers : MonoBehaviour
             case Define.CoreManagers.Input:
                 manager = _instance.gameObject.GetOrAddComponent<DataManager>();
                 break;
+            case Define.CoreManagers.Resource:
+                manager = _instance.gameObject.GetOrAddComponent<ResourceManager>();
+                break;
         }
 
         if (manager)
