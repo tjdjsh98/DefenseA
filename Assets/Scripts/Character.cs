@@ -102,6 +102,9 @@ public class Character : MonoBehaviour
         else if(direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
 
+        direction.x = Mathf.Clamp(direction.x, -1, 1);
+        direction.y = Mathf.Clamp(direction.y, -1, 1);
+
         if(_isEnableFly)
             _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
         else

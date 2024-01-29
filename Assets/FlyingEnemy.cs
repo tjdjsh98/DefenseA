@@ -9,20 +9,7 @@ public class FlyingEnemy : EnemyAI
     {
         base.Awake();
     }
-    protected override void Move()
-    {
-        if (_target != null) return;
-
-        if (!CheckGround())
-        {
-            _character.Move(Vector2.left);
-        }
-        else
-        {
-            _character.Move(Vector2.left + Vector2.up);
-        }
-    }
-
+  
     public bool CheckGround()
     {
         RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, _flyHeight, LayerMask.GetMask("Ground"));

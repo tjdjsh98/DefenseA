@@ -11,14 +11,14 @@ public class DataManager : ManagerBase
     public override void Init()
     {
         LoadData<Effect>("Prefabs/Effect");
+        LoadData<Weapon>("Prefabs/Weapon");
     }
 
     public override void ManagerUpdate()
     {
-        
     }
 
-    void LoadData<T>(string path) where T : MonoBehaviour, TypeDefine
+    void LoadData<T>(string path) where T : MonoBehaviour, ITypeDefine
     {
         T[] list = Resources.LoadAll<T>(path);
 
@@ -31,7 +31,7 @@ public class DataManager : ManagerBase
         }
     }
 
-    public T GetData<T>(int type) where T : MonoBehaviour, TypeDefine
+    public T GetData<T>(int type) where T : MonoBehaviour, ITypeDefine
     {
         if (_data.ContainsKey(typeof(T)))
         {

@@ -1,15 +1,19 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
+using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
 public class WeaponSwaper : MonoBehaviour
 {
     Weapon _currentWeapon;
 
-    [SerializeField] Weapon _mainWeapon;
-    [SerializeField] Weapon _subWeapon;
-    [SerializeField] Weapon _meleeWeapon;
+    [SerializeField] List<Define.WeaponName> _weaponNameList;
+    [SerializeField] List<GameObject> _weaponSlotList;
+    public List<GameObject> WeaponSlotList => _weaponSlotList;
+    List<Weapon> _weaponList;
+
     public Weapon CurrentWeapon=> _currentWeapon;
     public Action<Weapon> WeaponSwaped;
 
@@ -18,29 +22,58 @@ public class WeaponSwaper : MonoBehaviour
 
     private void Awake()
     {
-        SelectWeapon(0);
+        SelectWeapon(-1);
+        _weaponList= new List<Weapon>();
+        
 
-        Managers.GetManager<InputManager>().Num1KeyDown += () => SelectWeapon(0);
-        Managers.GetManager<InputManager>().Num2KeyDown += () => SelectWeapon(1);
-        Managers.GetManager<InputManager>().Num3KeyDown += () => SelectWeapon(2);
+        for (int i = 0; i < _weaponNameList.Count; i++)
+        {
+            _weaponList.Add(null);
+            ChangeNewWeapon(i, _weaponNameList[i]);
+
+        }
+       
+
+    }
+
+    public void ChangeNewWeapon(int index, Define.WeaponName weaponName)
+    {
+        if (index < 0 || index >= _weaponSlotList.Count) return;
+
+        if (_weaponList[index] != null)
+        {
+            Managers.GetManager<ResourceManager>().Destroy(_weaponList[index].gameObject);
+        }
+        _weaponList[index] = Managers.GetManager<ResourceManager>().Instantiate(Managers.GetManager<DataManager>().GetData<Weapon>((int)weaponName));
+        _weaponList[index].transform.SetParent(_weaponSlotList[index].transform);
+        _weaponList[index].transform.localPosition = Vector3.zero;
     }
 
     public void SelectWeapon(int index)
     {
-        if (index < 0 || index >= 3) return;
+        if(index == -1)
+        {
+            _currentWeapon = null;
+            _weaponIndex = -1;
+            return;
+        }
+        if (index < 0 || index >= _weaponSlotList.Count) return;
 
-        if (index == 0)
-            _currentWeapon = _mainWeapon;
-        else if (index == 1)
-            _currentWeapon = _subWeapon;
-        else if (index == 2)
-            _currentWeapon = _meleeWeapon;
+        _currentWeapon = _weaponList[index];
 
-        _mainWeapon.gameObject.SetActive(_currentWeapon == _mainWeapon);
-        _subWeapon.gameObject.SetActive(_currentWeapon == _subWeapon);
-        _meleeWeapon.gameObject.SetActive(_currentWeapon == _meleeWeapon);
+        for(int i =0; i < _weaponList.Count;i++)
+        {
+            _weaponList[i].gameObject.SetActive(index == i);
+        }
+
+        _weaponIndex = index;
 
         WeaponSwaped?.Invoke(_currentWeapon);
     }
 
+    public Weapon GetWeapon(int index)
+    {
+        if (_weaponList.Count <= index || index < 0) return null;
+        return _weaponList[index];
+    }
 }

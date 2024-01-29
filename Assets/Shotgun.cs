@@ -70,5 +70,6 @@ public class Shotgun : Weapon
 
             }
         }
+        Player?.OutAngle(_rebound);
     }
 }

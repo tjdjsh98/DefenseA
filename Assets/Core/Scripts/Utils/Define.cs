@@ -46,9 +46,17 @@ public static class Define
         AmmoUp,
         ReloadSpeedUp,
         RecoverHp,
+        UnlockSpear,
     }
 
-    
+    public enum WeaponName
+    {
+        None = -1,
+        Shotgun,
+        Handgun,
+        Minigun,
+        END
+    }
     public enum Passive
     {
         None = 1,

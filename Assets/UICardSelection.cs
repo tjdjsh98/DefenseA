@@ -57,6 +57,9 @@ public class UICardSelection : UIBase
             case "체력 회복":
                 Managers.GetManager<GameManager>().Player.Character.SetHp(Managers.GetManager<GameManager>().Player.Character.MaxHp);
                 break;
+            case "스피어 해제":
+                Managers.GetManager<GameManager>().Familiar.IsUnlockSpear = true;
+                break;
         }
         Close();
     }

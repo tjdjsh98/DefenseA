@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
@@ -45,7 +46,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (_target != null) return;
 
-        _character.Move(Vector2.left);
+        _character.Move(Managers.GetManager<GameManager>().Player.transform.position - transform.position);
     }
 
     protected virtual void CheckTarget()

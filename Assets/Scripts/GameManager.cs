@@ -11,6 +11,10 @@ public class GameManager : ManagerBase
     [SerializeField] Character _building;
     public Character Building => _building;
 
+    FamiliarAI _familiar;
+    public FamiliarAI Familiar;
+
+    [field: SerializeField]public  float MapSize { set; get; }
     // 플레이 경험 관련
     [Header("경험치")]
     [SerializeField] int _exp;
@@ -200,7 +204,11 @@ public class GameManager : ManagerBase
             for(int i = 0; i < count; i++)
             {
                 GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("FlyingEnemy");
-                enemy.transform.position = _enemySpawnPoint.transform.position.GetRandom(-1,1);
+                Vector3 random = Random.onUnitSphere;
+                random.y = random.y < 0 ? -random.y : random.y;
+                random.z = 0;
+                random = random.normalized * 50;
+                enemy.transform.position = _player.transform.position + random;
             }
 
             _genTime = 0;

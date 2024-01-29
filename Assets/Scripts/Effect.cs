@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.VFX;
 
-public class Effect : MonoBehaviour, TypeDefine
+public class Effect : MonoBehaviour, ITypeDefine
 {
     VisualEffect _visualEffect;
 

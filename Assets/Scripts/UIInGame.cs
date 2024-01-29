@@ -19,6 +19,9 @@ public class UIInGame : UIBase
     [SerializeField] Image _expCurrentImage;
     [SerializeField] TextMeshProUGUI _levelText;
 
+    [SerializeField] Image _mapPlayer;
+    [SerializeField] Image _mapImage;
+
     Player _player;
 
     public override void Init()
@@ -81,6 +84,17 @@ public class UIInGame : UIBase
 
             _levelText.text = Managers.GetManager<GameManager>().Level.ToString();
         }
+
+        ShowMap();
+    }
+
+    void ShowMap()
+    {
+        float mapImageSize = _mapImage.rectTransform.sizeDelta.x;
+        float mapSize = Managers.GetManager<GameManager>().MapSize;
+        float playerPosition = Managers.GetManager<GameManager>().Player.transform.position.x;
+
+        _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + playerPosition / mapSize * mapImageSize,0,0);
     }
 
     public void SetPlayerCharacter(Player player)

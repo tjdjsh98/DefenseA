@@ -3,9 +3,23 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Weapon : MonoBehaviour
+public class Weapon : MonoBehaviour, ITypeDefine
 {
     protected Character _character;
+    protected Player _player;
+
+    protected Character Character
+    {
+        get { if (_character == null) _character = GetComponentInParent<Character>(); return _character; }
+    }
+    protected Player Player
+    {
+        get { if(_player == null) _player = GetComponentInParent<Player>(); return _player; }
+    }
+
+
+    [SerializeField]protected Define.WeaponName _weaponName;
+    public Define.WeaponName WeaponName =>_weaponName;
 
     [SerializeField]protected bool _isRaycast;
     public GameObject _projectile;
@@ -31,6 +45,8 @@ public class Weapon : MonoBehaviour
 
     [SerializeField] protected GameObject _firePosition;
 
+    [SerializeField]protected float _rebound;
+    public float Rebound => _rebound;
 
     protected float _fireElapsed;
     protected float _reloadElapsed;
@@ -43,7 +59,6 @@ public class Weapon : MonoBehaviour
 
     private void Awake()
     {
-        _character = GetComponentInParent<Character>();
         _currentAmmo = _maxAmmo;
         if(_reloadGauge)
             _reloadGauge.gameObject.SetActive(false);
@@ -51,7 +66,6 @@ public class Weapon : MonoBehaviour
     }
     public virtual void Fire(Character fireCharacter)
     {
-
         if (_currentAmmo <= 0)
         {
             Reload();
@@ -62,7 +76,6 @@ public class Weapon : MonoBehaviour
 
         _currentAmmo--;
         _fireElapsed = 0;
-
 
 
         float angle = transform.rotation.eulerAngles.z;
@@ -97,11 +110,13 @@ public class Weapon : MonoBehaviour
 
                 if (character != null)
                 {
-                    character.Damage(_character, _damage, _power, direction.x > 0 ? Vector3.right: Vector3.left);
+                    character.Damage(Character, _damage, _power, direction.x > 0 ? Vector3.right: Vector3.left);
                 }
 
             }
         }
+
+        Player?.OutAngle(_rebound);
     }
     public void Update()
     {
@@ -148,5 +163,10 @@ public class Weapon : MonoBehaviour
     public void DecreaseReloadDelay(float delay)
     {
         _reloadDelay -= delay;
+    }
+
+    public int GetEnumToInt()
+    {
+        return (int)WeaponName;
     }
 }

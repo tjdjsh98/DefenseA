@@ -19,6 +19,11 @@ public class Player : MonoBehaviour
     Vector3 _initCameraPosition;
 
     CameraController _cameraController;
+
+    float _outAngle;
+    float _outAngleControlPower = 100f;
+
+
     private void Awake()
     {
         _character= GetComponent<Character>();
@@ -32,6 +37,10 @@ public class Player : MonoBehaviour
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
 
         _initCameraPosition = Camera.main.transform.position;
+
+        Managers.GetManager<InputManager>().Num1KeyDown += () => _weaponSwaper.SelectWeapon(0);
+        Managers.GetManager<InputManager>().Num2KeyDown += () => _weaponSwaper.SelectWeapon(1);
+        Managers.GetManager<InputManager>().Num3KeyDown += () => _weaponSwaper.SelectWeapon(2);
     }
 
     public void Update()
@@ -40,16 +49,40 @@ public class Player : MonoBehaviour
         HandleMove();
     }
 
+    public void OutAngle(float angle)
+    {
+        _outAngle+= angle;
+    }
+
     private void RotateArm()
     {
+        if (!Input.GetMouseButton(0))
+        {
+            if (_outAngle > 0)
+            {
+                _outAngle -= _outAngleControlPower * Time.deltaTime;
+                if (_outAngle < 0)
+                    _outAngle = 0;
+            }
+        }
+        else
+        {
+            if (_outAngle > 0)
+            {
+                _outAngle -= _outAngleControlPower/3 * Time.deltaTime;
+                if (_outAngle < 0)
+                    _outAngle = 0;
+            }
+        }
+
         Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _arm.transform.position;
 
         float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
-
         if (transform.localScale.x > 0)
         {
             if ((angle >= 0 && angle <= 70) || (angle >= -70 && angle <= 0))
             {
+                angle += _outAngle;
                 _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
 
             }
@@ -57,7 +90,14 @@ public class Player : MonoBehaviour
         else
         {
             angle += 180f;
-            if ((angle >= 0 && angle <= 70) || (angle >= 270 && angle <= 340))
+            if ((angle >= 0 && angle <= 70))
+            {
+                angle -= _outAngle;
+            }
+            if ((angle >= 270 && angle <= 340))
+            {
+                angle -= _outAngle;
+            }
                 _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
 
         }
@@ -93,6 +133,7 @@ public class Player : MonoBehaviour
 
     void UseWeapon()
     {
-        _weaponSwaper.CurrentWeapon.Fire(_character);
+        if(_weaponSwaper.CurrentWeapon != null)
+            _weaponSwaper.CurrentWeapon.Fire(_character);
     }
 }
