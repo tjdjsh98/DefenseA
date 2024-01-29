@@ -18,10 +18,12 @@ public class Player : MonoBehaviour
 
     Vector3 _initCameraPosition;
 
+    CameraController _cameraController;
     private void Awake()
     {
         _character= GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
+        _cameraController = Camera.main.GetComponent<CameraController>();
 
         Managers.GetManager<GameManager>().SetPlayer(this);
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
@@ -44,7 +46,33 @@ public class Player : MonoBehaviour
 
         float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
 
-        _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
+        if (transform.localScale.x > 0)
+        {
+            if ((angle >= 0 && angle <= 70) || (angle >= -70 && angle <= 0))
+            {
+                _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+            }
+        }
+        else
+        {
+            angle += 180f;
+            if ((angle >= 0 && angle <= 70) || (angle >= 270 && angle <= 340))
+                _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
+
+        }
+
+        float screenWidth = Screen.width;
+        Vector3 mousePosition = Input.mousePosition;
+
+        if(mousePosition.x > screenWidth/4*3)
+        {
+            _cameraController.ExpandsionView(Vector3.right);
+        }
+        else if(mousePosition.x < screenWidth / 4)
+        {
+            _cameraController.ExpandsionView(Vector3.left);
+        }
     }
 
     private void HandleMove()

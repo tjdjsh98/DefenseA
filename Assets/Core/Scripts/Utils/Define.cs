@@ -39,6 +39,23 @@ public static class Define
         Damage,
     }
 
+    public enum CardSelection
+    {
+        None = - 1,
+        WeaponDamageUp,
+        AmmoUp,
+        ReloadSpeedUp,
+        RecoverHp,
+    }
+
+    
+    public enum Passive
+    {
+        None = 1,
+        탄약소비무시,
+        빠른재장전,
+    }
+
     [System.Serializable]
     public struct Range
     {

@@ -6,9 +6,11 @@ using UnityEngine;
 public class WeaponSwaper : MonoBehaviour
 {
     Weapon _currentWeapon;
+
+    [SerializeField] Weapon _mainWeapon;
+    [SerializeField] Weapon _subWeapon;
+    [SerializeField] Weapon _meleeWeapon;
     public Weapon CurrentWeapon=> _currentWeapon;
-    [SerializeField]List<Weapon> _weaponList;
-    public List<Weapon> WeaponList=>_weaponList;
     public Action<Weapon> WeaponSwaped;
 
     int _weaponIndex;
@@ -25,20 +27,18 @@ public class WeaponSwaper : MonoBehaviour
 
     public void SelectWeapon(int index)
     {
-        if (index < 0 || index >= _weaponList.Count) return;
+        if (index < 0 || index >= 3) return;
 
-        _currentWeapon = _weaponList[index];
-        _weaponIndex = index;
+        if (index == 0)
+            _currentWeapon = _mainWeapon;
+        else if (index == 1)
+            _currentWeapon = _subWeapon;
+        else if (index == 2)
+            _currentWeapon = _meleeWeapon;
 
-        foreach(var weapon in _weaponList)
-        {
-            if (weapon == _currentWeapon)
-            {
-                weapon.gameObject.SetActive(true);
-                continue;
-            }
-            weapon.gameObject.SetActive(false);
-        }
+        _mainWeapon.gameObject.SetActive(_currentWeapon == _mainWeapon);
+        _subWeapon.gameObject.SetActive(_currentWeapon == _subWeapon);
+        _meleeWeapon.gameObject.SetActive(_currentWeapon == _meleeWeapon);
 
         WeaponSwaped?.Invoke(_currentWeapon);
     }

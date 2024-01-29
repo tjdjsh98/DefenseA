@@ -5,41 +5,41 @@ using UnityEngine;
 
 public class Weapon : MonoBehaviour
 {
-    Character _character;
+    protected Character _character;
 
-    [SerializeField] bool _isRaycast;
+    [SerializeField]protected bool _isRaycast;
     public GameObject _projectile;
 
 
-    [SerializeField] float _power = 1;
+    [SerializeField] protected float _power = 1;
     public float Power => _power;
-    [SerializeField] float _bulletSpeed = 15;
+    [SerializeField] protected float _bulletSpeed = 15;
     public float BulletSpeed => _bulletSpeed;
 
-    [SerializeField] int _damage = 1;
+    [SerializeField] protected int _damage = 1;
     public int Damage => _damage;
 
-    [SerializeField] int _maxAmmo;
+    [SerializeField] protected int _maxAmmo;
     public int MaxAmmo => _maxAmmo;
-    [SerializeField] int _currentAmmo;
+    [SerializeField]protected int _currentAmmo;
     public int CurrentAmmo => _currentAmmo;
 
-    [SerializeField] float _fireDelay;
+    [SerializeField] protected float _fireDelay;
     public float FireDelay => _fireDelay;
-    [SerializeField] float _reloadDelay;
+    [SerializeField] protected float _reloadDelay;
     public float ReloadDelay => _reloadDelay;
 
-    [SerializeField] GameObject _firePosition;
+    [SerializeField] protected GameObject _firePosition;
 
 
-    float _fireElapsed;
-    float _reloadElapsed;
+    protected float _fireElapsed;
+    protected float _reloadElapsed;
 
-    bool _isReload;
+    protected bool _isReload;
 
-    [SerializeField] HpBar _reloadGauge;
+    [SerializeField] protected HpBar _reloadGauge;
 
-    [SerializeField] Define.EffectName _hitEffect;
+    [SerializeField] protected Define.EffectName _hitEffect;
 
     private void Awake()
     {
@@ -49,7 +49,7 @@ public class Weapon : MonoBehaviour
             _reloadGauge.gameObject.SetActive(false);
 
     }
-    public void Fire(Character fireCharacter)
+    public virtual void Fire(Character fireCharacter)
     {
 
         if (_currentAmmo <= 0)
@@ -62,9 +62,14 @@ public class Weapon : MonoBehaviour
 
         _currentAmmo--;
         _fireElapsed = 0;
-        
-        Vector3 direction = Managers.GetManager<InputManager>().MouseWorldPosition - _firePosition.transform.position;
 
+
+
+        float angle = transform.rotation.eulerAngles.z;
+
+        angle = angle * Mathf.Deg2Rad;
+        Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
+        direction = direction.normalized;
         if (!_isRaycast)
         {
             GameObject go = Instantiate(_projectile);

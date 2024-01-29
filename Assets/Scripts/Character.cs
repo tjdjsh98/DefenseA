@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -8,6 +9,7 @@ public class Character : MonoBehaviour
 {
     Rigidbody2D _rigidBody;
 
+    [Header("캐릭터 능력치")]
     [SerializeField] Define.CharacterType _characterType;
     public Define.CharacterType CharacterType=>_characterType;
     [SerializeField] int _maxHp;
@@ -16,22 +18,30 @@ public class Character : MonoBehaviour
     public int Hp => _hp;
 
     [SerializeField] float _speed;
+    [SerializeField] bool _isEnableFly;
 
     float _stunTime;
 
+    // 캐릭터 행동상태
     public bool IsStun {private set; get; }
     public bool IsAttack {private set; get; }
 
     Character _attackTarget;
-    public Action<Character> CharacterAttack;
 
+    public Action<Character> CharacterAttack;
     public Action CharacterDead;
 
     [SerializeField] HpBar _hpBar;
+
+    public List<Define.Passive> CharacterPassive = new List<Define.Passive>();
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _hp = _maxHp;
+
+        if (_isEnableFly)
+            _rigidBody.isKinematic = true;
 
     }
 
@@ -92,7 +102,10 @@ public class Character : MonoBehaviour
         else if(direction.x < 0)
             transform.localScale = new Vector3(-1, 1, 1);
 
-        _rigidBody.velocity = new Vector2(direction.x * _speed, _rigidBody.velocity.y);
+        if(_isEnableFly)
+            _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
+        else
+            _rigidBody.velocity = new Vector2(direction.x * _speed, _rigidBody.velocity.y);
     }
 
     public void Attack(Character character)

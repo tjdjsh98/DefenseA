@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Properties;
 using UnityEngine;
 
 public class GameManager : ManagerBase
@@ -23,6 +24,7 @@ public class GameManager : ManagerBase
                 {
                     _exp = _exp - _maxExpList[Level];
                     Level++;
+                    Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
                 }
             }
         }
@@ -60,6 +62,8 @@ public class GameManager : ManagerBase
     float _totalTime;
     float _genTime;
 
+    [Header("카드 선택지")]
+    [field:SerializeField]public List<CardSelectionInfo> CardSelectionInfoList;
 
 
     private int _money;
@@ -74,6 +78,8 @@ public class GameManager : ManagerBase
             return _money;
         }
     }
+
+    public bool IsStopWave { get; set; }
 
     // 땅과 관련변수
     Map _map;
@@ -92,22 +98,25 @@ public class GameManager : ManagerBase
     {
         _totalTime += Time.deltaTime;
         HandleGround();
-        if (!_isEndless)
+        if (!IsStopWave)
         {
-            if (!_isStartWave && !Managers.GetManager<UIManager>().GetUI<UIShop>().gameObject.activeSelf)
+            if (!_isEndless)
             {
-                _genTime += Time.time;
-                if (_genTime > 3.0f)
+                if (!_isStartWave && !Managers.GetManager<UIManager>().GetUI<UIShop>().gameObject.activeSelf)
                 {
-                    StartWave();
-                    _genTime = 0;
+                    _genTime += Time.time;
+                    if (_genTime > 3.0f)
+                    {
+                        StartWave();
+                        _genTime = 0;
+                    }
                 }
+                PlayWave();
             }
-            PlayWave();
-        }
-        else
-        {
-            EndlessWave();
+            else
+            {
+                EndlessWave();
+            }
         }
     }
 
@@ -190,7 +199,7 @@ public class GameManager : ManagerBase
 
             for(int i = 0; i < count; i++)
             {
-                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("Enemy");
+                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("FlyingEnemy");
                 enemy.transform.position = _enemySpawnPoint.transform.position.GetRandom(-1,1);
             }
 

@@ -55,8 +55,11 @@ public class Turret : MonoBehaviour
     void AimTarget()
     {
         Vector3 distance = _target.transform.position - transform.position;
-
         float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
+
+
+        Vector3 mousePosition = Input.mousePosition;
+
 
     }
 }

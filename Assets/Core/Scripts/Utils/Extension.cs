@@ -27,7 +27,12 @@ public static class Extension
         if (list.Count == 0) return default(T);
         return list[list.Count - 1];
     }
+    public static T GetRandom<T>(this List<T> list)
+    {
+        if (list.Count == 0) return default(T);
 
+        return list[Random.Range(0, list.Count)];
+    }
     public static Vector3 GetRandom(this Vector3 vector,float min, float max)
     {
         Vector3 result = vector;

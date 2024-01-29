@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
 public class EnemyAI : MonoBehaviour
@@ -13,7 +14,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         _character = GetComponent<Character>();
 
@@ -40,7 +41,7 @@ public class EnemyAI : MonoBehaviour
         PlayAttack();
     }
 
-    private void Move()
+    protected virtual void Move()
     {
         if (_target != null) return;
 
