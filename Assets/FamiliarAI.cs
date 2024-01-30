@@ -54,15 +54,12 @@ public class FamiliarAI : MonoBehaviour
             _isMove = true;
         }
 
-        if(_isMove)
-        {
-            _character.Move(Vector3.right * (_player.transform.position.x - transform.position.x));
+        if(_player.transform.position.x < transform.position.x)
+            _character.Move(Vector3.right * (_player.transform.position.x+2.5f - transform.position.x));
+        else
+            _character.Move(Vector3.right * (_player.transform.position.x-2.5f - transform.position.x));
 
-            if(Mathf.Abs(_player.transform.position.x - transform.position.x) > _playerDistance)
-            {
-                _isMove = false;
-            }
-        }
+
     }
 
     void SpearAttack()

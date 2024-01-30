@@ -373,8 +373,9 @@ MonoBehaviour:
   _characterType: 0
   _maxHp: 20
   _hp: 20
-  _speed: 3.8
+  _speed: 2
   _isEnableFly: 0
+  _isTurnBodyAlongVelocity: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!61 &64456466
@@ -478,7 +479,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56587cb851c430849b8c304ea6960fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _weaponNameList: 0000000000000000000000000000000000000000
+  _weaponNameList: ffffffffffffffffffffffffffffffffffffffff
   _weaponSlotList:
   - {fileID: 1870531182}
   - {fileID: 946093963}
@@ -557,7 +558,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 1
   m_Sprite: {fileID: 21300000, guid: 8eb62d7caeca20d4ba946b6ba15af921, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -1824,8 +1825,9 @@ MonoBehaviour:
   _characterType: 0
   _maxHp: 3
   _hp: 3
-  _speed: 2
+  _speed: 4
   _isEnableFly: 0
+  _isTurnBodyAlongVelocity: 0
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!114 &387843786
@@ -3154,7 +3156,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 3
+  m_SortingOrder: 2
   m_Sprite: {fileID: 21300000, guid: df27f24ca25a8a649bccd6a8a2ac786e, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
@@ -5816,6 +5818,7 @@ MonoBehaviour:
   _hp: 200
   _speed: 10
   _isEnableFly: 0
+  _isTurnBodyAlongVelocity: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!61 &1581229580
@@ -7308,7 +7311,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 2
+  m_SortingOrder: 3
   m_SortAtRoot: 0
 --- !u!1 &2440715204946198165
 GameObject:

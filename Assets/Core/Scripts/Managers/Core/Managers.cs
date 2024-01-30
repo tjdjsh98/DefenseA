@@ -101,6 +101,9 @@ public class Managers : MonoBehaviour
             case Define.ContentManagers.Effect:
                 manager = _instance.gameObject.GetOrAddComponent<EffectManager>();
                 break;
+            case Define.ContentManagers.Text:
+                manager = _instance.gameObject.GetOrAddComponent<TextManager>();
+                break;
             case Define.ContentManagers.END:
                 break;
         }

@@ -45,8 +45,11 @@ public class WeaponSwaper : MonoBehaviour
             Managers.GetManager<ResourceManager>().Destroy(_weaponList[index].gameObject);
         }
         _weaponList[index] = Managers.GetManager<ResourceManager>().Instantiate(Managers.GetManager<DataManager>().GetData<Weapon>((int)weaponName));
-        _weaponList[index].transform.SetParent(_weaponSlotList[index].transform);
-        _weaponList[index].transform.localPosition = Vector3.zero;
+        if (_weaponList[index] != null)
+        {
+            _weaponList[index].transform.SetParent(_weaponSlotList[index].transform);
+            _weaponList[index].transform.localPosition = Vector3.zero;
+        }
     }
 
     public void SelectWeapon(int index)

@@ -90,7 +90,7 @@ public class GameManager : ManagerBase
 
     public override void Init()
     {
-        _map = new Map(90f);
+        _map = new Map(180f);
         _map.SetCenterGround(GameObject.Find("Ground"));
     }
 
@@ -203,7 +203,8 @@ public class GameManager : ManagerBase
 
             for(int i = 0; i < count; i++)
             {
-                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("FlyingEnemy");
+                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Enemy/FlyingEnemy");
+                enemy.GetComponent<Character>().SetHp((int)(_totalTime / 30) + 1);
                 Vector3 random = Random.onUnitSphere;
                 random.y = random.y < 0 ? -random.y : random.y;
                 random.z = 0;
@@ -278,7 +279,7 @@ class Map
     }
     public int GetIndex(float x)
     {
-        int index = (int)(x / (groundTerm / 2));
+        int index = (int)(x / (groundTerm ));
         return index;
     }
 }

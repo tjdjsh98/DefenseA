@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Player : MonoBehaviour
@@ -23,9 +24,12 @@ public class Player : MonoBehaviour
     float _outAngle;
     float _outAngleControlPower = 100f;
 
+    bool _isRiding;
 
+    Rigidbody2D _rigidbody;
     private void Awake()
     {
+        _rigidbody= GetComponent<Rigidbody2D>();
         _character= GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
@@ -45,13 +49,28 @@ public class Player : MonoBehaviour
 
     public void Update()
     {
+        TurnBody();
         RotateArm();
         HandleMove();
+        Riding();
     }
 
     public void OutAngle(float angle)
     {
         _outAngle+= angle;
+        if (_outAngle > 45)
+            _outAngle = 45;
+    }
+
+    private void TurnBody()
+    {
+        Vector3 scale =  transform.localScale;
+        if (Input.mousePosition.x < Screen.width / 2)
+            scale.x = -Math.Abs(scale.x);
+        else
+            scale.x = Math.Abs(scale.x);
+
+        transform.localScale = scale;   
     }
 
     private void RotateArm()
@@ -69,7 +88,7 @@ public class Player : MonoBehaviour
         {
             if (_outAngle > 0)
             {
-                _outAngle -= _outAngleControlPower/3 * Time.deltaTime;
+                _outAngle -= _outAngleControlPower/2 * Time.deltaTime;
                 if (_outAngle < 0)
                     _outAngle = 0;
             }
@@ -94,11 +113,11 @@ public class Player : MonoBehaviour
             {
                 angle -= _outAngle;
             }
-            if ((angle >= 270 && angle <= 340))
+            if ((angle >= 270 && angle <= 360))
             {
                 angle -= _outAngle;
             }
-                _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
+            _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
 
         }
 
@@ -117,6 +136,7 @@ public class Player : MonoBehaviour
 
     private void HandleMove()
     {
+        if (_isRiding) return;
         Managers.GetManager<InputManager>().RightArrowPressed += OnRightArrowPressed;
         Managers.GetManager<InputManager>().LeftArrowPressed += OnLeftArrowPressed;
 
@@ -135,5 +155,36 @@ public class Player : MonoBehaviour
     {
         if(_weaponSwaper.CurrentWeapon != null)
             _weaponSwaper.CurrentWeapon.Fire(_character);
+    }
+
+    void Riding()
+    {
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            if (_isRiding == false)
+            {
+                GameObject[] gos = Util.BoxcastAll2D(gameObject, new Define.Range { center = new Vector3(0, 0), size = Vector3.one });
+
+                if (gos.Length > 0)
+                {
+                    foreach (var go in gos)
+                    {
+                        if (go.gameObject.name.Equals("Dog"))
+                        {
+                            transform.SetParent(go.transform);
+                            transform.localPosition = Vector3.up;
+                            _isRiding = true;
+                            _rigidbody.isKinematic = true;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                _isRiding = false;
+                transform.SetParent(transform.parent.parent);
+                _rigidbody.isKinematic = false;
+            }
+        }
     }
 }

@@ -22,6 +22,7 @@ public static class Define
         Game,
         UI,
         Effect,
+        Text,
         END,
     }
     public static int CONTENT_MANAGER_COUNT = (int)ContentManagers.END;

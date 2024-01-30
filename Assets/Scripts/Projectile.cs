@@ -25,7 +25,7 @@ public class Projectile : MonoBehaviour
         Character character = null;
         if (character = collision.gameObject.GetComponent<Character>())
         {
-            if (character.CharacterType == _enableAttackCharacterType)
+            if (character.Hp > 0 && character.CharacterType == _enableAttackCharacterType)
             {
                 _direction.y = 0;
                 _direction = _direction.normalized;

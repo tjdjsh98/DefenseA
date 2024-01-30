@@ -23,6 +23,7 @@ public class Character : MonoBehaviour
     float _stunTime;
 
     // 캐릭터 행동상태
+    [SerializeField] bool _isTurnBodyAlongVelocity = true;
     public bool IsStun {private set; get; }
     public bool IsAttack {private set; get; }
 
@@ -80,9 +81,13 @@ public class Character : MonoBehaviour
 
     public void Damage(Character attacker, int damage, float power, Vector3 direction)
     {
+
+        Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
+
         _hp -= damage;
         _rigidBody.velocity = Vector2.zero;
         _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Force);
+
 
         if (_hp <= 0)
         {
@@ -97,10 +102,15 @@ public class Character : MonoBehaviour
     public void Move(Vector2 direction)
     {
         if (IsStun) return;
-        if (direction.x > 0)
-            transform.localScale = new Vector3(1, 1, 1);
-        else if(direction.x < 0)
-            transform.localScale = new Vector3(-1, 1, 1);
+
+        // 진행 방향에 맞게 몸을 회전
+        if (_isTurnBodyAlongVelocity)
+        {
+            if (direction.x > 0)
+                transform.localScale = new Vector3(1, 1, 1);
+            else if (direction.x < 0)
+                transform.localScale = new Vector3(-1, 1, 1);
+        }
 
         direction.x = Mathf.Clamp(direction.x, -1, 1);
         direction.y = Mathf.Clamp(direction.y, -1, 1);
