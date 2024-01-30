@@ -27,6 +27,9 @@ public class Player : MonoBehaviour
     bool _isRiding;
 
     Rigidbody2D _rigidbody;
+
+    Character _ridingCharacter;
+
     private void Awake()
     {
         _rigidbody= GetComponent<Rigidbody2D>();
@@ -34,7 +37,8 @@ public class Player : MonoBehaviour
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
 
-        Managers.GetManager<GameManager>().SetPlayer(this);
+
+        Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
         Managers.GetManager<InputManager>().Num1KeyDown += UseWeapon;
         HandleMove();
@@ -174,6 +178,9 @@ public class Player : MonoBehaviour
                             transform.SetParent(go.transform);
                             transform.localPosition = Vector3.up;
                             _isRiding = true;
+                            _ridingCharacter = go.GetComponent<Character>();
+                            _ridingCharacter.IsEnableMove = true;
+                            _character.IsEnableMove = false;
                             _rigidbody.isKinematic = true;
                         }
                     }
@@ -182,6 +189,8 @@ public class Player : MonoBehaviour
             else
             {
                 _isRiding = false;
+                _character.IsEnableMove = true;
+                _ridingCharacter.IsEnableMove = false;
                 transform.SetParent(transform.parent.parent);
                 _rigidbody.isKinematic = false;
             }

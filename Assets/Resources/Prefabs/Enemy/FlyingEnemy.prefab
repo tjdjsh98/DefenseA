@@ -69,7 +69,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.00000011920929}
+  m_Offset: {x: -0.14399886, y: 0.053999662}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -80,7 +80,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.7503498}
+  m_Size: {x: 2.1519933, y: 2.218347}
   m_EdgeRadius: 0
 --- !u!50 &4330924401004467543
 Rigidbody2D:
@@ -126,7 +126,10 @@ MonoBehaviour:
   _hp: 0
   _speed: 3
   _isEnableFly: 1
+  _isTurnBodyAlongVelocity: 1
+  <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
+  CharacterPassive: 
 --- !u!114 &721163610294590693
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -141,7 +144,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _attackRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 0, y: 0, z: 0}
+    size: {x: 7.32, y: 6.59, z: 0}
   _target: {fileID: 0}
   _attackDelay: 1
   _flyHeight: 3.5

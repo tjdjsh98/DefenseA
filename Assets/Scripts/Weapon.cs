@@ -38,6 +38,8 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField]protected int _currentAmmo;
     public int CurrentAmmo => _currentAmmo;
 
+    [SerializeField] protected bool _isAllReloadAmmo;
+    public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _fireDelay;
     public float FireDelay => _fireDelay;
     [SerializeField] protected float _reloadDelay;
@@ -53,13 +55,14 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     protected bool _isReload;
 
-    [SerializeField] protected HpBar _reloadGauge;
+    [SerializeField] protected GaugeBar _reloadGauge;
 
     [SerializeField] protected Define.EffectName _hitEffect;
 
     private void Awake()
     {
         _currentAmmo = _maxAmmo;
+        _reloadGauge = GetComponentInParent<GaugeBar>();
         if(_reloadGauge)
             _reloadGauge.gameObject.SetActive(false);
 
@@ -73,6 +76,16 @@ public class Weapon : MonoBehaviour, ITypeDefine
         }
 
         if (_fireElapsed < _fireDelay) return;
+
+        // 재장전 중이라면 재장전을 멈춥니다.
+        if (_isReload)
+        {
+            _isReload = false;
+            if(_reloadGauge)
+                _reloadGauge.gameObject.SetActive(false);
+            _reloadElapsed = 0;
+        }
+
 
         _currentAmmo--;
         _fireElapsed = 0;
@@ -126,15 +139,31 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isReload && _reloadElapsed < _reloadDelay)
         {
             _reloadElapsed += Time.deltaTime;
-            _reloadGauge.SetRatio(_reloadElapsed, _reloadDelay);
+            if(_reloadGauge)
+                _reloadGauge.SetRatio(_reloadElapsed, _reloadDelay);
         }
         else if(_isReload && _reloadElapsed >= _reloadDelay)
         {
-            _isReload = false;
-            _currentAmmo = _maxAmmo;
-            _reloadElapsed = 0;
-            if (_reloadGauge)
-                _reloadGauge.gameObject.SetActive(false);
+            if (_isAllReloadAmmo)
+            {
+                _isReload = false;
+                _currentAmmo = _maxAmmo;
+                _reloadElapsed = 0;
+                if (_reloadGauge)
+                    _reloadGauge.gameObject.SetActive(false);
+            }
+            else
+            {
+                _currentAmmo++;
+                if(_currentAmmo >= _maxAmmo)
+                {
+                    _currentAmmo = _maxAmmo;
+                    _isReload = false;
+                    if (_reloadGauge)
+                        _reloadGauge.gameObject.SetActive(false);
+                }
+                _reloadElapsed = 0;
+            }
         }
     }
 

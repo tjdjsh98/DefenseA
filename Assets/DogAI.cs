@@ -1,7 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Runtime.ExceptionServices;
-using Unity.Burst.Intrinsics;
 using UnityEngine;
 
 public class DogAI : MonoBehaviour
@@ -15,6 +13,7 @@ public class DogAI : MonoBehaviour
     private void Awake()
     {
         _character = GetComponent<Character>();
+        Managers.GetManager<GameManager>().Building = _character;
     }
 
     private void OnDrawGizmos()

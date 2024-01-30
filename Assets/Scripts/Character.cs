@@ -27,12 +27,13 @@ public class Character : MonoBehaviour
     public bool IsStun {private set; get; }
     public bool IsAttack {private set; get; }
 
+    [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     Character _attackTarget;
 
     public Action<Character> CharacterAttack;
     public Action CharacterDead;
 
-    [SerializeField] HpBar _hpBar;
+    [SerializeField] GaugeBar _hpBar;
 
     public List<Define.Passive> CharacterPassive = new List<Define.Passive>();
 
@@ -115,10 +116,14 @@ public class Character : MonoBehaviour
         direction.x = Mathf.Clamp(direction.x, -1, 1);
         direction.y = Mathf.Clamp(direction.y, -1, 1);
 
-        if(_isEnableFly)
-            _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
-        else
-            _rigidBody.velocity = new Vector2(direction.x * _speed, _rigidBody.velocity.y);
+        // 움직임 제어
+        if (IsEnableMove)
+        {
+            if (_isEnableFly)
+                _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
+            else
+                _rigidBody.velocity = new Vector2(direction.x * _speed, _rigidBody.velocity.y);
+        }
     }
 
     public void Attack(Character character)

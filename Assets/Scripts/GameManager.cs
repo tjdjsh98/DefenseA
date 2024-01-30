@@ -5,13 +5,10 @@ using UnityEngine;
 
 public class GameManager : ManagerBase
 {
-    Player _player;
-    public Player Player => _player;
+    public Player Player { set; get; }
 
-    [SerializeField] Character _building;
-    public Character Building => _building;
+    public Character Building { set; get; }
 
-    FamiliarAI _familiar;
     public FamiliarAI Familiar;
 
     [field: SerializeField]public  float MapSize { set; get; }
@@ -53,7 +50,6 @@ public class GameManager : ManagerBase
 
     // 적 소환 관련 변수
     [Header("적관련변수")]
-    [SerializeField] GameObject _enemySpawnPoint;
     [SerializeField] bool _isEndless;
     List<GameObject> _enemySpawnList = new List<GameObject>();
     [SerializeField] List<Wave> _waveList;
@@ -94,10 +90,7 @@ public class GameManager : ManagerBase
         _map.SetCenterGround(GameObject.Find("Ground"));
     }
 
-    public void SetPlayer(Player player)
-    {
-        _player = player;
-    }
+  
     public override void ManagerUpdate()
     {
         _totalTime += Time.deltaTime;
@@ -161,7 +154,6 @@ public class GameManager : ManagerBase
                 wave = _waveList[0];
 
             Character character = Instantiate(wave.characterList[_spawnCount]);
-            character.transform.position = _enemySpawnPoint.transform.position;
             character.SetHp((_currentWave + 1) * 3);
 
             character.CharacterDead += () =>
@@ -203,13 +195,13 @@ public class GameManager : ManagerBase
 
             for(int i = 0; i < count; i++)
             {
-                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Enemy/FlyingEnemy");
+                GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Enemy/Enemy");
                 enemy.GetComponent<Character>().SetHp((int)(_totalTime / 30) + 1);
                 Vector3 random = Random.onUnitSphere;
                 random.y = random.y < 0 ? -random.y : random.y;
                 random.z = 0;
                 random = random.normalized * 50;
-                enemy.transform.position = _player.transform.position + random;
+                enemy.transform.position = Player.transform.position + random;
             }
 
             _genTime = 0;

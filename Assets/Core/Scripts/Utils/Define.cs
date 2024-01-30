@@ -56,6 +56,8 @@ public static class Define
         Shotgun,
         Handgun,
         Minigun,
+        Revolver1,
+        Revolver2,
         END
     }
     public enum Passive
