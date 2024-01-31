@@ -43,7 +43,7 @@ public class Player : MonoBehaviour
         _cameraController = Camera.main.GetComponent<CameraController>();
 
         _initFrontArmAngle = _frontArm.transform.localRotation.eulerAngles.z;
-        _initBackArmAngle = _backArm.transform.localRotation.eulerAngles.z;
+        _initBackArmAngle = _backArm.transform.rotation.eulerAngles.z;
 
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
@@ -105,33 +105,15 @@ public class Player : MonoBehaviour
             }
         }
 
-        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _weaponPoint.transform.position;
+        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - (_weaponSwaper.CurrentWeapon != null ? _weaponSwaper.CurrentWeapon.FirePosition.transform.position : _weaponPoint.transform.position);
 
-        float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
 
-        if (transform.localScale.x > 0)
-        {
-            if ((angle >= 0 && angle <= 70) || (angle >= -70 && angle <= 0))
-            {
+       
                 angle += _outAngle;
 
-            }
-        }
-        else
-        {
-            angle = 180-angle;
-            if ((angle >= 0 && angle <= 70))
-            {
-                angle -= _outAngle;
-            }
-            if ((angle >= 270 && angle <= 360))
-            {
-                angle -= _outAngle;
-            }
-        }
 
-            //_frontArm.transform.localRotation = Quaternion.Euler(0, 0, angle + _initFrontArmAngle);
-            _backArm.transform.localRotation = Quaternion.Euler(0, 0, angle + _initBackArmAngle);
+            _backArm.transform.rotation = Quaternion.Euler(0, 0,  (transform.lossyScale.x > 0? angle + _initBackArmAngle : -angle -_initBackArmAngle));
 
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;

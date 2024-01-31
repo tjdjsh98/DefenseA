@@ -85,14 +85,9 @@ public class Character : MonoBehaviour
         if (!_animator) return;
         if(!IsStun)
         {
-            if(IsMove)
-            {
-                _animator.SetBool("Walk", true);
-            }
-            else
-            {
-                _animator.SetBool("Walk", false);
-            }
+           
+            
+            _animator.SetFloat("WalkBlend", Mathf.Clamp(Mathf.Abs(_rigidBody.velocity.x)/_speed,0,1));
             IsMove = false;
         }
     }

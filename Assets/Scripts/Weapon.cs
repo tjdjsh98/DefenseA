@@ -46,6 +46,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public float ReloadDelay => _reloadDelay;
 
     [SerializeField] protected GameObject _firePosition;
+    public GameObject FirePosition => _firePosition;
 
     [SerializeField]protected float _rebound;
     public float Rebound => _rebound;
