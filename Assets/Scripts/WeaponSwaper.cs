@@ -1,3 +1,4 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using UnityEngine;
 
 public class WeaponSwaper : MonoBehaviour
 {
+    Character _character;
     Weapon _currentWeapon;
 
     [SerializeField] List<Define.WeaponName> _weaponNameList;
@@ -22,6 +24,7 @@ public class WeaponSwaper : MonoBehaviour
 
     private void Awake()
     {
+        _character = GetComponent<Character>();
         SelectWeapon(-1);
         _weaponList= new List<Weapon>();
         
@@ -49,6 +52,7 @@ public class WeaponSwaper : MonoBehaviour
         {
             _weaponList[index].transform.SetParent(_weaponSlotList[index].transform);
             _weaponList[index].transform.localPosition = Vector3.zero;
+            _weaponList[index].Init(_character);
         }
     }
 

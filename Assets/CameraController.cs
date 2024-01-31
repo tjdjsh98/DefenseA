@@ -34,17 +34,13 @@ public class CameraController : MonoBehaviour
 
         Vector3 playerPosition = Managers.GetManager<GameManager>().Player.transform.position;
         playerPosition.z = -10f;
-        float value = Remap((playerPosition - transform.position).magnitude, 0, 10, 0f, 0.5f);
+        float value = Util.Remap((playerPosition - transform.position).magnitude, 0, 10, 0f, 0.5f);
 
         transform.position = Vector3.Lerp(transform.position, playerPosition + _fixedPos + _mouseView, 0.1f);
 
     }
 
-    public static float Remap(float value, float inputMin, float inputMax, float outputMin, float outputMax)
-    {
-        value =  Mathf.Clamp(value, inputMin, inputMax);
-        return outputMin + (value - inputMin) * (outputMax - outputMin) / (inputMax - inputMin);
-    }
+  
 
     public void ExpandsionView(Vector3 pos)
     {

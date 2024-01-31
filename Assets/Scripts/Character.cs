@@ -26,6 +26,7 @@ public class Character : MonoBehaviour
     [SerializeField] bool _isTurnBodyAlongVelocity = true;
     public bool IsStun {private set; get; }
     public bool IsAttack {private set; get; }
+    bool IsMove = false;
 
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     Character _attackTarget;
@@ -37,9 +38,13 @@ public class Character : MonoBehaviour
 
     public List<Define.Passive> CharacterPassive = new List<Define.Passive>();
 
+
+    Animator _animator;
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
+        _animator = GetComponent<Animator>();
         _hp = _maxHp;
 
         if (_isEnableFly)
@@ -49,6 +54,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+        ControlAnimation();
         if (_hpBar)
         {
             _hpBar.SetRatio(_hp, _maxHp);
@@ -71,6 +77,23 @@ public class Character : MonoBehaviour
                 IsAttack = false;
                 _stunTime = 0;
             }
+        }
+    }
+
+    void ControlAnimation()
+    {
+        if (!_animator) return;
+        if(!IsStun)
+        {
+            if(IsMove)
+            {
+                _animator.SetBool("Walk", true);
+            }
+            else
+            {
+                _animator.SetBool("Walk", false);
+            }
+            IsMove = false;
         }
     }
 
@@ -119,6 +142,7 @@ public class Character : MonoBehaviour
         // 움직임 제어
         if (IsEnableMove)
         {
+            IsMove = true;
             if (_isEnableFly)
                 _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
             else

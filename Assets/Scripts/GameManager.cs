@@ -11,6 +11,7 @@ public class GameManager : ManagerBase
 
     public FamiliarAI Familiar;
 
+    [SerializeField] bool _stop;
     [field: SerializeField]public  float MapSize { set; get; }
     // 플레이 경험 관련
     [Header("경험치")]
@@ -95,6 +96,7 @@ public class GameManager : ManagerBase
     {
         _totalTime += Time.deltaTime;
         HandleGround();
+        if (_stop) return;
         if (!IsStopWave)
         {
             if (!_isEndless)

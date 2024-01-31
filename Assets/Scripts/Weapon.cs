@@ -59,10 +59,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected Define.EffectName _hitEffect;
 
-    private void Awake()
+    public void Init(Character character)
     {
         _currentAmmo = _maxAmmo;
-        _reloadGauge = GetComponentInParent<GaugeBar>();
+        _character = character;
+        _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
         if(_reloadGauge)
             _reloadGauge.gameObject.SetActive(false);
 

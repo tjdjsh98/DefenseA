@@ -9,7 +9,12 @@ public class Player : MonoBehaviour
     Character _character;
     public Character Character=> _character;
 
-    [SerializeField] GameObject _arm;
+    [SerializeField] GameObject _frontArm;
+    [SerializeField] GameObject _backArm;
+    [SerializeField] GameObject _weaponPoint;
+
+    float _initFrontArmAngle;
+    float _initBackArmAngle;
 
     WeaponSwaper _weaponSwaper;
     public WeaponSwaper WeaponSwaper => _weaponSwaper;
@@ -37,6 +42,8 @@ public class Player : MonoBehaviour
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
 
+        _initFrontArmAngle = _frontArm.transform.localRotation.eulerAngles.z;
+        _initBackArmAngle = _backArm.transform.localRotation.eulerAngles.z;
 
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
@@ -98,21 +105,21 @@ public class Player : MonoBehaviour
             }
         }
 
-        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _arm.transform.position;
+        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - _weaponPoint.transform.position;
 
         float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
+
         if (transform.localScale.x > 0)
         {
             if ((angle >= 0 && angle <= 70) || (angle >= -70 && angle <= 0))
             {
                 angle += _outAngle;
-                _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
 
             }
         }
         else
         {
-            angle += 180f;
+            angle = 180-angle;
             if ((angle >= 0 && angle <= 70))
             {
                 angle -= _outAngle;
@@ -121,9 +128,10 @@ public class Player : MonoBehaviour
             {
                 angle -= _outAngle;
             }
-            _arm.transform.rotation = Quaternion.Euler(0, 0, angle);
-
         }
+
+            //_frontArm.transform.localRotation = Quaternion.Euler(0, 0, angle + _initFrontArmAngle);
+            _backArm.transform.localRotation = Quaternion.Euler(0, 0, angle + _initBackArmAngle);
 
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;

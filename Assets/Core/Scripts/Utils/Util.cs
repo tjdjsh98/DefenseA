@@ -30,5 +30,10 @@ public static class Util
         }
 
         return result;
-    }        
+    }
+    public static float Remap(float value, float inputMin, float inputMax, float outputMin, float outputMax)
+    {
+        value = Mathf.Clamp(value, inputMin, inputMax);
+        return outputMin + (value - inputMin) * (outputMax - outputMin) / (inputMax - inputMin);
+    }
 }
