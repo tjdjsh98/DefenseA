@@ -48,7 +48,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5652839444646967083
 Transform:
   m_ObjectHideFlags: 0
@@ -138,11 +138,11 @@ MonoBehaviour:
   _maxAmmo: 2
   _currentAmmo: 2
   _isAllReloadAmmo: 1
-  _fireDelay: 0.01
+  _fireDelay: 0.1
   _reloadDelay: 4
   _firePosition: {fileID: 2072443742557187777}
   _rebound: 115.2
   _reloadGauge: {fileID: 0}
   _hitEffect: 1
   _fireCount: 7
-  _collectionRate: 0
+  _collectionRate: 0.476

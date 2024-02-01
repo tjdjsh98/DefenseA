@@ -7,7 +7,7 @@ using UnityEngine;
 public class Player : MonoBehaviour
 {
     Character _character;
-    public Character Character=> _character;
+    public Character Character => _character;
 
     [SerializeField] GameObject _frontArm;
     [SerializeField] GameObject _backArm;
@@ -37,8 +37,8 @@ public class Player : MonoBehaviour
 
     private void Awake()
     {
-        _rigidbody= GetComponent<Rigidbody2D>();
-        _character= GetComponent<Character>();
+        _rigidbody = GetComponent<Rigidbody2D>();
+        _character = GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
 
@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
 
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
-        Managers.GetManager<InputManager>().Num1KeyDown += UseWeapon;
+        Managers.GetManager<InputManager>().ReloadKeyDown += OnReloadKeyDown;
         HandleMove();
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
 
@@ -56,6 +56,13 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().Num1KeyDown += () => _weaponSwaper.SelectWeapon(0);
         Managers.GetManager<InputManager>().Num2KeyDown += () => _weaponSwaper.SelectWeapon(1);
         Managers.GetManager<InputManager>().Num3KeyDown += () => _weaponSwaper.SelectWeapon(2);
+    }
+
+    private void OnReloadKeyDown()
+    {
+        if (_weaponSwaper.CurrentWeapon == null) return;
+
+        _weaponSwaper.CurrentWeapon.Reload();
     }
 
     public void Update()
@@ -68,20 +75,20 @@ public class Player : MonoBehaviour
 
     public void OutAngle(float angle)
     {
-        _outAngle+= angle;
+        _outAngle += angle;
         if (_outAngle > 45)
             _outAngle = 45;
     }
 
     private void TurnBody()
     {
-        Vector3 scale =  transform.localScale;
+        Vector3 scale = transform.localScale;
         if (Input.mousePosition.x < Screen.width / 2)
             scale.x = -Math.Abs(scale.x);
         else
             scale.x = Math.Abs(scale.x);
 
-        transform.localScale = scale;   
+        transform.localScale = scale;
     }
 
     private void RotateArm()
@@ -99,30 +106,28 @@ public class Player : MonoBehaviour
         {
             if (_outAngle > 0)
             {
-                _outAngle -= _outAngleControlPower/2 * Time.deltaTime;
+                _outAngle -= _outAngleControlPower / 2 * Time.deltaTime;
                 if (_outAngle < 0)
                     _outAngle = 0;
             }
         }
 
         Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - (_weaponSwaper.CurrentWeapon != null ? _weaponSwaper.CurrentWeapon.FirePosition.transform.position : _weaponPoint.transform.position);
-
         float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
 
-       
-                angle += _outAngle;
+        angle += _outAngle;
 
 
-            _backArm.transform.rotation = Quaternion.Euler(0, 0,  (transform.lossyScale.x > 0? angle + _initBackArmAngle : -angle -_initBackArmAngle));
+        _backArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initBackArmAngle : -angle - _initBackArmAngle));
 
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;
 
-        if(mousePosition.x > screenWidth/4*3)
+        if (mousePosition.x > screenWidth / 4 * 3)
         {
             _cameraController.ExpandsionView(Vector3.right);
         }
-        else if(mousePosition.x < screenWidth / 4)
+        else if (mousePosition.x < screenWidth / 4)
         {
             _cameraController.ExpandsionView(Vector3.left);
         }
@@ -147,13 +152,13 @@ public class Player : MonoBehaviour
 
     void UseWeapon()
     {
-        if(_weaponSwaper.CurrentWeapon != null)
+        if (_weaponSwaper.CurrentWeapon != null)
             _weaponSwaper.CurrentWeapon.Fire(_character);
     }
 
     void Riding()
     {
-        if(Input.GetKeyDown(KeyCode.E))
+        if (Input.GetKeyDown(KeyCode.E))
         {
             if (_isRiding == false)
             {
@@ -166,8 +171,9 @@ public class Player : MonoBehaviour
                         if (go.gameObject.name.Equals("Dog"))
                         {
                             transform.SetParent(go.transform);
-                            transform.localPosition = Vector3.up;
+                            transform.position = go.GetComponent<DogAI>().SitPosition.transform.position;
                             _isRiding = true;
+                            _character.AnimatorSetBool("Sit", true);
                             _ridingCharacter = go.GetComponent<Character>();
                             _ridingCharacter.IsEnableMove = true;
                             _character.IsEnableMove = false;
@@ -183,6 +189,7 @@ public class Player : MonoBehaviour
                 _ridingCharacter.IsEnableMove = false;
                 transform.SetParent(transform.parent.parent);
                 _rigidbody.isKinematic = false;
+                _character.AnimatorSetBool("Sit", false);
             }
         }
     }

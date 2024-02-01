@@ -9,6 +9,7 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
 {
     protected Character _character;
     [SerializeField] Define.EnemyName _enemyName;
+    public Define.EnemyName EnemyName => _enemyName;
     
     [SerializeField]protected Define.Range _attackRange;
 
@@ -48,7 +49,9 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
     {
         if (_target != null) return;
 
-        _character.Move(Managers.GetManager<GameManager>().Player.transform.position - transform.position);
+        Player player = Managers.GetManager<GameManager>().Player;
+        if(player == null) return;
+        _character.Move(player.transform.position - transform.position);
     }
 
     protected virtual void CheckTarget()

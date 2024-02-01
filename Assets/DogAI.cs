@@ -9,11 +9,12 @@ public class DogAI : MonoBehaviour
     [SerializeField] WeaponSwaper _weaponSwaper;
 
     [SerializeField] Define.Range _attackRange;
-
+    [SerializeField] GameObject _sitPosition;
+    public GameObject SitPosition => _sitPosition;
     private void Awake()
     {
         _character = GetComponent<Character>();
-        Managers.GetManager<GameManager>().Building = _character;
+        Managers.GetManager<GameManager>().DogAI = this;
     }
 
     private void OnDrawGizmos()

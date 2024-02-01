@@ -164,4 +164,10 @@ public class Character : MonoBehaviour
         _attackTarget = character;
         CharacterAttack?.Invoke(_attackTarget);
     }
+
+    public void AnimatorSetBool(string name, bool value)
+    {
+        _animator.SetBool(name, value);
+    }
+
 }

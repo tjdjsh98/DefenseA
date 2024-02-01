@@ -9,9 +9,19 @@ public class GameManager : ManagerBase
 {
     public Player Player { set; get; }
 
-    public Character Building { set; get; }
-
     public FamiliarAI Familiar;
+
+    Character _daugther;
+    public Character Daughter { get { if (_daugther == null) _daugther = Player?.GetComponent<Character>(); return _daugther; } }
+
+    public DogAI DogAI { set; get; }
+    Character _dog;
+    public Character Dog { get { if (_dog == null) _dog = DogAI?.GetComponent<Character>(); return _dog; } }
+
+    Character _father;
+    public Character Father { get { if (_father == null) _father = Familiar?.GetComponent<Character>(); return _father; } }
+
+
 
     [SerializeField] bool _stop;
     [field: SerializeField]public  float MapSize { set; get; }
@@ -197,7 +207,7 @@ public class GameManager : ManagerBase
 
         if (_genTime > genTime)
         {
-            int count = Random.Range(1, 4);
+            int count = Random.Range(1, 2);
 
             for(int i = 0; i < count; i++)
             {
@@ -224,7 +234,8 @@ public class GameManager : ManagerBase
                 }
                 else
                 {
-                    randomPosition.x = Player.transform.position.x + Random.Range(0,2)==0?distance : -distance;
+
+                    randomPosition.x = Player.transform.position.x + (enemy.EnemyName == Define.EnemyName.Walker1 ? distance : -distance);
                     randomPosition.y = _map.YPosition;
                 }
                 enemyCharacter.transform.position =  randomPosition;

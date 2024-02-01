@@ -13,6 +13,7 @@ public class InputManager : ManagerBase
     public Action Num1KeyDown;
     public Action Num2KeyDown;
     public Action Num3KeyDown;
+    public Action ReloadKeyDown;
 
     public Action RightArrowPressed;
     public Action LeftArrowPressed;
@@ -40,5 +41,7 @@ public class InputManager : ManagerBase
             RightArrowPressed?.Invoke();
         if (Input.GetKey(KeyCode.A))
             LeftArrowPressed?.Invoke();
+        if (Input.GetKey(KeyCode.R))
+            ReloadKeyDown?.Invoke();
     }
 }
