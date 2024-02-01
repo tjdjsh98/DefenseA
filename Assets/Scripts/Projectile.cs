@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 
 public class Projectile : MonoBehaviour
 {
@@ -58,7 +59,9 @@ public class Projectile : MonoBehaviour
     {
         direction.z = 0;    
         _attacker = attacker;
-        _rigid.velocity = (Vector2)attacker.MySpeed + (Vector2)direction.normalized * _speed;
+
+        Vector3 dir = direction.normalized + attacker.MySpeed.normalized;
+        _rigid.velocity = (Vector2)direction.normalized * (_speed + (attacker.MySpeed.magnitude ));
         _direction = direction.normalized;
     }
 }
