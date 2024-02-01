@@ -34,30 +34,59 @@ public static class Define
         Enemy,
         Building
     }
+
+    public enum EnemyName
+    {
+        None = -1,
+        Walker1,
+        Walker2,
+        Filier1,
+        Filier2,
+        END,
+    }
+
+    public static int ENEMY_COUNT = (int)EnemyName.END;
     public enum EffectName
     {
         None,
         Damage,
     }
 
+    public enum CardSelectionType
+    {
+        Status,
+        Weapon
+    }
     public enum CardSelection
     {
         None = - 1,
-        WeaponDamageUp,
-        AmmoUp,
-        ReloadSpeedUp,
-        RecoverHp,
-        UnlockSpear,
+        반동제어,
+        체력회복,
+        최대체력증가,
+        AK47,
+        Mk2,
+        더블배럭,
+        경찰권총,
+        리볼버,
+        데저트이글,
+        방망이,
+        패밀리어스피어능력해제,
+        패밀리어공격력증가,
+        방벽최대체력증가,
+        방벽크기증가,
+        방벽속도증가,
     }
 
     public enum WeaponName
     {
         None = -1,
-        Shotgun,
-        Handgun,
-        Minigun,
-        Revolver1,
-        Revolver2,
+        AK47,
+        Mk2,
+        DoubleBarreledShotgun,
+        PolicePistal,
+        DesertEagle,
+        Revolver,
+        Bat,
         END
     }
     public enum Passive

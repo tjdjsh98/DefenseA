@@ -58,7 +58,7 @@ public class Projectile : MonoBehaviour
     {
         direction.z = 0;    
         _attacker = attacker;
-        _rigid.velocity = direction.normalized * _speed;
+        _rigid.velocity = (Vector2)attacker.MySpeed + (Vector2)direction.normalized * _speed;
         _direction = direction.normalized;
     }
 }

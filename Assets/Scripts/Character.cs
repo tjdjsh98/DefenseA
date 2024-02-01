@@ -19,7 +19,7 @@ public class Character : MonoBehaviour
 
     [SerializeField] float _speed;
     [SerializeField] bool _isEnableFly;
-
+    public bool IsEnableFly => _isEnableFly;
     float _stunTime;
 
     // 캐릭터 행동상태
@@ -41,6 +41,10 @@ public class Character : MonoBehaviour
 
     Animator _animator;
 
+    Vector3 _prePosition;
+    Vector3 _mySpeed;
+    public Vector3 MySpeed => _mySpeed;
+
     private void Awake()
     {
         _rigidBody = GetComponent<Rigidbody2D>();
@@ -54,6 +58,8 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+      
+
         ControlAnimation();
         if (_hpBar)
         {
@@ -79,6 +85,12 @@ public class Character : MonoBehaviour
             }
         }
     }
+    private void FixedUpdate()
+    {
+        Vector3 currentPosition = transform.position;
+        _mySpeed = (currentPosition - _prePosition) / Time.fixedDeltaTime;
+        _prePosition = currentPosition;
+    }
 
     void ControlAnimation()
     {
@@ -100,12 +112,11 @@ public class Character : MonoBehaviour
 
     public void Damage(Character attacker, int damage, float power, Vector3 direction)
     {
-
         Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
 
         _hp -= damage;
         _rigidBody.velocity = Vector2.zero;
-        _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Force);
+        _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);
 
 
         if (_hp <= 0)

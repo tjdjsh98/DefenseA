@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
+using System.Globalization;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
 
@@ -29,11 +30,11 @@ public class WeaponSwaper : MonoBehaviour
         _weaponList= new List<Weapon>();
         
 
-        for (int i = 0; i < _weaponNameList.Count; i++)
+        for (int i = 0; i < _weaponSlotList.Count; i++)
         {
             _weaponList.Add(null);
-            ChangeNewWeapon(i, _weaponNameList[i]);
-
+            if(_weaponNameList.Count > i)
+                ChangeNewWeapon(i, _weaponNameList[i]);
         }
        
 
@@ -52,7 +53,14 @@ public class WeaponSwaper : MonoBehaviour
         {
             _weaponList[index].transform.SetParent(_weaponSlotList[index].transform);
             _weaponList[index].transform.localPosition = Vector3.zero;
+            _weaponList[index].transform.localScale = Vector3.one;
+            _weaponList[index].transform.localRotation = new Quaternion(0, 0, 0,0);
             _weaponList[index].Init(_character);
+        }
+
+        if(_weaponIndex == index)
+        {
+            SelectWeapon(index);
         }
     }
 
@@ -70,7 +78,7 @@ public class WeaponSwaper : MonoBehaviour
 
         for(int i =0; i < _weaponList.Count;i++)
         {
-            _weaponList[i].gameObject.SetActive(index == i);
+            _weaponList[i]?.gameObject.SetActive(index == i);
         }
 
         _weaponIndex = index;

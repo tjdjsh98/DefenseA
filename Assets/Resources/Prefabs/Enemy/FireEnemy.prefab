@@ -73,7 +73,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: 21300000, guid: 3defdcaaf83a171469a8bceb62c4805b, type: 3}
+  m_Sprite: {fileID: 1962754183537098916, guid: cae2b7cfb71787b42b8b0f4013153f1a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0
@@ -97,7 +97,6 @@ GameObject:
   - component: {fileID: 1967886871191142965}
   - component: {fileID: 1896784578234483789}
   - component: {fileID: 6377343253536845737}
-  - component: {fileID: 778342210777476709}
   m_Layer: 6
   m_Name: FireEnemy
   m_TagString: Untagged
@@ -114,7 +113,7 @@ Transform:
   m_GameObject: {fileID: 8988498683865309567}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.637, y: -3.989, z: -0.004086449}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -153,7 +152,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0, y: 0.00000011920929}
+  m_Offset: {x: -0.2556919, y: 1.0624435}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -164,7 +163,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 1, y: 1.7503498}
+  m_Size: {x: 2.7281232, y: 2.111845}
   m_EdgeRadius: 0
 --- !u!50 &1967886871191142965
 Rigidbody2D:
@@ -209,7 +208,11 @@ MonoBehaviour:
   _maxHp: 2
   _hp: 0
   _speed: 3
+  _isEnableFly: 0
+  _isTurnBodyAlongVelocity: 1
+  <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
+  CharacterPassive: 
 --- !u!114 &6377343253536845737
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,6 +225,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 55ab778f2e5ff704cbaa2a5b24ad0d2f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyName: 1
   _attackRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
@@ -230,16 +234,3 @@ MonoBehaviour:
   _parabola: {fileID: 1296242222331413700, guid: 0e97b45624ffb714f9d289a2831317c7, type: 3}
   _defaultFireDirection: {x: -0.3, y: 0.7, z: 0}
   _power: 10
---- !u!114 &778342210777476709
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8988498683865309567}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ede7131ceeef33a479e6e877714e3786, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _gainMoney: 2

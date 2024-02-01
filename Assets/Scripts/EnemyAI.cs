@@ -5,9 +5,11 @@ using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.UIElements;
 
-public class EnemyAI : MonoBehaviour
+public class EnemyAI : MonoBehaviour, ITypeDefine
 {
     protected Character _character;
+    [SerializeField] Define.EnemyName _enemyName;
+    
     [SerializeField]protected Define.Range _attackRange;
 
     [SerializeField] protected Character _target;
@@ -90,5 +92,10 @@ public class EnemyAI : MonoBehaviour
     public void Attack(Character character)
     {
         character.Damage(_character, 1, 1, Vector3.zero);
+    }
+
+    public int GetEnumToInt()
+    {
+        return (int)_enemyName;
     }
 }

@@ -1,12 +1,13 @@
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using UnityEditor;
 using UnityEngine;
 
 public class UICardSelection : UIBase
 {
     [SerializeField] List<TextMeshProUGUI> _cardText;
-    List<CardSelectionInfo> _cardInfoList = new List<CardSelectionInfo>();
+    List<CardSelectionData> _cardSelectionList = new List<CardSelectionData>();
 
     public override void Init()
     {
@@ -17,10 +18,12 @@ public class UICardSelection : UIBase
     {
         Time.timeScale = 0;
         Managers.GetManager<GameManager>().IsStopWave = true;
-        _cardInfoList.Clear();
-        _cardInfoList.Add(Managers.GetManager<GameManager>().CardSelectionInfoList.GetRandom());
-        _cardInfoList.Add(Managers.GetManager<GameManager>().CardSelectionInfoList.GetRandom());
-        _cardInfoList.Add(Managers.GetManager<GameManager>().CardSelectionInfoList.GetRandom());
+        _cardSelectionList.Clear();
+
+
+        _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
+        _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
+        _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
         Refresh();
 
         gameObject.SetActive(true);
@@ -37,36 +40,13 @@ public class UICardSelection : UIBase
     {
         for(int i =0; i < _cardText.Count; i++)
         {
-            _cardText[i].text = _cardInfoList[i].selectionName;
+            _cardText[i].text = _cardSelectionList[i].CardSelection.ToString();
         }
     }
 
     public void SelectCard(int cardIndex)
     {
-        switch (_cardInfoList[cardIndex].selectionName)
-        {
-            case "무기 데미지 증가":
-                Managers.GetManager<GameManager>().Player.WeaponSwaper.CurrentWeapon.SetDamage(Managers.GetManager<GameManager>().Player.WeaponSwaper.CurrentWeapon.Damage + 1);
-                break;
-            case "장전 탄약 증가":
-                Managers.GetManager<GameManager>().Player.WeaponSwaper.CurrentWeapon.IncreaseMaxAmmo(2);
-                break;
-            case "재장전 속도 증가":
-                Managers.GetManager<GameManager>().Player.WeaponSwaper.CurrentWeapon.DecreaseReloadDelay(0.1f);
-                break;
-            case "체력 회복":
-                Managers.GetManager<GameManager>().Player.Character.SetHp(Managers.GetManager<GameManager>().Player.Character.MaxHp);
-                break;
-            case "스피어 해제":
-                Managers.GetManager<GameManager>().Familiar.IsUnlockSpear = true;
-                break;
-        }
+        Managers.GetManager<GameManager>().SelectCardData(_cardSelectionList[cardIndex]);
         Close();
     }
-}
-
-[System.Serializable]
-public class CardSelectionInfo
-{
-    public string selectionName;
 }
