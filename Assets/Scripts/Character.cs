@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -28,6 +29,7 @@ public class Character : MonoBehaviour
     [SerializeField] bool _isTurnBodyAlongVelocity = true;
     public bool IsStun {private set; get; }
     public bool IsAttack {private set; get; }
+    public bool IsRoll { set; get; }
     bool IsMove = false;
 
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
@@ -46,6 +48,8 @@ public class Character : MonoBehaviour
     Vector3 _prePosition;
     Vector3 _mySpeed;
     public Vector3 MySpeed => _mySpeed;
+
+    public Action<Vector2> BodyTurn;
 
     private void Awake()
     {
@@ -85,8 +89,6 @@ public class Character : MonoBehaviour
         if (!_animator) return;
         if(!IsStun)
         {
-           
-            
             _animator.SetFloat("WalkBlend", Mathf.Clamp(Mathf.Abs(_rigidBody.velocity.x)/_speed,0,1));
             IsMove = false;
         }
@@ -129,10 +131,7 @@ public class Character : MonoBehaviour
         // 진행 방향에 맞게 몸을 회전
         if (_isTurnBodyAlongVelocity)
         {
-            if (direction.x > 0)
-                transform.localScale = new Vector3(1, 1, 1);
-            else if (direction.x < 0)
-                transform.localScale = new Vector3(-1, 1, 1);
+            TurnBody(direction);
         }
 
         direction.x = Mathf.Clamp(direction.x, -1, 1);
@@ -161,6 +160,28 @@ public class Character : MonoBehaviour
     public void AnimatorSetBool(string name, bool value)
     {
         _animator.SetBool(name, value);
+    }
+    public void AnimatorSetTrigger(string name)
+    {
+        _animator.SetTrigger(name);
+    }
+
+    public void TurnBody(Vector2 direction)
+    {
+        Vector3 scale = transform.localScale;
+        if (transform.localScale.x < 0 && direction.x > 0)
+        {
+            scale.x = Mathf.Abs(scale.x);
+            transform.localScale = scale;
+
+            BodyTurn?.Invoke(direction);
+        }
+        else if (transform.localScale.x > 0 && direction.x < 0)
+        {
+            scale.x = -Mathf.Abs(scale.x);
+            transform.localScale = scale;
+            BodyTurn?.Invoke(direction);
+        }
     }
 
 }

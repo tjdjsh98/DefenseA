@@ -76,17 +76,31 @@ public class Player : MonoBehaviour
     public void Update()
     {
         TurnBody();
-        RotateBody();
-        RotateArm();
         HandleMove();
         Riding();
+        Roll();
     }
 
+    private void LateUpdate()
+    {
+        RotateArm();
+        RotateBody();
+    }
     public void SetReboundControlPower(float power)
     {
         _reboundControlPower = power;
     }
 
+    void Roll()
+    {
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            if (!_character.IsStun)
+            {
+                _character.AnimatorSetTrigger("Roll");
+            }
+        }
+    }
     public void Rebound(float angle)
     {
         _rebound += angle;
@@ -96,13 +110,10 @@ public class Player : MonoBehaviour
 
     private void TurnBody()
     {
-        Vector3 scale = transform.localScale;
         if (Input.mousePosition.x < Screen.width / 2)
-            scale.x = -Math.Abs(scale.x);
+            _character.TurnBody(Vector2.left);
         else
-            scale.x = Math.Abs(scale.x);
-
-        transform.localScale = scale;
+            _character.TurnBody(Vector2.right);
     }
 
     private void RotateBody()
