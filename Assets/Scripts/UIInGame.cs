@@ -112,7 +112,7 @@ public class UIInGame : UIBase
         float mapSize = Managers.GetManager<GameManager>().MapSize;
         float playerPosition = Managers.GetManager<GameManager>().Player.transform.position.x;
 
-        _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + playerPosition / mapSize * mapImageSize,0,0);
+        _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + Mathf.Clamp01(playerPosition / mapSize) * mapImageSize,0,0);
     }
 
     public void SetPlayerCharacter(Player player)

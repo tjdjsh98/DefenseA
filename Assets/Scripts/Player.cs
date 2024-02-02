@@ -39,10 +39,11 @@ public class Player : MonoBehaviour
 
     bool _isRiding;
 
-    
 
+    Animator _animator;
     private void Awake()
     {
+        _animator = GetComponent<Animator>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _character = GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
@@ -64,6 +65,7 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().Num1KeyDown += () => _weaponSwaper.SelectWeapon(0);
         Managers.GetManager<InputManager>().Num2KeyDown += () => _weaponSwaper.SelectWeapon(1);
         Managers.GetManager<InputManager>().Num3KeyDown += () => _weaponSwaper.SelectWeapon(2);
+
     }
 
     private void OnReloadKeyDown()
@@ -77,14 +79,10 @@ public class Player : MonoBehaviour
     {
         TurnBody();
         HandleMove();
-        Riding();
-        Roll();
-    }
-
-    private void LateUpdate()
-    {
         RotateArm();
         RotateBody();
+        Riding();
+        Roll();
     }
     public void SetReboundControlPower(float power)
     {
