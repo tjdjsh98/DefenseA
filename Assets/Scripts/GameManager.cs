@@ -7,9 +7,11 @@ using UnityEngine.WSA;
 
 public class GameManager : ManagerBase
 {
+
+    // 가족 변수
     public Player Player { set; get; }
 
-    public FamiliarAI Familiar;
+    public FatherAI FatherAI;
 
     Character _daugther;
     public Character Daughter { get { if (_daugther == null) _daugther = Player?.GetComponent<Character>(); return _daugther; } }
@@ -19,10 +21,11 @@ public class GameManager : ManagerBase
     public Character Dog { get { if (_dog == null) _dog = DogAI?.GetComponent<Character>(); return _dog; } }
 
     Character _father;
-    public Character Father { get { if (_father == null) _father = Familiar?.GetComponent<Character>(); return _father; } }
+    public Character Father { get { if (_father == null) _father = FatherAI?.GetComponent<Character>(); return _father; } }
 
 
 
+    // 게임 진행 변수
     [SerializeField] bool _stop;
     [field: SerializeField]public  float MapSize { set; get; }
     // 플레이 경험 관련
@@ -44,7 +47,6 @@ public class GameManager : ManagerBase
         }
         get { return _exp; }
     }
-
     public int MaxExp
     {
         get
@@ -66,6 +68,7 @@ public class GameManager : ManagerBase
     [SerializeField] bool _isEndless;
     List<GameObject> _enemySpawnList = new List<GameObject>();
     [SerializeField] List<Wave> _waveList;
+
     int _currentWave = 0;
     public int CurrentWave => _currentWave;
     int _spawnCount;
@@ -129,6 +132,17 @@ public class GameManager : ManagerBase
             else
             {
                 EndlessWave();
+            }
+        }
+
+        if(Player.transform.position.x > MapSize)
+        {
+            _stop = true;
+
+            for(int i = _enemySpawnList.Count-1; i >= 0; i--)
+            {
+                Managers.GetManager<ResourceManager>().Destroy(_enemySpawnList[i]);
+                _enemySpawnList.RemoveAt(i);
             }
         }
     }
@@ -239,6 +253,8 @@ public class GameManager : ManagerBase
                     randomPosition.y = _map.YPosition;
                 }
                 enemyCharacter.transform.position =  randomPosition;
+                if(enemy)
+                    _enemySpawnList.Add(enemy.gameObject);
             }
 
             _genTime = 0;
@@ -275,6 +291,33 @@ public class GameManager : ManagerBase
             WeaponSwaper swaper = Player.GetComponent<WeaponSwaper>();
 
             swaper.ChangeNewWeapon(weaponCardSelection.WeaponSlotIndex, weaponCardSelection.WeaponName);
+        }
+        else
+        {
+            if(data.CardSelection == Define.CardSelection.최대체력증가)
+            {
+                Daughter.SetMaxHp(Daughter.MaxHp + 2);
+            }
+            
+            if(data.CardSelection == Define.CardSelection.반동제어)
+            {
+                Player.SetReboundControlPower(Player.ReboundControlPower + 10);
+            }
+            if(data.CardSelection == Define.CardSelection.패밀리어스피어능력해제)
+            {
+                FatherAI.IsUnlockSpear= true;
+            }
+            if(data.CardSelection == Define.CardSelection.방벽크기증가)
+            {
+                Vector3 scale = Dog.transform.localScale;
+                scale.x += 0.1f;
+                scale.y += 0.1f;
+                Dog.transform.localScale = scale;
+            }
+            if(data.CardSelection == Define.CardSelection.방벽최대체력증가)
+            {
+                Dog.SetMaxHp(Dog.MaxHp + 5);
+            }
         }
     }
     public int GetCardSelectionCount(Define.CardSelection cardSelection)

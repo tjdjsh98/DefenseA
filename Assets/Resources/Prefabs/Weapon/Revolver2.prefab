@@ -130,9 +130,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _weaponName: 5
-  _isRaycast: 1
-  _projectile: {fileID: 0}
-  _power: 700
+  _isRaycast: 0
+  _projectile: {fileID: 2311784550131828774, guid: 11b7a6642a03fa54eb27751432f4845a, type: 3}
+  _power: 30
   _bulletSpeed: 100
   _damage: 5
   _maxAmmo: 6

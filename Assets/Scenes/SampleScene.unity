@@ -738,11 +738,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 64456468}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &119356600 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: -5810491832448173641, guid: 2b545a07051fb9046b7abec7d5054dd5, type: 3}
-  m_PrefabInstance: {fileID: 163226297}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &121093689
 GameObject:
   m_ObjectHideFlags: 0
@@ -1347,9 +1342,6 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: -8653719598885068355, guid: 2b545a07051fb9046b7abec7d5054dd5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 163226306}
-    - targetCorrespondingSourceObject: {fileID: 1050178462750389632, guid: 2b545a07051fb9046b7abec7d5054dd5, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 653588038}
   m_SourcePrefab: {fileID: 4843985084834002234, guid: 2b545a07051fb9046b7abec7d5054dd5, type: 3}
 --- !u!4 &163226298 stripped
 Transform:
@@ -2599,6 +2591,79 @@ MonoBehaviour:
   DebugMode: 0
   ScaleValue: 1
   BackVisible: 0
+--- !u!1001 &415242090
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    serializedVersion: 3
+    m_TransformParent: {fileID: 1581229577}
+    m_Modifications:
+    - target: {fileID: 4428333719566189225, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_Name
+      value: PenetrateAttack
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -1.36
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 1.68
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+    m_RemovedGameObjects: []
+    m_AddedGameObjects: []
+    m_AddedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+--- !u!4 &415242091 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 6247721030881972149, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+  m_PrefabInstance: {fileID: 415242090}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &415242092 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3021148700395236499, guid: 3fcaecbf09504d0498a59858a38f62f7, type: 3}
+  m_PrefabInstance: {fileID: 415242090}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f9f5d7c87065158418c25796ce876971, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &433049978
 GameObject:
   m_ObjectHideFlags: 0
@@ -3826,21 +3891,6 @@ GameObject:
   m_CorrespondingSourceObject: {fileID: 1050178462750389632, guid: 2b545a07051fb9046b7abec7d5054dd5, type: 3}
   m_PrefabInstance: {fileID: 163226297}
   m_PrefabAsset: {fileID: 0}
---- !u!114 &653588038
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 653588036}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2251ff333a4b3374d9de0fea5dad0915, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _player: {fileID: 0}
-  _eye: {fileID: 119356600}
-  _body: {fileID: 1488017668}
 --- !u!1 &666992670
 GameObject:
   m_ObjectHideFlags: 0
@@ -4709,6 +4759,8 @@ MonoBehaviour:
   _frontArm: {fileID: 1238275063}
   _backArm: {fileID: 1819127461}
   _weaponPoint: {fileID: 1759790842}
+  _head: {fileID: 653588036}
+  _body: {fileID: 1488017668}
   _rightPadding: 0
   _upPadding: 0
 --- !u!114 &845479410
@@ -4789,9 +4841,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9031e8eb4629c924895377fb6d3844ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  Familiar: {fileID: 0}
-  _stop: 1
-  <MapSize>k__BackingField: 200
+  FatherAI: {fileID: 0}
+  _stop: 0
+  <MapSize>k__BackingField: 20
   _exp: 0
   _maxExpList: 010000000100000002000000050000000a0000000a0000000a0000000a0000000a0000000a000000
   _isEndless: 1
@@ -7414,6 +7466,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 666992671}
+  - {fileID: 415242091}
   m_Father: {fileID: 564719897}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1581229578
@@ -7428,9 +7481,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c095ae0f0c8d58499c7db2b14d39285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _penetrateAttack: {fileID: 415242092}
   _spearAttackRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 37.28, y: 8.37, z: 0}
+    center: {x: 0, y: 3.08, z: 0}
+    size: {x: 37.28, y: 28.9, z: 0}
 --- !u!114 &1581229579
 MonoBehaviour:
   m_ObjectHideFlags: 0

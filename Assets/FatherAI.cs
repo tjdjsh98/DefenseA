@@ -1,12 +1,14 @@
+using MoreMountains.Feedbacks;
 using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FamiliarAI : MonoBehaviour
+public class FatherAI : MonoBehaviour
 {
     Character _character;
     Player _player;
+    [SerializeField]PenetrateAttack _penetrateAttack;
     float _playerDistance = 5f;
 
     [SerializeField] Define.Range _spearAttackRange;
@@ -21,7 +23,7 @@ public class FamiliarAI : MonoBehaviour
     private void Awake()
     {
         _character = GetComponent<Character>();
-        Managers.GetManager<GameManager>().Familiar = this;
+        Managers.GetManager<GameManager>().FatherAI = this;
 
     }
 
@@ -34,6 +36,34 @@ public class FamiliarAI : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+
+            GameObject[] gos = Util.BoxcastAll2D(gameObject, _spearAttackRange);
+
+            Character closeOne = null;
+            float distance = 100;
+            if (gos.Length > 0)
+            {
+                foreach (var go in gos)
+                {
+                    Character c = go.GetComponent<Character>();
+                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        if((transform.position - c.transform.position).magnitude < distance)
+                        {
+                            closeOne = c;
+                            distance = (transform.position - c.transform.position).magnitude;
+                        }
+                    }
+                }
+            }
+
+            if (closeOne != null) {
+                _penetrateAttack.StartAttack(_character, closeOne.transform.position-transform.position ,20);
+            }
+        }
+
         if (_player == null)
             _player = Managers.GetManager<GameManager>().Player;
 

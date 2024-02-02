@@ -28,7 +28,6 @@ public class Projectile : MonoBehaviour
         {
             if (character.Hp > 0 && character.CharacterType == _enableAttackCharacterType)
             {
-                _direction.y = 0;
                 _direction = _direction.normalized;
                 character.Damage(_attacker, _damage, _power, _direction);
                 Destroy(gameObject);

@@ -125,13 +125,13 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
                 if (character != null)
                 {
-                    character.Damage(Character, _damage, _power, direction.x > 0 ? Vector3.right: Vector3.left);
+                    character.Damage(Character, _damage, _power, direction);
                 }
 
             }
         }
 
-        Player?.OutAngle(_rebound);
+        Player?.Rebound(_rebound);
     }
     public void Update()
     {

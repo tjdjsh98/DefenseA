@@ -12,6 +12,7 @@ public class CameraController : MonoBehaviour
 
     private void Update()
     {
+        
         if(_mouseDirection.x >=1)
         {
             _mouseView.x = Mathf.Lerp(_mouseView.x, _expandsionLimit, 0.01f);
@@ -35,6 +36,10 @@ public class CameraController : MonoBehaviour
         Vector3 playerPosition = Managers.GetManager<GameManager>().Player.transform.position;
         playerPosition.z = -10f;
         float value = Util.Remap((playerPosition - transform.position).magnitude, 0, 10, 0f, 0.5f);
+
+        Vector3 destination = playerPosition + _fixedPos + _mouseView;
+
+        if (destination.x < 0 || destination.x > Managers.GetManager<GameManager>().MapSize ) return;
 
         transform.position = Vector3.Lerp(transform.position, playerPosition + _fixedPos + _mouseView, 0.1f);
 

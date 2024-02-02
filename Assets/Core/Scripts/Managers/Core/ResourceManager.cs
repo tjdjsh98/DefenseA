@@ -165,14 +165,17 @@ public class ResourceManager : ManagerBase
     public void Destroy(GameObject gameObject)
     {
         Poolable pool = null;
-        if(pool= gameObject.GetComponent<Poolable>())
+        if (gameObject)
         {
-            pool.IsUsed = false;
-            gameObject.SetActive(false);
-        }
-        else
-        {
-            Object.Destroy(gameObject);
+            if (pool = gameObject.GetComponent<Poolable>())
+            {
+                pool.IsUsed = false;
+                gameObject.SetActive(false);
+            }
+            else
+            {
+                Object.Destroy(gameObject);
+            }
         }
     }
 }

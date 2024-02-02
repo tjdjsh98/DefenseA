@@ -31,6 +31,21 @@ public static class Util
 
         return result;
     }
+
+    public static GameObject[] BoxcastAll2D(Vector3 position, Define.Range range)
+    {
+
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(position + range.center, range.size, 0, Vector2.zero, 0);
+
+        GameObject[] result = new GameObject[hits.Length];
+
+        for (int i = 0; i < hits.Length; i++)
+        {
+            result[i] = hits[i].collider.gameObject;
+        }
+
+        return result;
+    }
     public static float Remap(float value, float inputMin, float inputMax, float outputMin, float outputMax)
     {
         value = Mathf.Clamp(value, inputMin, inputMax);

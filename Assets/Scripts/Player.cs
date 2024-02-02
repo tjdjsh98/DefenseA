@@ -2,17 +2,24 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using UnityEditor;
 using UnityEngine;
 
 public class Player : MonoBehaviour
 {
     Character _character;
     public Character Character => _character;
+    Rigidbody2D _rigidbody;
+    Character _ridingCharacter;
 
     [SerializeField] GameObject _frontArm;
     [SerializeField] GameObject _backArm;
     [SerializeField] GameObject _weaponPoint;
+    [SerializeField] GameObject _head;
+    [SerializeField] GameObject _body;
 
+    float _initHeadAngle;
+    float _initBodyAngle;
     float _initFrontArmAngle;
     float _initBackArmAngle;
 
@@ -26,14 +33,13 @@ public class Player : MonoBehaviour
 
     CameraController _cameraController;
 
-    float _outAngle;
-    float _outAngleControlPower = 100f;
+    float _rebound;
+    float _reboundControlPower = 100f;
+    public float ReboundControlPower => _reboundControlPower;
 
     bool _isRiding;
 
-    Rigidbody2D _rigidbody;
-
-    Character _ridingCharacter;
+    
 
     private void Awake()
     {
@@ -42,6 +48,8 @@ public class Player : MonoBehaviour
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
 
+        _initHeadAngle = _head.transform.rotation.eulerAngles.z;
+        _initBodyAngle = _body.transform.rotation.eulerAngles.z;
         _initFrontArmAngle = _frontArm.transform.localRotation.eulerAngles.z;
         _initBackArmAngle = _backArm.transform.rotation.eulerAngles.z;
 
@@ -68,16 +76,22 @@ public class Player : MonoBehaviour
     public void Update()
     {
         TurnBody();
+        RotateBody();
         RotateArm();
         HandleMove();
         Riding();
     }
 
-    public void OutAngle(float angle)
+    public void SetReboundControlPower(float power)
     {
-        _outAngle += angle;
-        if (_outAngle > 45)
-            _outAngle = 45;
+        _reboundControlPower = power;
+    }
+
+    public void Rebound(float angle)
+    {
+        _rebound += angle;
+        if (_rebound > 45)
+            _rebound = 45;
     }
 
     private void TurnBody()
@@ -91,32 +105,59 @@ public class Player : MonoBehaviour
         transform.localScale = scale;
     }
 
+    private void RotateBody()
+    {
+        float bodyAngle = 0;
+
+        Vector3 distance = Vector3.zero;
+        Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
+        mousePos.z = 0;
+
+        distance = mousePos - _backArm.transform.position;
+        float angle = _backArm.transform.rotation.eulerAngles.z - (transform.lossyScale.x > 0? 1 : -1) *_initBackArmAngle;
+
+        if (angle > 180) angle = -360 + angle;
+        if (angle < -180) angle = 360 + angle;
+
+        bodyAngle = angle / 2;
+
+        _body.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? bodyAngle + _initBodyAngle : bodyAngle - _initBodyAngle));
+        _head.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initHeadAngle : angle - _initHeadAngle));
+    }
+
     private void RotateArm()
     {
         if (!Input.GetMouseButton(0))
         {
-            if (_outAngle > 0)
+            if (_rebound > 0)
             {
-                _outAngle -= _outAngleControlPower * Time.deltaTime;
-                if (_outAngle < 0)
-                    _outAngle = 0;
+                _rebound -= _reboundControlPower * Time.deltaTime;
+                if (_rebound < 0)
+                    _rebound = 0;
             }
         }
         else
         {
-            if (_outAngle > 0)
+            if (_rebound > 0)
             {
-                _outAngle -= _outAngleControlPower / 2 * Time.deltaTime;
-                if (_outAngle < 0)
-                    _outAngle = 0;
+                _rebound -= _reboundControlPower / 2 * Time.deltaTime;
+                if (_rebound < 0)
+                    _rebound = 0;
             }
         }
 
-        Vector3 distance = Managers.GetManager<InputManager>().MouseWorldPosition - (_weaponSwaper.CurrentWeapon != null ? _weaponSwaper.CurrentWeapon.FirePosition.transform.position : _weaponPoint.transform.position);
+        Vector3 distance = Vector3.zero;
+        Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
+        mousePos.z = 0;
+
+        distance = mousePos - _backArm.transform.position;
         float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
 
-        angle += _outAngle;
+        if (angle > 180) angle = -360 + angle;
+        if (angle < -180) angle = 360 + angle;
+        angle += _rebound;
 
+        if (angle >= 90) angle = 89;
 
         _backArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initBackArmAngle : -angle - _initBackArmAngle));
 

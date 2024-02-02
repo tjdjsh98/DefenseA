@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.TextCore.Text;
 
 public class Character : MonoBehaviour
@@ -20,6 +21,7 @@ public class Character : MonoBehaviour
     [SerializeField] float _speed;
     [SerializeField] bool _isEnableFly;
     public bool IsEnableFly => _isEnableFly;
+    float _stunEleasped;
     float _stunTime;
 
     // 캐릭터 행동상태
@@ -50,16 +52,10 @@ public class Character : MonoBehaviour
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
         _hp = _maxHp;
-
-        if (_isEnableFly)
-            _rigidBody.isKinematic = true;
-
     }
 
     private void Update()
     {
-      
-
         ControlAnimation();
         if (_hpBar)
         {
@@ -68,22 +64,14 @@ public class Character : MonoBehaviour
 
         if (IsStun)
         {
-            _stunTime += Time.deltaTime;
-            if (_stunTime > 0.5f)
+            _stunEleasped += Time.deltaTime;
+            if (_stunEleasped > _stunTime)
             {
                 IsStun = false;
-                _stunTime = 0;
+                _stunEleasped = 0;
             }
         }
-        if(IsAttack)
-        {
-            _stunTime += Time.deltaTime;
-            if (_stunTime > 0.5f)
-            {
-                IsAttack = false;
-                _stunTime = 0;
-            }
-        }
+        
     }
     private void FixedUpdate()
     {
@@ -109,13 +97,17 @@ public class Character : MonoBehaviour
         _maxHp = hp;
         _hp = hp;
     }
+    
+    public void SetMaxHp(int maxHp) 
+    {
+        _maxHp = maxHp;
+    }
 
-    public void Damage(Character attacker, int damage, float power, Vector3 direction)
+    public void Damage(Character attacker, int damage, float power, Vector3 direction, float stumTime = 0.1f)
     {
         Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
 
         _hp -= damage;
-        _rigidBody.velocity = Vector2.zero;
         _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);
 
 
@@ -126,7 +118,8 @@ public class Character : MonoBehaviour
         }
 
         IsStun = true;
-        _stunTime = 0;
+        _stunEleasped = 0;
+        _stunTime = stumTime;
     }
 
     public void Move(Vector2 direction)
