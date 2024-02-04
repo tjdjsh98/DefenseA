@@ -13,7 +13,6 @@ public class Player : MonoBehaviour
     Character _ridingCharacter;
 
     [SerializeField] GameObject _frontArm;
-    [SerializeField] GameObject _backArm;
     [SerializeField] GameObject _weaponPoint;
     [SerializeField] GameObject _head;
     [SerializeField] GameObject _body;
@@ -21,7 +20,6 @@ public class Player : MonoBehaviour
     float _initHeadAngle;
     float _initBodyAngle;
     float _initFrontArmAngle;
-    float _initBackArmAngle;
 
     WeaponSwaper _weaponSwaper;
     public WeaponSwaper WeaponSwaper => _weaponSwaper;
@@ -51,8 +49,7 @@ public class Player : MonoBehaviour
 
         _initHeadAngle = _head.transform.rotation.eulerAngles.z;
         _initBodyAngle = _body.transform.rotation.eulerAngles.z;
-        _initFrontArmAngle = _frontArm.transform.localRotation.eulerAngles.z;
-        _initBackArmAngle = _backArm.transform.rotation.eulerAngles.z;
+        _initFrontArmAngle = _frontArm.transform.rotation.eulerAngles.z;
 
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
@@ -122,8 +119,8 @@ public class Player : MonoBehaviour
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         mousePos.z = 0;
 
-        distance = mousePos - _backArm.transform.position;
-        float angle = _backArm.transform.rotation.eulerAngles.z - (transform.lossyScale.x > 0? 1 : -1) *_initBackArmAngle;
+        distance = mousePos - _frontArm.transform.position;
+        float angle = _frontArm.transform.rotation.eulerAngles.z - (transform.lossyScale.x > 0? 1 : -1) *_initFrontArmAngle;
 
         if (angle > 180) angle = -360 + angle;
         if (angle < -180) angle = 360 + angle;
@@ -159,7 +156,10 @@ public class Player : MonoBehaviour
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         mousePos.z = 0;
 
-        distance = mousePos - _backArm.transform.position;
+        if(_weaponSwaper.CurrentWeapon ==null)
+            distance = mousePos - _frontArm.transform.position;
+        else
+            distance = mousePos - _weaponSwaper.CurrentWeapon.transform.position;
         float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
 
         if (angle > 180) angle = -360 + angle;
@@ -168,7 +168,7 @@ public class Player : MonoBehaviour
 
         if (angle >= 90) angle = 89;
 
-        _backArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initBackArmAngle : -angle - _initBackArmAngle));
+        _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initFrontArmAngle : -angle - _initFrontArmAngle));
 
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;
