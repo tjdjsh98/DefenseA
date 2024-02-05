@@ -9,7 +9,7 @@ public class Effect : MonoBehaviour, ITypeDefine
 
     [SerializeField] Define.EffectName _effectName;
 
-    float _offTime = 1f;
+    [SerializeField]float _offTime = 1f;
     float _eleasped;
 
     bool _isPlay;

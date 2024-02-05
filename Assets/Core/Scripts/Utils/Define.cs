@@ -50,6 +50,8 @@ public static class Define
     {
         None,
         Damage,
+        Effect,
+        Flare,
     }
 
     public enum CardSelectionType

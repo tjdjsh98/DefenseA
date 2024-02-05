@@ -1,7 +1,9 @@
+using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
+using UnityEngine.VFX;
 
 public class Projectile : MonoBehaviour
 {
@@ -30,6 +32,9 @@ public class Projectile : MonoBehaviour
             {
                 _direction = _direction.normalized;
                 character.Damage(_attacker, _damage, _power, _direction);
+                Effect flare = Managers.GetManager<ResourceManager>().Instantiate<Effect>("Prefabs/Effect/Flare");
+                flare.SetProperty("Direction", _direction*-1);
+                flare.Play(collision.ClosestPoint(transform.position));
                 Destroy(gameObject);
                 _isAttack = true;
             }

@@ -15,7 +15,6 @@ public class ResourceManager : ManagerBase
 
     public override void ManagerUpdate()
     {
-        GameObject gp;
     }
 
     public GameObject Instantiate(string name)
@@ -68,24 +67,26 @@ public class ResourceManager : ManagerBase
         return result;
     }
 
-    public T Instantiate<T>(string name) where T : MonoBehaviour
+    public T Instantiate<T>(string path) where T : MonoBehaviour
     {
         T result = null;
 
-        T origin = Resources.Load<T>(name);
+        T origin = Resources.Load<T>(path);
 
         if (origin == null)
         {
-            Debug.LogWarning($"{name}에 해당하는 리소스가 없습니다.");
+            Debug.LogWarning($"{path}에 해당하는 리소스가 없습니다.");
             return null;
         }
         Poolable pool = null;
         // 풀링 가능한 오브젝트라면 풀링된 오브젝트를 찾습니다.
         if ((pool = origin.GetComponent<Poolable>()) != null )
         {
-            if(_pool[name] != null)
+            if (!_pool.ContainsKey(origin.name))
+                _pool.Add(origin.name, new List<Poolable>());
+            if(_pool[origin.name] != null)
             {
-                foreach (var p in _pool[name])
+                foreach (var p in _pool[origin.name])
                 {
                     if (!p.IsUsed)
                     {
@@ -105,11 +106,11 @@ public class ResourceManager : ManagerBase
             // 풀링 가능하다면 풀링해줍니다.
             if (pool != null)
             {
-                if (_pool[name] == null)
-                    _pool[name] = new List<Poolable>();
+                if (_pool[origin.name] == null)
+                    _pool[origin.name] = new List<Poolable>();
 
-                _pool[name].Add(result.GetComponent<Poolable>());
-                _pool[name][_pool[name].Count - 1].IsUsed = true;
+                _pool[origin.name].Add(result.GetComponent<Poolable>());
+                _pool[origin.name][_pool[origin.name].Count - 1].IsUsed = true;
             }
         }
         result.gameObject.SetActive(true);
@@ -122,16 +123,18 @@ public class ResourceManager : ManagerBase
 
         if (origin == null)
         {
-            Debug.LogWarning($"{name}에 해당하는 리소스가 없습니다.");
+            Debug.LogWarning($"해당하는 리소스가 없습니다.");
             return null;
         }
         Poolable pool = null;
         // 풀링 가능한 오브젝트라면 풀링된 오브젝트를 찾습니다.
         if ((pool = origin.GetComponent<Poolable>()) != null)
         {
-            if (_pool[name] != null)
+            if (!_pool.ContainsKey(origin.name))
+                _pool.Add(origin.name, new List<Poolable>());
+            if (_pool[origin.name] != null)
             {
-                foreach (var p in _pool[name])
+                foreach (var p in _pool[origin.name])
                 {
                     if (!p.IsUsed)
                     {
@@ -151,11 +154,11 @@ public class ResourceManager : ManagerBase
             // 풀링 가능하다면 풀링해줍니다.
             if (pool != null)
             {
-                if (_pool[name] == null)
-                    _pool[name] = new List<Poolable>();
+                if (_pool[origin.name] == null)
+                    _pool[origin.name] = new List<Poolable>();
 
-                _pool[name].Add(result.GetComponent<Poolable>());
-                _pool[name][_pool[name].Count - 1].IsUsed = true;
+                _pool[origin.name].Add(result.GetComponent<Poolable>());
+                _pool[origin.name][_pool[origin.name].Count - 1].IsUsed = true;
             }
         }
         result.gameObject.SetActive(true);
