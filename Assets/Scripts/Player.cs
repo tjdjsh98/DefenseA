@@ -37,8 +37,9 @@ public class Player : MonoBehaviour
 
     bool _isRiding;
 
-
     Animator _animator;
+
+    Vector3 _mousePosition;
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -52,7 +53,8 @@ public class Player : MonoBehaviour
         _initFrontArmAngle = _frontArm.transform.rotation.eulerAngles.z;
 
         Managers.GetManager<GameManager>().Player = this;
-        Managers.GetManager<InputManager>().MouseButtonHold += UseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonDown += UseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonHold += AutoUseWeapon;
         Managers.GetManager<InputManager>().ReloadKeyDown += OnReloadKeyDown;
         HandleMove();
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
@@ -133,6 +135,12 @@ public class Player : MonoBehaviour
 
     private void RotateArm()
     {
+        bool isPressed = false;
+        if (Input.GetMouseButtonDown(0))
+        {
+            _mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
+            isPressed = true;
+        }
         if (!Input.GetMouseButton(0))
         {
             if (_rebound > 0)
@@ -150,10 +158,12 @@ public class Player : MonoBehaviour
                 if (_rebound < 0)
                     _rebound = 0;
             }
+            isPressed = true;
         }
+        _mousePosition += (Vector3)Managers.GetManager<InputManager>().MouseDelta;
 
         Vector3 distance = Vector3.zero;
-        Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
+        Vector3 mousePos = isPressed? _mousePosition : Managers.GetManager<InputManager>().MouseWorldPosition;
         mousePos.z = 0;
 
         if(_weaponSwaper.CurrentWeapon ==null)
@@ -202,7 +212,12 @@ public class Player : MonoBehaviour
 
     void UseWeapon()
     {
-        if (_weaponSwaper.CurrentWeapon != null)
+        if (_weaponSwaper.CurrentWeapon != null && !_weaponSwaper.CurrentWeapon.IsAuto)
+            _weaponSwaper.CurrentWeapon.Fire(_character);
+    }
+    void AutoUseWeapon()
+    {
+        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
     }
 

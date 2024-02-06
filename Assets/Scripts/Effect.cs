@@ -31,6 +31,8 @@ public class Effect : MonoBehaviour, ITypeDefine
             gameObject.SetActive(false);
             _isPlay= false;
             _eleasped=0;
+
+            Managers.GetManager<ResourceManager>().Destroy(gameObject);
         }
     }
     public int GetEnumToInt()

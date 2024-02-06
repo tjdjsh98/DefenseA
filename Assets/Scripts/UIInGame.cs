@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -102,9 +103,12 @@ public class UIInGame : UIBase
         Character dog = Managers.GetManager<GameManager>().Dog;
         Character father = Managers.GetManager<GameManager>().Father;
 
-        _daughterHpBar.rectTransform.sizeDelta = new Vector2((float)daughter.Hp / daughter.MaxHp * _maxHpWidth, _maxHpHeight);
-        _dogHpBar.rectTransform.sizeDelta = new Vector2((float)dog.Hp / dog.MaxHp * _maxHpWidth, _maxHpHeight);
-        _fatherHpBar.rectTransform.sizeDelta = new Vector2((float)father.Hp / father.MaxHp * _maxHpWidth, _maxHpHeight);  
+        if(daughter)
+            _daughterHpBar.rectTransform.sizeDelta = new Vector2((float)daughter.Hp / daughter.MaxHp * _maxHpWidth, _maxHpHeight);
+        if(dog)
+            _dogHpBar.rectTransform.sizeDelta = new Vector2((float)dog.Hp / dog.MaxHp * _maxHpWidth, _maxHpHeight);
+        if(father)
+            _fatherHpBar.rectTransform.sizeDelta = new Vector2((float)father.Hp / father.MaxHp * _maxHpWidth, _maxHpHeight);  
     }
     void ShowMap()
     {

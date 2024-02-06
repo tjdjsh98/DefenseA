@@ -6,12 +6,24 @@ using UnityEngine;
 
 public class UICardSelection : UIBase
 {
-    [SerializeField] List<TextMeshProUGUI> _cardText;
+    [SerializeField] List<GameObject> _cardList;
+    List<TextMeshProUGUI> _cardNameTextList = new List<TextMeshProUGUI>();
+    List<TextMeshProUGUI> _cardDescriptionTextList = new List<TextMeshProUGUI>();
+
     List<CardSelectionData> _cardSelectionList = new List<CardSelectionData>();
 
     public override void Init()
     {
         Close();
+
+        foreach (var card in _cardList)
+        {
+            _cardNameTextList.Add(card.transform.Find("Model").Find("CardName").GetComponent<TextMeshProUGUI>());
+            _cardDescriptionTextList.Add(card.transform.Find("Model").Find("CardDescription").GetComponent<TextMeshProUGUI>());
+        }
+
+
+
         _isInitDone = true;
     }
     public override void Open()
@@ -20,7 +32,7 @@ public class UICardSelection : UIBase
         Managers.GetManager<GameManager>().IsStopWave = true;
         _cardSelectionList.Clear();
 
-
+   
         _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
         _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
         _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
@@ -38,9 +50,10 @@ public class UICardSelection : UIBase
 
     void Refresh()
     {
-        for(int i =0; i < _cardText.Count; i++)
+        for(int i =0; i < _cardNameTextList.Count; i++)
         {
-            _cardText[i].text = _cardSelectionList[i].CardSelection.ToString();
+            _cardNameTextList[i].text = _cardSelectionList[i].CardSelection.ToString();
+            _cardDescriptionTextList[i].text = _cardSelectionList[i].CardDescription; ;
         }
     }
 

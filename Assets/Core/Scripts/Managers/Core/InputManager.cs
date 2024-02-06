@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.InputSystem;
+using UnityEngine.Rendering;
 
 public class InputManager : ManagerBase
 {
@@ -18,6 +20,9 @@ public class InputManager : ManagerBase
     public Action RightArrowPressed;
     public Action LeftArrowPressed;
 
+    [SerializeField]Vector3 _preMousePosition;
+    Vector2 _mouseDelta;
+    public Vector2 MouseDelta =>_mouseDelta;
 
     public override void Init()
     {
@@ -26,6 +31,26 @@ public class InputManager : ManagerBase
 
     public override void ManagerUpdate()
     {
+        if (Input.GetMouseButtonDown(0))
+        {
+            _preMousePosition = Input.mousePosition;
+            Cursor.visible = false;
+            
+        }
+        if (Input.GetMouseButton(0))
+        {
+            _mouseDelta = _mainCamera.ScreenToWorldPoint(Input.mousePosition) - _mainCamera.ScreenToWorldPoint(_preMousePosition);
+            Mouse.current.WarpCursorPosition(_preMousePosition);
+        }
+        if (Input.GetMouseButtonUp(0))
+        {
+            Mouse.current.WarpCursorPosition(_preMousePosition);
+            Cursor.visible = true;
+
+            _preMousePosition = Vector2.zero;
+            
+        }
+
         if (Input.GetMouseButtonDown(0))
             MouseButtonDown?.Invoke();
         if (Input.GetMouseButton(0))

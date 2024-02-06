@@ -1,9 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Data.Common;
-using Unity.Properties;
 using UnityEngine;
-using UnityEngine.WSA;
 
 public class GameManager : ManagerBase
 {
@@ -27,6 +24,8 @@ public class GameManager : ManagerBase
 
     // 게임 진행 변수
     [SerializeField] bool _stop;
+    [SerializeField] bool _allMaxExpFive;
+
     [field: SerializeField]public  float MapSize { set; get; }
     // 플레이 경험 관련
     [Header("경험치")]
@@ -35,14 +34,11 @@ public class GameManager : ManagerBase
         set
         {
             _exp = value;
-            if (_maxExpList.Count > Level)
+            if (_exp >= MaxExp)
             {
-                if (_exp >= _maxExpList[Level])
-                {
-                    _exp = _exp - _maxExpList[Level];
-                    Level++;
-                    Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
-                }
+                _exp = _exp - MaxExp;
+                Level++;
+                Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
             }
         }
         get { return _exp; }
@@ -51,16 +47,10 @@ public class GameManager : ManagerBase
     {
         get
         {
-            int maxExp = 9999999;
-            if (_maxExpList.Count > Level)
-            {
-                maxExp = _maxExpList[Level];
-            }
-
-            return maxExp;
+            if (_allMaxExpFive) return 5;
+            return Level * 3;
         }
     }
-    [SerializeField] List<int> _maxExpList;
     public int Level { set; get; }
 
     // 적 소환 관련 변수
@@ -69,7 +59,7 @@ public class GameManager : ManagerBase
     List<GameObject> _enemySpawnList = new List<GameObject>();
     [SerializeField] List<Wave> _waveList;
 
-    int _currentWave = 0;
+    [SerializeField]int _currentWave = 0;
     public int CurrentWave => _currentWave;
     int _spawnCount;
     int _maxSpawnCount = 5;
@@ -78,10 +68,14 @@ public class GameManager : ManagerBase
     float _totalTime;
     float _genTime;
 
+    int _nextTime;
+
     [Header("카드 선택지")]
     List<CardSelectionData> _remainCardSelectionList;
     Dictionary<Define.CardSelection, int> _cardSelectionCount = new Dictionary<Define.CardSelection, int>();
-    
+
+
+    Vector3 _preMousePosition;
 
     private int _money;
     public int Money
@@ -108,34 +102,23 @@ public class GameManager : ManagerBase
         _map.SetCenterGround(GameObject.Find("Ground"));
     }
 
-  
     public override void ManagerUpdate()
     {
+    
+
         _totalTime += Time.deltaTime;
         HandleGround();
         if (_stop) return;
         if (!IsStopWave)
         {
-            if (!_isEndless)
-            {
-                if (!_isStartWave && !Managers.GetManager<UIManager>().GetUI<UIShop>().gameObject.activeSelf)
-                {
-                    _genTime += Time.time;
-                    if (_genTime > 3.0f)
-                    {
-                        StartWave();
-                        _genTime = 0;
-                    }
-                }
-                PlayWave();
-            }
-            else
+            if (_isEndless)
             {
                 EndlessWave();
             }
         }
 
-        if(Player.transform.position.x > MapSize)
+        
+        if(Player && Player.transform.position.x > MapSize)
         {
             _stop = true;
 
@@ -157,107 +140,48 @@ public class GameManager : ManagerBase
         _map.SetGround(index);
     }
 
-    void StartWave()
-    {
-        if (_isStartWave) return;
-
-        _currentWave++;
-        if (_currentWave >= _waveList.Count)
-            _currentWave = 0;
-        _maxSpawnCount = _waveList[_currentWave].characterList.Count;
-        _isStartWave= true;
-    }
-
-    void PlayWave()
-    {
-        if (!_isStartWave) return;
-
-        _genTime += Time.deltaTime;
-
-        if(_genTime > 2f && _spawnCount < _maxSpawnCount)
-        {
-            Wave wave = null;
-
-            if (_waveList.Count > _currentWave)
-                wave = _waveList[_currentWave];
-            else
-                wave = _waveList[0];
-
-            Character character = Instantiate(wave.characterList[_spawnCount]);
-            character.SetHp((_currentWave + 1) * 3);
-
-            character.CharacterDead += () =>
-            {
-                _enemySpawnList.Remove(character.gameObject);
-            };
-            _enemySpawnList.Add(character.gameObject);
-            _spawnCount++;
-            _genTime = 0;
-        }
-
-        if(_spawnCount == _maxSpawnCount && _enemySpawnList.Count <= 0)
-        {
-            EndWave();
-        }
-    }
-
-    void EndWave()
-    {
-        _isStartWave = false;
-        _genTime = 0;
-        _spawnCount = 0;
-        Managers.GetManager<UIManager>().GetUI<UIShop>().Open();
-    }
-
     void EndlessWave()
     {
-        float genTime = 100;
-        if (_totalTime < 30)
-            genTime = 2f;
-        else if (_totalTime < 120)
-            genTime = 1.5f;
-        else if (_totalTime < 240)
-            genTime = 1.1f;
-
-        if (_genTime > genTime)
+        if (_currentWave < _waveList.Count-1)
         {
-            int count = Random.Range(1, 2);
+            if (_totalTime > _waveList[_currentWave + 1].time)
+                _currentWave++;
+        }
 
-            for(int i = 0; i < count; i++)
-            {
-
-                EnemyAI enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyAI>(Random.Range(0,Define.ENEMY_COUNT));
-                EnemyAI enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                Character enemyCharacter = enemy.GetComponent<Character>();
-                enemyCharacter.SetHp((int)(enemyCharacter.MaxHp *(1+ _totalTime/120)));
-
-                Vector3 randomPosition = Vector3.zero;
-                float distance = 50;
-                if (enemyCharacter.IsEnableFly)
-                {
-                    float angle = 0;
-                    if(Random.Range(0,2) == 0)
-                        angle = Random.Range(30, 70);
-                    else
-                        angle = Random.Range(110, 150);
-
-                    angle = angle * Mathf.Deg2Rad;
-                    randomPosition.x = Player.transform.position.x + Mathf.Cos(angle) * distance; 
-                    randomPosition.y = Player.transform.position.y + Mathf.Sin(angle) * distance;
-
-                }
-                else
-                {
-
-                    randomPosition.x = Player.transform.position.x + (enemy.EnemyName == Define.EnemyName.Walker1 ? distance : -distance);
-                    randomPosition.y = _map.YPosition;
-                }
-                enemyCharacter.transform.position =  randomPosition;
-                if(enemy)
-                    _enemySpawnList.Add(enemy.gameObject);
-            }
-
+        if (_genTime > _waveList[_currentWave].genTime)
+        {
             _genTime = 0;
+            if (_waveList[_currentWave].enemyList == null) return;
+
+            EnemyAI enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyAI>((int)_waveList[_currentWave].enemyList.GetRandom());
+            EnemyAI enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+            Character enemyCharacter = enemy.GetComponent<Character>();
+            enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _waveList[_currentWave].hpMultiply));
+
+            Vector3 randomPosition = Vector3.zero;
+            float distance = 50;
+            if (enemyCharacter.IsEnableFly)
+            {
+                float angle = 0;
+                if(Random.Range(0,2) == 0)
+                    angle = Random.Range(30, 70);
+                else
+                    angle = Random.Range(110, 150);
+
+                angle = angle * Mathf.Deg2Rad;
+                randomPosition.x = Player.transform.position.x + Mathf.Cos(angle) * distance; 
+                randomPosition.y = Player.transform.position.y + Mathf.Sin(angle) * distance;
+
+            }
+            else
+            {
+                randomPosition.x = Player.transform.position.x + (enemy.EnemyName == Define.EnemyName.Walker1 ? distance : -distance);
+                randomPosition.y = _map.YPosition;
+            }
+            enemyCharacter.transform.position =  randomPosition;
+            if(enemy)
+                _enemySpawnList.Add(enemy.gameObject);
+
         }
         else
         {
@@ -330,9 +254,12 @@ public class GameManager : ManagerBase
 }
 
 [System.Serializable]
-class Wave
+struct Wave
 {
-    public List<Character> characterList;
+    public int time;
+    public float genTime;
+    public List<Define.EnemyName> enemyList;
+    public float hpMultiply;
 }
 
 class Map
@@ -399,3 +326,4 @@ class Map
         return index;
     }
 }
+

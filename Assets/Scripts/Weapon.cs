@@ -23,7 +23,8 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField]protected bool _isRaycast;
     public GameObject _projectile;
-
+    [SerializeField] protected bool _isAuto;
+    public bool IsAuto => _isAuto;
 
     [SerializeField] protected float _power = 1;
     public float Power => _power;
