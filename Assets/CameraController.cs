@@ -17,6 +17,7 @@ public class CameraController : MonoBehaviour
     Coroutine _reverseCoroutine;
 
 
+    static int _ringPostionID = Shader.PropertyToID("_RingPosition");
     static int _waveDistacneFromCenterID = Shader.PropertyToID("_WaveDistanceFromCenter");
     static int _reverseID = Shader.PropertyToID("_Reverse");
 
@@ -79,7 +80,7 @@ public class CameraController : MonoBehaviour
 
     }
 
-    void ShockWave(Vector3 position)
+    public void ShockWave(Vector3 position)
     {
         if (_shockWaveCoroutine != null)
             StopCoroutine(_shockWaveCoroutine);
@@ -96,6 +97,9 @@ public class CameraController : MonoBehaviour
     {
         float time = 0;
 
+        Vector3 screenPosition = Camera.main.WorldToViewportPoint(position);
+        screenPosition.z = 0;
+        _screenSpriteRenderer.material.SetVector(_ringPostionID, screenPosition);
         while(time < 2.5f)
         {
             time += Time.deltaTime;

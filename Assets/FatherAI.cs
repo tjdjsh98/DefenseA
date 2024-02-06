@@ -2,6 +2,7 @@ using MoreMountains.Feedbacks;
 using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class FatherAI : MonoBehaviour
@@ -20,6 +21,9 @@ public class FatherAI : MonoBehaviour
 
     public bool IsUnlockSpear { set; get; } = false;
 
+    Vector3 _tc;
+    float _tr;
+
     private void Awake()
     {
         _character = GetComponent<Character>();
@@ -32,6 +36,8 @@ public class FatherAI : MonoBehaviour
         Gizmos.color = Color.red;
 
         Gizmos.DrawWireCube(transform.position + _spearAttackRange.center, _spearAttackRange.size);
+
+        Gizmos.DrawWireSphere(_tc, _tr);
     }
 
     private void Update()
@@ -50,17 +56,17 @@ public class FatherAI : MonoBehaviour
                     Character c = go.GetComponent<Character>();
                     if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                     {
-                        if((transform.position - c.transform.position).magnitude < distance)
+                        if((transform.position - c.GetCenter()).magnitude < distance)
                         {
                             closeOne = c;
-                            distance = (transform.position - c.transform.position).magnitude;
+                            distance = (transform.position - c.GetCenter()).magnitude;
                         }
                     }
                 }
             }
 
             if (closeOne != null) {
-                _penetrateAttack.StartAttack(_character, closeOne.transform.position-transform.position ,20);
+                _penetrateAttack.StartAttack(_character, closeOne.GetCenter()-transform.position ,20);
             }
         }
 
@@ -71,7 +77,15 @@ public class FatherAI : MonoBehaviour
         _attackElapsed += Time.deltaTime;
         if(_attackElapsed > _attackDuration)
         {
-            SpearAttack();
+            int random = Random.Range(0, 2);
+
+            if(random == 0)
+                SpearAttack();
+            if (random == 1)
+            {
+                StartCoroutine(CorShockwaveAttack());
+                _attackElapsed = 0;
+            }
         }
     }
 
@@ -112,6 +126,39 @@ public class FatherAI : MonoBehaviour
                     return;
                 }
             }
+        }
+    }
+
+    IEnumerator CorShockwaveAttack()
+    {
+        List<GameObject> characterList = new List<GameObject>();
+        characterList.Clear();
+        Vector3 center = transform.position;
+        _tc = center;
+        float radius = 0;
+        Camera.main.GetComponent<CameraController>().ShockWave(center);
+        while (radius < 30) {
+            radius += Time.deltaTime*30;
+            _tr = radius;
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, Vector2.zero, 0);
+
+            if (hits.Length > 0)
+            {
+                foreach (var hit in hits)
+                {
+                    if (characterList.Contains(hit.collider.gameObject)) continue;
+
+                    characterList.Add(hit.collider.gameObject);
+
+                    Character character = hit.collider.gameObject.GetComponent<Character>();
+                    if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        character.Damage(_character, 1, 10, character.transform.position - center);
+                    }
+                }
+            }
+
+            yield return null;
         }
     }
 }

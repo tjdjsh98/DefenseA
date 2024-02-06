@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!114 &-6241779758298286483
+--- !u!114 &-3741380633724746341
 MonoBehaviour:
   m_ObjectHideFlags: 11
   m_CorrespondingSourceObject: {fileID: 0}
@@ -20,13 +20,13 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: Beam
-  m_Shader: {fileID: -6465566751694194690, guid: 422cb6d9964a5cc4cbbfa94dcfc0d3b7, type: 3}
+  m_Name: CharacterMAT
+  m_Shader: {fileID: -6465566751694194690, guid: 551090218a72a954e95a9bc959617bc6, type: 3}
   m_Parent: {fileID: 0}
   m_ModifiedSerializedProperties: 0
   m_ValidKeywords: []
   m_InvalidKeywords: []
-  m_LightmapFlags: 4
+  m_LightmapFlags: 2
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -37,7 +37,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _MainTex:
-        m_Texture: {fileID: 2800000, guid: f9313ad493a07844cb370af0ece869e9, type: 3}
+        m_Texture: {fileID: -8328923581568760697, guid: e42a50690d71add49a438d56d40d0500, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
@@ -54,8 +54,10 @@ Material:
         m_Offset: {x: 0, y: 0}
     m_Ints: []
     m_Floats:
-    - _Power: 11.79
-    - _Thinckness: 0
+    - _QueueControl: 0
+    - _QueueOffset: 0
     m_Colors:
-    - _Color: {r: 31.999996, g: 2.0635633, b: 0, a: 0}
+    - _Color: {r: 0.9339623, g: 0.621173, b: 0.621173, a: 0}
+    - _FromColor: {r: 0.010960094, g: 0.011612245, b: 0.010960094, a: 1}
+    - _ToColor: {r: 1, g: 1, b: 1, a: 0}
   m_BuildTextureStacks: []

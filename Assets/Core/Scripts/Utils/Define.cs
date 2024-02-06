@@ -42,6 +42,7 @@ public static class Define
         Walker2,
         Filier1,
         Filier2,
+        FlyingFireEnemy,
         END,
     }
 

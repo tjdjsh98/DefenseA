@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using TreeEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -17,6 +18,9 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
+
+    [SerializeField] bool _isRangedAttack;
+
 
     protected virtual void Awake()
     {
@@ -88,7 +92,19 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
             if (_target == null) return;
 
             _attackElapsed = 0;
-            _character.Attack(_target);
+            _character.Move(Vector2.zero);
+
+            if (!_isRangedAttack)
+            {
+                _character.Attack(_target);
+            }
+            else
+            {
+                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>("Projectile");
+                projectile.Init(10, 10, 2, Define.CharacterType.Player);
+                projectile.transform.position = transform.position;
+                projectile.Fire(_character, _target.GetCenter() - transform.position);
+            }
         }
     }
 

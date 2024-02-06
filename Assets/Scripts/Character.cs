@@ -10,6 +10,8 @@ using UnityEngine.TextCore.Text;
 public class Character : MonoBehaviour
 {
     Rigidbody2D _rigidBody;
+    BoxCollider2D _boxCollider;
+    CapsuleCollider2D _capsuleCollider;
 
     [Header("캐릭터 능력치")]
     [SerializeField] Define.CharacterType _characterType;
@@ -55,6 +57,8 @@ public class Character : MonoBehaviour
     {
         _rigidBody = GetComponent<Rigidbody2D>();
         _animator = GetComponent<Animator>();
+        _boxCollider = GetComponent<BoxCollider2D>(); 
+        _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _hp = _maxHp;
     }
 
@@ -184,4 +188,20 @@ public class Character : MonoBehaviour
         }
     }
 
+    public Vector3 GetCenter()
+    {
+        Vector3 center = Vector3.zero;
+
+        center += transform.position;
+
+        if (_capsuleCollider != null) {
+            center += (Vector3)_capsuleCollider.offset + (Vector3)_capsuleCollider.size/2;
+        }
+        if(_boxCollider!= null)
+        {
+            center += (Vector3)_boxCollider.offset + (Vector3)_boxCollider.size / 2;
+        }
+
+        return center;
+    }
 }
