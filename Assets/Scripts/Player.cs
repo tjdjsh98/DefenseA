@@ -17,6 +17,8 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject _head;
     [SerializeField] GameObject _body;
 
+    
+
     float _initHeadAngle;
     float _initBodyAngle;
     float _initFrontArmAngle;
@@ -59,6 +61,7 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().Num1KeyDown += () => _weaponSwaper.SelectWeapon(0);
         Managers.GetManager<InputManager>().Num2KeyDown += () => _weaponSwaper.SelectWeapon(1);
         Managers.GetManager<InputManager>().Num3KeyDown += () => _weaponSwaper.SelectWeapon(2);
+        Managers.GetManager<InputManager>().JumpKeyDown += _character.Jump;
 
     }
 

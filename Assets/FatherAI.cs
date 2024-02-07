@@ -135,7 +135,7 @@ public class FatherAI : MonoBehaviour
         Vector3 center = transform.position;
         _tc = center;
         float radius = 0;
-        Camera.main.GetComponent<CameraController>().ShockWave(center);
+        Camera.main.GetComponent<CameraController>().ShockWave(center,30);
         while (radius < 30) {
             radius += Time.deltaTime*30;
             _tr = radius;

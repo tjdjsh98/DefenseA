@@ -75,7 +75,7 @@ SpriteRenderer:
   m_SortingOrder: 2
   m_Sprite: {fileID: 1962754183537098916, guid: cae2b7cfb71787b42b8b0f4013153f1a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
-  m_FlipX: 0
+  m_FlipX: 1
   m_FlipY: 0
   m_DrawMode: 0
   m_Size: {x: 1, y: 1}
@@ -208,7 +208,11 @@ MonoBehaviour:
   _maxHp: 2
   _hp: 0
   _speed: 10
+  _jumpPower: 10
   _isEnableFly: 0
+  _groundCheckRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
   _isTurnBodyAlongVelocity: 1
   <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
@@ -231,6 +235,7 @@ MonoBehaviour:
     size: {x: 0, y: 0, z: 0}
   _target: {fileID: 0}
   _attackDelay: 1
+  _isRangedAttack: 0
   _parabola: {fileID: 1296242222331413700, guid: 0e97b45624ffb714f9d289a2831317c7, type: 3}
   _defaultFireDirection: {x: -0.3, y: 0.7, z: 0}
   _power: 10

@@ -23,6 +23,7 @@ public class CameraController : MonoBehaviour
 
     static int _ringPostionID = Shader.PropertyToID("_RingPosition");
     static int _waveDistacneFromCenterID = Shader.PropertyToID("_WaveDistanceFromCenter");
+    static int _cameraSizeID = Shader.PropertyToID("_CameraSize");
     static int _reverseID = Shader.PropertyToID("_Reverse");
 
     private void Awake()
@@ -31,6 +32,7 @@ public class CameraController : MonoBehaviour
         _initCameraPosition = transform.position;
         if(_baseEnvironment)
             _baseEnvironmenInitLocalPosition = _baseEnvironment.transform.localPosition;
+        _screenSpriteRenderer.material.SetFloat(_cameraSizeID, Camera.main.orthographicSize);
     }
     private void Update()
     {
@@ -93,7 +95,7 @@ public class CameraController : MonoBehaviour
     {
         if(Input.GetKeyDown(KeyCode.W))
         {
-            ShockWave(Managers.GetManager<InputManager>().MouseWorldPosition);
+            ShockWave(Managers.GetManager<InputManager>().MouseWorldPosition,10);
         }
         if (Input.GetKeyDown(KeyCode.E))
         {
@@ -102,11 +104,11 @@ public class CameraController : MonoBehaviour
 
     }
 
-    public void ShockWave(Vector3 position)
+    public void ShockWave(Vector3 position, float speed)
     {
         if (_shockWaveCoroutine != null)
             StopCoroutine(_shockWaveCoroutine);
-        _shockWaveCoroutine = StartCoroutine(CorShockWave(position));
+        _shockWaveCoroutine = StartCoroutine(CorShockWave(position, speed));
     }
 
     void Reverse(float time)
@@ -115,7 +117,7 @@ public class CameraController : MonoBehaviour
             StopCoroutine(_reverseCoroutine);
         _reverseCoroutine = StartCoroutine(CorReverse(time));
     }
-    IEnumerator CorShockWave(Vector3 position)
+    IEnumerator CorShockWave(Vector3 position,float speed)
     {
         float time = 0;
 
@@ -124,12 +126,12 @@ public class CameraController : MonoBehaviour
         _screenSpriteRenderer.material.SetVector(_ringPostionID, screenPosition);
         while(time < 2.5f)
         {
-            time += Time.deltaTime;
+            time += Time.deltaTime * speed;
             _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, time);
             yield return null;
         }
 
-        _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -0.1f);
+        _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -5.0f);
     }
 
     IEnumerator CorReverse(float time)

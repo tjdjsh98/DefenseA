@@ -11,14 +11,14 @@ public class GameManager : ManagerBase
     public FatherAI FatherAI;
 
     Character _daugther;
-    public Character Daughter { get { if (_daugther == null) _daugther = Player?.GetComponent<Character>(); return _daugther; } }
+    public Character Daughter { get { if (Player && _daugther == null) _daugther = Player.GetComponent<Character>(); return _daugther; } }
 
     public DogAI DogAI { set; get; }
     Character _dog;
-    public Character Dog { get { if (_dog == null) _dog = DogAI?.GetComponent<Character>(); return _dog; } }
+    public Character Dog { get { if (DogAI && _dog == null) _dog = DogAI?.GetComponent<Character>(); return _dog; } }
 
     Character _father;
-    public Character Father { get { if (_father == null) _father = FatherAI?.GetComponent<Character>(); return _father; } }
+    public Character Father { get { if (FatherAI &&_father == null) _father = FatherAI?.GetComponent<Character>(); return _father; } }
 
 
 
@@ -285,6 +285,7 @@ class Map
     {
         this.groundTerm = groundTenm;
         groundFolder = new GameObject("GroundFolder");
+        groundFolder.layer = LayerMask.NameToLayer("Ground");
         groundFolder.AddComponent<Rigidbody2D>().isKinematic = true;
         groundFolder.AddComponent<CompositeCollider2D>();
     }

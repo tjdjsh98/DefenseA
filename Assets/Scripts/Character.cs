@@ -22,17 +22,23 @@ public class Character : MonoBehaviour
     public int Hp => _hp;
 
     [SerializeField] float _speed;
+    [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
     public bool IsEnableFly => _isEnableFly;
     float _stunEleasped;
     float _stunTime;
+
+    [SerializeField] Define.Range _groundCheckRange;
 
     // 캐릭터 행동상태
     [SerializeField] bool _isTurnBodyAlongVelocity = true;
     public bool IsStun {private set; get; }
     public bool IsAttack {private set; get; }
     public bool IsRoll { set; get; }
-    bool IsMove = false;
+    bool _isMove = false;
+
+    bool _isContactGround = false;
+    private bool _isJump;
 
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     Character _attackTarget;
@@ -62,6 +68,13 @@ public class Character : MonoBehaviour
         _hp = _maxHp;
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.green;
+
+        Gizmos.DrawWireCube(transform.position + _groundCheckRange.center, _groundCheckRange.size);
+    }
+
     private void Update()
     {
         ControlAnimation();
@@ -79,7 +92,7 @@ public class Character : MonoBehaviour
                 _stunEleasped = 0;
             }
         }
-        
+        CheckGround();
     }
     private void FixedUpdate()
     {
@@ -94,7 +107,7 @@ public class Character : MonoBehaviour
         if(!IsStun)
         {
             _animator.SetFloat("WalkBlend", Mathf.Clamp(Mathf.Abs(_rigidBody.velocity.x)/_speed,0,1));
-            IsMove = false;
+            _isMove = false;
         }
     }
 
@@ -144,7 +157,7 @@ public class Character : MonoBehaviour
         // 움직임 제어
         if (IsEnableMove)
         {
-            IsMove = true;
+            _isMove = true;
             if (_isEnableFly)
                 _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
             else
@@ -161,6 +174,36 @@ public class Character : MonoBehaviour
         CharacterAttack?.Invoke(_attackTarget);
     }
 
+    public void Jump()
+    {
+        if (!_isContactGround) return;
+
+        _rigidBody.AddForce(Vector2.up * _jumpPower,ForceMode2D.Impulse);
+
+        _isContactGround = false;
+        _isJump = true;
+    }
+
+    void CheckGround()
+    {
+        if (_groundCheckRange.size == Vector3.zero) return;
+        if (Mathf.Approximately(_rigidBody.velocity.y,0)) return;
+
+        Debug.Log("A");
+
+        GameObject[] gos = Util.BoxcastAll2D(gameObject, _groundCheckRange,LayerMask.GetMask("Ground"));
+
+        if (gos.Length > 0)
+        {
+            _isContactGround = true;
+            _isJump = false;
+        }
+        else
+        {
+
+_isContactGround = false;
+        }
+    }
     public void AnimatorSetBool(string name, bool value)
     {
         _animator.SetBool(name, value);

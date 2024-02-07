@@ -15,12 +15,17 @@ public static class Util
         return go;
     }
 
-    public static GameObject[] BoxcastAll2D(GameObject go, Define.Range range)
+    public static GameObject[] BoxcastAll2D(GameObject go, Define.Range range, int layerMask = -1)
     {
         if(go.transform.localScale.x < 0)
             range.center.x = -range.center.x;
 
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(go.transform.position + range.center,range.size, 0, Vector2.zero, 0);
+        RaycastHit2D[] hits = null;
+
+        if(layerMask == -1)
+            hits = Physics2D.BoxCastAll(go.transform.position + range.center,range.size, 0, Vector2.zero, 0);
+        else
+            hits = Physics2D.BoxCastAll(go.transform.position + range.center,range.size, 0, Vector2.zero, 0,layerMask);
 
         GameObject[] result = new GameObject[hits.Length];
 
