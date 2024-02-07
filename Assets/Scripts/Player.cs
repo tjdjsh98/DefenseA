@@ -27,8 +27,6 @@ public class Player : MonoBehaviour
     [SerializeField] float _rightPadding;
     [SerializeField] float _upPadding;
 
-    Vector3 _initCameraPosition;
-
     CameraController _cameraController;
 
     float _rebound;
@@ -39,7 +37,6 @@ public class Player : MonoBehaviour
 
     Animator _animator;
 
-    Vector3 _mousePosition;
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -58,8 +55,6 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().ReloadKeyDown += OnReloadKeyDown;
         HandleMove();
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
-
-        _initCameraPosition = Camera.main.transform.position;
 
         Managers.GetManager<InputManager>().Num1KeyDown += () => _weaponSwaper.SelectWeapon(0);
         Managers.GetManager<InputManager>().Num2KeyDown += () => _weaponSwaper.SelectWeapon(1);
@@ -101,13 +96,12 @@ public class Player : MonoBehaviour
     public void Rebound(float angle)
     {
         _rebound += angle;
-        if (_rebound > 45)
-            _rebound = 45;
+        
     }
 
     private void TurnBody()
     {
-        if (Input.mousePosition.x < Screen.width / 2)
+        if (Managers.GetManager<InputManager>().MouseWorldPosition.x < transform.position.x)
             _character.TurnBody(Vector2.left);
         else
             _character.TurnBody(Vector2.right);
@@ -138,16 +132,13 @@ public class Player : MonoBehaviour
         bool isPressed = false;
         if (Input.GetMouseButtonDown(0))
         {
-            _mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
             isPressed = true;
         }
         if (!Input.GetMouseButton(0))
         {
-            if (_rebound > 0)
+            if (_rebound != 0)
             {
-                _rebound -= _reboundControlPower * Time.deltaTime;
-                if (_rebound < 0)
-                    _rebound = 0;
+                _rebound = Mathf.Lerp(_rebound, 0, 0.1f);
             }
         }
         else
@@ -160,10 +151,13 @@ public class Player : MonoBehaviour
             }
             isPressed = true;
         }
-        _mousePosition += (Vector3)Managers.GetManager<InputManager>().MouseDelta;
+        if (isPressed)
+        {
+            _rebound += Managers.GetManager<InputManager>().MouseDelta.y;
+        }
 
         Vector3 distance = Vector3.zero;
-        Vector3 mousePos = isPressed? _mousePosition : Managers.GetManager<InputManager>().MouseWorldPosition;
+        Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         mousePos.z = 0;
 
         if(_weaponSwaper.CurrentWeapon ==null)

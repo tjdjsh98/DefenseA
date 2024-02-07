@@ -98,8 +98,12 @@ public class GameManager : ManagerBase
     public override void Init()
     {
         _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardSelectionData>();
-        _map = new Map(180f);
+        _map = new Map(60f);
         _map.SetCenterGround(GameObject.Find("Ground"));
+        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset1"));
+        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset2"));
+        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset3"));
+        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset4"));
     }
 
     public override void ManagerUpdate()
@@ -270,6 +274,7 @@ class Map
     GameObject center;
     GameObject right;
 
+    List<GameObject> buildingPresetList = new List<GameObject>();
 
     float groundTerm;
     float yPosision = -11.4f;
@@ -308,7 +313,41 @@ class Map
         center.transform.position = new Vector3(index * groundTerm, yPosision, 0);
         right.transform.position = new Vector3((index+1) * groundTerm, yPosision, 0);
         left.transform.position = new Vector3((index -1)* groundTerm, yPosision, 0);
-        
+
+        if (buildingPresetList.Count > 0)
+        {
+            Random.InitState(Mathf.CeilToInt(index / buildingPresetList.Count));
+            int random = (int)(Random.value * 1000);
+
+            for (int i = 0; i < buildingPresetList.Count; i++)
+            {
+                if ((random + index) % buildingPresetList.Count == i)
+                {
+                    Vector3 position = center.transform.position;
+                    position.y = Random.Range(-1f, -4f);
+                    buildingPresetList[i].transform.position = position;
+                    buildingPresetList[i].gameObject.SetActive(true);
+                }
+                else if ((random + index - 1) % buildingPresetList.Count == i)
+                {
+                    Vector3 position = left.transform.position;
+                    position.y = Random.Range(-1f, -4f);
+                    buildingPresetList[i].transform.position = position;
+                    buildingPresetList[i].gameObject.SetActive(true);
+                }
+                else if ((random + index + 1) % buildingPresetList.Count == i)
+                {
+                    Vector3 position = right.transform.position;
+                    position.y = Random.Range(-1f, -4f);
+                    buildingPresetList[i].transform.position = position;
+                    buildingPresetList[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    buildingPresetList[i].gameObject.SetActive(false);
+                }
+            }
+        }
     }
 
     public void SetCenterGround(GameObject ground)
@@ -320,6 +359,13 @@ class Map
         right.transform.SetParent(groundFolder.transform);
         center.transform.SetParent(groundFolder.transform);
     }
+
+    public void AddBuildingPreset(GameObject go)
+    {
+        buildingPresetList.Add(go);
+        go.gameObject.SetActive(false);
+    }
+
     public int GetIndex(float x)
     {
         int index = (int)(x / (groundTerm ));

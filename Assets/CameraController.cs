@@ -6,6 +6,10 @@ using UnityEngine;
 public class CameraController : MonoBehaviour
 {
     [SerializeField]Vector3 _fixedPos;
+    [SerializeField]GameObject _baseEnvironment;
+    [SerializeField] Vector3 _baseEnvironmenInitLocalPosition;
+
+    Vector3 _initCameraPosition;
 
     Vector3 _mouseView;
     Vector3 _mouseDirection;
@@ -24,6 +28,9 @@ public class CameraController : MonoBehaviour
     private void Awake()
     {
         _screenSpriteRenderer = transform.Find("ScreenEffect").GetComponent<SpriteRenderer>();
+        _initCameraPosition = transform.position;
+        if(_baseEnvironment)
+            _baseEnvironmenInitLocalPosition = _baseEnvironment.transform.localPosition;
     }
     private void Update()
     {
@@ -38,7 +45,7 @@ public class CameraController : MonoBehaviour
         }
         else
         {
-            _mouseView = Vector3.zero;
+            _mouseView.x = Mathf.Lerp(_mouseView.x,0, 0.01f);
         }
 
         _mouseDirection = Vector3.zero;
@@ -58,8 +65,23 @@ public class CameraController : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, playerPosition + _fixedPos + _mouseView, 0.1f);
 
+        HandleBaseEnvironent();
     }
 
+    void HandleBaseEnvironent()
+    {
+        if (_baseEnvironment == null) return;
+
+        float mapSize = Managers.GetManager<GameManager>().MapSize;
+        float distance = transform.position.x - _initCameraPosition.x;
+
+        Vector3 position = _baseEnvironmenInitLocalPosition;
+
+        position.x -= Mathf.Abs(_baseEnvironmenInitLocalPosition.x)*(distance / mapSize);
+        position.x -= _mouseView.x * (distance / mapSize);
+        _baseEnvironment.transform.localPosition = position;
+        
+    }
   
 
     public void ExpandsionView(Vector3 pos)

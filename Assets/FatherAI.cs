@@ -17,6 +17,7 @@ public class FatherAI : MonoBehaviour
     float _attackDuration = 3f;
 
     public bool IsUnlockSpear { set; get; } = false;
+    public bool IsUnlockShockwave { set; get; } = false;
 
     Vector3 _tc;
     float _tr;
@@ -80,7 +81,8 @@ public class FatherAI : MonoBehaviour
                 SpearAttack();
             if (random == 1)
             {
-                StartCoroutine(CorShockwaveAttack());
+                if(IsUnlockShockwave)
+                    StartCoroutine(CorShockwaveAttack());
                 _attackElapsed = 0;
             }
         }
