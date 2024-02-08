@@ -97,13 +97,13 @@ public class GameManager : ManagerBase
 
     public override void Init()
     {
-        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardSelectionData>();
+        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardSelectionData>((d) => { return d.IsStartCard; });
         _map = new Map(60f);
         _map.SetCenterGround(GameObject.Find("Ground"));
-        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset1"));
-        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset2"));
-        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset3"));
-        _map.AddBuildingPreset(Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BuildingPreset4"));
+        _map.AddBuildingPreset("Prefabs/BuildingPreset1");
+        _map.AddBuildingPreset("Prefabs/BuildingPreset2");
+        _map.AddBuildingPreset("Prefabs/BuildingPreset3");
+        _map.AddBuildingPreset("Prefabs/BuildingPreset4");
     }
 
     public override void ManagerUpdate()
@@ -180,7 +180,7 @@ public class GameManager : ManagerBase
             else
             {
                 randomPosition.x = Player.transform.position.x + (enemy.EnemyName == Define.EnemyName.Walker1 ? distance : -distance);
-                randomPosition.y = _map.YPosition;
+                randomPosition.y = _map.YPosition+1;
             }
             enemyCharacter.transform.position =  randomPosition;
             if(enemy)
@@ -197,11 +197,18 @@ public class GameManager : ManagerBase
     {
         return _remainCardSelectionList.GetRandom();
     }
-
+    public List<CardSelectionData> GetRandomCardSelectionData(int count)
+    {
+        return _remainCardSelectionList.GetRandom(count);
+    }
+    // 카드를 선택하여 능력치 추가
     public void SelectCardData(CardSelectionData data)
     {
         if (!_cardSelectionCount.ContainsKey(data.CardSelection))
-            _cardSelectionCount.Add(data.CardSelection ,0);
+        {
+            _cardSelectionCount.Add(data.CardSelection, 0);
+            _remainCardSelectionList.AddRange(data.CardListToAdd);
+        }
         _cardSelectionCount[data.CardSelection]++;
 
         if(data.MaxUpgradeCount <= _cardSelectionCount[data.CardSelection])
@@ -226,24 +233,32 @@ public class GameManager : ManagerBase
             {
                 Daughter.SetMaxHp(Daughter.MaxHp + 2);
             }
-            
             if(data.CardSelection == Define.CardSelection.반동제어)
             {
                 Player.SetReboundControlPower(Player.ReboundControlPower + 10);
             }
-            if(data.CardSelection == Define.CardSelection.패밀리어스피어능력해제)
+            if(data.CardSelection == Define.CardSelection.총알관통력증가)
+            {
+                Player.PenerstratingPower++;
+            }
+            if (data.CardSelection == Define.CardSelection.재장전시간감소)
+            {
+                Player.ReduceReloadTime += 10;
+            }
+            if (data.CardSelection == Define.CardSelection.스피어능력해제)
             {
                 FatherAI.IsUnlockSpear= true;
             }
-            if(data.CardSelection == Define.CardSelection.방벽크기증가)
+            if (data.CardSelection == Define.CardSelection.쇼크웨이브능력해제)
+            {
+                FatherAI.IsUnlockShockwave = true;
+            }
+            if (data.CardSelection == Define.CardSelection.방벽크기증가)
             {
                 Vector3 scale = Dog.transform.localScale;
                 scale.x += 0.1f;
                 scale.y += 0.1f;
                 Dog.transform.localScale = scale;
-            }
-            if(data.CardSelection == Define.CardSelection.방벽최대체력증가)
-            {
                 Dog.SetMaxHp(Dog.MaxHp + 5);
             }
         }
@@ -274,7 +289,11 @@ class Map
     GameObject center;
     GameObject right;
 
-    List<GameObject> buildingPresetList = new List<GameObject>();
+    GameObject leftBuilding;
+    GameObject centerBuilding;
+    GameObject rightBuilding;
+
+    List<string> buildingPresetPathList = new List<string>();
 
     float groundTerm;
     float yPosision = -11.4f;
@@ -315,39 +334,41 @@ class Map
         right.transform.position = new Vector3((index+1) * groundTerm, yPosision, 0);
         left.transform.position = new Vector3((index -1)* groundTerm, yPosision, 0);
 
-        if (buildingPresetList.Count > 0)
+        if (buildingPresetPathList.Count > 0)
         {
-            Random.InitState(Mathf.CeilToInt(index / buildingPresetList.Count));
+
+            // 중간
+            Random.InitState(Mathf.CeilToInt(index / buildingPresetPathList.Count));
             int random = (int)(Random.value * 1000);
 
-            for (int i = 0; i < buildingPresetList.Count; i++)
-            {
-                if ((random + index) % buildingPresetList.Count == i)
-                {
-                    Vector3 position = center.transform.position;
-                    position.y = Random.Range(-1f, -4f);
-                    buildingPresetList[i].transform.position = position;
-                    buildingPresetList[i].gameObject.SetActive(true);
-                }
-                else if ((random + index - 1) % buildingPresetList.Count == i)
-                {
-                    Vector3 position = left.transform.position;
-                    position.y = Random.Range(-1f, -4f);
-                    buildingPresetList[i].transform.position = position;
-                    buildingPresetList[i].gameObject.SetActive(true);
-                }
-                else if ((random + index + 1) % buildingPresetList.Count == i)
-                {
-                    Vector3 position = right.transform.position;
-                    position.y = Random.Range(-1f, -4f);
-                    buildingPresetList[i].transform.position = position;
-                    buildingPresetList[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    buildingPresetList[i].gameObject.SetActive(false);
-                }
-            }
+            if (centerBuilding)
+                Managers.GetManager<ResourceManager>().Destroy(centerBuilding);
+            Vector3 position = center.transform.position;
+            position.y = Random.Range(-1f, -4f);
+            centerBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index) % buildingPresetPathList.Count]);
+            centerBuilding.transform.position = position;
+
+            // 왼쪽
+            Random.InitState(Mathf.CeilToInt((index-1) / buildingPresetPathList.Count));
+            random = (int)(Random.value * 1000);
+
+            if (leftBuilding)
+                Managers.GetManager<ResourceManager>().Destroy(leftBuilding);
+            position = left.transform.position;
+            position.y = Random.Range(-1f, -4f);
+            leftBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index-1) % buildingPresetPathList.Count]);
+            leftBuilding.transform.position = position;
+
+            //오른쪽
+            Random.InitState(Mathf.CeilToInt((index + 1) / buildingPresetPathList.Count));
+            random = (int)(Random.value * 1000);
+
+            if (rightBuilding)
+                Managers.GetManager<ResourceManager>().Destroy(rightBuilding);
+            position = right.transform.position;
+            position.y = Random.Range(-1f, -4f);
+            rightBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index + 1) % buildingPresetPathList.Count]);
+            rightBuilding.transform.position = position;
         }
     }
 
@@ -361,10 +382,9 @@ class Map
         center.transform.SetParent(groundFolder.transform);
     }
 
-    public void AddBuildingPreset(GameObject go)
+    public void AddBuildingPreset(string path)
     {
-        buildingPresetList.Add(go);
-        go.gameObject.SetActive(false);
+        buildingPresetPathList.Add(path);
     }
 
     public int GetIndex(float x)

@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using System.Xml.XPath;
 using UnityEngine;
 
 public static class Extension
@@ -32,6 +34,24 @@ public static class Extension
         if (list.Count == 0) return default(T);
 
         return list[Random.Range(0, list.Count)];
+    }
+
+    public static List<T> GetRandom<T>(this List<T> list, int count)
+    {
+        if (list.Count == 0 || list.Count < count) return default(List<T>);
+
+        List<T> values = list.ToList();
+        List<T> result = new List<T>();
+
+        for(int i =0; i < count; i++)
+        {
+            int random = Random.Range(0, values.Count);
+            result.Add(values[random]);
+            values.RemoveAt(random);
+        }
+
+        return result;
+        
     }
     public static Vector3 GetRandom(this Vector3 vector,float min, float max)
     {

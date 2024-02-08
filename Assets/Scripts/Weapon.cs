@@ -34,6 +34,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected int _damage = 1;
     public int Damage => _damage;
 
+    [SerializeField] int _penerstratingPower;
+    public int PenerstratingPower => (_penerstratingPower+ (_player? _player.PenerstratingPower:0));
+
     [SerializeField] protected int _maxAmmo;
     public int MaxAmmo => _maxAmmo;
     [SerializeField]protected int _currentAmmo;
@@ -44,7 +47,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected float _fireDelay;
     public float FireDelay => _fireDelay;
     [SerializeField] protected float _reloadDelay;
-    public float ReloadDelay => _reloadDelay;
+    public float ReloadDelay => _reloadDelay - (_player? (_player.ReduceReloadTime /100f)* _reloadDelay:0);
 
     [SerializeField] protected GameObject _firePosition;
     public GameObject FirePosition => _firePosition;
@@ -104,9 +107,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             GameObject go = Instantiate(_projectile);
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
-            projectile.Init(_power, _bulletSpeed, _damage,Define.CharacterType.Enemy);
-
-
+            projectile.Init(_power, _bulletSpeed, _damage,Define.CharacterType.Enemy,_penerstratingPower);
             projectile.Fire(fireCharacter, direction.normalized);
         }
         else

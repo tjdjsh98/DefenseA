@@ -93,14 +93,7 @@ public class CameraController : MonoBehaviour
 
     void ScreenEffect()
     {
-        if(Input.GetKeyDown(KeyCode.W))
-        {
-            ShockWave(Managers.GetManager<InputManager>().MouseWorldPosition,10);
-        }
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            Reverse(0.2f);
-        }
+      
 
     }
 
@@ -111,6 +104,14 @@ public class CameraController : MonoBehaviour
         _shockWaveCoroutine = StartCoroutine(CorShockWave(position, speed));
     }
 
+    public void StopShockwave()
+    {
+
+        if (_shockWaveCoroutine != null)
+            StopCoroutine(_shockWaveCoroutine);
+        _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -5.0f);
+
+    }
     void Reverse(float time)
     {
         if (_reverseCoroutine != null)
@@ -126,8 +127,8 @@ public class CameraController : MonoBehaviour
         _screenSpriteRenderer.material.SetVector(_ringPostionID, screenPosition);
         while(time < 2.5f)
         {
-            time += Time.deltaTime * speed;
-            _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, time);
+            time += Time.deltaTime;
+            _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, time*speed);
             yield return null;
         }
 

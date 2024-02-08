@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 
@@ -17,7 +16,8 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject _head;
     [SerializeField] GameObject _body;
 
-    
+    public int PenerstratingPower { set; get; } = 0;
+    public int ReduceReloadTime { set; get; } = 0;
 
     float _initHeadAngle;
     float _initBodyAngle;
@@ -132,7 +132,10 @@ public class Player : MonoBehaviour
 
     private void RotateArm()
     {
+        Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         bool isPressed = false;
+
+       
         if (Input.GetMouseButtonDown(0))
         {
             isPressed = true;
@@ -160,13 +163,10 @@ public class Player : MonoBehaviour
         }
 
         Vector3 distance = Vector3.zero;
-        Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         mousePos.z = 0;
 
-        if(_weaponSwaper.CurrentWeapon ==null)
-            distance = mousePos - _frontArm.transform.position;
-        else
-            distance = mousePos - _weaponSwaper.CurrentWeapon.transform.position;
+
+        distance = mousePos - _frontArm.transform.position;
         float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
 
         if (angle > 180) angle = -360 + angle;

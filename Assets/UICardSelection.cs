@@ -32,10 +32,12 @@ public class UICardSelection : UIBase
         Managers.GetManager<GameManager>().IsStopWave = true;
         _cardSelectionList.Clear();
 
-   
-        _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
-        _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
-        _cardSelectionList.Add(Managers.GetManager<GameManager>().GetRandomCardSelectionData());
+
+        List<CardSelectionData> datas = Managers.GetManager<GameManager>().GetRandomCardSelectionData(3);
+        foreach (var data in datas)
+        {
+            _cardSelectionList.Add(data);
+        }
         Refresh();
 
         gameObject.SetActive(true);
@@ -52,7 +54,7 @@ public class UICardSelection : UIBase
     {
         for(int i =0; i < _cardNameTextList.Count; i++)
         {
-            _cardNameTextList[i].text = _cardSelectionList[i].CardSelection.ToString();
+            _cardNameTextList[i].text = _cardSelectionList[i].CardSelection.ToString(); 
             _cardDescriptionTextList[i].text = _cardSelectionList[i].CardDescription; ;
         }
     }

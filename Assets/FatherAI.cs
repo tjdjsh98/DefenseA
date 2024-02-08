@@ -14,10 +14,13 @@ public class FatherAI : MonoBehaviour
     bool _isMove = false;
 
     float _attackElapsed = 0;
-    float _attackDuration = 3f;
+    float _attackCoolTime = 3f;
+
+    float _shockwaveElasped = 0;
+    public float ShockwaveCoolTime = 20;
 
     public bool IsUnlockSpear { set; get; } = false;
-    public bool IsUnlockShockwave { set; get; } = false;
+    [field:SerializeField]public bool IsUnlockShockwave { set; get; } = false;
 
     Vector3 _tc;
     float _tr;
@@ -42,7 +45,6 @@ public class FatherAI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.O))
         {
-
             GameObject[] gos = Util.BoxcastAll2D(gameObject, _spearAttackRange);
 
             Character closeOne = null;
@@ -54,7 +56,7 @@ public class FatherAI : MonoBehaviour
                     Character c = go.GetComponent<Character>();
                     if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                     {
-                        if((transform.position - c.GetCenter()).magnitude < distance)
+                        if ((transform.position - c.GetCenter()).magnitude < distance)
                         {
                             closeOne = c;
                             distance = (transform.position - c.GetCenter()).magnitude;
@@ -64,7 +66,7 @@ public class FatherAI : MonoBehaviour
             }
 
             if (closeOne != null) {
-                _penetrateAttack.StartAttack(_character, closeOne.GetCenter()-transform.position ,20);
+                _penetrateAttack.StartAttack(_character, closeOne.GetCenter() - transform.position, 20);
             }
         }
 
@@ -72,19 +74,25 @@ public class FatherAI : MonoBehaviour
             _player = Managers.GetManager<GameManager>().Player;
 
         FollwerPlayer();
-        _attackElapsed += Time.deltaTime;
-        if(_attackElapsed > _attackDuration)
-        {
-            int random = Random.Range(0, 2);
 
-            if(random == 0)
-                SpearAttack();
-            if (random == 1)
+        if (IsUnlockSpear) {
+            _attackElapsed += Time.deltaTime;
+            if (_attackElapsed > _attackCoolTime)
             {
-                if(IsUnlockShockwave)
-                    StartCoroutine(CorShockwaveAttack());
+                SpearAttack();
                 _attackElapsed = 0;
             }
+        }
+
+        if (IsUnlockShockwave)
+        {
+            _shockwaveElasped += Time.deltaTime;
+            if (_shockwaveElasped > ShockwaveCoolTime)
+            {
+                StartCoroutine(CorShockwaveAttack());
+                _shockwaveElasped = 0;
+            }
+
         }
     }
 
@@ -156,8 +164,9 @@ public class FatherAI : MonoBehaviour
                     }
                 }
             }
-
             yield return null;
         }
+
+        Camera.main.GetComponent<CameraController>().StopShockwave();
     }
 }

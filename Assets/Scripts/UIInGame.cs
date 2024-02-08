@@ -58,6 +58,7 @@ public class UIInGame : UIBase
             _sb.Append($"공격력 : {weaponSwaper.CurrentWeapon.Damage}\n");
             _sb.Append($"넉백 : {weaponSwaper.CurrentWeapon.Power}\n");
             _sb.Append($"총알속도 : {weaponSwaper.CurrentWeapon.BulletSpeed}\n");
+            _sb.Append($"관통력 : {weaponSwaper.CurrentWeapon.PenerstratingPower}\n");
             _sb.Append($"발사 딜레이 : {weaponSwaper.CurrentWeapon.FireDelay}\n");
             _sb.Append($"리로드속도 : {weaponSwaper.CurrentWeapon.ReloadDelay}\n");
             _sb.Append($"총알 :{weaponSwaper.CurrentWeapon.CurrentAmmo}/{weaponSwaper.CurrentWeapon.MaxAmmo}\n");

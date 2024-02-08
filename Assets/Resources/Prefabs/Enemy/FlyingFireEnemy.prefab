@@ -124,7 +124,11 @@ MonoBehaviour:
   _maxHp: 2
   _hp: 0
   _speed: 3
+  _jumpPower: 10
   _isEnableFly: 1
+  _groundCheckRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
   _isTurnBodyAlongVelocity: 1
   <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}

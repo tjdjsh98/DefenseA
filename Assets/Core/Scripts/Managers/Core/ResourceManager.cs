@@ -1,9 +1,5 @@
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Xml.XPath;
-using TMPro;
 using UnityEngine;
 
 public class ResourceManager : ManagerBase
@@ -32,9 +28,11 @@ public class ResourceManager : ManagerBase
         // 풀링 가능한 오브젝트라면 풀링된 오브젝트를 찾습니다.
         if ((pool = origin.GetComponent<Poolable>()) != null)
         {
-            if (_pool[name] != null)
+            if (!_pool.ContainsKey(origin.name))
+                _pool.Add(origin.name, new List<Poolable>());
+            if (_pool[origin.name] != null)
             {
-                foreach (var p in _pool[name])
+                foreach (var p in _pool[origin.name])
                 {
                     if (!p.IsUsed)
                     {
@@ -54,11 +52,11 @@ public class ResourceManager : ManagerBase
             // 풀링 가능하다면 풀링해줍니다.
             if (pool != null)
             {
-                if (_pool[name] == null)
-                    _pool[name] = new List<Poolable>();
+                if (_pool[origin.name] == null)
+                    _pool[origin.name] = new List<Poolable>();
 
-                _pool[name].Add(result.GetComponent<Poolable>());
-                _pool[name][_pool[name].Count - 1].IsUsed = true;
+                _pool[origin.name].Add(result.GetComponent<Poolable>());
+                _pool[origin.name][_pool[origin.name].Count - 1].IsUsed = true;
             }
         }
 

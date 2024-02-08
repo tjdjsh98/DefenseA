@@ -14,8 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _cardSelection: 8
   _cardSelectionType: 1
-  _maxUpgradeCount: 1
   _cardDescription: "\uB370\uC800\uD2B8\uC774\uAE00\uC744 \uBCF4\uC870\uBB34\uAE30\uC5D0
     \uC7A5\uCC29\uD569\uB2C8\uB2E4."
-  _weaponName: 4
+  _isStartCard: 1
+  _cardListToAdd: []
+  _maxUpgradeCount: 1
+  _weaponName: -1
   _weaponSlotIndex: 1

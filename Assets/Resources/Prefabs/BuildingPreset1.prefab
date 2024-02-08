@@ -262,6 +262,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4377247579631474191}
   - component: {fileID: 275298278691800396}
+  - component: {fileID: -6717700301190406066}
   m_Layer: 0
   m_Name: BuildingPreset1
   m_TagString: Untagged
@@ -300,6 +301,18 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 1
   m_SortAtRoot: 0
+--- !u!114 &-6717700301190406066
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7859202843946095984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d10bae48406cb514abf69f31e4cb1aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &8059386981880624265
 GameObject:
   m_ObjectHideFlags: 0

@@ -189,8 +189,6 @@ public class Character : MonoBehaviour
         if (_groundCheckRange.size == Vector3.zero) return;
         if (Mathf.Approximately(_rigidBody.velocity.y,0)) return;
 
-        Debug.Log("A");
-
         GameObject[] gos = Util.BoxcastAll2D(gameObject, _groundCheckRange,LayerMask.GetMask("Ground"));
 
         if (gos.Length > 0)
