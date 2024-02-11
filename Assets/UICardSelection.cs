@@ -18,8 +18,8 @@ public class UICardSelection : UIBase
 
         foreach (var card in _cardList)
         {
-            _cardNameTextList.Add(card.transform.Find("Model").Find("CardName").GetComponent<TextMeshProUGUI>());
-            _cardDescriptionTextList.Add(card.transform.Find("Model").Find("CardDescription").GetComponent<TextMeshProUGUI>());
+            _cardNameTextList.Add(card.transform.Find("Model").Find("Front").Find("CardName").GetComponent<TextMeshProUGUI>());
+            _cardDescriptionTextList.Add(card.transform.Find("Model").Find("Front").Find("CardDescription").GetComponent<TextMeshProUGUI>());
         }
 
 
