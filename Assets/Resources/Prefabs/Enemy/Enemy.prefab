@@ -97,6 +97,7 @@ GameObject:
   - component: {fileID: 4789760404234877350}
   - component: {fileID: 7047468612559563358}
   - component: {fileID: 3927619139887317043}
+  - component: {fileID: 4404014092464376731}
   m_Layer: 6
   m_Name: Enemy
   m_TagString: Untagged
@@ -231,11 +232,23 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyName: 0
   _attackRange:
-    center: {x: 1.73, y: 0.59, z: 0}
-    size: {x: 8.38, y: 2.59, z: 0}
+    center: {x: 0.58, y: 0.59, z: 0}
+    size: {x: 3.46, y: 2.59, z: 0}
   _target: {fileID: 0}
   _attackDelay: 1
   _isRangedAttack: 0
+--- !u!210 &4404014092464376731
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3791020047488867769}
+  m_Enabled: 1
+  m_SortingLayerID: 1343365121
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &3987772382707713430
 GameObject:
   m_ObjectHideFlags: 0

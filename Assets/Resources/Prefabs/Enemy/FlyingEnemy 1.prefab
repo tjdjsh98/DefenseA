@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 4330924401004467543}
   - component: {fileID: 4413086375596073726}
   - component: {fileID: 721163610294590693}
+  - component: {fileID: -993404685145601219}
   m_Layer: 6
   m_Name: FlyingEnemy 1
   m_TagString: Untagged
@@ -153,6 +154,18 @@ MonoBehaviour:
   _attackDelay: 1
   _isRangedAttack: 0
   _flyHeight: 3.5
+--- !u!210 &-993404685145601219
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338747963396321650}
+  m_Enabled: 1
+  m_SortingLayerID: 1343365121
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0

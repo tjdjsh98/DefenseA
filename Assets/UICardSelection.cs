@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using TMPro;
 using UnityEditor;
 using UnityEngine;
@@ -7,9 +8,13 @@ using UnityEngine;
 public class UICardSelection : UIBase
 {
     [SerializeField] List<GameObject> _cardList;
-    List<TextMeshProUGUI> _cardNameTextList = new List<TextMeshProUGUI>();
-    List<TextMeshProUGUI> _cardDescriptionTextList = new List<TextMeshProUGUI>();
 
+    List<CardSelectionData> _cashDatas;
+
+    int _cardCount;
+
+    List <TextMeshProUGUI> _cardNameTextList = new List<TextMeshProUGUI>();
+    List<TextMeshProUGUI> _cardDescriptionTextList = new List<TextMeshProUGUI>();
     List<CardSelectionData> _cardSelectionList = new List<CardSelectionData>();
 
     public override void Init()
@@ -22,7 +27,7 @@ public class UICardSelection : UIBase
             _cardDescriptionTextList.Add(card.transform.Find("Model").Find("Front").Find("CardDescription").GetComponent<TextMeshProUGUI>());
         }
 
-
+        _cardCount = _cardList.Count;
 
         _isInitDone = true;
     }
@@ -33,10 +38,13 @@ public class UICardSelection : UIBase
         _cardSelectionList.Clear();
 
 
-        List<CardSelectionData> datas = Managers.GetManager<GameManager>().GetRandomCardSelectionData(3);
-        foreach (var data in datas)
+        _cashDatas = Managers.GetManager<GameManager>().GetRemainCardSelection().ToList();
+
+        for(int i =0; i < _cardCount; i++)
         {
-            _cardSelectionList.Add(data);
+            int random = Random.Range(0, _cashDatas.Count);
+            _cardSelectionList.Add(_cashDatas[random]);
+            _cashDatas.RemoveAt(random);
         }
         Refresh();
 
@@ -62,6 +70,22 @@ public class UICardSelection : UIBase
     public void SelectCard(int cardIndex)
     {
         Managers.GetManager<GameManager>().SelectCardData(_cardSelectionList[cardIndex]);
+
+        Debug.Log(cardIndex + " " + _cardSelectionList[cardIndex].CardSelection);
         Close();
+    }
+
+    public void Reroll()
+    {
+        if (_cashDatas.Count < _cardCount) return;
+
+        _cardSelectionList.Clear();
+          for (int i = 0; i < _cardCount; i++)
+        {
+            int random = Random.Range(0, _cashDatas.Count);
+            _cardSelectionList.Add(_cashDatas[random]);
+            _cashDatas.RemoveAt(random);
+        }
+        Refresh();
     }
 }

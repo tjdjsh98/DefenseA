@@ -164,7 +164,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 8417641983434288956}
-  - component: {fileID: 1502693519759663481}
   m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
@@ -188,18 +187,6 @@ Transform:
   - {fileID: 3862394643446953226}
   m_Father: {fileID: 8535803638410844145}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &1502693519759663481
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3995523847928909427}
-  m_Enabled: 1
-  m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
-  m_SortingOrder: 0
-  m_SortAtRoot: 0
 --- !u!1 &5712714033902791459
 GameObject:
   m_ObjectHideFlags: 0
@@ -281,6 +268,7 @@ GameObject:
   - component: {fileID: 6881585769480385616}
   - component: {fileID: 4669120605170730670}
   - component: {fileID: 1268709811801672397}
+  - component: {fileID: 5524488991626720711}
   m_Layer: 6
   m_Name: Dog
   m_TagString: Untagged
@@ -394,7 +382,11 @@ MonoBehaviour:
   _maxHp: 20
   _hp: 20
   _speed: 5
+  _jumpPower: 10
   _isEnableFly: 0
+  _groundCheckRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
   _isTurnBodyAlongVelocity: 1
   <IsEnableMove>k__BackingField: 0
   _hpBar: {fileID: 0}
@@ -435,6 +427,18 @@ MonoBehaviour:
   - {fileID: 2033687536987958619}
   - {fileID: 5712714033902791459}
   - {fileID: 3309856161473932553}
+--- !u!210 &5524488991626720711
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7378709587785658188}
+  m_Enabled: 1
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 3
+  m_SortAtRoot: 0
 --- !u!1001 &2501236662224489684
 PrefabInstance:
   m_ObjectHideFlags: 0

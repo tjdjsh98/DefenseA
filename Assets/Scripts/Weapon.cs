@@ -1,3 +1,4 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
@@ -7,7 +8,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 {
     protected Character _character;
     protected Player _player;
-
+    protected AudioSource _audioSource;
     protected Character Character
     {
         get { if (_character == null) _character = GetComponentInParent<Character>(); return _character; }
@@ -20,6 +21,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField]protected Define.WeaponName _weaponName;
     public Define.WeaponName WeaponName =>_weaponName;
+
+    [SerializeField][Range(0,1)] float _audioLength;
+    Coroutine _audioCoroutine;
 
     [SerializeField]protected bool _isRaycast;
     public GameObject _projectile;
@@ -66,6 +70,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public void Init(Character character)
     {
+        _audioSource = GetComponent<AudioSource>();
         _currentAmmo = _maxAmmo;
         _character = character;
         _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
@@ -96,9 +101,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
         _currentAmmo--;
         _fireElapsed = 0;
 
+        if (_audioCoroutine != null)
+            StopCoroutine(_audioCoroutine);
+        _audioCoroutine = StartCoroutine(CorPlayAudio());
 
         float angle = transform.rotation.eulerAngles.z;
-
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
         direction = direction.normalized;
@@ -175,7 +182,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
     {
         _isReload = true;
         if (_reloadGauge)
+        {
+            _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
+        }
     }
 
     public void SetPower(float power)
@@ -201,5 +211,15 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public int GetEnumToInt()
     {
         return (int)WeaponName;
+    }
+
+    IEnumerator CorPlayAudio()
+    {
+        if (_audioSource) { 
+        _audioSource.Stop();
+        _audioSource.Play();
+        yield return new WaitForSeconds(_audioLength);
+        _audioSource.Stop();
+            }
     }
 }

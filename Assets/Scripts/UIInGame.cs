@@ -1,3 +1,4 @@
+using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using System.Net.NetworkInformation;
@@ -25,9 +26,9 @@ public class UIInGame : UIBase
 
     Player _player;
 
-    [SerializeField]Image _daughterHpBar;
-    [SerializeField] Image _dogHpBar;
-    [SerializeField] Image _fatherHpBar;
+    [SerializeField] MMProgressBar _daughterHpBar;
+    [SerializeField] MMProgressBar _fatherHpBar;
+    [SerializeField] MMProgressBar _dogHpBar;
 
     float _maxHpWidth;
     float _maxHpHeight;
@@ -35,9 +36,6 @@ public class UIInGame : UIBase
     public override void Init()
     {
         _isInitDone = true;
-
-        _maxHpWidth = _daughterHpBar.rectTransform.sizeDelta.x;
-        _maxHpHeight = _daughterHpBar.rectTransform.sizeDelta.y;
         _mainWeaponPos = _weaponImage[0].transform.localPosition;
     }
 
@@ -105,11 +103,18 @@ public class UIInGame : UIBase
         Character father = Managers.GetManager<GameManager>().Father;
 
         if(daughter)
-            _daughterHpBar.rectTransform.sizeDelta = new Vector2((float)daughter.Hp / daughter.MaxHp * _maxHpWidth, _maxHpHeight);
-        if(dog)
-            _dogHpBar.rectTransform.sizeDelta = new Vector2((float)dog.Hp / dog.MaxHp * _maxHpWidth, _maxHpHeight);
-        if(father)
-            _fatherHpBar.rectTransform.sizeDelta = new Vector2((float)father.Hp / father.MaxHp * _maxHpWidth, _maxHpHeight);  
+            _daughterHpBar.UpdateBar01((float)daughter.Hp/ daughter.MaxHp);
+        else
+            _daughterHpBar.UpdateBar01(0);
+        if (dog)
+            _dogHpBar.UpdateBar01((float)dog.Hp / dog.MaxHp);
+        else
+            _dogHpBar.UpdateBar01(0);
+
+        if (father)
+            _fatherHpBar.UpdateBar01((float)father.Hp / father.MaxHp); 
+        else
+            _fatherHpBar.UpdateBar01(0);
     }
     void ShowMap()
     {

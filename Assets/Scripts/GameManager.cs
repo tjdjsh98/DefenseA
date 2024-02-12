@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class GameManager : ManagerBase
@@ -104,12 +105,11 @@ public class GameManager : ManagerBase
         _map.AddBuildingPreset("Prefabs/BuildingPreset2");
         _map.AddBuildingPreset("Prefabs/BuildingPreset3");
         _map.AddBuildingPreset("Prefabs/BuildingPreset4");
+        _map.AddMoreBackBuildingPreset("Prefabs/MoreBackBuildingPreset1");
     }
 
     public override void ManagerUpdate()
     {
-    
-
         _totalTime += Time.deltaTime;
         HandleGround();
         if (_stop) return;
@@ -138,10 +138,7 @@ public class GameManager : ManagerBase
     {
         if (Player == null) return;
 
-        float playerX = Player.transform.position.x;
-        int index = _map.GetIndex(playerX);
-
-        _map.SetGround(index);
+        _map.Update(Player);
     }
 
     void EndlessWave()
@@ -200,6 +197,10 @@ public class GameManager : ManagerBase
     public List<CardSelectionData> GetRandomCardSelectionData(int count)
     {
         return _remainCardSelectionList.GetRandom(count);
+    }
+    public List<CardSelectionData> GetRemainCardSelection()
+    {
+        return _remainCardSelectionList;
     }
     // 카드를 선택하여 능력치 추가
     public void SelectCardData(CardSelectionData data)
@@ -284,7 +285,7 @@ struct Wave
 class Map
 {
     int currentIndex = -10002;
-
+    int moreBackBuildingIndex = -1000;
     GameObject left;
     GameObject center;
     GameObject right;
@@ -293,7 +294,12 @@ class Map
     GameObject centerBuilding;
     GameObject rightBuilding;
 
+    GameObject moreBackLeftBuilding;
+    GameObject moreBackCenterBuilding;
+    GameObject moreBackRightBuilding;
+
     List<string> buildingPresetPathList = new List<string>();
+    List<string> moreBackBuildingPresetPathList = new List<string>();
 
     float groundTerm;
     float yPosision = -11.4f;
@@ -307,6 +313,63 @@ class Map
         groundFolder.layer = LayerMask.NameToLayer("Ground");
         groundFolder.AddComponent<Rigidbody2D>().isKinematic = true;
         groundFolder.AddComponent<CompositeCollider2D>();
+    }
+
+    public void Update(Player player)
+    {
+        if(player == null) return;
+
+        Vector3 pos = player.transform.position;
+        SetGround(GetIndex(pos.x));
+
+        int mul = 4;
+
+        int index = Mathf.RoundToInt(pos.x / (groundTerm* mul));
+        if(index != moreBackBuildingIndex)
+        {
+            if(moreBackBuildingPresetPathList.Count > 0)
+            {
+                // 중간
+                Random.InitState(Mathf.RoundToInt(index / moreBackBuildingPresetPathList.Count));
+                int random = (int)(Random.value * 1000);
+
+                if (moreBackCenterBuilding)
+                    Managers.GetManager<ResourceManager>().Destroy(moreBackCenterBuilding);
+                Vector3 position = new Vector3(index * groundTerm * mul, 0, 0);
+                position.y = -2f;
+                moreBackCenterBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index) % moreBackBuildingPresetPathList.Count]);
+                moreBackCenterBuilding.transform.parent = groundFolder.transform;
+                // 왼쪽
+                Random.InitState(Mathf.RoundToInt((index - 1) / moreBackBuildingPresetPathList.Count));
+                random = (int)(Random.value * 1000);
+
+                if (moreBackLeftBuilding)
+                    Managers.GetManager<ResourceManager>().Destroy(moreBackLeftBuilding);
+                position = new Vector3((index-1) * groundTerm * mul, 0, 0);
+                position.y = -2f;
+                moreBackLeftBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index - 1) % moreBackBuildingPresetPathList.Count]);
+                moreBackLeftBuilding.transform.parent = groundFolder.transform;
+                //오른쪽
+                Random.InitState(Mathf.RoundToInt((index + 1) / moreBackBuildingPresetPathList.Count));
+                random = (int)(Random.value * 1000);
+
+                if (moreBackRightBuilding)
+                    Managers.GetManager<ResourceManager>().Destroy(moreBackRightBuilding);
+                position = new Vector3((index + 1) * groundTerm * mul , 0, 0);
+                position.y = -2f;
+                moreBackRightBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index + 1) % moreBackBuildingPresetPathList.Count]);
+                moreBackRightBuilding.transform.parent = groundFolder.transform;
+            }
+
+            moreBackBuildingIndex = index;
+        }
+
+        float distacne = player.transform.position.x - moreBackBuildingIndex * groundTerm * mul;
+
+        moreBackCenterBuilding.transform.position = new Vector3(moreBackBuildingIndex * groundTerm * mul + distacne/2, 0, 0);
+        moreBackRightBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x + groundTerm * 2, 0, 0);
+        moreBackLeftBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x - groundTerm * 2, 0, 0);
+
     }
 
   
@@ -386,10 +449,14 @@ class Map
     {
         buildingPresetPathList.Add(path);
     }
+    public void AddMoreBackBuildingPreset(string path)
+    {
+        moreBackBuildingPresetPathList.Add(path);
+    }
 
     public int GetIndex(float x)
     {
-        int index = (int)(x / (groundTerm ));
+        int index = Mathf.RoundToInt(x / (groundTerm ));
         return index;
     }
 }

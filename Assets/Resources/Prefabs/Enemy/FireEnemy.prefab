@@ -96,7 +96,8 @@ GameObject:
   - component: {fileID: 3899802485729554007}
   - component: {fileID: 1967886871191142965}
   - component: {fileID: 1896784578234483789}
-  - component: {fileID: 6377343253536845737}
+  - component: {fileID: 1307951516241150032}
+  - component: {fileID: 3041734555230691502}
   m_Layer: 6
   m_Name: FireEnemy
   m_TagString: Untagged
@@ -217,7 +218,7 @@ MonoBehaviour:
   <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
---- !u!114 &6377343253536845737
+--- !u!114 &1307951516241150032
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -226,16 +227,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 8988498683865309567}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55ab778f2e5ff704cbaa2a5b24ad0d2f, type: 3}
+  m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyName: 1
   _attackRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 0, y: 0, z: 0}
+    center: {x: 0, y: 1.07, z: 0}
+    size: {x: 4.01, y: 2.16, z: 0}
   _target: {fileID: 0}
   _attackDelay: 1
   _isRangedAttack: 0
-  _parabola: {fileID: 1296242222331413700, guid: 0e97b45624ffb714f9d289a2831317c7, type: 3}
-  _defaultFireDirection: {x: -0.3, y: 0.7, z: 0}
-  _power: 10
+--- !u!210 &3041734555230691502
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8988498683865309567}
+  m_Enabled: 1
+  m_SortingLayerID: 1343365121
+  m_SortingLayer: 1
+  m_SortingOrder: 0
+  m_SortAtRoot: 0

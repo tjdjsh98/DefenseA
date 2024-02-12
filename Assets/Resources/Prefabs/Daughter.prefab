@@ -2377,6 +2377,7 @@ GameObject:
   - component: {fileID: 4711550402425175098}
   - component: {fileID: 6008444623420581962}
   - component: {fileID: 5796714714944593930}
+  - component: {fileID: 7756102853106050329}
   m_Layer: 6
   m_Name: Daughter
   m_TagString: Player
@@ -2500,7 +2501,11 @@ MonoBehaviour:
   _maxHp: 5
   _hp: 5
   _speed: 3
+  _jumpPower: 10
   _isEnableFly: 0
+  _groundCheckRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
   _isTurnBodyAlongVelocity: 0
   <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
@@ -2540,6 +2545,18 @@ MonoBehaviour:
   - {fileID: 4743824381584374038}
   - {fileID: 4477150851416204001}
   - {fileID: 219622547004779552}
+--- !u!210 &7756102853106050329
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3362198211384105993}
+  m_Enabled: 1
+  m_SortingLayerID: 1343365121
+  m_SortingLayer: 1
+  m_SortingOrder: 4
+  m_SortAtRoot: 0
 --- !u!1 &3402862034505109206
 GameObject:
   m_ObjectHideFlags: 0
@@ -6344,7 +6361,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 5632545969002935762}
-  - component: {fileID: 738177980085373349}
   m_Layer: 6
   m_Name: Model
   m_TagString: Untagged
@@ -6369,18 +6385,6 @@ Transform:
   - {fileID: 5023181679092657849}
   m_Father: {fileID: 5012608316136634072}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!210 &738177980085373349
-SortingGroup:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 8963512533429226287}
-  m_Enabled: 1
-  m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
-  m_SortingOrder: 2
-  m_SortAtRoot: 0
 --- !u!1 &9041346680019925717
 GameObject:
   m_ObjectHideFlags: 0
