@@ -9,6 +9,7 @@ using UnityEngine.VFX;
 public class Projectile : MonoBehaviour
 {
     Rigidbody2D _rigid;
+    TrailRenderer _trailRenderer;
 
     float _power;
     float _speed;
@@ -29,21 +30,25 @@ public class Projectile : MonoBehaviour
     List<GameObject> _attackCharacterList = new List<GameObject>();
 
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    private void Awake()
     {
-     
+        _rigid = GetComponent<Rigidbody2D>();
+        _trailRenderer = GetComponent<TrailRenderer>();
     }
 
     public void Init(float power, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0)
     {
-        _rigid = GetComponent<Rigidbody2D>();
+        _trailRenderer.Clear();
         _power = power;
         _speed = speed;
         _damage = damage;
         _enableAttackCharacterType = enableAttackCharacterType;
         _penerstratingPower = penetratingPower;
         _isAttack = false;
+        _time = 0;
+        _penerstrateCount = 0;
         _attackCharacterList.Clear();
+        gameObject.SetActive(true);
     }
 
     private void Update()
@@ -81,6 +86,7 @@ public class Projectile : MonoBehaviour
             {
                 if (character.Hp > 0 && character.CharacterType == _enableAttackCharacterType)
                 {
+
                     _direction = _direction.normalized;
                     character.Damage(_attacker, _damage, _power, _direction);
                     Effect flare = Managers.GetManager<ResourceManager>().Instantiate<Effect>("Prefabs/Effect/Flare");
@@ -92,6 +98,7 @@ public class Projectile : MonoBehaviour
                     {
                         Managers.GetManager<ResourceManager>().Destroy(gameObject);
                         _isAttack = true;
+                        return;
                     }
                 }
             }
@@ -106,5 +113,6 @@ public class Projectile : MonoBehaviour
         Vector3 dir = direction.normalized + attacker.MySpeed.normalized;
         _rigid.velocity = (Vector2)direction.normalized * (_speed + (attacker.MySpeed.magnitude ));
         _direction = direction.normalized;
+        _prePostion = transform.position;
     }
 }

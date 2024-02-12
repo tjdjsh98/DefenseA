@@ -140,22 +140,15 @@ public class Player : MonoBehaviour
         {
             isPressed = true;
         }
-        if (!Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
-            if (_rebound != 0)
-            {
-                _rebound = Mathf.Lerp(_rebound, 0, 0.1f);
-            }
-        }
-        else
-        {
-            if (_rebound > 0)
-            {
-                _rebound -= _reboundControlPower / 2 * Time.deltaTime;
-                if (_rebound < 0)
-                    _rebound = 0;
-            }
             isPressed = true;
+        }
+        if (_rebound > 0)
+        {
+            _rebound -= _reboundControlPower / 2 * Time.deltaTime;
+            if (_rebound < 0)
+                _rebound = 0;
         }
         if (isPressed)
         {

@@ -1,20 +1,37 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
+
 
 public class FatherAI : MonoBehaviour
 {
     Character _character;
     Player _player;
+
+    /*
+     * 0 = 일반 공격 적 인식 범위
+     * 1 = 일반공격
+     * 2 = 관통공격
+     * 3 = 바닥에서 치솟는 스피어 공격
+     */
+    [SerializeField] int _debugAttackRangeIndex;
+    [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
+
     [SerializeField]PenetrateAttack _penetrateAttack;
     float _playerDistance = 5f;
 
-    [SerializeField] Define.Range _spearAttackRange;
+    Character _enemyToAttack;
+
+    float _normalAttackElapsed = 0;
+    float _normalAttackCoolTime = 5f;
 
     bool _isMove = false;
 
-    float _attackElapsed = 0;
-    float _attackCoolTime = 3f;
+    float _spearAttackElapsed = 0;
+    float _spearAttackCoolTime = 3f;
 
     float _shockwaveElasped = 0;
     public float ShockwaveCoolTime = 20;
@@ -29,15 +46,26 @@ public class FatherAI : MonoBehaviour
     {
         _character = GetComponent<Character>();
         Managers.GetManager<GameManager>().FatherAI = this;
-
+        if(_attackRangeList.Count < Define.FatherSkillCount)
+        {
+            for(int i = _attackRangeList.Count; i < Define.FatherSkillCount;i++) 
+                _attackRangeList.Add(new Define.Range());
+        }
     }
 
     private void OnDrawGizmos()
     {
         Gizmos.color = Color.red;
 
-        Gizmos.DrawWireCube(transform.position + _spearAttackRange.center, _spearAttackRange.size);
+        if (_attackRangeList.Count <= _debugAttackRangeIndex) return;
 
+        Define.Range range = _attackRangeList[_debugAttackRangeIndex];
+        range.center.x = transform.lossyScale.x > 0 ? range.center.x : - range.center.x;
+
+        if(range.figureType == Define.FigureType.Box)
+            Gizmos.DrawWireCube(transform.position + range.center, range.size);
+        else if (range.figureType == Define.FigureType.Circle)
+            Gizmos.DrawWireSphere(transform.position + range.center, range.size.x);
         Gizmos.DrawWireSphere(_tc, _tr);
     }
 
@@ -45,7 +73,7 @@ public class FatherAI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.O))
         {
-            GameObject[] gos = Util.BoxcastAll2D(gameObject, _spearAttackRange);
+            GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.PenerstrateRange]);
 
             Character closeOne = null;
             float distance = 100;
@@ -73,17 +101,33 @@ public class FatherAI : MonoBehaviour
         if (_player == null)
             _player = Managers.GetManager<GameManager>().Player;
 
-        FollwerPlayer();
-
-        if (IsUnlockSpear) {
-            _attackElapsed += Time.deltaTime;
-            if (_attackElapsed > _attackCoolTime)
+        if(_normalAttackElapsed < _normalAttackCoolTime)
+        {
+            _normalAttackElapsed += Time.deltaTime;
+            FollwerPlayer();
+        }
+        else
+        {
+            FindEnemyToNormalAttack();
+            if (_enemyToAttack == null)
             {
-                SpearAttack();
-                _attackElapsed = 0;
+                FollwerPlayer();
+            }
+            else
+            {
+                PlayNormalAttack();
             }
         }
 
+        if (IsUnlockSpear)
+        {
+            _spearAttackElapsed += Time.deltaTime;
+            if (_spearAttackElapsed > _spearAttackCoolTime)
+            {
+                SpearAttack();
+                _spearAttackElapsed = 0;
+            }
+        }
         if (IsUnlockShockwave)
         {
             _shockwaveElasped += Time.deltaTime;
@@ -100,28 +144,94 @@ public class FatherAI : MonoBehaviour
     {
         if(_player ==null) return;
 
-        if(Mathf.Abs(_player.transform.position.x - transform.position.x) > _playerDistance+1)
+        float distacne = _player.transform.position.x - transform.position.x;
+        if (Mathf.Abs(distacne) > _playerDistance)
         {
-            _isMove = true;
+            Debug.Log(distacne);
+            _character.Move(Vector3.right * (distacne + (distacne > 0? -_playerDistance : _playerDistance))/(_playerDistance));
         }
 
-        if(_player.transform.position.x < transform.position.x)
-            _character.Move(Vector3.right * (_player.transform.position.x+2.5f - transform.position.x));
-        else
-            _character.Move(Vector3.right * (_player.transform.position.x-2.5f - transform.position.x));
+    }
+
+    void PlayNormalAttack()
+    {
+        if(_enemyToAttack)
+        {
+            Define.Range range = _attackRangeList[(int)Define.FatherSkill.NormalAttackRange];
+            range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
+            float distance = ((Vector2)_enemyToAttack.transform.position - ((Vector2)range.center + (Vector2)transform.position)).magnitude;
+            if(distance > range.center.x + range.size.x/2)
+            {
+                _character.Move(Vector3.right * (_enemyToAttack.transform.position.x - transform.position.x));
+            }
+            else
+            {
+                _normalAttackElapsed = 0;
+                _character.AnimatorSetTrigger("NormalAttack");
+                _character.IsEnableMove = false;
+                _character.IsEnableTurn = false;
+            }
+        }
+    }
+
+    public void NormalAttack()
+    {
+        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
+
+        if (gos.Length > 0)
+        {
+            foreach (var go in gos)
+            {
+                Character c = go.GetComponent<Character>();
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                {
+                    c.Damage(_character, 1, 1, c.transform.position - transform.position);
+                }
+            }
+        }
+    }
+
+    public void FinishNormalAttack()
+    {
+        _character.IsEnableMove = true;
+        _character.IsEnableTurn = true;
+    }
 
 
+    void FindEnemyToNormalAttack()
+    {
+        if(_enemyToAttack != null) return;
+        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.FindingRange], LayerMask.GetMask("Character"));
+
+        if (gos.Length > 0)
+        {
+            Character closeOne = null;
+            float distance = 1000;
+            foreach (var go in gos)
+            {
+                Character c = go.GetComponent<Character>();
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                {
+                    if ((c.transform.position - transform.position).magnitude < distance)
+                    {
+                        closeOne = c;
+                        distance = (c.transform.position - transform.position).magnitude;
+                    }
+                }
+            }
+            _enemyToAttack = closeOne;
+        }
     }
 
     void SpearAttack()
     {
         if (!IsUnlockSpear) return;
 
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _spearAttackRange);
+        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[2]);
 
         if(gos.Length > 0) 
         {
-            _attackElapsed = 0;
+            _spearAttackElapsed = 0;
             foreach (var go in gos)
             {
                 Character c = go.GetComponent<Character>();

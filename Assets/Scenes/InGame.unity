@@ -2225,16 +2225,16 @@ MonoBehaviour:
   TextFormat: '{000}'
   DisplayTotal: 0
   TotalSeparator: ' / '
-  DebugNewTargetValue: 0
+  DebugNewTargetValue: 1
   DebugUpdateBarButton: 0
   DebugSetBarButton: 0
   TestBumpButton: 0
   Plus10PercentButton: 0
   Minus10PercentButton: 0
-  BarProgress: 0
-  BarTarget: 0.59
-  DelayedBarIncreasingProgress: 0.67
-  DelayedBarDecreasingProgress: 0.75
+  BarProgress: 1
+  BarTarget: 1
+  DelayedBarIncreasingProgress: 1
+  DelayedBarDecreasingProgress: 1
 --- !u!1 &491650109
 GameObject:
   m_ObjectHideFlags: 0
@@ -4191,7 +4191,7 @@ RectTransform:
   m_GameObject: {fileID: 1018390359}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1071498426}
@@ -4611,16 +4611,16 @@ MonoBehaviour:
   TextFormat: '{000}'
   DisplayTotal: 0
   TotalSeparator: ' / '
-  DebugNewTargetValue: 0
+  DebugNewTargetValue: 1
   DebugUpdateBarButton: 0
   DebugSetBarButton: 0
   TestBumpButton: 0
   Plus10PercentButton: 0
   Minus10PercentButton: 0
-  BarProgress: 0
-  BarTarget: 0.59
-  DelayedBarIncreasingProgress: 0.67
-  DelayedBarDecreasingProgress: 0.75
+  BarProgress: 1
+  BarTarget: 1
+  DelayedBarIncreasingProgress: 1
+  DelayedBarDecreasingProgress: 1
 --- !u!1 &1106946242
 GameObject:
   m_ObjectHideFlags: 0
@@ -4648,7 +4648,7 @@ RectTransform:
   m_GameObject: {fileID: 1106946242}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1667523102}
@@ -4933,7 +4933,7 @@ RectTransform:
   m_GameObject: {fileID: 1216159565}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1071498426}
@@ -5229,7 +5229,7 @@ RectTransform:
   m_GameObject: {fileID: 1302470789}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1071498426}
@@ -6722,16 +6722,16 @@ MonoBehaviour:
   TextFormat: '{000}'
   DisplayTotal: 0
   TotalSeparator: ' / '
-  DebugNewTargetValue: 0
+  DebugNewTargetValue: 1
   DebugUpdateBarButton: 0
   DebugSetBarButton: 0
   TestBumpButton: 0
   Plus10PercentButton: 0
   Minus10PercentButton: 0
-  BarProgress: 0
-  BarTarget: 0.59
-  DelayedBarIncreasingProgress: 0.67
-  DelayedBarDecreasingProgress: 0.75
+  BarProgress: 1
+  BarTarget: 1
+  DelayedBarIncreasingProgress: 1
+  DelayedBarDecreasingProgress: 1
 --- !u!1 &1687537035
 GameObject:
   m_ObjectHideFlags: 0
@@ -6759,7 +6759,7 @@ RectTransform:
   m_GameObject: {fileID: 1687537035}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1667523102}
@@ -6834,7 +6834,7 @@ RectTransform:
   m_GameObject: {fileID: 1762894767}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 451022309}
@@ -7502,7 +7502,7 @@ RectTransform:
   m_GameObject: {fileID: 1937614724}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1667523102}
@@ -7877,7 +7877,7 @@ RectTransform:
   m_GameObject: {fileID: 2047785791}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 451022309}
@@ -7999,7 +7999,7 @@ RectTransform:
   m_GameObject: {fileID: 2101061746}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.4, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 451022309}
@@ -8217,8 +8217,68 @@ PrefabInstance:
       value: -0.99892235
       objectReference: {fileID: 0}
     - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _debugAttackRangeIndex
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.size
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: <IsUnlockShockwave>k__BackingField
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[0].size.x
+      value: 18.22
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[0].size.y
+      value: 5.14
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[1].size.x
+      value: 6.11
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[1].size.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[2].size.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[2].size.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[3].size.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[3].size.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[0].center.y
+      value: 2.47
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[1].center.x
+      value: 2.58
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[1].center.y
+      value: 2.5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[2].center.y
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[3].center.y
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8830081167131702790, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: m_LocalRotation.w

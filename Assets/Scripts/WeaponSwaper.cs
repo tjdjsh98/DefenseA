@@ -6,11 +6,13 @@ using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class WeaponSwaper : MonoBehaviour
 {
     Character _character;
     Weapon _currentWeapon;
+    [SerializeField] protected GaugeBar _reloadGauge;
 
     [SerializeField] List<Define.WeaponName> _weaponNameList;
     [SerializeField] List<GameObject> _weaponSlotList;
@@ -28,7 +30,9 @@ public class WeaponSwaper : MonoBehaviour
         _character = GetComponent<Character>();
         SelectWeapon(-1);
         _weaponList= new List<Weapon>();
-        
+        _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
+
+       
 
         for (int i = 0; i < _weaponSlotList.Count; i++)
         {
@@ -36,8 +40,6 @@ public class WeaponSwaper : MonoBehaviour
             if(_weaponNameList.Count > i)
                 ChangeNewWeapon(i, _weaponNameList[i]);
         }
-       
-
     }
 
     public void ChangeNewWeapon(int index, Define.WeaponName weaponName)
@@ -62,6 +64,8 @@ public class WeaponSwaper : MonoBehaviour
         {
             SelectWeapon(index);
         }
+        if (_reloadGauge)
+            _reloadGauge.gameObject.SetActive(false);
     }
 
     public void SelectWeapon(int index)
@@ -82,6 +86,9 @@ public class WeaponSwaper : MonoBehaviour
         }
 
         _weaponIndex = index;
+
+        if (_reloadGauge)
+            _reloadGauge.gameObject.SetActive(false);
 
         WeaponSwaped?.Invoke(_currentWeapon);
     }

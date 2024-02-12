@@ -54,6 +54,15 @@ public static class Define
         Effect,
         Flare,
     }
+    public enum FatherSkill
+    {
+        FindingRange = 0,
+        NormalAttackRange,
+        PenerstrateRange,
+        SpearAttackRange,
+        END
+    }
+    public static int FatherSkillCount = (int)FatherSkill.END;
 
     public enum CardSelectionType
     {
@@ -108,5 +117,13 @@ public static class Define
     {
         public Vector3 center;
         public Vector3 size;
+        public FigureType figureType;
+    }
+
+    public enum FigureType
+    {
+        Box,
+        Circle,
+        Raycast
     }
 }

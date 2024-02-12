@@ -25,6 +25,10 @@ public class Character : MonoBehaviour
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
     public bool IsEnableFly => _isEnableFly;
+    [field:SerializeField]public bool IsEnableMove { set; get; } = true;
+    [field:SerializeField]public bool IsEnableTurn { set; get; } = true;
+
+
     float _stunEleasped;
     float _stunTime;
 
@@ -40,7 +44,9 @@ public class Character : MonoBehaviour
     bool _isContactGround = false;
     private bool _isJump;
 
-    [field:SerializeField]public bool IsEnableMove { set; get; } = true;
+    float _groundBreakPower = 30;
+    float _airBreakPower = 10;
+
     Character _attackTarget;
 
     public Action<Character> CharacterAttack;
@@ -93,6 +99,7 @@ public class Character : MonoBehaviour
             }
         }
         CheckGround();
+        HandleBreak();
     }
     private void FixedUpdate()
     {
@@ -101,13 +108,47 @@ public class Character : MonoBehaviour
         _prePosition = currentPosition;
     }
 
+    void HandleBreak()
+    {
+        // 브레이크
+        if (!_isMove)
+        {
+            float xSpeed = _rigidBody.velocity.x;
+            if (xSpeed != 0)
+            {
+                if (_isContactGround)
+                {
+                    xSpeed += Time.deltaTime * _groundBreakPower * (xSpeed > 0 ? -1 : 1);
+                    if (xSpeed < Time.deltaTime * _groundBreakPower * xSpeed)
+                        xSpeed = 0;
+                }
+                else
+                {
+
+                    xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
+                    if (xSpeed < Time.deltaTime * _airBreakPower * xSpeed)
+                        xSpeed = 0;
+                }
+            }
+            float ySpeed = _rigidBody.velocity.y;
+            if (_isEnableFly)
+            {
+                ySpeed -= Time.deltaTime * _airBreakPower;
+                if (ySpeed < Time.deltaTime * _groundBreakPower * ySpeed)
+                    ySpeed = 0;
+            }
+            _rigidBody.velocity = new Vector3(xSpeed, ySpeed);
+        }
+
+        _isMove = false;
+    }
+
     void ControlAnimation()
     {
         if (!_animator) return;
         if(!IsStun)
         {
             _animator.SetFloat("WalkBlend", Mathf.Clamp(Mathf.Abs(_rigidBody.velocity.x)/_speed,0,1));
-            _isMove = false;
         }
     }
 
@@ -143,6 +184,7 @@ public class Character : MonoBehaviour
 
     public void Move(Vector2 direction)
     {
+    
         if (IsStun) return;
 
         // 진행 방향에 맞게 몸을 회전
@@ -213,6 +255,7 @@ _isContactGround = false;
 
     public void TurnBody(Vector2 direction)
     {
+        if (!IsEnableTurn) return;
         Vector3 scale = transform.localScale;
         if (transform.localScale.x < 0 && direction.x > 0)
         {

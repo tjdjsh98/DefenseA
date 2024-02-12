@@ -118,6 +118,7 @@ public class UIInGame : UIBase
     }
     void ShowMap()
     {
+        if (!Managers.GetManager<GameManager>().Player) return;
         float mapImageSize = _mapImage.rectTransform.sizeDelta.x;
         float mapSize = Managers.GetManager<GameManager>().MapSize;
         float playerPosition = Managers.GetManager<GameManager>().Player.transform.position.x;

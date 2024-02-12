@@ -71,7 +71,6 @@ public class UICardSelection : UIBase
     {
         Managers.GetManager<GameManager>().SelectCardData(_cardSelectionList[cardIndex]);
 
-        Debug.Log(cardIndex + " " + _cardSelectionList[cardIndex].CardSelection);
         Close();
     }
 

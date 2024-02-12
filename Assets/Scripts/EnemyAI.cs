@@ -99,7 +99,7 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
             }
             else
             {
-                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>("Projectile");
+                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>("Prefabs/Projectile");
                 projectile.Init(10, 10, 2, Define.CharacterType.Player);
                 projectile.transform.position = transform.position;
                 projectile.Fire(_character, _target.GetCenter() - transform.position);

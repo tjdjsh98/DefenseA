@@ -74,6 +74,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         _currentAmmo = _maxAmmo;
         _character = character;
         _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
+        
         if(_reloadGauge)
             _reloadGauge.gameObject.SetActive(false);
 
@@ -111,10 +112,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
         direction = direction.normalized;
         if (!_isRaycast)
         {
-            GameObject go = Instantiate(_projectile);
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
-            projectile.Init(_power, _bulletSpeed, _damage,Define.CharacterType.Enemy,_penerstratingPower);
+            projectile.Init(Power, BulletSpeed, Damage,Define.CharacterType.Enemy,PenerstratingPower);
             projectile.Fire(fireCharacter, direction.normalized);
         }
         else
