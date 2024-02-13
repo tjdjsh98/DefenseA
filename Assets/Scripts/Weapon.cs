@@ -63,6 +63,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     protected float _reloadElapsed;
 
     protected bool _isReload;
+    public bool IsReload => _isReload;
 
     [SerializeField] protected GaugeBar _reloadGauge;
 

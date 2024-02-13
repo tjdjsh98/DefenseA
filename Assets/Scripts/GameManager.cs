@@ -1,7 +1,11 @@
+using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Analytics;
+using UnityEngine.WSA;
 
 public class GameManager : ManagerBase
 {
@@ -22,14 +26,18 @@ public class GameManager : ManagerBase
     public Character Father { get { if (FatherAI &&_father == null) _father = FatherAI?.GetComponent<Character>(); return _father; } }
 
 
+    [Header("Debug")]
+    [SerializeField] bool _summonDummy;
+    [SerializeField] int _dummyHp;
 
-    // 게임 진행 변수
+    [Header("게임 진행")]
     [SerializeField] bool _stop;
-    [SerializeField] bool _allMaxExpFive;
-
     [field: SerializeField]public  float MapSize { set; get; }
+
+
     // 플레이 경험 관련
     [Header("경험치")]
+    [SerializeField] bool _allMaxExpFive;
     [SerializeField] int _exp;
     public int Exp {
         set
@@ -112,6 +120,17 @@ public class GameManager : ManagerBase
     {
         _totalTime += Time.deltaTime;
         HandleGround();
+        if (_summonDummy)
+        {
+            EnemyAI enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyAI>((int)Define.EnemyName.Walker1);
+            EnemyAI enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+            enemy.transform.position = Player.transform.position + Vector3.right*3;
+            Character enemyCharacter = enemy.GetComponent<Character>();
+            enemyCharacter.SetHp(_dummyHp);
+            _summonDummy = false;
+        }
+
+
         if (_stop) return;
         if (!IsStopWave)
         {
@@ -286,10 +305,10 @@ class Map
 {
     int currentIndex = -10002;
     int moreBackBuildingIndex = -1000;
-    GameObject left;
-    GameObject center;
-    GameObject right;
+    int groundCount = 5;
 
+    Dictionary<int, GameObject> grounds = new Dictionary<int, GameObject>();
+   
     GameObject leftBuilding;
     GameObject centerBuilding;
     GameObject rightBuilding;
@@ -377,72 +396,89 @@ class Map
     {
         if (index == currentIndex) return;
 
-        if(index > currentIndex)
+        Random.InitState(Mathf.RoundToInt(index / groundCount));
+        int groundRandom = (int)(Random.value * 1000);
+
+        List<int> indexList = grounds.Keys.ToList();
+
+        for (int i = 0; i < groundCount; i++)
         {
-            GameObject temp = left;
-            left = center;
-            center = right;
-            right = temp;
+            int groundIndex = index + ((i % 2) == 0 ? -1 : 1) * (Mathf.FloorToInt((i-1) / 2)+1) * (i == 0 ? 0 : 1);
+            // int randomGroundTile = (groundRandom + groundIndex) % groundCount;
+
+            if (!grounds.ContainsKey(groundIndex))
+            {
+                grounds.Add(groundIndex, Managers.GetManager<ResourceManager>().Instantiate("Ground"));
+                grounds[groundIndex]?.transform.SetParent(groundFolder.transform);
+                grounds[groundIndex].transform.position = new Vector3(groundTerm * groundIndex, YPosition, 0);
+            }
+
+            indexList.Remove(groundIndex);
         }
-        else
+
+        for(int i = indexList.Count-1; i >= 0; i--) 
         {
-            GameObject temp = right;
-            right = center;
-            center = left;
-            left = temp;
+            Debug.Log(indexList[i]);
+            Managers.GetManager<ResourceManager>().Destroy(grounds[indexList[i]]);
+            grounds.Remove(indexList[i]);
         }
+
+
         currentIndex= index;
 
-        center.transform.position = new Vector3(index * groundTerm, yPosision, 0);
-        right.transform.position = new Vector3((index+1) * groundTerm, yPosision, 0);
-        left.transform.position = new Vector3((index -1)* groundTerm, yPosision, 0);
 
         if (buildingPresetPathList.Count > 0)
         {
 
             // 중간
-            Random.InitState(Mathf.CeilToInt(index / buildingPresetPathList.Count));
+            Random.InitState(Mathf.RoundToInt(index / buildingPresetPathList.Count));
             int random = (int)(Random.value * 1000);
 
             if (centerBuilding)
                 Managers.GetManager<ResourceManager>().Destroy(centerBuilding);
-            Vector3 position = center.transform.position;
+            Vector3 position = grounds[currentIndex].transform.position;
             position.y = Random.Range(-1f, -4f);
             centerBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index) % buildingPresetPathList.Count]);
+            centerBuilding.transform.parent = groundFolder.transform;
             centerBuilding.transform.position = position;
 
             // 왼쪽
-            Random.InitState(Mathf.CeilToInt((index-1) / buildingPresetPathList.Count));
+            Random.InitState(Mathf.RoundToInt((index-1) / buildingPresetPathList.Count));
             random = (int)(Random.value * 1000);
 
             if (leftBuilding)
                 Managers.GetManager<ResourceManager>().Destroy(leftBuilding);
-            position = left.transform.position;
+            position = grounds[currentIndex-1].transform.position;
             position.y = Random.Range(-1f, -4f);
             leftBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index-1) % buildingPresetPathList.Count]);
+            leftBuilding.transform.parent = groundFolder.transform;
             leftBuilding.transform.position = position;
 
             //오른쪽
-            Random.InitState(Mathf.CeilToInt((index + 1) / buildingPresetPathList.Count));
+            Random.InitState(Mathf.RoundToInt((index + 1) / buildingPresetPathList.Count));
             random = (int)(Random.value * 1000);
 
             if (rightBuilding)
                 Managers.GetManager<ResourceManager>().Destroy(rightBuilding);
-            position = right.transform.position;
+            position = grounds[currentIndex+1].transform.position;
             position.y = Random.Range(-1f, -4f);
             rightBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index + 1) % buildingPresetPathList.Count]);
+            rightBuilding.transform.parent = groundFolder.transform;
             rightBuilding.transform.position = position;
         }
     }
 
     public void SetCenterGround(GameObject ground)
     {
-        center= ground;
-        left = Managers.GetManager<ResourceManager>().Instantiate("Ground");
-        right = Managers.GetManager<ResourceManager>().Instantiate("Ground");
-        left.transform.SetParent(groundFolder.transform);
-        right.transform.SetParent(groundFolder.transform);
-        center.transform.SetParent(groundFolder.transform);
+        grounds.Add(0,ground);
+
+        for (int i = 1; i < groundCount; i++)
+        {
+            int groundIndex = ((i % 2) == 0 ? -1 : 1) * (Mathf.FloorToInt((i - 1) / 2) + 1);
+            grounds.Add(groundIndex, Managers.GetManager<ResourceManager>().Instantiate("Ground"));
+            grounds[groundIndex]?.transform.SetParent(groundFolder.transform);
+            grounds[groundIndex].transform.position = new Vector3(groundTerm * groundIndex, YPosition, 0);
+        }
     }
 
     public void AddBuildingPreset(string path)

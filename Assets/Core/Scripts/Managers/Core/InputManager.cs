@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.Rendering;
+using UnityEngine.UIElements;
 
 public class InputManager : ManagerBase
 {
@@ -12,6 +13,9 @@ public class InputManager : ManagerBase
 
     public Action MouseButtonDown;
     public Action MouseButtonHold;
+    public Action MouseButtonUp;
+
+
     public Action Num1KeyDown;
     public Action Num2KeyDown;
     public Action Num3KeyDown;
@@ -25,6 +29,8 @@ public class InputManager : ManagerBase
     Vector2 _mouseDelta;
     public Vector2 MouseDelta =>_mouseDelta;
 
+    public bool AimTarget { set; get; }
+    bool _saveMousePosition;
     public override void Init()
     {
         _mainCamera= Camera.main;
@@ -32,30 +38,33 @@ public class InputManager : ManagerBase
 
     public override void ManagerUpdate()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (AimTarget && !_saveMousePosition)
         {
             _preMousePosition = Input.mousePosition;
-            Cursor.visible = false;
-            
+            UnityEngine.Cursor.visible = false;
+            _saveMousePosition = true;
         }
-        if (Input.GetMouseButton(0))
+        if (AimTarget)
         {
             _mouseDelta = _mainCamera.ScreenToWorldPoint(Input.mousePosition) - _mainCamera.ScreenToWorldPoint(_preMousePosition);
             Mouse.current.WarpCursorPosition(_preMousePosition);
         }
-        if (Input.GetMouseButtonUp(0))
+        if (!AimTarget && _saveMousePosition)
         {
+            _saveMousePosition= false;
             Mouse.current.WarpCursorPosition(_preMousePosition);
-            Cursor.visible = true;
+            UnityEngine.Cursor.visible = true;
 
             _preMousePosition = Vector2.zero;
-            
         }
 
         if (Input.GetMouseButtonDown(0))
             MouseButtonDown?.Invoke();
         if (Input.GetMouseButton(0))
             MouseButtonHold?.Invoke();
+        if (Input.GetMouseButtonUp(0))
+            MouseButtonUp?.Invoke();
+
         if (Input.GetKeyDown(KeyCode.Alpha1))
             Num1KeyDown?.Invoke();
         if(Input.GetKeyDown(KeyCode.Alpha2))
@@ -71,5 +80,18 @@ public class InputManager : ManagerBase
             ReloadKeyDown?.Invoke();
         if(Input.GetKeyDown(KeyCode.Space))
             JumpKeyDown?.Invoke();
+    }
+
+    private void OnApplicationFocus(bool focus)
+    {
+        if (!focus)
+            AimTarget = false;
+    }
+    private void OnApplicationPause(bool pause)
+    {
+        if (pause)
+        {
+            AimTarget = false;
+        }
     }
 }

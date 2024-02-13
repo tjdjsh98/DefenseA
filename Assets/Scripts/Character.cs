@@ -25,7 +25,9 @@ public class Character : MonoBehaviour
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
     public bool IsEnableFly => _isEnableFly;
+
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
+    // 스턴 후 전 움직임 가능상태로 변경
     [field:SerializeField]public bool IsEnableTurn { set; get; } = true;
 
 
@@ -44,8 +46,10 @@ public class Character : MonoBehaviour
     bool _isContactGround = false;
     private bool _isJump;
 
-    float _groundBreakPower = 30;
-    float _airBreakPower = 10;
+    float _groundAccelePower = 60;
+    float _airAccelePower = 60;
+    float _groundBreakPower = 60;
+    float _airBreakPower = 20;
 
     Character _attackTarget;
 
@@ -193,17 +197,29 @@ public class Character : MonoBehaviour
             TurnBody(direction);
         }
 
-        direction.x = Mathf.Clamp(direction.x, -1, 1);
-        direction.y = Mathf.Clamp(direction.y, -1, 1);
-
         // 움직임 제어
         if (IsEnableMove)
         {
-            _isMove = true;
+            direction.x = Mathf.Clamp(direction.x, -1, 1);
+            direction.y = Mathf.Clamp(direction.y, -1, 1);
+            float maxSpeed = Mathf.Abs( _speed * direction.x);
+
+            Vector2 currentSpeed = _rigidBody.velocity;
+
+            currentSpeed.x += (direction.x > 0 ? 1 : -1) *  (_isContactGround?_groundAccelePower:_airAccelePower) * Time.deltaTime;
+            if (Mathf.Abs(currentSpeed.x) > maxSpeed)
+                currentSpeed.x = currentSpeed.x > 0 ? maxSpeed : -maxSpeed;
+
             if (_isEnableFly)
-                _rigidBody.velocity = new Vector2(direction.x * _speed, direction.y * _speed);
-            else
-                _rigidBody.velocity = new Vector2(direction.x * _speed, _rigidBody.velocity.y);
+            {
+                currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
+                if (Mathf.Abs(currentSpeed.y) > maxSpeed)
+                    currentSpeed.y = currentSpeed.y > 0 ? maxSpeed : -maxSpeed;
+            }
+
+            _rigidBody.velocity = currentSpeed;
+
+            _isMove = true;
         }
     }
 
@@ -240,8 +256,7 @@ public class Character : MonoBehaviour
         }
         else
         {
-
-_isContactGround = false;
+            _isContactGround = false;
         }
     }
     public void AnimatorSetBool(string name, bool value)

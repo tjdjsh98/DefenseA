@@ -91,11 +91,10 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
             if (_target == null) return;
 
             _attackElapsed = 0;
-            _character.Move(Vector2.zero);
-
+            
             if (!_isRangedAttack)
             {
-                _character.Attack(_target);
+                Attack(_target);
             }
             else
             {
@@ -110,6 +109,7 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
     public void Attack(Character character)
     {
         character.Damage(_character, 1, 1, Vector3.zero);
+        _target = null;
     }
 
     public int GetEnumToInt()

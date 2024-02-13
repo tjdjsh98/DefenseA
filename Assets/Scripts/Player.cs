@@ -32,9 +32,11 @@ public class Player : MonoBehaviour
     CameraController _cameraController;
 
     float _rebound;
-    float _reboundControlPower = 100f;
+    float _reboundControlPower = 50f;
     public float ReboundControlPower => _reboundControlPower;
 
+    [SerializeField]float _reboundRecoverPower = 10f;
+    float _reboundRecoverTime = 0;
     bool _isRiding;
 
     Animator _animator;
@@ -54,6 +56,7 @@ public class Player : MonoBehaviour
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonDown += UseWeapon;
         Managers.GetManager<InputManager>().MouseButtonHold += AutoUseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonUp += ShowAim;
         Managers.GetManager<InputManager>().ReloadKeyDown += OnReloadKeyDown;
         HandleMove();
         Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
@@ -98,7 +101,7 @@ public class Player : MonoBehaviour
     }
     public void Rebound(float angle)
     {
-        _rebound += angle;
+        _rebound += angle * (1-(_reboundControlPower / (100 + _reboundControlPower)));
         
     }
 
@@ -135,20 +138,33 @@ public class Player : MonoBehaviour
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         bool isPressed = false;
 
-       
-        if (Input.GetMouseButtonDown(0))
-        {
-            isPressed = true;
-        }
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
+            _reboundRecoverTime = 0;
         }
+        _reboundRecoverTime += Time.deltaTime*3;
         if (_rebound > 0)
         {
-            _rebound -= _reboundControlPower / 2 * Time.deltaTime;
-            if (_rebound < 0)
+            if ((_rebound - _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime) < 0)
+            {
                 _rebound = 0;
+            }
+            else
+            {
+                _rebound -= _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
+            }
+        }
+        if(!isPressed && _rebound < 0)
+        {
+            if ((_rebound + _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime) > 0)
+            {
+                _rebound = 0;
+            }
+            else
+            {
+                _rebound += _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
+            }
         }
         if (isPressed)
         {
@@ -167,7 +183,7 @@ public class Player : MonoBehaviour
         angle += _rebound;
 
         if (angle >= 90) angle = 89;
-
+        if (angle <= -90) angle = -89;
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initFrontArmAngle : -angle - _initFrontArmAngle));
 
         float screenWidth = Screen.width;
@@ -202,13 +218,28 @@ public class Player : MonoBehaviour
 
     void UseWeapon()
     {
-        if (_weaponSwaper.CurrentWeapon != null && !_weaponSwaper.CurrentWeapon.IsAuto)
+        Managers.GetManager<InputManager>().AimTarget = true;
+        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && !_weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
+        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo <= 0 && !_weaponSwaper.CurrentWeapon.IsReload)
+        {
+            _weaponSwaper.CurrentWeapon.Reload();
+        }
     }
     void AutoUseWeapon()
     {
-        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
+        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
+
+        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo <= 0 && !_weaponSwaper.CurrentWeapon.IsReload)
+        {
+            _weaponSwaper.CurrentWeapon.Reload();
+        }
+
+    }
+    void ShowAim()
+    {
+        Managers.GetManager<InputManager>().AimTarget = false;
     }
 
     void Riding()

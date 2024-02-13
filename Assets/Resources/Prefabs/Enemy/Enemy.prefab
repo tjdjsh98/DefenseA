@@ -181,7 +181,7 @@ Rigidbody2D:
   m_Mass: 5
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 2
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -208,14 +208,16 @@ MonoBehaviour:
   _characterType: 1
   _maxHp: 2
   _hp: 0
-  _speed: 3
+  _speed: 1.2
   _jumpPower: 10
   _isEnableFly: 0
+  <IsEnableMove>k__BackingField: 1
+  <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    figureType: 0
   _isTurnBodyAlongVelocity: 1
-  <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!114 &3927619139887317043
@@ -234,6 +236,7 @@ MonoBehaviour:
   _attackRange:
     center: {x: 0.58, y: 0.59, z: 0}
     size: {x: 3.46, y: 2.59, z: 0}
+    figureType: 0
   _target: {fileID: 0}
   _attackDelay: 1
   _isRangedAttack: 0

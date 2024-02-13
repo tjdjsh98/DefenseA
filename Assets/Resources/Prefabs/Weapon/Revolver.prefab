@@ -132,7 +132,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponName: 5
   _audioLength: 1
-  _isRaycast: 0
+  _isRaycast: 1
   _projectile: {fileID: 2311784550131828774, guid: 11b7a6642a03fa54eb27751432f4845a, type: 3}
   _isAuto: 0
   _power: 30
@@ -142,7 +142,7 @@ MonoBehaviour:
   _maxAmmo: 6
   _currentAmmo: 6
   _isAllReloadAmmo: 0
-  _fireDelay: 0.05
+  _fireDelay: 0.1
   _reloadDelay: 0.7
   _firePosition: {fileID: 321610210134309561}
   _rebound: 0

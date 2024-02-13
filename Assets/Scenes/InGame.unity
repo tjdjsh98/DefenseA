@@ -3580,9 +3580,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   FatherAI: {fileID: 0}
-  _stop: 0
-  _allMaxExpFive: 1
+  _summonDummy: 0
+  _dummyHp: 10
+  _stop: 1
   <MapSize>k__BackingField: 1000
+  _allMaxExpFive: 1
   _exp: 0
   _isEndless: 1
   _waveList:
@@ -8218,7 +8220,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: _debugAttackRangeIndex
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: _attackRangeList.Array.size
@@ -8226,7 +8228,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: <IsUnlockShockwave>k__BackingField
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: _attackRangeList.Array.data[0].size.x
@@ -8279,6 +8281,10 @@ PrefabInstance:
     - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: _attackRangeList.Array.data[3].center.y
       value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8301567896846815562, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.03082371
       objectReference: {fileID: 0}
     - target: {fileID: 8830081167131702790, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: m_LocalRotation.w
@@ -8387,11 +8393,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5796714714944593930, guid: bf9e295c8aebd164795d92eebba24c08, type: 3}
       propertyPath: _weaponNameList.Array.data[0]
-      value: -1
+      value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 5796714714944593930, guid: bf9e295c8aebd164795d92eebba24c08, type: 3}
       propertyPath: _weaponNameList.Array.data[1]
-      value: 3
+      value: 4
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

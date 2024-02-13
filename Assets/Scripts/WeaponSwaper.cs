@@ -30,7 +30,7 @@ public class WeaponSwaper : MonoBehaviour
         _character = GetComponent<Character>();
         SelectWeapon(-1);
         _weaponList= new List<Weapon>();
-        _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
+        _reloadGauge = _character.transform.Find("GagueBar")?.GetComponent<GaugeBar>();
 
        
 

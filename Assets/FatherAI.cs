@@ -1,6 +1,7 @@
 using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
@@ -147,7 +148,6 @@ public class FatherAI : MonoBehaviour
         float distacne = _player.transform.position.x - transform.position.x;
         if (Mathf.Abs(distacne) > _playerDistance)
         {
-            Debug.Log(distacne);
             _character.Move(Vector3.right * (distacne + (distacne > 0? -_playerDistance : _playerDistance))/(_playerDistance));
         }
 
@@ -160,16 +160,22 @@ public class FatherAI : MonoBehaviour
             Define.Range range = _attackRangeList[(int)Define.FatherSkill.NormalAttackRange];
             range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
             float distance = ((Vector2)_enemyToAttack.transform.position - ((Vector2)range.center + (Vector2)transform.position)).magnitude;
-            if(distance > range.center.x + range.size.x/2)
+
+            if(distance > Mathf.Abs(range.center.x) + range.size.x/2)
             {
                 _character.Move(Vector3.right * (_enemyToAttack.transform.position.x - transform.position.x));
             }
             else
             {
+                _character.TurnBody(_enemyToAttack.transform.position - transform.position);
                 _normalAttackElapsed = 0;
-                _character.AnimatorSetTrigger("NormalAttack");
+                if(Random.Range(0,2) == 3)
+                    _character.AnimatorSetTrigger("NormalAttack");
+                else
+                    _character.AnimatorSetTrigger("AirBorneAttack");
                 _character.IsEnableMove = false;
                 _character.IsEnableTurn = false;
+                _enemyToAttack = null;
             }
         }
     }
@@ -185,7 +191,23 @@ public class FatherAI : MonoBehaviour
                 Character c = go.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    c.Damage(_character, 1, 1, c.transform.position - transform.position);
+                    c.Damage(_character, 1, 100, c.transform.position - transform.position);
+                }
+            }
+        }
+    }
+    public void AirBorneAttack()
+    {
+        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
+
+        if (gos.Length > 0)
+        {
+            foreach (var go in gos)
+            {
+                Character c = go.GetComponent<Character>();
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                {
+                    c.Damage(_character, 1, 100, Vector3.up,0.4f);
                 }
             }
         }
