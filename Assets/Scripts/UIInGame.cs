@@ -43,8 +43,13 @@ public class UIInGame : UIBase
     {
         if (!_isInitDone) return;
 
-       
         _sb.Clear();
+
+        if (_player == null)
+            _player = Managers.GetManager<GameManager>().Player;
+
+        if (_player == null) return;
+
         Character character = _player.Character;
         WeaponSwaper weaponSwaper = _player.WeaponSwaper;
         if(character)
@@ -126,10 +131,6 @@ public class UIInGame : UIBase
         _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + Mathf.Clamp01(playerPosition / mapSize) * mapImageSize,0,0);
     }
 
-    public void SetPlayerCharacter(Player player)
-    {
-        _player= player;
-    }
 
     public override void Open()
     {

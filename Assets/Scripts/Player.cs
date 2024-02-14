@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -54,17 +55,16 @@ public class Player : MonoBehaviour
         _initFrontArmAngle = _frontArm.transform.rotation.eulerAngles.z;
 
         Managers.GetManager<GameManager>().Player = this;
-        Managers.GetManager<InputManager>().MouseButtonDown += UseWeapon;
-        Managers.GetManager<InputManager>().MouseButtonHold += AutoUseWeapon;
-        Managers.GetManager<InputManager>().MouseButtonUp += ShowAim;
-        Managers.GetManager<InputManager>().ReloadKeyDown += OnReloadKeyDown;
+        Managers.GetManager<InputManager>().MouseButtonDownHandler += UseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonHoldHandler += AutoUseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonUpHandler += ShowAim;
+        Managers.GetManager<InputManager>().ReloadKeyDownHandler += OnReloadKeyDown;
         HandleMove();
-        Managers.GetManager<UIManager>().GetUI<UIInGame>().SetPlayerCharacter(this);
 
-        Managers.GetManager<InputManager>().Num1KeyDown += () => _weaponSwaper.SelectWeapon(0);
-        Managers.GetManager<InputManager>().Num2KeyDown += () => _weaponSwaper.SelectWeapon(1);
-        Managers.GetManager<InputManager>().Num3KeyDown += () => _weaponSwaper.SelectWeapon(2);
-        Managers.GetManager<InputManager>().JumpKeyDown += _character.Jump;
+        Managers.GetManager<InputManager>().Num1KeyDownHandler += () => _weaponSwaper.SelectWeapon(0);
+        Managers.GetManager<InputManager>().Num2KeyDownHandler += () => _weaponSwaper.SelectWeapon(1);
+        Managers.GetManager<InputManager>().Num3KeyDownHandler += () => _weaponSwaper.SelectWeapon(2);
+        Managers.GetManager<InputManager>().JumpKeyDownHandler += _character.Jump;
 
     }
 
@@ -102,6 +102,9 @@ public class Player : MonoBehaviour
     public void Rebound(float angle)
     {
         _rebound += angle * (1-(_reboundControlPower / (100 + _reboundControlPower)));
+
+        if (_rebound > 45)
+            _rebound = 45;
         
     }
 
@@ -135,13 +138,15 @@ public class Player : MonoBehaviour
 
     private void RotateArm()
     {
+        if (Time.timeScale == 0) return;
+
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         bool isPressed = false;
 
         if (Input.GetMouseButton(0))
         {
             isPressed = true;
-            _reboundRecoverTime = 0;
+            _reboundRecoverTime = 0.5f;
         }
         _reboundRecoverTime += Time.deltaTime*3;
         if (_rebound > 0)
@@ -173,18 +178,36 @@ public class Player : MonoBehaviour
 
         Vector3 distance = Vector3.zero;
         mousePos.z = 0;
-
-
         distance = mousePos - _frontArm.transform.position;
-        float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+        float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg + _initFrontArmAngle * (transform.lossyScale.x > 0 ? 1 : 1);
+        float weaponAngle = 0;
+        if (_weaponSwaper.CurrentWeapon)
+        {
+            distance = mousePos - _frontArm.transform.position;
+            float armAngle = _frontArm.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1 : -1);
 
-        if (angle > 180) angle = -360 + angle;
-        if (angle < -180) angle = 360 + angle;
-        angle += _rebound;
+            weaponAngle = _weaponSwaper.CurrentWeapon.FirePosition.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1: -1);
 
-        if (angle >= 90) angle = 89;
-        if (angle <= -90) angle = -89;
-        _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initFrontArmAngle : -angle - _initFrontArmAngle));
+            distance = mousePos - _weaponSwaper.CurrentWeapon.FirePosition.transform.position;
+            float firePointToMouseAngle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+
+            if (firePointToMouseAngle > 180) firePointToMouseAngle = -360 + firePointToMouseAngle;
+            if (firePointToMouseAngle < -180) firePointToMouseAngle = 360 + firePointToMouseAngle;
+            firePointToMouseAngle += _rebound;
+            if (firePointToMouseAngle >= 90) firePointToMouseAngle = 90;
+            if (firePointToMouseAngle <= -90) firePointToMouseAngle = -90;
+                
+            float r = weaponAngle - firePointToMouseAngle;
+            angle = armAngle - r;
+        }
+       
+        _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
+
+        if (_weaponSwaper.CurrentWeapon)
+        {
+            distance = mousePos - _weaponSwaper.CurrentWeapon.FirePosition.transform.position;
+            angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+        }
 
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;
@@ -202,8 +225,8 @@ public class Player : MonoBehaviour
     private void HandleMove()
     {
         if (_isRiding) return;
-        Managers.GetManager<InputManager>().RightArrowPressed += OnRightArrowPressed;
-        Managers.GetManager<InputManager>().LeftArrowPressed += OnLeftArrowPressed;
+        Managers.GetManager<InputManager>().RightArrowPressedHandler += OnRightArrowPressed;
+        Managers.GetManager<InputManager>().LeftArrowPressedHandler += OnLeftArrowPressed;
 
     }
 
@@ -218,6 +241,8 @@ public class Player : MonoBehaviour
 
     void UseWeapon()
     {
+        if (Time.timeScale == 0) return;
+
         Managers.GetManager<InputManager>().AimTarget = true;
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && !_weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
@@ -228,6 +253,8 @@ public class Player : MonoBehaviour
     }
     void AutoUseWeapon()
     {
+        if (Time.timeScale == 0) return;
+
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
 
@@ -239,6 +266,7 @@ public class Player : MonoBehaviour
     }
     void ShowAim()
     {
+
         Managers.GetManager<InputManager>().AimTarget = false;
     }
 
