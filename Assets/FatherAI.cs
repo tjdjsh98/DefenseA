@@ -169,7 +169,8 @@ public class FatherAI : MonoBehaviour
             {
                 _character.TurnBody(_enemyToAttack.transform.position - transform.position);
                 _normalAttackElapsed = 0;
-                if(Random.Range(0,2) == 3)
+
+                if(Random.Range(0,2) == 0)
                     _character.AnimatorSetTrigger("NormalAttack");
                 else
                     _character.AnimatorSetTrigger("AirBorneAttack");

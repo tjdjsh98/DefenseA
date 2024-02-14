@@ -321,7 +321,7 @@ class Map
     List<string> moreBackBuildingPresetPathList = new List<string>();
 
     float groundTerm;
-    float yPosision = -11.4f;
+    float yPosision = -8.91f;
     public float YPosition => yPosision;
 
     GameObject groundFolder;
@@ -383,7 +383,7 @@ class Map
             moreBackBuildingIndex = index;
         }
 
-        float distacne = player.transform.position.x - moreBackBuildingIndex * groundTerm * mul;
+        float distacne = Camera.main.transform.position.x - moreBackBuildingIndex * groundTerm * mul;
 
         moreBackCenterBuilding.transform.position = new Vector3(moreBackBuildingIndex * groundTerm * mul + distacne/2, 0, 0);
         moreBackRightBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x + groundTerm * 2, 0, 0);
@@ -418,7 +418,6 @@ class Map
 
         for(int i = indexList.Count-1; i >= 0; i--) 
         {
-            Debug.Log(indexList[i]);
             Managers.GetManager<ResourceManager>().Destroy(grounds[indexList[i]]);
             grounds.Remove(indexList[i]);
         }

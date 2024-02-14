@@ -21,6 +21,12 @@ public class Character : MonoBehaviour
     [SerializeField] int _hp;
     public int Hp => _hp;
 
+    [SerializeField] int _maxMental = 100;
+    public int MaxMental => _maxMental;
+    [SerializeField] int _mental;
+    public int Mental => _mental;
+
+
     [SerializeField] float _speed;
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;

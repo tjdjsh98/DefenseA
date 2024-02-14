@@ -43,6 +43,7 @@ public static class Define
         Filier1,
         Filier2,
         FlyingFireEnemy,
+        OctoHead,
         END,
     }
 

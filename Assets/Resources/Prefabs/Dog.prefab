@@ -87,7 +87,7 @@ Transform:
   m_GameObject: {fileID: 3040861773646171398}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 3.101, z: 0}
+  m_LocalPosition: {x: 0, y: 2.3, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
@@ -284,7 +284,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7378709587785658188}
   serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
@@ -353,7 +353,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: -0.07968688, y: 1.7339804}
+  m_Offset: {x: -0.2176199, y: 1.0999677}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -364,7 +364,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.241819, y: 2.3038507}
+  m_Size: {x: 2.1864252, y: 2.3671584}
   m_EdgeRadius: 0
 --- !u!114 &6881585769480385616
 MonoBehaviour:
@@ -381,14 +381,18 @@ MonoBehaviour:
   _characterType: 0
   _maxHp: 20
   _hp: 20
+  _maxMental: 100
+  _mental: 0
   _speed: 5
   _jumpPower: 10
   _isEnableFly: 0
+  <IsEnableMove>k__BackingField: 0
+  <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    figureType: 0
   _isTurnBodyAlongVelocity: 1
-  <IsEnableMove>k__BackingField: 0
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!114 &4669120605170730670
@@ -407,6 +411,7 @@ MonoBehaviour:
   _attackRange:
     center: {x: 0, y: 7.8, z: 0}
     size: {x: 53.9, y: 18.2, z: 0}
+    figureType: 0
   _sitPosition: {fileID: 3040861773646171398}
 --- !u!114 &1268709811801672397
 MonoBehaviour:
@@ -420,6 +425,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56587cb851c430849b8c304ea6960fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _reloadGauge: {fileID: 0}
   _weaponNameList: ffffffffffffffffffffffffffffffffffffffff
   _weaponSlotList:
   - {fileID: 3372940216708602538}

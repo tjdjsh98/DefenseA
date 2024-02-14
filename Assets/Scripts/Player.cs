@@ -1,3 +1,4 @@
+using MoreMountains.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -181,33 +182,31 @@ public class Player : MonoBehaviour
         distance = mousePos - _frontArm.transform.position;
         float angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg + _initFrontArmAngle * (transform.lossyScale.x > 0 ? 1 : 1);
         float weaponAngle = 0;
+
         if (_weaponSwaper.CurrentWeapon)
         {
-            distance = mousePos - _frontArm.transform.position;
             float armAngle = _frontArm.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1 : -1);
 
             weaponAngle = _weaponSwaper.CurrentWeapon.FirePosition.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1: -1);
 
-            distance = mousePos - _weaponSwaper.CurrentWeapon.FirePosition.transform.position;
-            float firePointToMouseAngle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+            distance = (_weaponSwaper.CurrentWeapon.FirePosition.transform.position - _frontArm.transform.position).normalized;
+            float frontArmToWeaponAngle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
 
-            if (firePointToMouseAngle > 180) firePointToMouseAngle = -360 + firePointToMouseAngle;
-            if (firePointToMouseAngle < -180) firePointToMouseAngle = 360 + firePointToMouseAngle;
-            firePointToMouseAngle += _rebound;
-            if (firePointToMouseAngle >= 90) firePointToMouseAngle = 90;
-            if (firePointToMouseAngle <= -90) firePointToMouseAngle = -90;
-                
-            float r = weaponAngle - firePointToMouseAngle;
-            angle = armAngle - r;
+            distance = (mousePos - _frontArm.transform.position).normalized;
+            float frontArmToMouseAngle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+
+            if (frontArmToMouseAngle > 180) frontArmToMouseAngle = -360 + frontArmToMouseAngle;
+            if (frontArmToMouseAngle < -180) frontArmToMouseAngle = 360 + frontArmToMouseAngle;
+            frontArmToMouseAngle += _rebound;
+            if (frontArmToMouseAngle >= 90) frontArmToMouseAngle = 90;
+            if (frontArmToMouseAngle <= -90) frontArmToMouseAngle = -90;
+
+        
+            float r = weaponAngle - frontArmToMouseAngle;
+            angle = armAngle - r ;
         }
        
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
-
-        if (_weaponSwaper.CurrentWeapon)
-        {
-            distance = mousePos - _weaponSwaper.CurrentWeapon.FirePosition.transform.position;
-            angle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
-        }
 
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;

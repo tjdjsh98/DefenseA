@@ -59,7 +59,10 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
 
     protected virtual void CheckTarget()
     {
-        GameObject[] gameObjects = Util.BoxcastAll2D(gameObject,_attackRange);
+        Define.Range range = _attackRange;
+        range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
+
+        GameObject[] gameObjects = Util.BoxcastAll2D(gameObject, range);
 
         if(gameObjects.Length > 0 ) 
         { 

@@ -107,7 +107,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
 
-        float angle = transform.rotation.eulerAngles.z;
+        float angle = FirePosition.transform.rotation.eulerAngles.z;
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
         direction = direction.normalized;
