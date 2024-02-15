@@ -5,6 +5,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
+using UnityEngine.Playables;
 using UnityEngine.WSA;
 
 public class GameManager : ManagerBase
@@ -39,6 +40,11 @@ public class GameManager : ManagerBase
     [Header("경험치")]
     [SerializeField] bool _allMaxExpFive;
     [SerializeField] int _exp;
+
+    [Header("타임라인")]
+    [SerializeField] PlayableDirector _playableDirector;
+    [SerializeField] PlayableAsset _enteracneTimeline;
+
     public int Exp {
         set
         {
@@ -114,6 +120,9 @@ public class GameManager : ManagerBase
         _map.AddBuildingPreset("Prefabs/BuildingPreset3");
         _map.AddBuildingPreset("Prefabs/BuildingPreset4");
         _map.AddMoreBackBuildingPreset("Prefabs/MoreBackBuildingPreset1");
+
+        _playableDirector.playableAsset = _enteracneTimeline;
+        _playableDirector.Play();
     }
 
     public override void ManagerUpdate()
