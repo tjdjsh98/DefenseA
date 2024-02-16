@@ -26,7 +26,6 @@ public class Weapon : MonoBehaviour, ITypeDefine
     Coroutine _audioCoroutine;
 
     [SerializeField]protected bool _isRaycast;
-    public GameObject _projectile;
     [SerializeField] protected bool _isAuto;
     public bool IsAuto => _isAuto;
 

@@ -44,7 +44,7 @@ public class PenetrateAttack : MonoBehaviour
             Vector3 dest = _endPoint;
             if (transform.lossyScale.x < 0) dest.x = -dest.x;
             _lineRenderer.SetPosition(1,  _endPoint);
-            GameObject[] gos = Util.BoxcastAll2D(transform.position + dest, _attackRange);
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange);
 
             if (gos.Length > 0)
             {

@@ -74,7 +74,7 @@ public class FatherAI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.O))
         {
-            GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.PenerstrateRange]);
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.PenerstrateRange]);
 
             Character closeOne = null;
             float distance = 100;
@@ -183,7 +183,7 @@ public class FatherAI : MonoBehaviour
 
     public void NormalAttack()
     {
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -199,7 +199,7 @@ public class FatherAI : MonoBehaviour
     }
     public void AirBorneAttack()
     {
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -224,7 +224,7 @@ public class FatherAI : MonoBehaviour
     void FindEnemyToNormalAttack()
     {
         if(_enemyToAttack != null) return;
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.FindingRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.FindingRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -250,7 +250,7 @@ public class FatherAI : MonoBehaviour
     {
         if (!IsUnlockSpear) return;
 
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRangeList[2]);
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[2]);
 
         if(gos.Length > 0) 
         {

@@ -300,7 +300,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &704428091668558157
 RectTransform:
   m_ObjectHideFlags: 0
@@ -609,7 +609,7 @@ MonoBehaviour:
   InitializationMode: 2
   AutoInitialization: 1
   SafeMode: 3
-  Direction: 1
+  Direction: 0
   AutoChangeDirectionOnEnd: 0
   AutoPlayOnStart: 0
   AutoPlayOnEnable: 0
@@ -682,12 +682,12 @@ MonoBehaviour:
         m_Calls: []
   DebugActive: 0
   FeedbacksList:
-  - rid: 2650591934237114375
-  - rid: 2650591934237114376
-  - rid: 2650591934237114377
-  - rid: 2650591934237114378
-  - rid: 2650591934237114379
-  - rid: 2650591934237114380
+  - rid: 4536595239484260352
+  - rid: 4536595239484260353
+  - rid: 4536595239484260354
+  - rid: 4536595239484260355
+  - rid: 4536595239484260356
+  - rid: 4536595239484260357
   KeepPlayModeChanges: 0
   PerformanceMode: 0
   StopFeedbacksOnDisable: 0
@@ -695,11 +695,11 @@ MonoBehaviour:
   references:
     version: 2
     RefIds:
-    - rid: 2650591934237114375
+    - rid: 4536595239484260352
       type: {class: MMF_Scale, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: 1932929166
+        UniqueID: -1354561728
         Label: ScaleX
         ChannelMode: 0
         Channel: 0
@@ -878,11 +878,11 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 2650591934237114376
+    - rid: 4536595239484260353
       type: {class: MMF_Scale, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -1784557119
+        UniqueID: -1694676665
         Label: ScaleY&Z
         ChannelMode: 0
         Channel: 0
@@ -1061,11 +1061,11 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 2650591934237114377
+    - rid: 4536595239484260354
       type: {class: MMF_HoldingPause, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -1355047621
+        UniqueID: -619232503
         Label: Holding Pause
         ChannelMode: 0
         Channel: 0
@@ -1137,11 +1137,11 @@ MonoBehaviour:
         ScriptDriven: 0
         AutoResume: 0
         AutoResumeAfter: 0.25
-    - rid: 2650591934237114378
+    - rid: 4536595239484260355
       type: {class: MMF_Position, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -234822260
+        UniqueID: -1202552824
         Label: PositionX
         ChannelMode: 0
         Channel: 0
@@ -1423,11 +1423,11 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 2650591934237114379
+    - rid: 4536595239484260356
       type: {class: MMF_Scale, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -1566480816
+        UniqueID: -277551647
         Label: CardScale
         ChannelMode: 0
         Channel: 0
@@ -1615,11 +1615,11 @@ MonoBehaviour:
           m_PreInfinity: 2
           m_PostInfinity: 2
           m_RotationOrder: 4
-    - rid: 2650591934237114380
+    - rid: 4536595239484260357
       type: {class: MMF_Scale, ns: MoreMountains.Feedbacks, asm: MoreMountains.Feedbacks}
       data:
         Active: 1
-        UniqueID: -137041484
+        UniqueID: -1844889998
         Label: ScaleY
         ChannelMode: 0
         Channel: 0
@@ -1841,7 +1841,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &5813512425237138991
 RectTransform:
   m_ObjectHideFlags: 0
@@ -2022,7 +2022,7 @@ RectTransform:
   m_GameObject: {fileID: 8003736456200249670}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5813512425237138991}
@@ -2055,4 +2055,4 @@ MonoBehaviour:
       m_Calls: []
   DebugMode: 0
   ScaleValue: -1
-  BackVisible: 0
+  BackVisible: 1

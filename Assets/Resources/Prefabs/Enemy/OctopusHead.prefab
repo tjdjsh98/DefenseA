@@ -70,7 +70,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.111195326, y: 0.89498854}
+  m_Offset: {x: -1.2139387, y: 3.8561816}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -81,7 +81,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4.9899592, y: 1.7540956}
+  m_Size: {x: 5.448944, y: 4.8337364}
   m_EdgeRadius: 0
 --- !u!50 &1534523759619356098
 Rigidbody2D:
@@ -126,7 +126,6 @@ MonoBehaviour:
   _maxHp: 10
   _hp: 10
   _maxMental: 100
-  _mental: 0
   _speed: 3
   _jumpPower: 10
   _isEnableFly: 0
@@ -159,6 +158,7 @@ MonoBehaviour:
   _target: {fileID: 0}
   _attackDelay: 1
   _isRangedAttack: 0
+  _attackTriggerName: Attack
 --- !u!210 &3068244798690998300
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -202,7 +202,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3843468115693586701}
   m_Layer: 0
-  m_Name: Model (1)
+  m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -234,7 +234,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: -8653719598885068355, guid: 46dad231becdc594dbd9e7cac643db52, type: 3}
       propertyPath: m_Name
-      value: Creatures 1
+      value: OctoHead
       objectReference: {fileID: 0}
     - target: {fileID: -7552582706839291426, guid: 46dad231becdc594dbd9e7cac643db52, type: 3}
       propertyPath: m_LocalScale.x

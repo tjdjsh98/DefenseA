@@ -47,7 +47,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
   m_PositionCurves:
   - curve:
       serializedVersion: 2
@@ -82,7 +82,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Model (1)/Creatures 1/Root/Body/TopShell
+    path: Model/OctoHead/Root/Body/TopShell
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -125,7 +125,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Model (1)/Creatures 1/Root/Body/BackShell
+    path: Model/OctoHead/Root/Body/BackShell
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -168,7 +168,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Model (1)/Creatures 1/Root/Body/SideShell
+    path: Model/OctoHead/Root/Body/SideShell
   - curve:
       serializedVersion: 2
       m_Curve:
@@ -202,7 +202,7 @@ AnimationClip:
       m_PreInfinity: 2
       m_PostInfinity: 2
       m_RotationOrder: 4
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
   m_ScaleCurves: []
   m_FloatCurves: []
   m_PPtrCurves: []
@@ -315,7 +315,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Model (1)/Creatures 1/Root/Body/TopShell
+    path: Model/OctoHead/Root/Body/TopShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -354,7 +354,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Model (1)/Creatures 1/Root/Body/TopShell
+    path: Model/OctoHead/Root/Body/TopShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -393,7 +393,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Model (1)/Creatures 1/Root/Body/TopShell
+    path: Model/OctoHead/Root/Body/TopShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -441,7 +441,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Model (1)/Creatures 1/Root/Body/BackShell
+    path: Model/OctoHead/Root/Body/BackShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -489,7 +489,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Model (1)/Creatures 1/Root/Body/BackShell
+    path: Model/OctoHead/Root/Body/BackShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -537,7 +537,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Model (1)/Creatures 1/Root/Body/BackShell
+    path: Model/OctoHead/Root/Body/BackShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -585,7 +585,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Model (1)/Creatures 1/Root/Body/SideShell
+    path: Model/OctoHead/Root/Body/SideShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -633,7 +633,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Model (1)/Creatures 1/Root/Body/SideShell
+    path: Model/OctoHead/Root/Body/SideShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -681,7 +681,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Model (1)/Creatures 1/Root/Body/SideShell
+    path: Model/OctoHead/Root/Body/SideShell
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -720,7 +720,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.x
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -759,7 +759,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.y
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -798,7 +798,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: localEulerAnglesRaw.z
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 16
@@ -837,7 +837,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.x
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -876,7 +876,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.y
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -915,7 +915,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalPosition.z
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -928,7 +928,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.x
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -940,7 +940,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.y
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 0
@@ -952,7 +952,7 @@ AnimationClip:
       m_PostInfinity: 2
       m_RotationOrder: 4
     attribute: m_LocalEulerAngles.z
-    path: Model (1)/Creatures 1/Root/Body
+    path: Model/OctoHead/Root/Body
     classID: 4
     script: {fileID: 0}
     flags: 0

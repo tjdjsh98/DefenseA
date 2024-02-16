@@ -44,6 +44,8 @@ public class GameManager : ManagerBase
     [Header("타임라인")]
     [SerializeField] PlayableDirector _playableDirector;
     [SerializeField] PlayableAsset _enteracneTimeline;
+    bool _isPlayTimeline;
+    public bool IsPlayTimeline => _isPlayTimeline;
 
     public int Exp {
         set
@@ -121,10 +123,20 @@ public class GameManager : ManagerBase
         _map.AddBuildingPreset("Prefabs/BuildingPreset4");
         _map.AddMoreBackBuildingPreset("Prefabs/MoreBackBuildingPreset1");
 
+        
         _playableDirector.playableAsset = _enteracneTimeline;
         _playableDirector.Play();
+        Invoke("OffTimeline", (float)_playableDirector.duration-0.1f);
+        _isPlayTimeline = true;
     }
 
+    void OffTimeline()
+    {
+        _isPlayTimeline = false;
+        _father?.SetVelocityForcibly(Vector3.zero);
+        _daugther?.SetVelocityForcibly(Vector3.zero);
+        _dog?.SetVelocityForcibly(Vector3.zero);
+    }
     public override void ManagerUpdate()
     {
         _totalTime += Time.deltaTime;

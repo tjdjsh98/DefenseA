@@ -5,6 +5,7 @@ using UnityEngine;
 
 public class CameraController : MonoBehaviour
 {
+
     [SerializeField]Vector3 _fixedPos;
     [SerializeField]GameObject _baseEnvironment;
     [SerializeField] Vector3 _baseEnvironmenInitLocalPosition;
@@ -79,8 +80,8 @@ public class CameraController : MonoBehaviour
 
         Vector3 position = _baseEnvironmenInitLocalPosition;
 
-        position.x -= Mathf.Abs(_baseEnvironmenInitLocalPosition.x)*(distance / mapSize);
-        position.x -= _mouseView.x * (distance / mapSize);
+        position.x -= Mathf.Abs(_baseEnvironmenInitLocalPosition.x)*(distance / mapSize)*2;
+        position.x -= _mouseView.x * (distance / mapSize)*2;
         _baseEnvironment.transform.localPosition = position;
         
     }

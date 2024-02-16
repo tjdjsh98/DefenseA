@@ -1,9 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.UIElements;
 
 public class EnemyAI : MonoBehaviour, ITypeDefine
 {
@@ -20,12 +15,13 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
 
     [SerializeField] bool _isRangedAttack;
 
+    [SerializeField] string _attackTriggerName;
 
     protected virtual void Awake()
     {
         _character = GetComponent<Character>();
-
-        _character.CharacterAttack += Attack;
+        _character.AttackHandler += Attack;
+        _character.FinishAttackHandler += FinishAttack;
         _character.CharacterDead += () =>
         {
             Managers.GetManager<GameManager>().Exp += 1;
@@ -59,23 +55,22 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
 
     protected virtual void CheckTarget()
     {
-        Define.Range range = _attackRange;
-        range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
-
-        GameObject[] gameObjects = Util.BoxcastAll2D(gameObject, range);
+        if (_target != null) return;
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
 
         if(gameObjects.Length > 0 ) 
         { 
             foreach(var gameObject in gameObjects)
             {
                 if (gameObject == this.gameObject) continue;
-                _target = gameObject.GetComponent<Character>();
-                if (_target)
+                Character character = gameObject.GetComponent<Character>();
+                if (character)
                 {
-                    if (_target.CharacterType == Define.CharacterType.Enemy)
-                        _target = null;
-                    else
+                    if (character.CharacterType == Define.CharacterType.Player)
+                    {
+                        _target = character;
                         return;
+                    }
                 }
             }
         }
@@ -97,7 +92,18 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
             
             if (!_isRangedAttack)
             {
-                Attack(_target);
+                if (!_attackTriggerName.Equals(""))
+                {
+                    _character.IsEnableMove = false;
+                    _character.IsEnableTurn = false;
+                    _character.IsAttack = true;
+                    _character.TurnBody(_target.transform.position - transform.position);
+                    _character.AnimatorSetTrigger(_attackTriggerName);
+                }
+                else
+                {
+                    Attack();
+                }
             }
             else
             {
@@ -109,12 +115,27 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
         }
     }
 
-    public void Attack(Character character)
+     void Attack()
     {
-        character.Damage(_character, 1, 1, Vector3.zero);
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
+
+        foreach (var go in gos)
+        {
+            Character character = go.GetComponent<Character>();
+            if(character == null) continue;
+
+            character.Damage(_character, 1, 1, Vector3.zero);
+        }
         _target = null;
     }
 
+     void FinishAttack()
+    {
+        _character.IsAttack = false;
+        _character.IsEnableMove = true;
+        _character.IsEnableTurn = true;
+
+    }
     public int GetEnumToInt()
     {
         return (int)_enemyName;

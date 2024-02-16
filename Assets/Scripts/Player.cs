@@ -78,6 +78,7 @@ public class Player : MonoBehaviour
 
     public void Update()
     {
+        if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
         TurnBody();
         HandleMove();
         RotateArm();
@@ -185,27 +186,40 @@ public class Player : MonoBehaviour
 
         if (_weaponSwaper.CurrentWeapon)
         {
+            angle = 0;
             float armAngle = _frontArm.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1 : -1);
+            weaponAngle = _weaponSwaper.CurrentWeapon.FirePosition.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1 : -1);
+            Vector3 firePointToTarget = mousePos - _weaponSwaper.CurrentWeapon.FirePosition.transform.position;
+            float firePointToTargetAngle = Mathf.Atan2(firePointToTarget.y, Mathf.Abs(firePointToTarget.x)) * Mathf.Rad2Deg;
 
-            weaponAngle = _weaponSwaper.CurrentWeapon.FirePosition.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1: -1);
+            firePointToTargetAngle += _rebound;
 
-            distance = (_weaponSwaper.CurrentWeapon.FirePosition.transform.position - _frontArm.transform.position).normalized;
-            float frontArmToWeaponAngle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+            weaponAngle += 90;
+            firePointToTargetAngle += 90;
 
-            distance = (mousePos - _frontArm.transform.position).normalized;
-            float frontArmToMouseAngle = Mathf.Atan2(distance.y, Mathf.Abs(distance.x)) * Mathf.Rad2Deg;
+            weaponAngle %= 360;
+            firePointToTargetAngle %= 360;
 
-            if (frontArmToMouseAngle > 180) frontArmToMouseAngle = -360 + frontArmToMouseAngle;
-            if (frontArmToMouseAngle < -180) frontArmToMouseAngle = 360 + frontArmToMouseAngle;
-            frontArmToMouseAngle += _rebound;
-            if (frontArmToMouseAngle >= 90) frontArmToMouseAngle = 90;
-            if (frontArmToMouseAngle <= -90) frontArmToMouseAngle = -90;
+            if (weaponAngle < -180) weaponAngle = weaponAngle + 360;
 
-        
-            float r = weaponAngle - frontArmToMouseAngle;
-            angle = armAngle - r ;
+            Debug.Log(weaponAngle + " " + firePointToTargetAngle);
+
+            if (Mathf.Abs(Mathf.Abs(firePointToTargetAngle) - Mathf.Abs(weaponAngle) )> 0.1f)
+            {
+                if (weaponAngle < firePointToTargetAngle)
+                {
+                    armAngle += firePointToTargetAngle -weaponAngle;
+                }
+                else
+                {
+                    armAngle -= weaponAngle - firePointToTargetAngle;
+                }
+            }
+            angle = armAngle ;
+            Debug.Log(angle);
+            
         }
-       
+
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
 
         float screenWidth = Screen.width;
@@ -275,7 +289,7 @@ public class Player : MonoBehaviour
         {
             if (_isRiding == false)
             {
-                GameObject[] gos = Util.BoxcastAll2D(gameObject, new Define.Range { center = new Vector3(0, 0), size = Vector3.one });
+                GameObject[] gos = Util.RangeCastAll2D(gameObject, new Define.Range { center = new Vector3(0, 0), size = Vector3.one });
 
                 if (gos.Length > 0)
                 {
@@ -288,7 +302,6 @@ public class Player : MonoBehaviour
                             _isRiding = true;
                             _character.AnimatorSetBool("Sit", true);
                             _ridingCharacter = go.GetComponent<Character>();
-                            _ridingCharacter.IsEnableMove = true;
                             _character.IsEnableMove = false;
                             _rigidbody.isKinematic = true;
                         }
@@ -299,7 +312,6 @@ public class Player : MonoBehaviour
             {
                 _isRiding = false;
                 _character.IsEnableMove = true;
-                _ridingCharacter.IsEnableMove = false;
                 transform.SetParent(transform.parent.parent);
                 _rigidbody.isKinematic = false;
                 _character.AnimatorSetBool("Sit", false);

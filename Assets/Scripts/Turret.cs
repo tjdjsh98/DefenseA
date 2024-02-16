@@ -25,7 +25,7 @@ public class Turret : MonoBehaviour
 
     void CheckTarget()
     {
-        GameObject[] gameObjects = Util.BoxcastAll2D(gameObject, _attackRange);
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
 
         GameObject closeGameObject = null;
 

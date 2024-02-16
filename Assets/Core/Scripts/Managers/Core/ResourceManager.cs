@@ -34,10 +34,10 @@ public class ResourceManager : ManagerBase
             {
                 foreach (var p in _pool[origin.name])
                 {
-                    if (!p.IsUsed)
+                    if (!p.IsUse)
                     {
                         result = p.gameObject;
-                        p.IsUsed = true;
+                        p.IsUse = true;
                         break;
                     }
                 }
@@ -52,11 +52,11 @@ public class ResourceManager : ManagerBase
             // 풀링 가능하다면 풀링해줍니다.
             if (pool != null)
             {
-                if (_pool[origin.name] == null)
-                    _pool[origin.name] = new List<Poolable>();
+                if (!_pool.ContainsKey(origin.name))
+                    _pool.Add(origin.name, new List<Poolable>());
 
                 _pool[origin.name].Add(result.GetComponent<Poolable>());
-                _pool[origin.name][_pool[origin.name].Count - 1].IsUsed = true;
+                _pool[origin.name][_pool[origin.name].Count - 1].IsUse = true;
             }
         }
 
@@ -86,10 +86,10 @@ public class ResourceManager : ManagerBase
             {
                 foreach (var p in _pool[origin.name])
                 {
-                    if (!p.IsUsed)
+                    if (!p.IsUse)
                     {
                         result = p.GetComponent<T>();
-                        p.IsUsed = true;
+                        p.IsUse = true;
                         break;
                     }
                 }
@@ -104,11 +104,11 @@ public class ResourceManager : ManagerBase
             // 풀링 가능하다면 풀링해줍니다.
             if (pool != null)
             {
-                if (_pool[origin.name] == null)
-                    _pool[origin.name] = new List<Poolable>();
+                if (!_pool.ContainsKey(origin.name))
+                    _pool.Add(origin.name, new List<Poolable>());
 
                 _pool[origin.name].Add(result.GetComponent<Poolable>());
-                _pool[origin.name][_pool[origin.name].Count - 1].IsUsed = true;
+                _pool[origin.name][_pool[origin.name].Count - 1].IsUse = true;
             }
         }
         result.gameObject.SetActive(true);
@@ -134,10 +134,10 @@ public class ResourceManager : ManagerBase
             {
                 foreach (var p in _pool[origin.name])
                 {
-                    if (!p.IsUsed)
+                    if (!p.IsUse)
                     {
                         result = p.GetComponent<T>();
-                        p.IsUsed = true;
+                        p.IsUse = true;
                         break;
                     }
                 }
@@ -152,11 +152,11 @@ public class ResourceManager : ManagerBase
             // 풀링 가능하다면 풀링해줍니다.
             if (pool != null)
             {
-                if (_pool[origin.name] == null)
-                    _pool[origin.name] = new List<Poolable>();
+                if (!_pool.ContainsKey(origin.name))
+                    _pool.Add(origin.name, new List<Poolable>());
 
                 _pool[origin.name].Add(result.GetComponent<Poolable>());
-                _pool[origin.name][_pool[origin.name].Count - 1].IsUsed = true;
+                _pool[origin.name][_pool[origin.name].Count - 1].IsUse = true;
             }
         }
         result.gameObject.SetActive(true);
@@ -170,7 +170,7 @@ public class ResourceManager : ManagerBase
         {
             if (pool = gameObject.GetComponent<Poolable>())
             {
-                pool.IsUsed = false;
+                pool.IsUse = false;
                 gameObject.SetActive(false);
             }
             else

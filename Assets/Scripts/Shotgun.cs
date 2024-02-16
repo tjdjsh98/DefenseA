@@ -38,7 +38,7 @@ public class Shotgun : Weapon
                 bulletAngle += Random.Range(-0.2f * (1-_collectionRate), 0.2f* (1-_collectionRate));
 
                 Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
-                GameObject go = Instantiate(_projectile);
+                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
                 go.transform.position = _firePosition.transform.position;
                 Projectile projectile = go.GetComponent<Projectile>();
                 projectile.Init(_power, _bulletSpeed, _damage, Define.CharacterType.Enemy);

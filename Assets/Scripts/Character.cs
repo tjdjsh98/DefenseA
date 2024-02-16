@@ -23,8 +23,7 @@ public class Character : MonoBehaviour
 
     [SerializeField] int _maxMental = 100;
     public int MaxMental => _maxMental;
-    [SerializeField] int _mental;
-    public int Mental => _mental;
+    public int Mental { set; get; }
 
 
     [SerializeField] float _speed;
@@ -45,7 +44,7 @@ public class Character : MonoBehaviour
     // 캐릭터 행동상태
     [SerializeField] bool _isTurnBodyAlongVelocity = true;
     public bool IsStun {private set; get; }
-    public bool IsAttack {private set; get; }
+    public bool IsAttack {set; get; }
     public bool IsRoll { set; get; }
     bool _isMove = false;
 
@@ -57,9 +56,8 @@ public class Character : MonoBehaviour
     float _groundBreakPower = 60;
     float _airBreakPower = 20;
 
-    Character _attackTarget;
-
-    public Action<Character> CharacterAttack;
+    public Action AttackHandler;
+    public Action FinishAttackHandler;
     public Action CharacterDead;
 
     [SerializeField] GaugeBar _hpBar;
@@ -93,6 +91,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+        if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
         ControlAnimation();
         if (_hpBar)
         {
@@ -184,6 +183,7 @@ public class Character : MonoBehaviour
         if (_hp <= 0)
         {
             CharacterDead?.Invoke();
+            attacker.Mental += 5;
             Destroy(gameObject);
         }
 
@@ -229,13 +229,13 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void Attack(Character character)
+    public void Attack()
     {
-        if (IsStun || IsAttack) return;
-
-        IsAttack = true;
-        _attackTarget = character;
-        CharacterAttack?.Invoke(_attackTarget);
+        AttackHandler?.Invoke();
+    }
+    public void FinishAttack()
+    {
+        FinishAttackHandler?.Invoke();
     }
 
     public void Jump()
@@ -253,7 +253,7 @@ public class Character : MonoBehaviour
         if (_groundCheckRange.size == Vector3.zero) return;
         if (Mathf.Approximately(_rigidBody.velocity.y,0)) return;
 
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _groundCheckRange,LayerMask.GetMask("Ground"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _groundCheckRange,LayerMask.GetMask("Ground"));
 
         if (gos.Length > 0)
         {
@@ -265,6 +265,7 @@ public class Character : MonoBehaviour
             _isContactGround = false;
         }
     }
+
     public void AnimatorSetBool(string name, bool value)
     {
         _animator.SetBool(name, value);
@@ -308,5 +309,10 @@ public class Character : MonoBehaviour
         }
 
         return center;
+    }
+
+    public void SetVelocityForcibly(Vector3 velocity)
+    {
+        _rigidBody.velocity = velocity;
     }
 }

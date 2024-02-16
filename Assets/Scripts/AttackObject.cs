@@ -56,7 +56,7 @@ public class AttackObject : MonoBehaviour
 
     void Attack()
     {
-        GameObject[] gos = Util.BoxcastAll2D(gameObject, _attackRange);
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange);
 
         foreach (var go in gos)
         {

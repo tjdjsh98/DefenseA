@@ -29,6 +29,9 @@ public class UIInGame : UIBase
     [SerializeField] MMProgressBar _daughterHpBar;
     [SerializeField] MMProgressBar _fatherHpBar;
     [SerializeField] MMProgressBar _dogHpBar;
+    [SerializeField] MMProgressBar _daughterMentalBar;
+    [SerializeField] MMProgressBar _fatherMentalBar;
+    [SerializeField] MMProgressBar _dogMentalBar;
 
     float _maxHpWidth;
     float _maxHpHeight;
@@ -97,29 +100,48 @@ public class UIInGame : UIBase
 
             _levelText.text = Managers.GetManager<GameManager>().Level.ToString();
         }
-        HandleHp();
+        HandleBar();
         ShowMap();
     }
 
-    void HandleHp()
+    void HandleBar()
     {
         Character daughter = Managers.GetManager<GameManager>().Daughter;
         Character dog = Managers.GetManager<GameManager>().Dog;
         Character father = Managers.GetManager<GameManager>().Father;
 
-        if(daughter)
-            _daughterHpBar.UpdateBar01((float)daughter.Hp/ daughter.MaxHp);
+        if (daughter)
+        {
+            _daughterHpBar.UpdateBar01((float)daughter.Hp / daughter.MaxHp);
+            _daughterMentalBar.UpdateBar01((float)daughter.Mental / daughter.MaxMental);
+        }
         else
+        {
             _daughterHpBar.UpdateBar01(0);
+            _daughterMentalBar.UpdateBar01(0);
+        }
         if (dog)
+        {
             _dogHpBar.UpdateBar01((float)dog.Hp / dog.MaxHp);
+            _dogMentalBar.UpdateBar01((float)dog.Mental / dog.MaxMental);
+        }
         else
+        {
             _dogHpBar.UpdateBar01(0);
+            _dogMentalBar.UpdateBar01(0);
+        }
 
         if (father)
-            _fatherHpBar.UpdateBar01((float)father.Hp / father.MaxHp); 
+        {
+            _fatherHpBar.UpdateBar01((float)father.Hp / father.MaxHp);
+            _fatherMentalBar.UpdateBar01((float)father.Mental / father.MaxMental);
+        }
         else
+        {
             _fatherHpBar.UpdateBar01(0);
+            _fatherMentalBar.UpdateBar01(0);
+        }
+
     }
     void ShowMap()
     {

@@ -1,3 +1,5 @@
+using MoreMountains.Feedbacks;
+using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,7 @@ using UnityEngine.UI;
 public class UICardSelection : UIBase
 {
     [SerializeField] List<GameObject> _cardList;
+    [SerializeField]List<MMF_Player> _playerList;
 
     List<CardSelectionData> _cashDatas;
 
@@ -104,9 +107,12 @@ public class UICardSelection : UIBase
         }
         Refresh();
 
+
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
 
         gameObject.SetActive(true);
+        StartCoroutine(CorOpenCards());
+
     }
 
 
@@ -166,6 +172,16 @@ public class UICardSelection : UIBase
 
                 }
             }
+        }
+    }
+
+    IEnumerator CorOpenCards()
+    {
+        for(int i =0; i < _playerList.Count; i++)
+        {
+            _playerList[i].PlayFeedbacks();
+
+            yield return new WaitForSecondsRealtime(0.2f);
         }
     }
 }
