@@ -48,6 +48,14 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
+    - _ShockWave_f561771c92fe4e3387e2476b59024903_CameraSortingLayerTexture_419095162_Texture2D:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
+    - _Texture2D_Array:
+        m_Texture: {fileID: 0}
+        m_Scale: {x: 1, y: 1}
+        m_Offset: {x: 0, y: 0}
     - unity_Lightmaps:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -68,9 +76,10 @@ Material:
     - _Radius: -0.2
     - _Reverse: 0
     - _ReverseBoundary: 0.05
-    - _ShockWaveStrength: -0.1
+    - _ShockWaveStrength: 1
     - _Size: 0.05
     - _WaveDistanceFromCenter: -5
+    - _WaveDistanceFromCenter2: -5
     m_Colors:
     - _RingPosition: {r: 0.5, g: 0.5, b: 0, a: 0}
   m_BuildTextureStacks: []

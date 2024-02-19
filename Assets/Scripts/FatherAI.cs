@@ -47,7 +47,11 @@ public class FatherAI : MonoBehaviour
 
     // 쇼크웨이브 공격 변수
     float _shockwaveElasped = 0;
-    public float ShockwaveCoolTime = 20;
+    float _shockwaveCoolTime = 20;
+    public float ShockwaveCoolTime => DecreasedShockwaveCoolTimePercentage > 0 ? _shockwaveCoolTime / (1 + (DecreasedShockwaveCoolTimePercentage/100)) : _shockwaveCoolTime*(1- (DecreasedShockwaveCoolTimePercentage / 100));
+    public float DecreasedShockwaveCoolTimePercentage { set; get; }
+    public int ShockwaveHitCount { set; get; } = 1;
+    public float ShockwaveRange { set; get; } = 20;
     [field:SerializeField]public bool IsUnlockShockwave { set; get; } = false;
 
     // 반경 테스트 변수
@@ -142,11 +146,16 @@ public class FatherAI : MonoBehaviour
         }
         if (IsUnlockShockwave)
         {
-            _shockwaveElasped += Time.deltaTime;
             if (_shockwaveElasped > ShockwaveCoolTime)
             {
-                StartCoroutine(CorShockwaveAttack());
+                if (ShockwaveHitCount >= 1)
+                    StartCoroutine(CorShockwaveAttack());
+                if (ShockwaveHitCount >= 2)
+                    StartCoroutine(CorShockwaveAttack(0.2f,1));
                 _shockwaveElasped = 0;
+            }else
+            {
+                _shockwaveElasped += Time.deltaTime;
             }
 
         }
@@ -283,15 +292,17 @@ public class FatherAI : MonoBehaviour
         }
     }
 
-    IEnumerator CorShockwaveAttack()
+    IEnumerator CorShockwaveAttack(float later = 0, int num = 0)
     {
+        if(later != 0)
+            yield return new WaitForSeconds(later);
         List<GameObject> characterList = new List<GameObject>();
         characterList.Clear();
         Vector3 center = transform.position;
         _tc = center;
         float radius = 0;
-        Camera.main.GetComponent<CameraController>().ShockWave(center,30);
-        while (radius < 30) {
+        Camera.main.GetComponent<CameraController>().ShockWave(center,30,num);
+        while (radius < ShockwaveRange) {
             radius += Time.deltaTime*30;
             _tr = radius;
             RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, Vector2.zero, 0);
@@ -314,6 +325,6 @@ public class FatherAI : MonoBehaviour
             yield return null;
         }
 
-        Camera.main.GetComponent<CameraController>().StopShockwave();
+        Camera.main.GetComponent<CameraController>().StopShockwave(num);
     }
 }

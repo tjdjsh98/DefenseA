@@ -16,5 +16,8 @@ MonoBehaviour:
   _cardType: 0
   _cardDescription: "10\uCD08\uB9C8\uB2E4 \uC1FC\uD06C\uC6E8\uC774\uBE0C\uB97C \uBC29\uCD9C\uD569\uB2C8\uB2E4."
   _isStartCard: 1
-  _cardListToAdd: []
+  _cardListToAdd:
+  - {fileID: 11400000, guid: 9b5a10df96b7a58479ca4c82bf756865, type: 2}
+  - {fileID: 11400000, guid: 199fbf6f93a82f144a046ec3167f970c, type: 2}
+  - {fileID: 11400000, guid: a217d18850e0dca4991ba3aa29f3ced3, type: 2}
   _maxUpgradeCount: 1

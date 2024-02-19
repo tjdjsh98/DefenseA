@@ -2,6 +2,7 @@ using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Analytics;
@@ -339,12 +340,16 @@ public class GameManager : ManagerBase
                     FatherAI.IsUnlockShockwave = true;
                     break;
                 case Define.CardName.쇼크웨이브반경증가:
+                    FatherAI.ShockwaveRange += 5;
                     break;
                 case Define.CardName.쇼크웨이브공격주기감소:
+                    FatherAI.DecreasedShockwaveCoolTimePercentage += 10;
                     break;
-                case Define.CardName.쇼크웨이브다단히트:
+                case Define.CardName.쇼크웨이브히트휫수증가:
+                    FatherAI.ShockwaveHitCount += 1;
                     break;
                 case Define.CardName.아빠체력재생력증가:
+                    Father.IncreasedRecoverHpPower += 0.4f;
                     break;
                 case Define.CardName.꿰뚫기언락:
                     break;
@@ -355,6 +360,15 @@ public class GameManager : ManagerBase
                 case Define.CardName.꿰뚫기확장:
                     break;
                 case Define.CardName.꿰뚫기확장거리증가:
+                    break;
+                case Define.CardName.강아지체력증가:
+                    Dog.AddMaxHp(5);
+                    Vector3 scale = Dog.transform.localScale;
+                    scale.x += 0.1f;
+                    scale.y += 0.1f;
+                    scale.z += 0.1f;
+                    Dog.transform.localScale = scale;
+
                     break;
                 case Define.CardName.END:
                     break;

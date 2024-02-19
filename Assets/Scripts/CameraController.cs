@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
 public class CameraController : MonoBehaviour
@@ -19,11 +20,13 @@ public class CameraController : MonoBehaviour
     SpriteRenderer _screenSpriteRenderer;
 
     Coroutine _shockWaveCoroutine;
+    Coroutine _shockWave2Coroutine;
     Coroutine _reverseCoroutine;
 
 
     static int _ringPostionID = Shader.PropertyToID("_RingPosition");
     static int _waveDistacneFromCenterID = Shader.PropertyToID("_WaveDistanceFromCenter");
+    static int _waveDistacneFromCenter2ID = Shader.PropertyToID("_WaveDistanceFromCenter2");
     static int _cameraSizeID = Shader.PropertyToID("_CameraSize");
     static int _reverseID = Shader.PropertyToID("_Reverse");
 
@@ -98,19 +101,28 @@ public class CameraController : MonoBehaviour
 
     }
 
-    public void ShockWave(Vector3 position, float speed)
+    public void ShockWave(Vector3 position, float speed,int num =0)
     {
-        if (_shockWaveCoroutine != null)
+        if(num == 0 && _shockWaveCoroutine != null) 
             StopCoroutine(_shockWaveCoroutine);
-        _shockWaveCoroutine = StartCoroutine(CorShockWave(position, speed));
+
+        if (num == 1 &&_shockWave2Coroutine != null)
+            StopCoroutine(_shockWave2Coroutine);
+
+        if(num == 0)
+            _shockWaveCoroutine = StartCoroutine(CorShockWave(position, speed,num));
+        if(num == 1)
+            _shockWave2Coroutine = StartCoroutine(CorShockWave(position, speed,num));
     }
 
-    public void StopShockwave()
+    public void StopShockwave(int num =0)
     {
-
-        if (_shockWaveCoroutine != null)
+        if (num == 0 && _shockWaveCoroutine != null)
             StopCoroutine(_shockWaveCoroutine);
-        _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -5.0f);
+
+        if (num == 1 && _shockWave2Coroutine != null)
+            StopCoroutine(_shockWave2Coroutine);
+        _screenSpriteRenderer.material.SetFloat(num == 0 ?_waveDistacneFromCenterID : _waveDistacneFromCenter2ID, -5.0f);
 
     }
     void Reverse(float time)
@@ -119,7 +131,7 @@ public class CameraController : MonoBehaviour
             StopCoroutine(_reverseCoroutine);
         _reverseCoroutine = StartCoroutine(CorReverse(time));
     }
-    IEnumerator CorShockWave(Vector3 position,float speed)
+    IEnumerator CorShockWave(Vector3 position,float speed, int num = 0)
     {
         float time = 0;
 
@@ -129,11 +141,14 @@ public class CameraController : MonoBehaviour
         while(time < 2.5f)
         {
             time += Time.deltaTime;
-            _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, time*speed);
+            _screenSpriteRenderer.material.SetFloat(num == 0 ?_waveDistacneFromCenterID : _waveDistacneFromCenter2ID, time*speed);
             yield return null;
         }
 
-        _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -5.0f);
+        if(num == 0)
+            _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -5.0f);
+        else
+            _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenter2ID, -5.0f);
     }
 
     IEnumerator CorReverse(float time)
