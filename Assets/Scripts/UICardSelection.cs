@@ -13,7 +13,7 @@ public class UICardSelection : UIBase
     [SerializeField] List<GameObject> _cardList;
     [SerializeField]List<MMF_Player> _playerList;
 
-    List<CardSelectionData> _cashDatas;
+    List<CardData> _cashDatas;
 
     int _cardCount;
 
@@ -22,7 +22,7 @@ public class UICardSelection : UIBase
     List<Image> _cardBloodImageList = new List<Image>();
     List<float> _cardBloodDryValueList = new List<float>();
     List<bool> _cardBloodIsHoverList = new List<bool>();
-    List<CardSelectionData> _cardSelectionList = new List<CardSelectionData>();
+    List<CardData> _cardSelectionList = new List<CardData>();
 
     static int _dryValueID = Shader.PropertyToID("_DryValue");
 
@@ -134,7 +134,7 @@ public class UICardSelection : UIBase
     {
         for(int i =0; i < _cardNameTextList.Count; i++)
         {
-            _cardNameTextList[i].text = _cardSelectionList[i].CardSelection.ToString(); 
+            _cardNameTextList[i].text = _cardSelectionList[i].CardName.ToString(); 
             _cardDescriptionTextList[i].text = _cardSelectionList[i].CardDescription; ;
         }
     }

@@ -8,6 +8,8 @@ using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
+    Animator _animator;
+
     Character _character;
     public Character Character => _character;
     Rigidbody2D _rigidbody;
@@ -18,7 +20,6 @@ public class Player : MonoBehaviour
     [SerializeField] GameObject _head;
     [SerializeField] GameObject _body;
 
-    public int PenerstratingPower { set; get; } = 0;
     public int ReduceReloadTime { set; get; } = 0;
 
     float _initHeadAngle;
@@ -35,13 +36,28 @@ public class Player : MonoBehaviour
 
     float _rebound;
     float _reboundControlPower = 50f;
-    public float ReboundControlPower => _reboundControlPower;
+    public float ReboundControlPower => _reboundControlPower + (_reboundControlPower *  IncreasedReboundControlPowerPercent/100f);
 
     [SerializeField]float _reboundRecoverPower = 10f;
+    public float ReboundRecoverPower => _reboundRecoverPower + ((IncreasedReboundRecoverPercent/ 100f) * _reboundRecoverPower);
     float _reboundRecoverTime = 0;
     bool _isRiding;
 
-    Animator _animator;
+    // 추가적인 능력
+    public bool IsHaveRemoveReboundAMoment { set; get; }
+    public bool IsHaveFastReload { set; get; }
+    public bool IsHaveExtraAmmo { set; get; }
+    public bool IsHaveAutoReload { set; get; }
+    public int IncreasedPenerstratingPower { set; get; } = 0;
+    public bool IsHaveLastShot { set; get; }
+    public float DecreasedFireRatePercent { set; get; }
+    public float IncreasedReloadSpeedPercent { set; get; }
+    public float IncreasedReboundControlPowerPercent { set; get; }
+    public float IncreasedReboundRecoverPercent { set; get; }
+    public int IncreasedDamage { set; get; }
+
+
+
 
     private void Awake()
     {
@@ -73,12 +89,18 @@ public class Player : MonoBehaviour
     {
         if (_weaponSwaper.CurrentWeapon == null) return;
 
+
+        if (IsHaveFastReload)
+        {
+            _weaponSwaper.CurrentWeapon.FastReload();
+        }
         _weaponSwaper.CurrentWeapon.Reload();
     }
 
     public void Update()
     {
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
+       
         TurnBody();
         HandleMove();
         RotateArm();
@@ -103,7 +125,7 @@ public class Player : MonoBehaviour
     }
     public void Rebound(float angle)
     {
-        _rebound += angle * (1-(_reboundControlPower / (100 + _reboundControlPower)));
+        _rebound += angle * (1-(ReboundControlPower / (100 + ReboundControlPower)));
 
         if (_rebound > 45)
             _rebound = 45;
@@ -153,24 +175,24 @@ public class Player : MonoBehaviour
         _reboundRecoverTime += Time.deltaTime*3;
         if (_rebound > 0)
         {
-            if ((_rebound - _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime) < 0)
+            if ((_rebound - ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime) < 0)
             {
                 _rebound = 0;
             }
             else
             {
-                _rebound -= _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
+                _rebound -= ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
             }
         }
         if(!isPressed && _rebound < 0)
         {
-            if ((_rebound + _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime) > 0)
+            if ((_rebound + ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime) > 0)
             {
                 _rebound = 0;
             }
             else
             {
-                _rebound += _reboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
+                _rebound += ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
             }
         }
         if (isPressed)
@@ -202,8 +224,6 @@ public class Player : MonoBehaviour
 
             if (weaponAngle < -180) weaponAngle = weaponAngle + 360;
 
-            Debug.Log(weaponAngle + " " + firePointToTargetAngle);
-
             if (Mathf.Abs(Mathf.Abs(firePointToTargetAngle) - Mathf.Abs(weaponAngle) )> 0.1f)
             {
                 if (weaponAngle < firePointToTargetAngle)
@@ -216,7 +236,6 @@ public class Player : MonoBehaviour
                 }
             }
             angle = armAngle ;
-            Debug.Log(angle);
             
         }
 

@@ -62,7 +62,7 @@ public class UIInGame : UIBase
         if(weaponSwaper.CurrentWeapon)
         {
             _sb.Append($"°ø°Ý·Â : {weaponSwaper.CurrentWeapon.Damage}\n");
-            _sb.Append($"³Ë¹é : {weaponSwaper.CurrentWeapon.Power}\n");
+            _sb.Append($"³Ë¹é : {weaponSwaper.CurrentWeapon.KnockBackPower}\n");
             _sb.Append($"ÃÑ¾Ë¼Óµµ : {weaponSwaper.CurrentWeapon.BulletSpeed}\n");
             _sb.Append($"°üÅë·Â : {weaponSwaper.CurrentWeapon.PenerstratingPower}\n");
             _sb.Append($"¹ß»ç µô·¹ÀÌ : {weaponSwaper.CurrentWeapon.FireDelay}\n");

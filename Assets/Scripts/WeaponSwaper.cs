@@ -2,11 +2,7 @@ using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Globalization;
-using Unity.VisualScripting.Dependencies.NCalc;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class WeaponSwaper : MonoBehaviour
 {
@@ -78,17 +74,15 @@ public class WeaponSwaper : MonoBehaviour
         }
         if (index < 0 || index >= _weaponSlotList.Count) return;
 
+
+        _currentWeapon?.CancelReload();
         _currentWeapon = _weaponList[index];
 
         for(int i =0; i < _weaponList.Count;i++)
         {
             _weaponList[i]?.gameObject.SetActive(index == i);
         }
-
         _weaponIndex = index;
-
-        if (_reloadGauge)
-            _reloadGauge.gameObject.SetActive(false);
 
         WeaponSwaped?.Invoke(_currentWeapon);
     }

@@ -40,22 +40,7 @@ public class UIShop : UIBase
                     info.isSale = true;
                     _selectionList[tempIndex] = info;
 
-                    if (_selectionList[tempIndex].index == 0)
-                    {
-                        gameManager.Player.WeaponSwaper.CurrentWeapon.SetDamage(gameManager.Player.WeaponSwaper.CurrentWeapon.Damage + 1);
-                    }
-                    if (_selectionList[tempIndex].index == 1)
-                    {
-                        gameManager.Player.WeaponSwaper.CurrentWeapon.SetPower(gameManager.Player.WeaponSwaper.CurrentWeapon.Power + 100);
-                    }
-                    if (_selectionList[tempIndex].index == 2)
-                    {
-                        gameManager.Player.WeaponSwaper.CurrentWeapon.DecreaseReloadDelay(0.1f);
-                    }
-                    if (_selectionList[tempIndex].index == 3)
-                    {
-                        gameManager.Player.WeaponSwaper.CurrentWeapon.IncreaseMaxAmmo(3);
-                    }
+                   
                     Refresh();
                 }
             });

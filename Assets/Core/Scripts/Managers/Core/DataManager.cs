@@ -15,7 +15,7 @@ public class DataManager : ManagerBase
         LoadData<EnemyAI>("Prefabs/Enemy");
         LoadData<Effect>("Prefabs/Effect");
         LoadData<Weapon>("Prefabs/Weapon");
-        LoadData<CardSelectionData>("Datas/CardSelection");
+        LoadData<CardData>("Datas/Card");
     }
 
     public override void ManagerUpdate()

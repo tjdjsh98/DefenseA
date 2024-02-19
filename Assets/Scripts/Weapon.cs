@@ -1,7 +1,5 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour, ITypeDefine
@@ -29,16 +27,16 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected bool _isAuto;
     public bool IsAuto => _isAuto;
 
-    [SerializeField] protected float _power = 1;
-    public float Power => _power;
+    [SerializeField] protected float _knockBackPower = 1;
+    public float KnockBackPower => _knockBackPower;
     [SerializeField] protected float _bulletSpeed = 15;
     public float BulletSpeed => _bulletSpeed;
 
     [SerializeField] protected int _damage = 1;
-    public int Damage => _damage;
+    public int Damage => (_damage + (_player ? _player.IncreasedDamage : 0));
 
     [SerializeField] int _penerstratingPower;
-    public int PenerstratingPower => (_penerstratingPower+ (_player? _player.PenerstratingPower:0));
+    public int PenerstratingPower => (_penerstratingPower+ (_player? _player.IncreasedPenerstratingPower:0));
 
     [SerializeField] protected int _maxAmmo;
     public int MaxAmmo => _maxAmmo;
@@ -48,9 +46,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected bool _isAllReloadAmmo;
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _fireDelay;
-    public float FireDelay => _fireDelay;
+    public float FireDelay => _fireDelay + (_player? -(_player.DecreasedFireRatePercent/100f) *_fireDelay:0);
     [SerializeField] protected float _reloadDelay;
-    public float ReloadDelay => _reloadDelay - (_player? (_player.ReduceReloadTime /100f)* _reloadDelay:0);
+    public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercent /100f)* _reloadDelay:0);
 
     [SerializeField] protected GameObject _firePosition;
     public GameObject FirePosition => _firePosition;
@@ -59,7 +57,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public float Rebound => _rebound;
 
     protected float _fireElapsed;
+
     protected float _reloadElapsed;
+    public float ReloadElapsed => _reloadElapsed;
 
     protected bool _isReload;
     public bool IsReload => _isReload;
@@ -68,6 +68,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected Define.EffectName _hitEffect;
 
+    bool _fastReloadFailed;
     public void Init(Character character)
     {
         _audioSource = GetComponent<AudioSource>();
@@ -87,15 +88,12 @@ public class Weapon : MonoBehaviour, ITypeDefine
             return;
         }
 
-        if (_fireElapsed < _fireDelay) return;
+        if (_fireElapsed < FireDelay) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)
         {
-            _isReload = false;
-            if(_reloadGauge)
-                _reloadGauge.gameObject.SetActive(false);
-            _reloadElapsed = 0;
+            CancelReload();
         }
 
 
@@ -115,7 +113,12 @@ public class Weapon : MonoBehaviour, ITypeDefine
             GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
-            projectile.Init(Power, BulletSpeed, Damage,Define.CharacterType.Enemy,PenerstratingPower);
+            int damage = Damage;
+
+            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
+            if (Player.IsHaveLastShot && _currentAmmo == 0)
+                damage = Damage * 3;
+            projectile.Init(KnockBackPower, BulletSpeed, damage,Define.CharacterType.Enemy,PenerstratingPower);
             projectile.Fire(fireCharacter, direction.normalized);
         }
         else
@@ -135,7 +138,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
                 if (character != null)
                 {
-                    character.Damage(Character, _damage, _power, direction);
+                    character.Damage(Character, _damage, _knockBackPower, direction);
                 }
 
             }
@@ -145,53 +148,98 @@ public class Weapon : MonoBehaviour, ITypeDefine
     }
     public void Update()
     {
-        if (_fireElapsed < _fireDelay)
+        if (_fireElapsed < FireDelay)
             _fireElapsed += Time.deltaTime;
 
-        if (_isReload && _reloadElapsed < _reloadDelay)
+        if (_isReload && _reloadElapsed < ReloadDelay)
         {
             _reloadElapsed += Time.deltaTime;
             if(_reloadGauge)
-                _reloadGauge.SetRatio(_reloadElapsed, _reloadDelay);
+                _reloadGauge.SetRatio(_reloadElapsed, ReloadDelay);
         }
-        else if(_isReload && _reloadElapsed >= _reloadDelay)
+        else if(_isReload && _reloadElapsed >= ReloadDelay)
         {
-            if (_isAllReloadAmmo)
-            {
-                _isReload = false;
-                _currentAmmo = _maxAmmo;
-                _reloadElapsed = 0;
-                if (_reloadGauge)
-                    _reloadGauge.gameObject.SetActive(false);
-            }
-            else
-            {
-                _currentAmmo++;
-                if(_currentAmmo >= _maxAmmo)
-                {
-                    _currentAmmo = _maxAmmo;
-                    _isReload = false;
-                    if (_reloadGauge)
-                        _reloadGauge.gameObject.SetActive(false);
-                }
-                _reloadElapsed = 0;
-            }
+            CompleteReload();
         }
     }
 
     public void Reload()
     {
+        if (_maxAmmo <= _currentAmmo) return;
+        if (_isReload) return;
+
+        _fastReloadFailed = false;
         _isReload = true;
         if (_reloadGauge)
         {
+            if (_player)
+            {
+                if (_player.IsHaveFastReload)
+                {
+                    _reloadGauge.Point(0.7f, 0.9f);
+                }
+                else
+                {
+                    _reloadGauge.DisablePoint();
+                }
+            }
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
         }
     }
 
+    public void FastReload()
+    {
+        if (_fastReloadFailed) return;
+
+        float ratio = ReloadElapsed / ReloadDelay;
+        if (ratio > 0.7f && ratio < 0.9f)
+        {
+            CompleteReload();
+        }
+        else
+        {
+            _fastReloadFailed = true;
+        }
+    }
+    public void CompleteReload()
+    {
+        if (_isAllReloadAmmo)
+        {
+            _isReload = false;
+            if (_player.IsHaveExtraAmmo)
+                _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
+            else
+                _currentAmmo = _maxAmmo;
+            _reloadElapsed = 0;
+            if (_reloadGauge)
+                _reloadGauge.gameObject.SetActive(false);
+        }
+        else
+        {
+            _currentAmmo++;
+            if (_currentAmmo >= _maxAmmo)
+            {
+                _currentAmmo = _maxAmmo;
+                _isReload = false;
+                if (_reloadGauge)
+                    _reloadGauge.gameObject.SetActive(false);
+            }
+            _reloadElapsed = 0;
+        }
+    }
+
+    public void CancelReload()
+    {
+        _isReload = false;
+        _reloadGauge.gameObject.SetActive(false);
+        _reloadGauge.SetRatio(0, 1);
+        _reloadElapsed = 0;
+    }
+
     public void SetPower(float power)
     {
-        _power = power;
+        _knockBackPower = power;
     }
 
     public void SetDamage(int damage)

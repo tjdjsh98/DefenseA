@@ -65,34 +65,49 @@ public static class Define
     }
     public static int FatherSkillCount = (int)FatherSkill.END;
 
-    public enum CardSelectionType
+    public enum CardType
     {
         Status,
         Weapon
     }
-    public enum CardSelection
+    public enum CardName
     {
         None = - 1,
-        반동제어,
-        체력회복,
-        최대체력증가,
-        AK47,
-        Mk2,
-        더블배럭,
-        경찰권총,
-        리볼버,
-        데저트이글,
-        방망이,
-        스피어능력해제,
-        패밀리어공격력증가,
-        방벽최대체력증가,
-        방벽크기증가,
-        방벽속도증가,
-        총알관통력증가,
-        총알데미지증가,
-        쇼크웨이브능력해제,    
-        재장전시간감소,
+        딸최대체력증가,
+        발사간격감소,
+        재장전속도증가,
+        반동제어력증가,
+        반동회복력증가,
+        반동삭제,
+        빠른재장전,
+        추가탄창,
+        관통력증가,
+        라스트샷,
+        반동제어력감소데미지증가,
+        딸체력재생력증가,
+        눈어시스트,
+        눈데미지증가,
+        엑스트라웨폰,
+        웨폰마스터,
+        자동장전,
+        아빠최대체력증가,
+        아빠일반공격력증가,
+        아빠공격속도증가,
+        아빠일반공격주기감소,
+        쇼크웨이브언락,
+        쇼크웨이브반경증가,
+        쇼크웨이브공격주기감소,
+        쇼크웨이브다단히트,
+        아빠체력재생력증가,
+        꿰뚫기언락,
+        꿰뚫기공격주기감소,
+        꿰뚫기거리증가,
+        꿰뚫기확장,
+        꿰뚫기확장거리증가,
+        END,
     }
+
+    public static int CARD_COUNT = (int)CardName.END;
 
     public enum WeaponName
     {

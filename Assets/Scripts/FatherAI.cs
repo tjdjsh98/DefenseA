@@ -26,20 +26,31 @@ public class FatherAI : MonoBehaviour
 
     Character _enemyToAttack;
 
-    float _normalAttackElapsed = 0;
-    float _normalAttackCoolTime = 5f;
-
     bool _isMove = false;
 
+    // 일반공격 변수
+    int _normalAttackDamage = 1;
+    int NormalAttackDamage => _normalAttackDamage + IncreasedNormalAttackDamage;
+    float _normalAttackElapsed = 0;
+    float _normalAttackCoolTime = 5f;
+    float NormalAttackCoolTime => _normalAttackCoolTime - DecreasedNormalAttackCoolTimePercentage / 100 * _normalAttackCoolTime;
+    public int IncreasedNormalAttackDamage{ set; get; }
+    public float IncreasedNormalAttackSpeedPercentage { set; get; }
+    public float DecreasedNormalAttackCoolTimePercentage { set; get; }
+
+
+    // 스피어 공격 변수
+    
     float _spearAttackElapsed = 0;
     float _spearAttackCoolTime = 3f;
+    public bool IsUnlockSpear { set; get; } = false;
 
+    // 쇼크웨이브 공격 변수
     float _shockwaveElasped = 0;
     public float ShockwaveCoolTime = 20;
-
-    public bool IsUnlockSpear { set; get; } = false;
     [field:SerializeField]public bool IsUnlockShockwave { set; get; } = false;
 
+    // 반경 테스트 변수
     Vector3 _tc;
     float _tr;
 
@@ -102,7 +113,7 @@ public class FatherAI : MonoBehaviour
         if (_player == null)
             _player = Managers.GetManager<GameManager>().Player;
 
-        if(_normalAttackElapsed < _normalAttackCoolTime)
+        if(_normalAttackElapsed < NormalAttackCoolTime)
         {
             _normalAttackElapsed += Time.deltaTime;
             FollwerPlayer();
@@ -170,10 +181,12 @@ public class FatherAI : MonoBehaviour
                 _character.TurnBody(_enemyToAttack.transform.position - transform.position);
                 _normalAttackElapsed = 0;
 
-                if(Random.Range(0,2) == 0)
+                if(Random.Range(0,2) == 0) 
                     _character.AnimatorSetTrigger("NormalAttack");
                 else
                     _character.AnimatorSetTrigger("AirBorneAttack");
+
+                _character.SetAnimationSpeed(1 + IncreasedNormalAttackSpeedPercentage / 100);
                 _character.IsEnableMove = false;
                 _character.IsEnableTurn = false;
                 _enemyToAttack = null;
@@ -192,7 +205,7 @@ public class FatherAI : MonoBehaviour
                 Character c = go.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    c.Damage(_character, 1, 100, c.transform.position - transform.position);
+                    c.Damage(_character, NormalAttackDamage, 100, c.transform.position - transform.position);
                 }
             }
         }
@@ -208,7 +221,7 @@ public class FatherAI : MonoBehaviour
                 Character c = go.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    c.Damage(_character, 1, 100, Vector3.up,0.4f);
+                    c.Damage(_character, NormalAttackDamage, 100, Vector3.up,0.4f);
                 }
             }
         }
@@ -218,6 +231,7 @@ public class FatherAI : MonoBehaviour
     {
         _character.IsEnableMove = true;
         _character.IsEnableTurn = true;
+        _character.SetAnimationSpeed(1);
     }
 
 

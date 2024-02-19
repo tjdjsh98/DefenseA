@@ -19,12 +19,14 @@ public class Character : MonoBehaviour
     [SerializeField] int _maxHp;
     public int MaxHp => _maxHp;
     [SerializeField] int _hp;
-    public int Hp => _hp;
-
+    public int Hp { set => _hp = value; get => _hp; }
+    
     [SerializeField] int _maxMental = 100;
     public int MaxMental => _maxMental;
     public int Mental { set; get; }
-
+    public float IncreasedRecoverHpPower { set; get; }
+    float _recoverHpTime;
+    float _recoverHpAmount;
 
     [SerializeField] float _speed;
     [SerializeField] float _jumpPower = 10;
@@ -92,6 +94,18 @@ public class Character : MonoBehaviour
     private void Update()
     {
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
+
+        _recoverHpAmount += Time.deltaTime * IncreasedRecoverHpPower;
+        if ((_recoverHpTime += Time.deltaTime) > 1)
+        {
+            _recoverHpTime = 0;
+            if ((int)_recoverHpAmount != 0)
+            {
+                Hp += (int)_recoverHpAmount;
+                _recoverHpAmount -= (int)_recoverHpAmount;
+            }
+        }
+
         ControlAnimation();
         if (_hpBar)
         {
@@ -171,6 +185,12 @@ public class Character : MonoBehaviour
     {
         _maxHp = maxHp;
     }
+    public void AddMaxHp(int value)
+    {
+        _maxHp += value; 
+        _hp += value;
+    }
+
 
     public void Damage(Character attacker, int damage, float power, Vector3 direction, float stumTime = 0.1f)
     {
@@ -274,7 +294,10 @@ public class Character : MonoBehaviour
     {
         _animator.SetTrigger(name);
     }
-
+    public void SetAnimationSpeed(float speed)
+    {
+        _animator.speed = speed;
+    }
     public void TurnBody(Vector2 direction)
     {
         if (!IsEnableTurn) return;

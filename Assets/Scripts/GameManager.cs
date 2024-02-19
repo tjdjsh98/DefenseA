@@ -88,8 +88,8 @@ public class GameManager : ManagerBase
     int _nextTime;
 
     [Header("카드 선택지")]
-    List<CardSelectionData> _remainCardSelectionList;
-    Dictionary<Define.CardSelection, int> _cardSelectionCount = new Dictionary<Define.CardSelection, int>();
+    List<CardData> _remainCardSelectionList;
+    Dictionary<Define.CardName, int> _cardSelectionCount = new Dictionary<Define.CardName, int>();
 
 
     Vector3 _preMousePosition;
@@ -114,7 +114,7 @@ public class GameManager : ManagerBase
 
     public override void Init()
     {
-        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardSelectionData>((d) => { return d.IsStartCard; });
+        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) => { return d.IsStartCard; });
         _map = new Map(60f);
         _map.SetCenterGround(GameObject.Find("Ground"));
         _map.AddBuildingPreset("Prefabs/BuildingPreset1");
@@ -230,29 +230,29 @@ public class GameManager : ManagerBase
         }
     }
 
-    public CardSelectionData GetRandomCardSelectionData()
+    public CardData GetRandomCardSelectionData()
     {
         return _remainCardSelectionList.GetRandom();
     }
-    public List<CardSelectionData> GetRandomCardSelectionData(int count)
+    public List<CardData> GetRandomCardSelectionData(int count)
     {
         return _remainCardSelectionList.GetRandom(count);
     }
-    public List<CardSelectionData> GetRemainCardSelection()
+    public List<CardData> GetRemainCardSelection()
     {
         return _remainCardSelectionList;
     }
     // 카드를 선택하여 능력치 추가
-    public void SelectCardData(CardSelectionData data)
+    public void SelectCardData(CardData data)
     {
-        if (!_cardSelectionCount.ContainsKey(data.CardSelection))
+        if (!_cardSelectionCount.ContainsKey(data.CardName))
         {
-            _cardSelectionCount.Add(data.CardSelection, 0);
+            _cardSelectionCount.Add(data.CardName, 0);
             _remainCardSelectionList.AddRange(data.CardListToAdd);
         }
-        _cardSelectionCount[data.CardSelection]++;
+        _cardSelectionCount[data.CardName]++;
 
-        if(data.MaxUpgradeCount <= _cardSelectionCount[data.CardSelection])
+        if(data.MaxUpgradeCount <= _cardSelectionCount[data.CardName])
         {
             _remainCardSelectionList.Remove(data);
         }
@@ -260,7 +260,7 @@ public class GameManager : ManagerBase
         // TODO
         // 능력적용
 
-        if(data.CardSelectionType == Define.CardSelectionType.Weapon)
+        if(data.CardSelectionType == Define.CardType.Weapon)
         {
             WeaponCardSelection weaponCardSelection = data as WeaponCardSelection;
 
@@ -270,41 +270,130 @@ public class GameManager : ManagerBase
         }
         else
         {
-            if(data.CardSelection == Define.CardSelection.최대체력증가)
+            switch (data.CardName)
+            {
+                case Define.CardName.None:
+                    break;
+                case Define.CardName.딸최대체력증가:
+                    Daughter.AddMaxHp(2);
+                    break;
+                case Define.CardName.발사간격감소:
+                    Player.DecreasedFireRatePercent += 10;
+                    break;
+                case Define.CardName.재장전속도증가:
+                    Player.IncreasedReloadSpeedPercent += 10;
+                    break;
+                case Define.CardName.반동제어력증가:
+                    Player.IncreasedReboundControlPowerPercent += 10;
+                    break;
+                case Define.CardName.반동회복력증가:
+                    Player.IncreasedReboundRecoverPercent += 10;
+                    break;
+                case Define.CardName.반동삭제:
+                    Player.IsHaveRemoveReboundAMoment = true;
+                    break;
+                case Define.CardName.빠른재장전:
+                    Player.IsHaveFastReload = true;
+                    break;
+                case Define.CardName.추가탄창:
+                    Player.IsHaveExtraAmmo = true;
+                    break;
+                case Define.CardName.관통력증가:
+                    Player.IncreasedPenerstratingPower += 1;
+                    break;
+                case Define.CardName.라스트샷:
+                    Player.IncreasedReloadSpeedPercent -= 30;
+                    Player.IsHaveLastShot = true;
+                    break;
+                case Define.CardName.반동제어력감소데미지증가:
+                    Player.IncreasedReboundControlPowerPercent -= 30;
+                    Player.IncreasedDamage += 1;
+                    break;
+                case Define.CardName.딸체력재생력증가:
+                    Daughter.IncreasedRecoverHpPower += 0.2f;
+                    break;
+                case Define.CardName.눈어시스트:
+                    break;
+                case Define.CardName.눈데미지증가:
+                    break;
+                case Define.CardName.엑스트라웨폰:
+                    break;
+                case Define.CardName.웨폰마스터:
+                    break;
+                case Define.CardName.자동장전:
+                    Player.IsHaveAutoReload = true;
+                    break;
+                case Define.CardName.아빠최대체력증가:
+                    Father.AddMaxHp(2);
+                    break;
+                case Define.CardName.아빠일반공격력증가:
+                    FatherAI.IncreasedNormalAttackDamage += 1;
+                    break;
+                case Define.CardName.아빠공격속도증가:
+                    FatherAI.IncreasedNormalAttackSpeedPercentage += 10;
+                    break;
+                case Define.CardName.아빠일반공격주기감소:
+                    FatherAI.DecreasedNormalAttackCoolTimePercentage += 10;
+                    break;
+                case Define.CardName.쇼크웨이브언락:
+                    FatherAI.IsUnlockShockwave = true;
+                    break;
+                case Define.CardName.쇼크웨이브반경증가:
+                    break;
+                case Define.CardName.쇼크웨이브공격주기감소:
+                    break;
+                case Define.CardName.쇼크웨이브다단히트:
+                    break;
+                case Define.CardName.아빠체력재생력증가:
+                    break;
+                case Define.CardName.꿰뚫기언락:
+                    break;
+                case Define.CardName.꿰뚫기공격주기감소:
+                    break;
+                case Define.CardName.꿰뚫기거리증가:
+                    break;
+                case Define.CardName.꿰뚫기확장:
+                    break;
+                case Define.CardName.꿰뚫기확장거리증가:
+                    break;
+                case Define.CardName.END:
+                    break;
+            }
+            if (data.CardName == Define.CardName.딸최대체력증가)
             {
                 Daughter.SetMaxHp(Daughter.MaxHp + 2);
             }
-            if(data.CardSelection == Define.CardSelection.반동제어)
-            {
-                Player.SetReboundControlPower(Player.ReboundControlPower + 10);
-            }
-            if(data.CardSelection == Define.CardSelection.총알관통력증가)
-            {
-                Player.PenerstratingPower++;
-            }
-            if (data.CardSelection == Define.CardSelection.재장전시간감소)
-            {
-                Player.ReduceReloadTime += 10;
-            }
-            if (data.CardSelection == Define.CardSelection.스피어능력해제)
-            {
-                FatherAI.IsUnlockSpear= true;
-            }
-            if (data.CardSelection == Define.CardSelection.쇼크웨이브능력해제)
-            {
-                FatherAI.IsUnlockShockwave = true;
-            }
-            if (data.CardSelection == Define.CardSelection.방벽크기증가)
-            {
-                Vector3 scale = Dog.transform.localScale;
-                scale.x += 0.1f;
-                scale.y += 0.1f;
-                Dog.transform.localScale = scale;
-                Dog.SetMaxHp(Dog.MaxHp + 5);
-            }
+            //if(data.CardName == Define.CardName.반동제어)
+            //{
+            //    Player.SetReboundControlPower(Player.ReboundControlPower + 10);
+            //}
+            //if(data.CardName == Define.CardName.총알관통력증가)
+            //{
+            //    Player.PenerstratingPower++;
+            //}
+            //if (data.CardName == Define.CardName.재장전시간감소)
+            //{
+            //    Player.ReduceReloadTime += 10;
+            //}
+            //if (data.CardName == Define.CardName.스피어능력해제)
+            //{
+            //    FatherAI.IsUnlockSpear= true;
+            //}
+            //if (data.CardName == Define.CardName.쇼크웨이브능력해제)
+            //{
+            //    FatherAI.IsUnlockShockwave = true;
+            //}
+            //if (data.CardName == Define.CardName.방벽크기증가)
+            //{
+            //    Vector3 scale = Dog.transform.localScale;
+            //    scale.x += 0.1f;
+            //    scale.y += 0.1f;
+            //    Dog.transform.localScale = scale;
+            //    Dog.SetMaxHp(Dog.MaxHp + 5);
+            //}
         }
     }
-    public int GetCardSelectionCount(Define.CardSelection cardSelection)
+    public int GetCardSelectionCount(Define.CardName cardSelection)
     {
         int count = 0;
         _cardSelectionCount.TryGetValue(cardSelection, out count);

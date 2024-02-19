@@ -108,7 +108,7 @@ public class InputManager : ManagerBase
             RightArrowPressedHandler?.Invoke();
         if (Input.GetKey(KeyCode.A))
             LeftArrowPressedHandler?.Invoke();
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R))
             ReloadKeyDownHandler?.Invoke();
         if(Input.GetKeyDown(KeyCode.Space))
             JumpKeyDownHandler?.Invoke();

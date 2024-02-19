@@ -41,7 +41,7 @@ public class Shotgun : Weapon
                 GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
                 go.transform.position = _firePosition.transform.position;
                 Projectile projectile = go.GetComponent<Projectile>();
-                projectile.Init(_power, _bulletSpeed, _damage, Define.CharacterType.Enemy);
+                projectile.Init(_knockBackPower, _bulletSpeed, _damage, Define.CharacterType.Enemy);
 
                 projectile.Fire(fireCharacter, direction.normalized);
             }
@@ -65,7 +65,7 @@ public class Shotgun : Weapon
 
                 if (character != null)
                 {
-                    character.Damage(_character, _damage, _power, direction.x > 0 ? Vector3.right : Vector3.left);
+                    character.Damage(_character, _damage, _knockBackPower, direction.x > 0 ? Vector3.right : Vector3.left);
                 }
 
             }
