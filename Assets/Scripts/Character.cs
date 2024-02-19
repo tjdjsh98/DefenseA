@@ -1,7 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -168,7 +167,7 @@ public class Character : MonoBehaviour
 
     void ControlAnimation()
     {
-        if (!_animator) return;
+        if (!_animator || _animator.runtimeAnimatorController == null) return;
         if(!IsStun)
         {
             _animator.SetFloat("WalkBlend", Mathf.Clamp(Mathf.Abs(_rigidBody.velocity.x)/_speed,0,1));

@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UIElements;
 
@@ -36,10 +37,10 @@ public class Player : MonoBehaviour
 
     float _rebound;
     float _reboundControlPower = 50f;
-    public float ReboundControlPower => _reboundControlPower + (_reboundControlPower *  IncreasedReboundControlPowerPercent/100f);
+    public float ReboundControlPower => IncreasedReboundControlPowerPercent > 0 ? _reboundControlPower * (1 + IncreasedReboundControlPowerPercent / 100) : _reboundControlPower / (1 - IncreasedReboundControlPowerPercent / 100);
 
     [SerializeField]float _reboundRecoverPower = 10f;
-    public float ReboundRecoverPower => _reboundRecoverPower + ((IncreasedReboundRecoverPercent/ 100f) * _reboundRecoverPower);
+    public float ReboundRecoverPower => IncreasedReboundRecoverPercent > 0 ? _reboundRecoverPower * (1 + IncreasedReboundRecoverPercent / 100) : _reboundRecoverPower / (1 - IncreasedReboundRecoverPercent / 100);
     float _reboundRecoverTime = 0;
     bool _isRiding;
 
@@ -224,15 +225,23 @@ public class Player : MonoBehaviour
 
             if (weaponAngle < -180) weaponAngle = weaponAngle + 360;
 
+            if (firePointToTargetAngle > 180) firePointToTargetAngle = 179f;
+
             if (Mathf.Abs(Mathf.Abs(firePointToTargetAngle) - Mathf.Abs(weaponAngle) )> 0.1f)
             {
                 if (weaponAngle < firePointToTargetAngle)
                 {
-                    armAngle += firePointToTargetAngle -weaponAngle;
+                    if (firePointToTarget.magnitude > 5) 
+                        armAngle += (firePointToTargetAngle - weaponAngle);
+                    else
+                        armAngle += (firePointToTargetAngle - weaponAngle) * Time.deltaTime*10f;
                 }
                 else
                 {
-                    armAngle -= weaponAngle - firePointToTargetAngle;
+                    if (firePointToTarget.magnitude > 5)
+                        armAngle -= (weaponAngle - firePointToTargetAngle);
+                    else
+                        armAngle -= (weaponAngle - firePointToTargetAngle) * Time.deltaTime*10f;
                 }
             }
             angle = armAngle ;

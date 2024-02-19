@@ -216,7 +216,7 @@ public class GameManager : ManagerBase
             }
             else
             {
-                randomPosition.x = Player.transform.position.x + (enemy.EnemyName == Define.EnemyName.Walker1 ? distance : -distance);
+                randomPosition.x = Player.transform.position.x +distance;
                 randomPosition.y = _map.YPosition+1;
             }
             enemyCharacter.transform.position =  randomPosition;

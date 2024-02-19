@@ -122,7 +122,7 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
         foreach (var go in gos)
         {
             Character character = go.GetComponent<Character>();
-            if(character == null) continue;
+            if(character == null || character.CharacterType == _character.CharacterType) continue;
 
             character.Damage(_character, 1, 1, Vector3.zero);
         }

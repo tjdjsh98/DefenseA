@@ -50,19 +50,20 @@ public class DogAI : MonoBehaviour
     {
         while (true)
         {
+            bool isDetect = false;
             GameObject[] gos = Util.RangeCastAll2D(gameObject, _detecctRange, LayerMask.GetMask("Character"));
 
             foreach (var go in gos)
             {
+                if (go == null) continue;
                 Character c = go.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _isDetectEnemy = true;
-                    yield return new WaitForSeconds(0.2f);
-                    continue;
+                    isDetect = true;
+                    break;
                 }
             }
-            _isDetectEnemy = false;
+            _isDetectEnemy = isDetect;
             yield return new WaitForSeconds(0.2f);
         }
     }

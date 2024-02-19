@@ -33,7 +33,7 @@ public class FatherAI : MonoBehaviour
     int NormalAttackDamage => _normalAttackDamage + IncreasedNormalAttackDamage;
     float _normalAttackElapsed = 0;
     float _normalAttackCoolTime = 5f;
-    float NormalAttackCoolTime => _normalAttackCoolTime - DecreasedNormalAttackCoolTimePercentage / 100 * _normalAttackCoolTime;
+    float NormalAttackCoolTime => DecreasedNormalAttackCoolTimePercentage > 0? _normalAttackCoolTime / (1 + (DecreasedNormalAttackCoolTimePercentage / 100)):  _normalAttackCoolTime * (1- (DecreasedNormalAttackCoolTimePercentage / 100));
     public int IncreasedNormalAttackDamage{ set; get; }
     public float IncreasedNormalAttackSpeedPercentage { set; get; }
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
@@ -186,7 +186,7 @@ public class FatherAI : MonoBehaviour
                 else
                     _character.AnimatorSetTrigger("AirBorneAttack");
 
-                _character.SetAnimationSpeed(1 + IncreasedNormalAttackSpeedPercentage / 100);
+                _character.SetAnimationSpeed(IncreasedNormalAttackSpeedPercentage > 0?1 + IncreasedNormalAttackSpeedPercentage / 100 : 1f/(1-IncreasedNormalAttackSpeedPercentage/100));
                 _character.IsEnableMove = false;
                 _character.IsEnableTurn = false;
                 _enemyToAttack = null;
