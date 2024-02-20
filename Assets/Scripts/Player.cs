@@ -1,3 +1,4 @@
+using MoreMountains.FeedbacksForThirdParty;
 using MoreMountains.Tools;
 using System;
 using System.Collections;
@@ -17,7 +18,7 @@ public class Player : MonoBehaviour
     Character _ridingCharacter;
 
     [SerializeField] GameObject _frontArm;
-    [SerializeField] GameObject _weaponPoint;
+    [SerializeField] GameObject _backArmIK;
     [SerializeField] GameObject _head;
     [SerializeField] GameObject _body;
 
@@ -250,6 +251,8 @@ public class Player : MonoBehaviour
 
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
 
+        if(_weaponSwaper.CurrentWeapon && _weaponSwaper.CurrentWeapon.HandlePosition)
+            _backArmIK.transform.position = _weaponSwaper.CurrentWeapon.HandlePosition.transform.position;
         float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;
 

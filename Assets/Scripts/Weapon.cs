@@ -69,12 +69,16 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected Define.EffectName _hitEffect;
 
     bool _fastReloadFailed;
+
+    public GameObject HandlePosition;
+
     public void Init(Character character)
     {
         _audioSource = GetComponent<AudioSource>();
         _currentAmmo = _maxAmmo;
         _character = character;
         _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
+        HandlePosition = transform.Find("HandlePosition").gameObject;
         
         if(_reloadGauge)
             _reloadGauge.gameObject.SetActive(false);
@@ -108,6 +112,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
         direction = direction.normalized;
+        Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
+        Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
+        fireFlare.Play(_firePosition.transform.position);
+        fireFlare.transform.rotation = _firePosition.transform.rotation;
+
         if (!_isRaycast)
         {
             GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");

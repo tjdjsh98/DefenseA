@@ -2,6 +2,7 @@ using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
@@ -21,12 +22,16 @@ public class FatherAI : MonoBehaviour
     [SerializeField] int _debugAttackRangeIndex;
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
 
-    [SerializeField]PenetrateAttack _penetrateAttack;
     float _playerDistance = 5f;
-
     Character _enemyToAttack;
-
     bool _isMove = false;
+
+    // 관통공격
+    [Header("관통공격")]
+    [SerializeField]PenetrateAttack _penetrateAttack;
+    [SerializeField] GameObject _fArmIK;
+    Character _closeOne;
+
 
     // 일반공격 변수
     int _normalAttackDamage = 1;
@@ -40,10 +45,9 @@ public class FatherAI : MonoBehaviour
 
 
     // 스피어 공격 변수
-    
+    [field:SerializeField]public bool IsUnlockSpear { set; get; } = false;
     float _spearAttackElapsed = 0;
-    float _spearAttackCoolTime = 3f;
-    public bool IsUnlockSpear { set; get; } = false;
+    [SerializeField]float _spearAttackCoolTime = 3f;
 
     // 쇼크웨이브 공격 변수
     float _shockwaveElasped = 0;
@@ -87,8 +91,11 @@ public class FatherAI : MonoBehaviour
 
     private void Update()
     {
+        if (_character.IsAttack) return;
+
         if (Input.GetKeyDown(KeyCode.O))
         {
+           
             GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.PenerstrateRange]);
 
             Character closeOne = null;
@@ -110,7 +117,11 @@ public class FatherAI : MonoBehaviour
             }
 
             if (closeOne != null) {
-                _penetrateAttack.StartAttack(_character, closeOne.GetCenter() - transform.position, 20);
+                _closeOne = closeOne;
+                _character.TurnBody(closeOne.transform.position - transform.position);
+                _character.IsAttack = true;
+                _character.AnimatorSetTrigger("PenerstrateAttack");
+
             }
         }
 
@@ -161,6 +172,35 @@ public class FatherAI : MonoBehaviour
         }
     }
 
+    public void AimFrontArmToEnemy()
+    {
+        Animation anim = GetComponent<Animation>();
+        AnimationCurve curve;
+
+        // create a new AnimationClip
+        AnimationClip clip = new AnimationClip();
+        clip.legacy = true;
+
+        // create a curve to move the GameObject and assign to the clip
+        Keyframe[] keys;
+        keys = new Keyframe[3];
+        keys[0] = new Keyframe(0.0f, 0.0f);
+        keys[1] = new Keyframe(1.0f, 1.5f);
+        keys[2] = new Keyframe(2.0f, 0.0f);
+        curve = new AnimationCurve(keys);
+        clip.SetCurve("", typeof(Transform), "localPosition.x", curve);
+
+        // update the clip to a change the red color
+        curve = AnimationCurve.Linear(0.0f, 1.0f, 2.0f, 0.0f);
+        clip.SetCurve("", typeof(Material), "_Color.r", curve);
+        _fArmIK.transform.position = _closeOne.transform.position;
+    }
+
+    public void StartPenerstrateAttack()
+    {
+        _penetrateAttack.StartAttack(_character, _closeOne.GetCenter() - _penetrateAttack.transform.position, 20);
+
+    }
     void FollwerPlayer()
     {
         if(_player ==null) return;

@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &2826548209074215668
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 5171852907767553496}
+  m_Layer: 6
+  m_Name: HandlePosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &5171852907767553496
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2826548209074215668}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.308, y: 0.073, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 788150696777309415}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &7564376385380888200
 GameObject:
   m_ObjectHideFlags: 0
@@ -33,6 +64,7 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1000072899564702760}
+  - {fileID: 5171852907767553496}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!212 &4476797819236331975
@@ -102,9 +134,8 @@ MonoBehaviour:
   _weaponName: 0
   _audioLength: 0.31
   _isRaycast: 0
-  _projectile: {fileID: 2311784550131828774, guid: 11b7a6642a03fa54eb27751432f4845a, type: 3}
   _isAuto: 1
-  _power: 40
+  _knockBackPower: 1
   _bulletSpeed: 100
   _damage: 1
   _penerstratingPower: 1
@@ -117,6 +148,7 @@ MonoBehaviour:
   _rebound: 15
   _reloadGauge: {fileID: 0}
   _hitEffect: 0
+  HandlePosition: {fileID: 0}
 --- !u!82 &-8678973786356318684
 AudioSource:
   m_ObjectHideFlags: 0

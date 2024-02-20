@@ -63,6 +63,7 @@ Transform:
   m_LocalScale: {x: 1.3, y: 0.27000004, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
+  - {fileID: 4391745715391456809}
   - {fileID: 8835128691714920692}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -133,9 +134,8 @@ MonoBehaviour:
   _weaponName: 2
   _audioLength: 1
   _isRaycast: 0
-  _projectile: {fileID: 2311784550131828774, guid: 11b7a6642a03fa54eb27751432f4845a, type: 3}
   _isAuto: 1
-  _power: 20
+  _knockBackPower: 1
   _bulletSpeed: 100
   _damage: 1
   _penerstratingPower: 0
@@ -148,6 +148,7 @@ MonoBehaviour:
   _rebound: 30
   _reloadGauge: {fileID: 0}
   _hitEffect: 1
+  HandlePosition: {fileID: 0}
   _fireCount: 7
   _collectionRate: 0.476
 --- !u!82 &2139983186691116744
@@ -246,3 +247,34 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
+--- !u!1 &9005611132872991663
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4391745715391456809}
+  m_Layer: 6
+  m_Name: HandlePosition
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4391745715391456809
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9005611132872991663}
+  serializedVersion: 2
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0.23692314, y: -0.389, z: 0}
+  m_LocalScale: {x: 0.7692308, y: 3.7037034, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 5652839444646967083}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}

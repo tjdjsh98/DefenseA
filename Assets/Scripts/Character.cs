@@ -254,6 +254,7 @@ public class Character : MonoBehaviour
     }
     public void FinishAttack()
     {
+        IsAttack= false;
         FinishAttackHandler?.Invoke();
     }
 
@@ -323,11 +324,11 @@ public class Character : MonoBehaviour
         center += transform.position;
 
         if (_capsuleCollider != null) {
-            center += (Vector3)_capsuleCollider.offset + (Vector3)_capsuleCollider.size/2;
+            center += (Vector3)_capsuleCollider.offset;
         }
         if(_boxCollider!= null)
         {
-            center += (Vector3)_boxCollider.offset + (Vector3)_boxCollider.size / 2;
+            center += (Vector3)_boxCollider.offset;
         }
 
         return center;

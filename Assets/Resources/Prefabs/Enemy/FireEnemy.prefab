@@ -209,7 +209,6 @@ MonoBehaviour:
   _maxHp: 2
   _hp: 0
   _maxMental: 100
-  _mental: 0
   _speed: 10
   _jumpPower: 10
   _isEnableFly: 0
@@ -236,12 +235,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyName: 1
   _attackRange:
-    center: {x: 0, y: 1.07, z: 0}
+    center: {x: -0.57, y: 1.07, z: 0}
     size: {x: 4.01, y: 2.16, z: 0}
     figureType: 0
   _target: {fileID: 0}
   _attackDelay: 1
   _isRangedAttack: 0
+  _attackTriggerName: 
 --- !u!210 &3041734555230691502
 SortingGroup:
   m_ObjectHideFlags: 0

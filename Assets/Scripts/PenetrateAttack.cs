@@ -1,6 +1,7 @@
 using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor;
 using UnityEngine;
 
 public class PenetrateAttack : MonoBehaviour
@@ -25,11 +26,10 @@ public class PenetrateAttack : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.yellow;
+        Util.DrawRangeOnGizmos(gameObject, _attackRange,Color.yellow);
     }
     private void Update()
     {
-        
         if(_isStart)
         {
             _endPoint += _speed * _direction.normalized * Time.deltaTime;
@@ -41,8 +41,9 @@ public class PenetrateAttack : MonoBehaviour
                 gameObject.SetActive(false);
             }
 
+            _attackRange.center = _endPoint;
             Vector3 dest = _endPoint;
-            if (transform.lossyScale.x < 0) dest.x = -dest.x;
+
             _lineRenderer.SetPosition(1,  _endPoint);
             GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange);
 
@@ -65,6 +66,7 @@ public class PenetrateAttack : MonoBehaviour
     {
         _character = character;
         _isStart =true;
+        direction.z = 0;
         _direction = direction;
         _distance = distance;
 
