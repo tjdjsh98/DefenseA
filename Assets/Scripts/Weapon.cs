@@ -115,6 +115,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
         Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
         fireFlare.Play(_firePosition.transform.position);
+        fireFlare.transform.localScale = _firePosition.transform.lossyScale;
         fireFlare.transform.rotation = _firePosition.transform.rotation;
 
         if (!_isRaycast)

@@ -89,9 +89,9 @@ public class Projectile : MonoBehaviour
 
                     _direction = _direction.normalized;
                     character.Damage(_attacker, _damage, _power, _direction);
-                    Effect flare = Managers.GetManager<ResourceManager>().Instantiate<Effect>("Prefabs/Effect/Flare");
-                    flare.SetProperty("Direction", _direction * -1);
-                    flare.Play(transform.position);
+                    Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit2);
+                    Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
+                    hitEffect.Play(transform.position);
                     _penerstrateCount++;
 
                     if (_penerstrateCount > _penerstratingPower)
