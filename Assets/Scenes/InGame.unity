@@ -4237,7 +4237,7 @@ MonoBehaviour:
   FatherAI: {fileID: 0}
   _summonDummy: 0
   _dummyHp: 1
-  _stop: 0
+  _stop: 1
   <MapSize>k__BackingField: 500
   _allMaxExpFive: 1
   _exp: 5
@@ -10403,6 +10403,14 @@ PrefabInstance:
     - target: {fileID: 4391792738818776787, guid: bf9e295c8aebd164795d92eebba24c08, type: 3}
       propertyPath: m_Parameters.widthCurve.m_Curve.Array.data[0].value
       value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 4711550402425175098, guid: bf9e295c8aebd164795d92eebba24c08, type: 3}
+      propertyPath: _hp
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 4711550402425175098, guid: bf9e295c8aebd164795d92eebba24c08, type: 3}
+      propertyPath: _maxHp
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 4711550402425175098, guid: bf9e295c8aebd164795d92eebba24c08, type: 3}
       propertyPath: _jumpPower

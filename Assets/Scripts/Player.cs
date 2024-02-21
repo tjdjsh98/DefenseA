@@ -49,7 +49,7 @@ public class Player : MonoBehaviour
     public bool IsHaveRemoveReboundAMoment { set; get; }
     public bool IsHaveFastReload { set; get; }
     public bool IsHaveExtraAmmo { set; get; }
-    public bool IsHaveAutoReload { set; get; }
+    public bool IsHaveAutoReload { set; get; } = true;
     public int IncreasedPenerstratingPower { set; get; } = 0;
     public bool IsHaveLastShot { set; get; }
     public float DecreasedFireRatePercent { set; get; }
@@ -59,7 +59,8 @@ public class Player : MonoBehaviour
     public int IncreasedDamage { set; get; }
 
 
-
+    // 자동장전
+    List<float> _autoReloadElaspedTimeList = new List<float>();
 
     private void Awake()
     {
@@ -109,7 +110,41 @@ public class Player : MonoBehaviour
         RotateBody();
         Riding();
         Roll();
+        AutoReload();
     }
+
+    private void AutoReload()
+    {
+        if (!IsHaveAutoReload) return;
+
+        for(int i = 0;i < _weaponSwaper.GetWeaponCount(); i++)
+        {
+            if (_autoReloadElaspedTimeList.Count <= i)
+                _autoReloadElaspedTimeList.Add(0);
+            if (_weaponSwaper.WeaponIndex == i)
+            {
+                _autoReloadElaspedTimeList[i] = 0;
+                continue;
+            }
+
+            Weapon weapon = _weaponSwaper.GetWeapon(i);
+            if (weapon== null) continue;
+
+            if (weapon.CurrentAmmo < weapon.MaxAmmo)
+            {
+                if (_autoReloadElaspedTimeList[i] > weapon.ReloadDelay)
+                {
+                    weapon.CompleteReload();
+                    _autoReloadElaspedTimeList[i] = 0;
+                }
+                else
+                {
+                    _autoReloadElaspedTimeList[i] += Time.deltaTime;
+                }
+            }
+        }
+    }
+
     public void SetReboundControlPower(float power)
     {
         _reboundControlPower = power;
@@ -145,6 +180,7 @@ public class Player : MonoBehaviour
     private void RotateBody()
     {
         float bodyAngle = 0;
+        float headAngle = 0;
 
         Vector3 distance = Vector3.zero;
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
@@ -156,10 +192,10 @@ public class Player : MonoBehaviour
         if (angle > 180) angle = -360 + angle;
         if (angle < -180) angle = 360 + angle;
 
-        bodyAngle = angle / 2;
-
+        bodyAngle = angle / 4;
+        headAngle = angle / 2;
         _body.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? bodyAngle + _initBodyAngle : bodyAngle - _initBodyAngle));
-        _head.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle + _initHeadAngle : angle - _initHeadAngle));
+        _head.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? headAngle + _initHeadAngle : headAngle - _initHeadAngle));
     }
 
     private void RotateArm()

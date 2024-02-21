@@ -92,4 +92,8 @@ public class WeaponSwaper : MonoBehaviour
         if (_weaponList.Count <= index || index < 0) return null;
         return _weaponList[index];
     }
+    public int GetWeaponCount()
+    {
+        return _weaponList.Count;
+    }
 }

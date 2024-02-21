@@ -100,7 +100,11 @@ public class Character : MonoBehaviour
             _recoverHpTime = 0;
             if ((int)_recoverHpAmount != 0)
             {
-                Hp += (int)_recoverHpAmount;
+                if (Hp + (int)_recoverHpAmount > MaxHp)
+                    Hp = MaxHp;
+                else
+                    Hp += (int)_recoverHpAmount;
+
                 _recoverHpAmount -= (int)_recoverHpAmount;
             }
         }

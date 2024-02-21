@@ -217,7 +217,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            if (_player.IsHaveExtraAmmo)
+            if (_player.IsHaveExtraAmmo && !_fastReloadFailed)
                 _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
             else
                 _currentAmmo = _maxAmmo;

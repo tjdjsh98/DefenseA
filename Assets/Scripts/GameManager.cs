@@ -276,7 +276,7 @@ public class GameManager : ManagerBase
                 case Define.CardName.None:
                     break;
                 case Define.CardName.딸최대체력증가:
-                    Daughter.AddMaxHp(2);
+                    Daughter.AddMaxHp(5);
                     break;
                 case Define.CardName.발사간격감소:
                     Player.DecreasedFireRatePercent += 10;
@@ -312,10 +312,6 @@ public class GameManager : ManagerBase
                     break;
                 case Define.CardName.딸체력재생력증가:
                     Daughter.IncreasedRecoverHpPower += 0.2f;
-                    break;
-                case Define.CardName.눈어시스트:
-                    break;
-                case Define.CardName.눈데미지증가:
                     break;
                 case Define.CardName.엑스트라웨폰:
                     break;
