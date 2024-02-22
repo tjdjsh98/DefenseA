@@ -1,10 +1,8 @@
 using UnityEngine;
 
-public class EnemyAI : MonoBehaviour, ITypeDefine
+public class EnemyAI : MonoBehaviour
 {
     protected Character _character;
-    [SerializeField] Define.EnemyName _enemyName;
-    public Define.EnemyName EnemyName => _enemyName;
     
     [SerializeField]protected Define.Range _attackRange;
 
@@ -14,7 +12,7 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
     protected  float _attackElapsed;
 
     [SerializeField] bool _isRangedAttack;
-
+    public bool IsAutoMove { set; get; } = true;
     [SerializeField] string _attackTriggerName;
 
     protected virtual void Awake()
@@ -47,7 +45,7 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
     protected virtual void Move()
     {
         if (_target != null) return;
-
+        if (!IsAutoMove) return;
         Player player = Managers.GetManager<GameManager>().Player;
         if(player == null) return;
         _character.Move(player.transform.position - transform.position);
@@ -136,8 +134,5 @@ public class EnemyAI : MonoBehaviour, ITypeDefine
         _character.IsEnableTurn = true;
 
     }
-    public int GetEnumToInt()
-    {
-        return (int)_enemyName;
-    }
+  
 }

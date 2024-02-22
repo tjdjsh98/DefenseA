@@ -145,8 +145,8 @@ public class GameManager : ManagerBase
         HandleGround();
         if (_summonDummy)
         {
-            EnemyAI enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyAI>((int)Define.EnemyName.Walker1);
-            EnemyAI enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+            EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Spider);
+            EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
             enemy.transform.position = Player.transform.position + Vector3.right*3;
             Character enemyCharacter = enemy.GetComponent<Character>();
             enemyCharacter.SetHp(_dummyHp);
@@ -185,6 +185,7 @@ public class GameManager : ManagerBase
 
     void EndlessWave()
     {
+        if (IsPlayTimeline) return;
         if (_currentWave < _waveList.Count-1)
         {
             if (_totalTime > _waveList[_currentWave + 1].time)
@@ -196,14 +197,22 @@ public class GameManager : ManagerBase
             _genTime = 0;
             if (_waveList[_currentWave].enemyList == null) return;
 
-            EnemyAI enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyAI>((int)_waveList[_currentWave].enemyList.GetRandom());
-            EnemyAI enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+            EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)_waveList[_currentWave].enemyList.GetRandom());
+            EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
             Character enemyCharacter = enemy.GetComponent<Character>();
-            enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _waveList[_currentWave].hpMultiply));
+            if (enemy.IsGroup)
+                enemy.GetComponent<EnemyGroup>().SetHp(_waveList[_currentWave].hpMultiply);
+            else
+                enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _waveList[_currentWave].hpMultiply));
 
             Vector3 randomPosition = Vector3.zero;
             float distance = 50;
-            if (enemyCharacter.IsEnableFly)
+            if (enemy.EnemyName == Define.EnemyName.BatGroup)
+            {
+                randomPosition.x = Player.transform.position.x + Random.Range(0,2)==0?-30:30;
+                randomPosition.y = Player.transform.position.y + 20;
+            }
+            else if (enemyCharacter!= null && enemyCharacter.IsEnableFly)
             {
                 float angle = 0;
                 if(Random.Range(0,2) == 0)
@@ -221,7 +230,7 @@ public class GameManager : ManagerBase
                 randomPosition.x = Player.transform.position.x +distance;
                 randomPosition.y = _map.YPosition+1;
             }
-            enemyCharacter.transform.position =  randomPosition;
+            enemy.transform.position =  randomPosition;
             if(enemy)
                 _enemySpawnList.Add(enemy.gameObject);
 

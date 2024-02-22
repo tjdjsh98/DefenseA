@@ -54,7 +54,6 @@ public class Character : MonoBehaviour
     public bool IsRoll { set; get; }
     bool _isMove = false;
     public bool IsDead { set; get; }
-
     bool _isContactGround = false;
     private bool _isJump;
 
@@ -156,18 +155,15 @@ public class Character : MonoBehaviour
                     xSpeed += Time.deltaTime * _groundBreakPower * (xSpeed > 0 ? -1 : 1);
                     if (xSpeed < Time.deltaTime * _groundBreakPower * xSpeed)
                         xSpeed = 0;
-                }
-                else
-                {
 
-                    xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
-                    if (xSpeed < Time.deltaTime * _airBreakPower * xSpeed)
-                        xSpeed = 0;
                 }
             }
             float ySpeed = _rigidBody.velocity.y;
             if (_isEnableFly)
             {
+                xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
+                if (xSpeed < Time.deltaTime * _airBreakPower * xSpeed)
+                    xSpeed = 0;
                 ySpeed -= Time.deltaTime * _airBreakPower;
                 if (ySpeed < Time.deltaTime * _groundBreakPower * ySpeed)
                     ySpeed = 0;
@@ -257,19 +253,22 @@ public class Character : MonoBehaviour
         {
             direction.x = Mathf.Clamp(direction.x, -1, 1);
             direction.y = Mathf.Clamp(direction.y, -1, 1);
-            float maxSpeed = Mathf.Abs( _speed * direction.x);
+            float maxXSpeed = Mathf.Abs( _speed * direction.x);
+            float maxYSpeed = Mathf.Abs( _speed * direction.y);
 
             Vector2 currentSpeed = _rigidBody.velocity;
 
-            currentSpeed.x += (direction.x > 0 ? 1 : -1) *  (_isContactGround?_groundAccelePower:_airAccelePower) * Time.deltaTime;
-            if (Mathf.Abs(currentSpeed.x) > maxSpeed)
-                currentSpeed.x = currentSpeed.x > 0 ? maxSpeed : -maxSpeed;
-
+            if (_isContactGround)
+            {
+                currentSpeed.x += (direction.x > 0 ? 1 : -1) *  (_isContactGround?_groundAccelePower:_airAccelePower) * Time.deltaTime;
+                if (Mathf.Abs(currentSpeed.x) > maxXSpeed)
+                    currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
+            }
             if (_isEnableFly)
             {
                 currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
-                if (Mathf.Abs(currentSpeed.y) > maxSpeed)
-                    currentSpeed.y = currentSpeed.y > 0 ? maxSpeed : -maxSpeed;
+                if (Mathf.Abs(currentSpeed.y) > maxYSpeed)
+                    currentSpeed.y = currentSpeed.y > 0 ? maxYSpeed : -maxYSpeed;
             }
 
             _rigidBody.velocity = currentSpeed;
@@ -297,13 +296,21 @@ public class Character : MonoBehaviour
         _isContactGround = false;
         _isJump = true;
     }
+    public void Jump(Vector3 direction, float power)
+    {
+        _rigidBody.AddForce(direction * power, ForceMode2D.Impulse);
 
+        _isContactGround = false;
+        _isJump = true;
+    }
     void CheckGround()
     {
         if (_groundCheckRange.size == Vector3.zero) return;
         if (Mathf.Approximately(_rigidBody.velocity.y,0)) return;
 
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _groundCheckRange,LayerMask.GetMask("Ground"));
+        if (_isJump && !_isContactGround && _rigidBody.velocity.y > 0) return;
+        
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _groundCheckRange, LayerMask.GetMask("Ground"));
 
         if (gos.Length > 0)
         {
@@ -314,15 +321,16 @@ public class Character : MonoBehaviour
         {
             _isContactGround = false;
         }
+        
     }
 
     public void AnimatorSetBool(string name, bool value)
     {
-        _animator.SetBool(name, value);
+        _animator?.SetBool(name, value);
     }
     public void AnimatorSetTrigger(string name)
     {
-        _animator.SetTrigger(name);
+        _animator?.SetTrigger(name);
     }
     public void SetAnimationSpeed(float speed)
     {
@@ -367,6 +375,18 @@ public class Character : MonoBehaviour
     public void SetVelocityForcibly(Vector3 velocity)
     {
         _rigidBody.velocity = velocity;
+    }
+
+    public Define.Range GetSize()
+    {
+        Define.Range size = new Define.Range()
+        {
+            center = _boxCollider ? _boxCollider.offset : _capsuleCollider ? _capsuleCollider.offset : Vector3.zero,
+            size = _boxCollider ? _boxCollider.size : _capsuleCollider ? _capsuleCollider.size : Vector3.zero,
+            figureType = _boxCollider ? Define.FigureType.Box : _capsuleCollider ? Define.FigureType.Circle : Define.FigureType.Box
+        };
+
+        return size;
     }
 
     public void Revive()

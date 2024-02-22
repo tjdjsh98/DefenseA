@@ -4237,7 +4237,7 @@ MonoBehaviour:
   FatherAI: {fileID: 0}
   _summonDummy: 0
   _dummyHp: 5
-  _stop: 0
+  _stop: 1
   <MapSize>k__BackingField: 500
   _allMaxExpFive: 1
   _exp: 5
@@ -4247,7 +4247,7 @@ MonoBehaviour:
   _waveList:
   - time: 0
     genTime: 2
-    enemyList: 0100000001000000
+    enemyList: 0600000001000000
     hpMultiply: 1
   - time: 30
     genTime: 1.8
@@ -10159,6 +10159,14 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 564719897}
     m_Modifications:
+    - target: {fileID: 1883153369627720756, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: m_Mass
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1883153369627720756, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 2288596502381105152, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: m_LocalRotation.w
       value: -0.2654617
@@ -10181,6 +10189,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3163120892723780403, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: _isEnableRevive
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3163120892723780403, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _groundCheckRange.size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3163120892723780403, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _groundCheckRange.size.y
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3166344917188589571, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
@@ -14821,12 +14837,32 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: _groundCheckRange.size.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: _groundCheckRange.size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: <IsEnableMove>k__BackingField
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7378709587785658188, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: m_Name
       value: Dog
+      objectReference: {fileID: 0}
+    - target: {fileID: 7378709587785658188, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: m_TagString
+      value: Player
+      objectReference: {fileID: 0}
+    - target: {fileID: 7948498784638123714, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: m_Mass
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 7948498784638123714, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: m_GravityScale
+      value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 8358729890642596902, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: m_LocalPosition.y

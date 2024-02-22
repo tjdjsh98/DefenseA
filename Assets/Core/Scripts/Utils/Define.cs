@@ -38,12 +38,13 @@ public static class Define
     public enum EnemyName
     {
         None = -1,
-        Walker1,
-        Walker2,
-        Filier1,
-        Filier2,
-        FlyingFireEnemy,
+        Slime,
+        Spider,
+        Bat,
+        FlyOcto,
+        WhiteBat,
         OctoHead,
+        BatGroup,
         END,
     }
 

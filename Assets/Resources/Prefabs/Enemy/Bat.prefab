@@ -12,10 +12,11 @@ GameObject:
   - component: {fileID: 2001862777640968701}
   - component: {fileID: 4330924401004467543}
   - component: {fileID: 4413086375596073726}
-  - component: {fileID: 721163610294590693}
-  - component: {fileID: 115957724620147319}
+  - component: {fileID: -346677282961738032}
+  - component: {fileID: 8723594639585359007}
+  - component: {fileID: -1096205499464472584}
   m_Layer: 6
-  m_Name: FlyingFireEnemy
+  m_Name: Bat
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -29,8 +30,8 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1338747963396321650}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.637, y: 7.07, z: -0.004086449}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 13.542088, y: 6.2959266, z: 0.026139587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -66,7 +67,7 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0.1573689, y: 0.20854712}
@@ -124,37 +125,21 @@ MonoBehaviour:
   _characterType: 1
   _maxHp: 2
   _hp: 0
+  _maxMental: 100
   _speed: 3
   _jumpPower: 10
   _isEnableFly: 1
+  _isEnableRevive: 0
+  <IsEnableMove>k__BackingField: 1
+  <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    figureType: 0
   _isTurnBodyAlongVelocity: 1
-  <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
---- !u!114 &721163610294590693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1338747963396321650}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enemyName: 4
-  _attackRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 30.01, y: 8.12, z: 0}
-  _target: {fileID: 0}
-  _attackDelay: 1
-  _isRangedAttack: 1
-  _flyHeight: 3.5
---- !u!210 &115957724620147319
+--- !u!210 &-346677282961738032
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,6 +151,40 @@ SortingGroup:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_SortAtRoot: 0
+--- !u!114 &8723594639585359007
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338747963396321650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 7.32, y: 6.59, z: 0}
+    figureType: 0
+  _target: {fileID: 0}
+  _attackDelay: 1
+  _isRangedAttack: 0
+  _attackTriggerName: 
+--- !u!114 &-1096205499464472584
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338747963396321650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccd028e74454eaf4198b5035ffa61723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyName: 2
+  <IsGroup>k__BackingField: 0
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0
@@ -218,7 +237,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: 111a1e58329c1d9468a891bf9befbf4e, type: 2}
+  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

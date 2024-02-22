@@ -3,6 +3,7 @@ using MoreMountains.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -62,6 +63,9 @@ public class Player : MonoBehaviour
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
+    [SerializeField] bool _bounce;
+    [SerializeField] float _power;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -104,6 +108,12 @@ public class Player : MonoBehaviour
     {
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
        
+        if (_bounce)
+        {
+            _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
+            _bounce = false;
+        }
+
         TurnBody();
         HandleMove();
         RotateArm();

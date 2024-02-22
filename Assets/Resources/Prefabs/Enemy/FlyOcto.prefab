@@ -13,9 +13,10 @@ GameObject:
   - component: {fileID: 4330924401004467543}
   - component: {fileID: 4413086375596073726}
   - component: {fileID: 721163610294590693}
-  - component: {fileID: -346677282961738032}
+  - component: {fileID: -993404685145601219}
+  - component: {fileID: -4507659182994723316}
   m_Layer: 6
-  m_Name: FlyingEnemy
+  m_Name: FlyOcto
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -66,10 +67,10 @@ BoxCollider2D:
   m_CallbackLayers:
     serializedVersion: 2
     m_Bits: 4294967295
-  m_IsTrigger: 0
+  m_IsTrigger: 1
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.1573689, y: 0.20854712}
+  m_Offset: {x: 0.19299936, y: 1.5525644}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -80,7 +81,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 2.198358, y: 1.9092522}
+  m_Size: {x: 4.6328726, y: 5.2154765}
   m_EdgeRadius: 0
 --- !u!50 &4330924401004467543
 Rigidbody2D:
@@ -124,14 +125,18 @@ MonoBehaviour:
   _characterType: 1
   _maxHp: 2
   _hp: 0
+  _maxMental: 100
   _speed: 3
   _jumpPower: 10
   _isEnableFly: 1
+  _isEnableRevive: 0
+  <IsEnableMove>k__BackingField: 1
+  <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    figureType: 0
   _isTurnBodyAlongVelocity: 1
-  <IsEnableMove>k__BackingField: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!114 &721163610294590693
@@ -146,15 +151,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _enemyName: 2
   _attackRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 7.32, y: 6.59, z: 0}
+    figureType: 0
   _target: {fileID: 0}
   _attackDelay: 1
   _isRangedAttack: 0
+  _attackTriggerName: 
   _flyHeight: 3.5
---- !u!210 &-346677282961738032
+--- !u!210 &-993404685145601219
 SortingGroup:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -166,6 +172,19 @@ SortingGroup:
   m_SortingLayer: 1
   m_SortingOrder: 0
   m_SortAtRoot: 0
+--- !u!114 &-4507659182994723316
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338747963396321650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccd028e74454eaf4198b5035ffa61723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyName: 3
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0
@@ -239,7 +258,7 @@ SpriteRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 2
-  m_Sprite: {fileID: -7278554151284785199, guid: cae2b7cfb71787b42b8b0f4013153f1a, type: 3}
+  m_Sprite: {fileID: -6699228083443301126, guid: cae2b7cfb71787b42b8b0f4013153f1a, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 1
   m_FlipY: 0

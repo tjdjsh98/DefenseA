@@ -11,10 +11,11 @@ GameObject:
   - component: {fileID: 3600716475663566132}
   - component: {fileID: 6508908295389247836}
   - component: {fileID: 1534523759619356098}
-  - component: {fileID: 6873240942446195857}
-  - component: {fileID: 6226169344074567468}
   - component: {fileID: 3068244798690998300}
   - component: {fileID: 4267616243129709646}
+  - component: {fileID: 6873240942446195857}
+  - component: {fileID: 4326452225187102782}
+  - component: {fileID: 6226169344074567468}
   m_Layer: 6
   m_Name: OctopusHead
   m_TagString: Untagged
@@ -110,55 +111,6 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 4
---- !u!114 &6873240942446195857
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 882222657658996634}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 9f5a127e10f00c84d9fbf5d88df9a739, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _characterType: 1
-  _maxHp: 10
-  _hp: 10
-  _maxMental: 100
-  _speed: 3
-  _jumpPower: 10
-  _isEnableFly: 0
-  <IsEnableMove>k__BackingField: 1
-  <IsEnableTurn>k__BackingField: 1
-  _groundCheckRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 0, y: 0, z: 0}
-    figureType: 0
-  _isTurnBodyAlongVelocity: 1
-  _hpBar: {fileID: 0}
-  CharacterPassive: 
---- !u!114 &6226169344074567468
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 882222657658996634}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _enemyName: 5
-  _attackRange:
-    center: {x: 2.3, y: 3.5, z: 0}
-    size: {x: 6.68, y: 5.09, z: 0}
-    figureType: 0
-  _target: {fileID: 0}
-  _attackDelay: 1
-  _isRangedAttack: 0
-  _attackTriggerName: Attack
 --- !u!210 &3068244798690998300
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -192,6 +144,68 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &6873240942446195857
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882222657658996634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9f5a127e10f00c84d9fbf5d88df9a739, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _characterType: 1
+  _maxHp: 10
+  _hp: 10
+  _maxMental: 100
+  _speed: 3
+  _jumpPower: 10
+  _isEnableFly: 0
+  _isEnableRevive: 0
+  <IsEnableMove>k__BackingField: 1
+  <IsEnableTurn>k__BackingField: 1
+  _groundCheckRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    figureType: 0
+  _isTurnBodyAlongVelocity: 1
+  _hpBar: {fileID: 0}
+  CharacterPassive: 
+--- !u!114 &4326452225187102782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882222657658996634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ccd028e74454eaf4198b5035ffa61723, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _enemyName: 5
+--- !u!114 &6226169344074567468
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 882222657658996634}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _attackRange:
+    center: {x: 2.3, y: 3.5, z: 0}
+    size: {x: 6.68, y: 5.09, z: 0}
+    figureType: 0
+  _target: {fileID: 0}
+  _attackDelay: 1
+  _isRangedAttack: 0
+  _attackTriggerName: Attack
 --- !u!1 &3856559377835060577
 GameObject:
   m_ObjectHideFlags: 0
