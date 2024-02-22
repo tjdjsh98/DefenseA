@@ -54,6 +54,7 @@ public class WeaponSwaper : MonoBehaviour
             _weaponList[index].transform.localScale = Vector3.one;
             _weaponList[index].transform.localRotation = new Quaternion(0, 0, 0,0);
             _weaponList[index].Init(_character);
+            _weaponList[index].gameObject.SetActive(false);
         }
 
         if(_weaponIndex == index)

@@ -1,3 +1,5 @@
+using MoreMountains.FeedbacksForThirdParty;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,10 +21,29 @@ public class DogAI : MonoBehaviour
     bool _isDetectEnemy;
     Coroutine _detectEnemyCoroutine;
 
+    [SerializeField]float _reviveTime = 30;
+    public float OriginalReviveTime => _reviveTime;
+    public float ReviveTime => IncreasedRevivePercetage > 0 ? 
+        _reviveTime * (1 + IncreasedRevivePercetage/100) : _reviveTime / (1 - IncreasedRevivePercetage / 100);
+    float _reviveElapsedTime = 0;
+
+
+    // 추가적 능력치
+    public int ReflectionDamage { set; get; } = 0;
+    public float IncreasedRevivePercetage { set; get; }
+
     private void Awake()
     {
         _character = GetComponent<Character>();
         Managers.GetManager<GameManager>().DogAI = this;
+
+        _character.CharacterDamaged += OnCharacterDamaged;
+    }
+
+    private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
+    {
+        if(ReflectionDamage != 0)
+            attacker.Damage(_character, ReflectionDamage, 0, Vector3.zero, 0);
     }
 
     private void OnDrawGizmos()
@@ -33,6 +54,21 @@ public class DogAI : MonoBehaviour
     }
     private void Update()
     {
+        if (_character.IsDead)
+        {
+            if (_reviveElapsedTime < _reviveTime)
+            {
+                _reviveElapsedTime += Time.deltaTime;
+            }
+            else
+            {
+                _reviveTime = 0;
+                _character.Revive();
+            }
+
+            return;
+        }
+
         MoveForward();
         Targeting();
     }
@@ -42,7 +78,7 @@ public class DogAI : MonoBehaviour
         if (_detectEnemyCoroutine == null)
             _detectEnemyCoroutine = StartCoroutine(CorDetectEnemy());
 
-        if(!_isDetectEnemy && ((Vector2)(Managers.GetManager<GameManager>().Player.transform.position - transform.position)).magnitude < _playerDistance)
+        if(!_isDetectEnemy && ((transform.position.x - Managers.GetManager<GameManager>().Player.transform.position.x) < _playerDistance))
             _character.Move(Vector2.right);
     }
 
@@ -50,6 +86,11 @@ public class DogAI : MonoBehaviour
     {
         while (true)
         {
+            if (_character.IsDead)
+            {
+                yield return new WaitForSeconds(0.2f);
+                continue;
+            }
             bool isDetect = false;
             GameObject[] gos = Util.RangeCastAll2D(gameObject, _detecctRange, LayerMask.GetMask("Character"));
 

@@ -4236,8 +4236,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   FatherAI: {fileID: 0}
   _summonDummy: 0
-  _dummyHp: 1
-  _stop: 1
+  _dummyHp: 5
+  _stop: 0
   <MapSize>k__BackingField: 500
   _allMaxExpFive: 1
   _exp: 5
@@ -10179,6 +10179,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: Father
       objectReference: {fileID: 0}
+    - target: {fileID: 3163120892723780403, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _isEnableRevive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 3166344917188589571, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.902286
@@ -10295,6 +10299,26 @@ PrefabInstance:
       propertyPath: _fArmIK
       value: 
       objectReference: {fileID: 44234291}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _debugAttackRangeIndex
+      value: 4
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.size
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[4].size.x
+      value: 30
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[4].size.y
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 8291804802324025878, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
+      propertyPath: _attackRangeList.Array.data[4].center.y
+      value: 10
+      objectReference: {fileID: 0}
     - target: {fileID: 8830081167131702790, guid: 7fecb7a1bd43fd644b21e05ef6c64c2c, type: 3}
       propertyPath: m_LocalRotation.w
       value: 0.99999946
@@ -14786,6 +14810,14 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: _speed
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: _isEnableFly
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: _isEnableRevive
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}

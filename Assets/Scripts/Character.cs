@@ -23,13 +23,18 @@ public class Character : MonoBehaviour
     [SerializeField] int _maxMental = 100;
     public int MaxMental => _maxMental;
     public int Mental { set; get; }
+
+    // 증가되는 능력치
     public float IncreasedRecoverHpPower { set; get; }
+    public float IncreasedDamagePercentage { set; get; }
+
     float _recoverHpTime;
     float _recoverHpAmount;
 
     [SerializeField] float _speed;
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
+    [SerializeField] bool _isEnableRevive;
     public bool IsEnableFly => _isEnableFly;
 
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
@@ -48,6 +53,7 @@ public class Character : MonoBehaviour
     public bool IsAttack {set; get; }
     public bool IsRoll { set; get; }
     bool _isMove = false;
+    public bool IsDead { set; get; }
 
     bool _isContactGround = false;
     private bool _isJump;
@@ -72,6 +78,8 @@ public class Character : MonoBehaviour
     Vector3 _mySpeed;
     public Vector3 MySpeed => _mySpeed;
 
+    public Action<Character, int, float, Vector3, float> CharacterDamaged { set; get; }
+
     public Action<Vector2> BodyTurn;
 
     private void Awake()
@@ -92,6 +100,7 @@ public class Character : MonoBehaviour
 
     private void Update()
     {
+        if(IsDead) return;
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
 
         _recoverHpAmount += Time.deltaTime * IncreasedRecoverHpPower;
@@ -195,24 +204,41 @@ public class Character : MonoBehaviour
     }
 
 
-    public void Damage(Character attacker, int damage, float power, Vector3 direction, float stumTime = 0.1f)
+    public void Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
     {
         Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
+
+        damage = IncreasedDamagePercentage > 0 ? Mathf.RoundToInt(damage * (1 + IncreasedDamagePercentage / 100)) :
+            Mathf.RoundToInt(damage / (1 - IncreasedDamagePercentage / 100));
 
         _hp -= damage;
         _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);
 
+        CharacterDamaged?.Invoke(attacker, damage, power, direction, stunTime);
 
         if (_hp <= 0)
         {
             CharacterDead?.Invoke();
             attacker.Mental += 5;
-            Destroy(gameObject);
+
+            if (!_isEnableRevive)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                IsDead = true;
+                if(_boxCollider)
+                    _boxCollider.enabled = false;
+                if(_capsuleCollider)
+                    _capsuleCollider.enabled = false;
+                _rigidBody.isKinematic = true;
+            }
         }
 
         IsStun = true;
         _stunEleasped = 0;
-        _stunTime = stumTime;
+        _stunTime = stunTime;
     }
 
     public void Move(Vector2 direction)
@@ -341,5 +367,16 @@ public class Character : MonoBehaviour
     public void SetVelocityForcibly(Vector3 velocity)
     {
         _rigidBody.velocity = velocity;
+    }
+
+    public void Revive()
+    {
+        _hp = _maxHp/2;
+        IsDead = false;
+        if (_boxCollider)
+            _boxCollider.enabled = true;
+        if (_capsuleCollider)
+            _capsuleCollider.enabled = true;
+        _rigidBody.isKinematic = false;
     }
 }

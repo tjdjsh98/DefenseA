@@ -2,6 +2,7 @@ using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
 using System.Data;
+using System.Runtime.InteropServices;
 using Unity.Cinemachine;
 using UnityEditor;
 using UnityEngine;
@@ -18,6 +19,7 @@ public class FatherAI : MonoBehaviour
      * 1 = 일반공격
      * 2 = 관통공격
      * 3 = 바닥에서 치솟는 스피어 공격
+     * 4 = 땅구르기 공격
      */
     [SerializeField] int _debugAttackRangeIndex;
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
@@ -26,20 +28,20 @@ public class FatherAI : MonoBehaviour
     Character _enemyToAttack;
     bool _isMove = false;
 
+    public int AttackDamage { set; get; } = 1;
     // 관통공격
     [Header("관통공격")]
     [SerializeField]PenetrateAttack _penetrateAttack;
     [SerializeField] GameObject _fArmIK;
     Character _closeOne;
 
-
+    
     // 일반공격 변수
-    int _normalAttackDamage = 1;
-    int NormalAttackDamage => _normalAttackDamage + IncreasedNormalAttackDamage;
     float _normalAttackElapsed = 0;
     float _normalAttackCoolTime = 5f;
     float NormalAttackCoolTime => DecreasedNormalAttackCoolTimePercentage > 0? _normalAttackCoolTime / (1 + (DecreasedNormalAttackCoolTimePercentage / 100)):  _normalAttackCoolTime * (1- (DecreasedNormalAttackCoolTimePercentage / 100));
-    public int IncreasedNormalAttackDamage{ set; get; }
+    public int NormalAttackDamage => IncreasedNormalAttackPercentage > 0 ? AttackDamage * (1 + IncreasedNormalAttackPercentage / 100) : AttackDamage / (1 - IncreasedNormalAttackPercentage / 100);
+    public int IncreasedNormalAttackPercentage{ set; get; }
     public float IncreasedNormalAttackSpeedPercentage { set; get; }
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
 
@@ -56,7 +58,19 @@ public class FatherAI : MonoBehaviour
     public float DecreasedShockwaveCoolTimePercentage { set; get; }
     public int ShockwaveHitCount { set; get; } = 1;
     public float ShockwaveRange { set; get; } = 20;
+    public float IncreasedShockwaveDamagePercentage { set; get; } = 500;
+    public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + IncreasedShockwaveDamagePercentage)) :Mathf.RoundToInt( AttackDamage / (1 + IncreasedShockwaveDamagePercentage));
     [field:SerializeField]public bool IsUnlockShockwave { set; get; } = false;
+
+    // 땅구르기
+    [field:SerializeField]public bool IsUnlockStempGround { set; get; }
+    float _stempGroundElaspsedTime;
+    float _stempGroundCoolTime = 5;
+    int StempGroundDamage => IncreasedStempGroundDamagePercentage > 0 ?Mathf.RoundToInt( AttackDamage * (1 + (IncreasedStempGroundDamagePercentage / 100))) : Mathf.RoundToInt(AttackDamage / (1 - (IncreasedStempGroundDamagePercentage / 100)));
+    public float IncreasedStempGroundDamagePercentage { set; get; } = 200;
+    float _stempGroundPower = 50;
+    public float StempGroundPower => IncreasedStempGroundPowerPercentage > 0 ? _stempGroundPower * (1 + (IncreasedStempGroundPowerPercentage / 100)) : _stempGroundPower / (1 - (IncreasedStempGroundPowerPercentage / 100));
+    public float IncreasedStempGroundPowerPercentage { set; get; } = 200;
 
     // 반경 테스트 변수
     Vector3 _tc;
@@ -127,6 +141,8 @@ public class FatherAI : MonoBehaviour
 
         if (_player == null)
             _player = Managers.GetManager<GameManager>().Player;
+
+        StempGround();
 
         if(_normalAttackElapsed < NormalAttackCoolTime)
         {
@@ -254,7 +270,7 @@ public class FatherAI : MonoBehaviour
                 Character c = go.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    c.Damage(_character, NormalAttackDamage, 100, c.transform.position - transform.position);
+                    c.Damage(_character, AttackDamage, 100, c.transform.position - transform.position);
                 }
             }
         }
@@ -270,7 +286,7 @@ public class FatherAI : MonoBehaviour
                 Character c = go.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    c.Damage(_character, NormalAttackDamage, 100, Vector3.up,0.4f);
+                    c.Damage(_character, AttackDamage, 100, Vector3.up,0.4f);
                 }
             }
         }
@@ -358,7 +374,7 @@ public class FatherAI : MonoBehaviour
                     Character character = hit.collider.gameObject.GetComponent<Character>();
                     if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                     {
-                        character.Damage(_character, 1, 10, character.transform.position - center);
+                        character.Damage(_character, ShockwaveDamage, 50, character.transform.position - center);
                     }
                 }
             }
@@ -366,5 +382,32 @@ public class FatherAI : MonoBehaviour
         }
 
         Camera.main.GetComponent<CameraController>().StopShockwave(num);
+    }
+
+    void StempGround()
+    {
+        if (_stempGroundElaspsedTime < _stempGroundCoolTime)
+        {
+            _stempGroundElaspsedTime += Time.deltaTime;
+        }
+        else
+        {
+            _stempGroundElaspsedTime = 0;
+
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
+
+            if (gos.Length > 0)
+            {
+                _spearAttackElapsed = 0;
+                foreach (var go in gos)
+                {
+                    Character c = go.GetComponent<Character>();
+                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        c.Damage(_character, StempGroundDamage, StempGroundPower, Vector3.up, 1);
+                    }
+                }
+            }
+        }
     }
 }

@@ -135,7 +135,12 @@ public class UICardSelection : UIBase
         for(int i =0; i < _cardNameTextList.Count; i++)
         {
             _cardNameTextList[i].text = _cardSelectionList[i].CardName.ToString(); 
-            _cardDescriptionTextList[i].text = _cardSelectionList[i].CardDescription; ;
+
+            string cardDescription = _cardSelectionList[i].CardDescription;
+
+
+            TranslateCardDescription(_cardSelectionList[i], ref cardDescription);
+            _cardDescriptionTextList[i].text = cardDescription;
         }
     }
 
@@ -182,6 +187,18 @@ public class UICardSelection : UIBase
             _playerList[i].PlayFeedbacks();
 
             yield return new WaitForSecondsRealtime(0.2f);
+        }
+    }
+
+    public void TranslateCardDescription(CardData cardData, ref string description)
+    {
+        if (description != null)
+        {
+            if (cardData.CardName == Define.CardName.강아지부활시간감소)
+            {
+                DogAI dogAi = Managers.GetManager<GameManager>().DogAI;
+                description = string.Format(description, dogAi.ReviveTime, Util.PreviewPercentage(dogAi.OriginalReviveTime, dogAi.IncreasedRevivePercetage, -20));
+            }
         }
     }
 }

@@ -125,4 +125,17 @@ public static class Util
         if (range.figureType == Define.FigureType.Raycast)
             Gizmos.DrawRay(go.transform.position + range.center, range.size);
     }
+
+    public static float PreviewPercentage(float orginValue, float currentPercentage, float increasedPercentage)
+    {
+        float percentage = currentPercentage + increasedPercentage;
+
+        return percentage > 0 ? orginValue * (1 + percentage/100) : orginValue/(1-percentage / 100);
+    }
+    public static int PreviewPercentage(int orginValue, float currentPercentage, float increasedPercentage)
+    {
+        float percentage = currentPercentage + increasedPercentage;
+
+        return percentage > 0 ? Mathf.RoundToInt(orginValue * (1 + percentage/100)) :Mathf.RoundToInt( orginValue / (1 - percentage/100));
+    }
 }

@@ -23,6 +23,8 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField][Range(0,1)] float _audioLength;
     Coroutine _audioCoroutine;
 
+    [Header("ÃÑ±â ´É·ÂÄ¡")]
+
     [SerializeField]protected bool _isRaycast;
     [SerializeField] protected bool _isAuto;
     public bool IsAuto => _isAuto;
@@ -32,8 +34,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected float _bulletSpeed = 15;
     public float BulletSpeed => _bulletSpeed;
 
+    [SerializeField] protected float _attackMultiplier = 1;
+    public float AttackMutiplier => _attackMultiplier;
     [SerializeField] protected int _damage = 1;
-    public int Damage => (_damage + (_player ? _player.IncreasedDamage : 0));
+    public int Damage => (_damage + (_player ? Mathf.RoundToInt(_player.IncreasedDamage * _attackMultiplier) : 0));
 
     [SerializeField] int _penerstratingPower;
     public int PenerstratingPower => (_penerstratingPower+ (_player? _player.IncreasedPenerstratingPower:0));

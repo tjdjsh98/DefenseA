@@ -2,6 +2,7 @@ using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -311,7 +312,7 @@ public class GameManager : ManagerBase
                     Player.IncreasedDamage += 1;
                     break;
                 case Define.CardName.딸체력재생력증가:
-                    Daughter.IncreasedRecoverHpPower += 0.2f;
+                    Daughter.IncreasedRecoverHpPower += 0.1f;
                     break;
                 case Define.CardName.엑스트라웨폰:
                     break;
@@ -321,22 +322,20 @@ public class GameManager : ManagerBase
                     Player.IsHaveAutoReload = true;
                     break;
                 case Define.CardName.아빠최대체력증가:
-                    Father.AddMaxHp(2);
+                    Father.AddMaxHp(10);
                     break;
-                case Define.CardName.아빠일반공격력증가:
-                    FatherAI.IncreasedNormalAttackDamage += 1;
+                case Define.CardName.아빠공격력증가:
+                    FatherAI.AttackDamage += 1;
                     break;
                 case Define.CardName.아빠공격속도증가:
                     FatherAI.IncreasedNormalAttackSpeedPercentage += 10;
-                    break;
-                case Define.CardName.아빠일반공격주기감소:
                     FatherAI.DecreasedNormalAttackCoolTimePercentage += 10;
                     break;
                 case Define.CardName.쇼크웨이브언락:
                     FatherAI.IsUnlockShockwave = true;
                     break;
                 case Define.CardName.쇼크웨이브반경증가:
-                    FatherAI.ShockwaveRange += 5;
+                    FatherAI.ShockwaveRange += 10;
                     break;
                 case Define.CardName.쇼크웨이브공격주기감소:
                     FatherAI.DecreasedShockwaveCoolTimePercentage += 10;
@@ -345,7 +344,7 @@ public class GameManager : ManagerBase
                     FatherAI.ShockwaveHitCount += 1;
                     break;
                 case Define.CardName.아빠체력재생력증가:
-                    Father.IncreasedRecoverHpPower += 0.4f;
+                    Father.IncreasedRecoverHpPower += 0.3f;
                     break;
                 case Define.CardName.꿰뚫기언락:
                     break;
@@ -364,7 +363,40 @@ public class GameManager : ManagerBase
                     scale.y += 0.1f;
                     scale.z += 0.1f;
                     Dog.transform.localScale = scale;
-
+                    break;
+                case Define.CardName.강아지체력재생력증가:
+                    Dog.IncreasedRecoverHpPower += 0.5f;
+                    break;
+                case Define.CardName.강아지데미지감소:
+                    Dog.IncreasedDamagePercentage -= 10f;
+                    break;
+                case Define.CardName.강아지데미지반사:
+                    DogAI.ReflectionDamage += 1;
+                    break;
+                case Define.CardName.강아지부활시간감소:
+                    DogAI.IncreasedRevivePercetage -= 10;
+                    break;
+                case Define.CardName.강아지부활시부호막부여:
+                    break;
+                case Define.CardName.강아지사망시폭발:
+                    break;
+                case Define.CardName.강아지폭발데미지증가:
+                    break;
+                case Define.CardName.강아지폭발범위증가:
+                    break;
+                case Define.CardName.강아지부활시딸의위치로이동:
+                    break;
+                case Define.CardName.쇼크웨이브공격력증가:
+                    FatherAI.IncreasedShockwaveDamagePercentage += 100;
+                    break;
+                case Define.CardName.땅구르기해금:
+                    FatherAI.IsUnlockStempGround = true;
+                    break;
+                case Define.CardName.땅구르기데미지증가:
+                    FatherAI.IncreasedStempGroundDamagePercentage += 50;
+                    break;
+                case Define.CardName.땅구르기높이증가:
+                    FatherAI.IncreasedStempGroundPowerPercentage += 20;
                     break;
                 case Define.CardName.END:
                     break;
@@ -373,34 +405,6 @@ public class GameManager : ManagerBase
             {
                 Daughter.SetMaxHp(Daughter.MaxHp + 2);
             }
-            //if(data.CardName == Define.CardName.반동제어)
-            //{
-            //    Player.SetReboundControlPower(Player.ReboundControlPower + 10);
-            //}
-            //if(data.CardName == Define.CardName.총알관통력증가)
-            //{
-            //    Player.PenerstratingPower++;
-            //}
-            //if (data.CardName == Define.CardName.재장전시간감소)
-            //{
-            //    Player.ReduceReloadTime += 10;
-            //}
-            //if (data.CardName == Define.CardName.스피어능력해제)
-            //{
-            //    FatherAI.IsUnlockSpear= true;
-            //}
-            //if (data.CardName == Define.CardName.쇼크웨이브능력해제)
-            //{
-            //    FatherAI.IsUnlockShockwave = true;
-            //}
-            //if (data.CardName == Define.CardName.방벽크기증가)
-            //{
-            //    Vector3 scale = Dog.transform.localScale;
-            //    scale.x += 0.1f;
-            //    scale.y += 0.1f;
-            //    Dog.transform.localScale = scale;
-            //    Dog.SetMaxHp(Dog.MaxHp + 5);
-            //}
         }
     }
     public int GetCardSelectionCount(Define.CardName cardSelection)
