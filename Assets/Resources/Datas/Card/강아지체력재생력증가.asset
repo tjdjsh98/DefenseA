@@ -15,7 +15,10 @@ MonoBehaviour:
   _cardName: 29
   _cardType: 0
   _cardDescription: "\uAC15\uC544\uC9C0\uC758 \uCCB4\uB825\uC7AC\uC0DD\uB825\uC774
-    0.5 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+    0.5 \uC99D\uAC00\uD569\uB2C8\uB2E4.\n{0}=>{1}"
   _isStartCard: 1
   _cardListToAdd: []
   _maxUpgradeCount: 10
+  _increaseHp: 0
+  _increaseRecoverHpPower: 0
+  _increaseDamageReducePercentage: 0

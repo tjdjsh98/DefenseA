@@ -11,13 +11,13 @@ using UnityEngine.UI;
 public class UICardSelection : UIBase
 {
     [SerializeField] List<GameObject> _cardList;
-    [SerializeField]List<MMF_Player> _playerList;
+    [SerializeField] List<MMF_Player> _playerList;
 
     List<CardData> _cashDatas;
 
     int _cardCount;
 
-    List <TextMeshProUGUI> _cardNameTextList = new List<TextMeshProUGUI>();
+    List<TextMeshProUGUI> _cardNameTextList = new List<TextMeshProUGUI>();
     List<TextMeshProUGUI> _cardDescriptionTextList = new List<TextMeshProUGUI>();
     List<Image> _cardBloodImageList = new List<Image>();
     List<float> _cardBloodDryValueList = new List<float>();
@@ -37,7 +37,7 @@ public class UICardSelection : UIBase
             _cardBloodDryValueList.Add(1.5f);
             _cardBloodIsHoverList.Add(false);
             _cardBloodImageList.Add(card.transform.Find("Model").Find("Front").Find("Blood").GetComponent<Image>());
-            _cardBloodImageList[_cardBloodImageList.Count-1].material = new Material(_cardBloodImageList[_cardBloodImageList.Count-1].material);
+            _cardBloodImageList[_cardBloodImageList.Count - 1].material = new Material(_cardBloodImageList[_cardBloodImageList.Count - 1].material);
         }
         _cardCount = _cardList.Count;
 
@@ -46,7 +46,7 @@ public class UICardSelection : UIBase
 
     private void Update()
     {
-        for(int i =0; i < _cardBloodDryValueList.Count; i++)
+        for (int i = 0; i < _cardBloodDryValueList.Count; i++)
         {
             if (_cardBloodIsHoverList[i] == true)
             {
@@ -58,7 +58,7 @@ public class UICardSelection : UIBase
                         _cardBloodDryValueList[i] -= Time.unscaledDeltaTime * 3;
 
                     Color color = _cardNameTextList[i].color;
-                    if(color.a > 0)
+                    if (color.a > 0)
                     {
                         color.a -= Time.unscaledDeltaTime * 3;
                         _cardNameTextList[i].color = color;
@@ -85,7 +85,7 @@ public class UICardSelection : UIBase
                 _cardBloodImageList[i].material.SetFloat(_dryValueID, _cardBloodDryValueList[i]);
             }
         }
-        for(int i =0; i < _cardBloodIsHoverList.Count; i++)
+        for (int i = 0; i < _cardBloodIsHoverList.Count; i++)
         {
             _cardBloodIsHoverList[i] = false;
         }
@@ -99,7 +99,7 @@ public class UICardSelection : UIBase
 
         _cashDatas = Managers.GetManager<GameManager>().GetRemainCardSelection().ToList();
 
-        for(int i =0; i < _cardCount; i++)
+        for (int i = 0; i < _cardCount; i++)
         {
             int random = Random.Range(0, _cashDatas.Count);
             _cardSelectionList.Add(_cashDatas[random]);
@@ -132,9 +132,9 @@ public class UICardSelection : UIBase
 
     void Refresh()
     {
-        for(int i =0; i < _cardNameTextList.Count; i++)
+        for (int i = 0; i < _cardNameTextList.Count; i++)
         {
-            _cardNameTextList[i].text = _cardSelectionList[i].CardName.ToString(); 
+            _cardNameTextList[i].text = _cardSelectionList[i].CardName.ToString();
 
             string cardDescription = _cardSelectionList[i].CardDescription;
 
@@ -156,7 +156,7 @@ public class UICardSelection : UIBase
         if (_cashDatas.Count < _cardCount) return;
 
         _cardSelectionList.Clear();
-          for (int i = 0; i < _cardCount; i++)
+        for (int i = 0; i < _cardCount; i++)
         {
             int random = Random.Range(0, _cashDatas.Count);
             _cardSelectionList.Add(_cashDatas[random]);
@@ -167,7 +167,7 @@ public class UICardSelection : UIBase
 
     private void OnUIMouseHover(List<GameObject> list)
     {
-        foreach(GameObject go in list)
+        foreach (GameObject go in list)
         {
             for (int i = 0; i < _cardBloodImageList.Count; i++)
             {
@@ -182,7 +182,7 @@ public class UICardSelection : UIBase
 
     IEnumerator CorOpenCards()
     {
-        for(int i =0; i < _playerList.Count; i++)
+        for (int i = 0; i < _playerList.Count; i++)
         {
             _playerList[i].PlayFeedbacks();
 
@@ -198,6 +198,23 @@ public class UICardSelection : UIBase
             {
                 DogAI dogAi = Managers.GetManager<GameManager>().DogAI;
                 description = string.Format(description, dogAi.ReviveTime, Util.PreviewPercentage(dogAi.OriginalReviveTime, dogAi.IncreasedRevivePercetage, -20));
+            }
+            if (cardData.CardName == Define.CardName.강아지데미지감소)
+            {
+                Character dog = Managers.GetManager<GameManager>().Dog;
+                description = string.Format(description,
+                    dog.IncreasedDamagePercentage, -10);
+            }
+            if (cardData.CardName == Define.CardName.강아지데미지반사)
+            {
+                DogAI dogAi = Managers.GetManager<GameManager>().DogAI;
+                description = string.Format(description, dogAi.ReflectionDamage, dogAi.ReflectionDamage+ 1);
+            }
+            if (cardData.CardName == Define.CardName.강아지체력재생력증가)
+            {
+                Character dog = Managers.GetManager<GameManager>().Dog;
+                description = string.Format(description,
+                    dog.IncreasedDamagePercentage, -10);
             }
         }
     }

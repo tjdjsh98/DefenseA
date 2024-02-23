@@ -9,13 +9,25 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
+  m_Script: {fileID: 11500000, guid: 2fb8f268ddeae51469c1f11543f2ffa8, type: 3}
   m_Name: "\uBE60\uB978\uC7AC\uC7A5\uC804"
   m_EditorClassIdentifier: 
-  _cardName: 6
-  _cardType: 0
-  _cardDescription: "\uB354 \uBE60\uB978 \uC7AC\uC7A5\uC804\uC744 \uD560 \uC218 \uC788\uAC8C\uD569\uB2C8\uB2E4."
-  _isStartCard: 1
-  _cardListToAdd:
-  - {fileID: 11400000, guid: 0403f13ce5f8d7249927e862c5f92c35, type: 2}
-  _maxUpgradeCount: 1
+  <CardName>k__BackingField: 6
+  <CardSelectionType>k__BackingField: 0
+  <CardDescription>k__BackingField: "\uD0C4\uC744 \uB354 \uBE60\uB974\uAC8C \uC7AC\uC7A5\uC804\uD560
+    \uC218 \uC788\uC2B5\uB2C8\uB2E4."
+  <IsStartCard>k__BackingField: 1
+  <CardListToAdd>k__BackingField: []
+  <MaxUpgradeCount>k__BackingField: 1
+  <IncreaseHp>k__BackingField: 0
+  <IncreaseRecoverHpPower>k__BackingField: 0
+  <IncreaseDamageReducePercentage>k__BackingField: 0
+  <UnlockLastShot>k__BackingField: 0
+  <UnlockFastReload>k__BackingField: 1
+  <UnlockAutoReload>k__BackingField: 0
+  <UnlockExtraAmmo>k__BackingField: 0
+  <DecreaseFireDelayPercentage>k__BackingField: 0
+  <IncreaseReloadSpeedPercentage>k__BackingField: 0
+  <IncreaseControlReboundPowerPercentage>k__BackingField: 0
+  <IncreasePenerstratePower>k__BackingField: 0
+  <IncreaseAttackPower>k__BackingField: 0
