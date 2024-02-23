@@ -44,6 +44,14 @@ public class Effect : MonoBehaviour, ITypeDefine
     {
         _visualEffect.SetVector3(id, vector);
     }
+    public void SetProperty(string id, float value)
+    {
+        _visualEffect.SetFloat(id, value);
+    }
+    public void SetProperty(string id, int value)
+    {
+        _visualEffect.SetInt(id, value);
+    }
 
     public void Play(Vector3 position)
     {

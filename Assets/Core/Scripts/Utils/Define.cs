@@ -56,7 +56,9 @@ public static class Define
         Effect,
         Flare,
         FireFlare,
-        Hit2
+        Hit2,
+        Explosion,
+        StempGround,
     }
     public enum FatherSkill
     {

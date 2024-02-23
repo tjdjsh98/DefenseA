@@ -230,7 +230,7 @@ MonoBehaviour:
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 0, y: 0, z: 0}
+    size: {x: 4.87, y: 0.75, z: 0}
     figureType: 0
   _isTurnBodyAlongVelocity: 1
   _hpBar: {fileID: 0}
@@ -248,6 +248,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyName: 0
+  <IsGroup>k__BackingField: 0
 --- !u!114 &3927619139887317043
 MonoBehaviour:
   m_ObjectHideFlags: 0

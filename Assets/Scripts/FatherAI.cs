@@ -395,7 +395,10 @@ public class FatherAI : MonoBehaviour
             _stempGroundElaspsedTime = 0;
 
             GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
-
+            Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
+            Effect effect= Managers.GetManager < ResourceManager>().Instantiate(effectOrigin);
+            effect.SetProperty("Range", _attackRangeList[4].size.x);
+            effect.Play(transform.position);
             if (gos.Length > 0)
             {
                 _spearAttackElapsed = 0;

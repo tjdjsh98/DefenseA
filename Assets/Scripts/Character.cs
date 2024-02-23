@@ -258,7 +258,7 @@ public class Character : MonoBehaviour
 
             Vector2 currentSpeed = _rigidBody.velocity;
 
-            if (_isContactGround)
+            if (_isEnableFly || _isContactGround)
             {
                 currentSpeed.x += (direction.x > 0 ? 1 : -1) *  (_isContactGround?_groundAccelePower:_airAccelePower) * Time.deltaTime;
                 if (Mathf.Abs(currentSpeed.x) > maxXSpeed)

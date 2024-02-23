@@ -27,7 +27,15 @@ public class DogAI : MonoBehaviour
         _reviveTime * (1 + IncreasedRevivePercetage/100) : _reviveTime / (1 - IncreasedRevivePercetage / 100);
     float _reviveElapsedTime = 0;
 
+    // 폭파능력
+    [field:Header("폭파 능력")]
+    [field:SerializeField]public bool IsUnlockExplosionWhenDead { set; get; } = false;
+    [field:SerializeField]public float ExplosionRange { set; get; } = 10;
+    [field: SerializeField] public float ExplosionPower { set; get; } = 50;
+    [field: SerializeField] public int ExplosionDamage { set; get; } = 50;
 
+
+    [field: SerializeField] public bool IsReviveWhereDaughterPosition { set; get; } = false;
     // 추가적 능력치
     public int ReflectionDamage { set; get; } = 0;
     public float IncreasedRevivePercetage { set; get; }
@@ -38,6 +46,36 @@ public class DogAI : MonoBehaviour
         Managers.GetManager<GameManager>().DogAI = this;
 
         _character.CharacterDamaged += OnCharacterDamaged;
+        _character.CharacterDead += OnCharacterDead;
+    }
+
+    private void OnCharacterDead()
+    {
+        if (!IsUnlockExplosionWhenDead) return;
+
+        Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Explosion);
+        Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
+        effect.SetProperty("Radius", (ExplosionRange-10)/2);   
+        effect.SetProperty("BubbleCount", (int)Mathf.Pow(ExplosionRange/5,2));
+
+        effect.Play(_character.GetCenter());
+
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, new Define.Range()
+        {
+            center = _character.GetCenter(),
+            size = new Vector3(ExplosionRange, ExplosionRange, ExplosionRange),
+            figureType = Define.FigureType.Circle
+        });
+
+        foreach(var gameObject in gameObjects)
+        {
+            Character character = gameObject.GetComponent<Character>();
+            if (character && character.CharacterType == Define.CharacterType.Enemy)
+            {
+                character.Damage(_character, ExplosionDamage, ExplosionPower, character.transform.position
+                    - _character.GetCenter(), 1);
+            }
+        }
     }
 
     private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
@@ -54,6 +92,15 @@ public class DogAI : MonoBehaviour
     }
     private void Update()
     {
+        Revive();
+
+        if (_character.IsDead) return;
+        MoveForward();
+        Targeting();
+    }
+
+    void Revive()
+    {
         if (_character.IsDead)
         {
             if (_reviveElapsedTime < _reviveTime)
@@ -64,15 +111,12 @@ public class DogAI : MonoBehaviour
             {
                 _reviveTime = 0;
                 _character.Revive();
+                if (IsReviveWhereDaughterPosition)
+                    transform.position = Managers.GetManager<GameManager>().Player.transform.position;
             }
-
-            return;
         }
 
-        MoveForward();
-        Targeting();
     }
-
     protected virtual void MoveForward()
     {
         if (_detectEnemyCoroutine == null)

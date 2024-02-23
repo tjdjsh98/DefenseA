@@ -14808,6 +14808,10 @@ PrefabInstance:
       propertyPath: _detecctRange.center.y
       value: 3.32
       objectReference: {fileID: 0}
+    - target: {fileID: 4669120605170730670, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: <ExplosionWhenDead>k__BackingField
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5184441067649960510, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: m_Size.x
       value: 2.1864252
@@ -14823,6 +14827,14 @@ PrefabInstance:
     - target: {fileID: 5184441067649960510, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: m_Offset.y
       value: 1.0999677
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: _hp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
+      propertyPath: _maxHp
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6881585769480385616, guid: f39ce4312d5fd4440a1a4c0ecca2b152, type: 3}
       propertyPath: _speed
