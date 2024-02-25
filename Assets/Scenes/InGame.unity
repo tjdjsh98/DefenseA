@@ -4237,7 +4237,7 @@ MonoBehaviour:
   FatherAI: {fileID: 0}
   _summonDummy: 0
   _dummyHp: 5
-  _stop: 1
+  _stop: 0
   <MapSize>k__BackingField: 500
   _allMaxExpFive: 1
   _exp: 5
@@ -4274,6 +4274,7 @@ MonoBehaviour:
     enemyList: 0000000001000000020000000300000004000000
     hpMultiply: 7
   _currentWave: 0
+  _priorCardList: []
 --- !u!1 &864241778
 GameObject:
   m_ObjectHideFlags: 0

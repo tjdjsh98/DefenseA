@@ -11,7 +11,7 @@ public class CardData : ScriptableObject,ITypeDefine
     [field: SerializeField] public bool IsStartCard { set; get; }
 
     // 처음 해당 카드를 선택할 때 카드 목록을 업그레이드할 목록에 넣어줌.
-    [field: SerializeField] public List<CardData> CardListToAdd {set;get; }
+    [field: SerializeField] public List<Define.CardName> PriorCards {set;get; }
     [field: SerializeField] public int MaxUpgradeCount { get; set; }
 
     [field: SerializeField] public int IncreaseHp { get; set; }

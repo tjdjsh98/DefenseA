@@ -1,16 +1,7 @@
-using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
-using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.Tracing;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Security.Cryptography.X509Certificates;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Analytics;
 using UnityEngine.Playables;
-using UnityEngine.WSA;
 
 public class GameManager : ManagerBase
 {
@@ -94,7 +85,7 @@ public class GameManager : ManagerBase
     [Header("카드 선택지")]
     List<CardData> _remainCardSelectionList;
     Dictionary<Define.CardName, int> _cardSelectionCount = new Dictionary<Define.CardName, int>();
-
+    [SerializeField]List<PriorCard> _priorCardList = new List<PriorCard>();
 
     Vector3 _preMousePosition;
 
@@ -118,7 +109,22 @@ public class GameManager : ManagerBase
 
     public override void Init()
     {
-        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) => { return d.IsStartCard; });
+        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) => 
+        {
+            if(d.IsStartCard)
+            {
+                return true;
+            }
+            else
+            {
+                PriorCard prior = new PriorCard();
+                prior.cardName = d.CardName;
+                foreach(var card in d.PriorCards)
+                    prior.priorCardList.Add(card);
+                _priorCardList.Add(prior);
+                return false;
+            }
+        });
         _map = new Map(60f);
         _map.SetCenterGround(GameObject.Find("Ground"));
         _map.AddBuildingPreset("Prefabs/BuildingPreset1");
@@ -258,13 +264,24 @@ public class GameManager : ManagerBase
     // 카드를 선택하여 능력치 추가
     public void SelectCardData(CardData data)
     {
+
         if (!_cardSelectionCount.ContainsKey(data.CardName))
         {
             _cardSelectionCount.Add(data.CardName, 0);
-            _remainCardSelectionList.AddRange(data.CardListToAdd);
+
+            // 선행카드가 모두 만족되었다면 남은카드에 추가
+            foreach(var prior in _priorCardList)
+            {
+                prior.priorCardList.Remove(data.CardName);
+                if (prior.priorCardList.Count <= 0)
+                {
+                    _remainCardSelectionList.Add(Managers.GetManager<DataManager>().GetData<CardData>((int)prior.cardName));
+                }
+            }
         }
         _cardSelectionCount[data.CardName]++;
 
+        // 업그레이드가 모두 완료 시 남은 카드에서 삭제
         if(data.MaxUpgradeCount <= _cardSelectionCount[data.CardName])
         {
             _remainCardSelectionList.Remove(data);
@@ -354,3 +371,9 @@ struct Wave
     public float hpMultiply;
 }
 
+[System.Serializable]
+public class PriorCard
+{
+    public Define.CardName cardName;
+    public List<Define.CardName> priorCardList = new List<Define.CardName>();
+}

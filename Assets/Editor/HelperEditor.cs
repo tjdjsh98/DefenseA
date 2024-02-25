@@ -13,7 +13,7 @@ using UnityEngine;
 
 public class HelperEditor : EditorWindow
 {
-    const string DAUGHTER_CARD_DATA_PATH = "Data/카드정보.csv";
+    const string DAUGHTER_CARD_DATA_PATH = "Data/딸카드.csv";
     const string FATHER_CARD_DATA_PATH = "Data/아빠카드.csv";
     const string DOG_CARD_DATA_PATH = "Data/강아지카드.csv";
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
@@ -30,7 +30,7 @@ public class HelperEditor : EditorWindow
         {
             CreateDaughterCardData();
             CreateFatherCardData();
-
+            CreateDogCardData();
         }
     }
     void CreateDaughterCardData()
@@ -40,14 +40,25 @@ public class HelperEditor : EditorWindow
 
         string[] lines = textAsset.text.Split('\n');
 
-        foreach (string line in lines)
+        string[] preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
         {
-            string[] words = line.Split(',');
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
             DaughterCardData data = ScriptableObject.CreateInstance<DaughterCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
+
+            string[] priorCards = words[4].Split("|",options:System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<Define.CardName>();
+            foreach (var priorCard in priorCards)
+            {
+                data.PriorCards.Add(GetCardName(priorCard));
+            }
             data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
             data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
@@ -55,11 +66,12 @@ public class HelperEditor : EditorWindow
             data.UnlockLastShot = words[9].Equals("1") ? true : false;
             data.UnlockFastReload = words[10].Equals("1") ? true : false;
             data.UnlockAutoReload = words[11].Equals("1") ? true : false;
-            data.DecreaseFireDelayPercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
-            data.IncreaseReloadSpeedPercentage = words[13].Equals("") ? 0 : float.Parse(words[13]);
-            data.IncreaseReboundControlPowerPercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
-            data.IncreasePenerstratingPower = words[15].Equals("") ? 0 : int.Parse(words[15]);
-            data.IncreaseAttackPoint = words[16].Equals("") ? 0 : int.Parse(words[16]);
+            data.UnlockExtraAmmo = words[12].Equals("1") ? true : false;
+            data.DecreaseFireDelayPercentage = words[13].Equals("") ? 0 : float.Parse(words[13]);
+            data.IncreaseReloadSpeedPercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
+            data.IncreaseReboundControlPowerPercentage = words[15].Equals("") ? 0 : float.Parse(words[15]);
+            data.IncreasePenerstratingPower = words[16].Equals("") ? 0 : int.Parse(words[16]);
+            data.IncreaseAttackPoint = ParseInt(words[17]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
@@ -73,19 +85,28 @@ public class HelperEditor : EditorWindow
 
         string[] lines = textAsset.text.Split('\n');
 
-        foreach (string line in lines)
+        string[] preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
         {
-            string[] words = line.Split(',');
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
             FatherCardData data = ScriptableObject.CreateInstance<FatherCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
+            string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<Define.CardName>();
+            foreach (var priorCard in priorCards)
+            {
+                data.PriorCards.Add(GetCardName(priorCard));
+            }
             data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
             data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-            data.IncreaseAttackPoint= words[9].Equals("") ? 0 : int.Parse(words[9]);
+            data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
             data.IncreaseNormalAttackSpeedPercentage = words[10].Equals("") ? 0 : float.Parse(words[10]);
             data.UnlockShockwave = words[11].Equals("1") ? true : false;
             data.IncreaseShockwaveDamagePercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
@@ -94,7 +115,48 @@ public class HelperEditor : EditorWindow
             data.IncreaseShockwaveCount = words[15].Equals("") ? 0 : int.Parse(words[15]);
             data.UnlockStempGround = words[16].Equals("1") ? true : false;
             data.IncreaseStempGroundDamagePercentage = words[17].Equals("") ? 0 : float.Parse(words[17]);
-            data.IncreaseStempGroundRangePercentage = words[18].Equals("") ? 0 : float.Parse(words[18]);
+            data.IncreaseStempGroundRangePercentage = ParseFloat(words[18]);
+
+            AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+    }
+    void CreateDogCardData()
+    {
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + DOG_CARD_DATA_PATH);
+        if (textAsset == null) return;
+
+        string[] lines = textAsset.text.Split('\n');
+
+        string[] preHeadWords = lines[0].Split(',');
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
+            DogCardData data = ScriptableObject.CreateInstance<DogCardData>();
+            data.name = words[0];
+            data.CardName = GetCardName(words[0]);
+            data.CardDescription = words[2];
+            data.IsStartCard = words[3].Equals("1") ? true : false;
+            string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<Define.CardName>();
+            foreach (var priorCard in priorCards)
+            {
+                data.PriorCards.Add(GetCardName(priorCard));
+            }
+            data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
+            data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
+            data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
+            data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
+            data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
+            data.IncreaseReflectionDamage = words[10].Equals("") ? 0 : int.Parse(words[10]);
+            data.DecreaseReviveTimePercentage = words[11].Equals("") ?0 : float.Parse(words[11]);
+            data.UnlockExplosionWhenDead = words[13].Equals("1") ? true : false;
+            data.IncreaseExplosionDamage = words[14].Equals("") ? 0 : int.Parse(words[14]);
+            data.IncreaseExplosionRange = words[15].Equals("") ? 0 : float.Parse(words[15]);
+            data.UnlockReviveWhereDaughterPosition = words[16].Equals("1") ? true : false;
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
@@ -158,4 +220,26 @@ public class HelperEditor : EditorWindow
         }
         return Define.CardName.None;
     }
+
+    int ParseInt(string value)
+    {
+        int result = 0;
+        int.TryParse(value, out result);
+        return result;
+    }
+
+    float ParseFloat(string value)
+    {
+        float result = 0;
+        float.TryParse(value, out result);
+        return result;
+    }
+    bool ParseBoolean(string value)
+    {
+        if (value.Equals("1"))
+            return true;
+
+        return false;
+    }
+
 }

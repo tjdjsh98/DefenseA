@@ -9,16 +9,23 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
+  m_Script: {fileID: 11500000, guid: a0ea544e4f3e52841ab2906e796945eb, type: 3}
   m_Name: "\uAC15\uC544\uC9C0\uCCB4\uB825\uC7AC\uC0DD\uB825\uC99D\uAC00"
   m_EditorClassIdentifier: 
-  _cardName: 29
-  _cardType: 0
-  _cardDescription: "\uAC15\uC544\uC9C0\uC758 \uCCB4\uB825\uC7AC\uC0DD\uB825\uC774
-    0.5 \uC99D\uAC00\uD569\uB2C8\uB2E4.\n{0}=>{1}"
-  _isStartCard: 1
-  _cardListToAdd: []
-  _maxUpgradeCount: 10
-  _increaseHp: 0
-  _increaseRecoverHpPower: 0
-  _increaseDamageReducePercentage: 0
+  <CardName>k__BackingField: 29
+  <CardSelectionType>k__BackingField: 0
+  <CardDescription>k__BackingField: "\uAC15\uC544\uC9C0\uC758 \uCCB4\uB825\uC7AC\uC0DD\uB825\uC774
+    0.5\uC99D\uAC00\uD569\uB2C8\uB2E4."
+  <IsStartCard>k__BackingField: 1
+  <PriorCards>k__BackingField: 
+  <MaxUpgradeCount>k__BackingField: 5
+  <IncreaseHp>k__BackingField: 0
+  <IncreaseRecoverHpPower>k__BackingField: 0.5
+  <IncreaseDamageReducePercentage>k__BackingField: 0
+  <IncreaseAttackPoint>k__BackingField: 0
+  <IncreaseReflectionDamage>k__BackingField: 0
+  <DecreaseReviveTimePercentage>k__BackingField: 0
+  <UnlockExplosionWhenDead>k__BackingField: 0
+  <IncreaseExplosionDamage>k__BackingField: 0
+  <IncreaseExplosionRange>k__BackingField: 0
+  <UnlockReviveWhereDaughterPosition>k__BackingField: 0
