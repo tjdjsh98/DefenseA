@@ -48,16 +48,15 @@ public class Player : MonoBehaviour
 
     // 추가적인 능력
     public bool IsHaveRemoveReboundAMoment { set; get; }
-    public bool IsHaveFastReload { set; get; }
-    public bool IsHaveExtraAmmo { set; get; }
-    public bool IsHaveAutoReload { set; get; } = true;
+    public bool IsUnlockFastReload { set; get; }
+    public bool IsUnlockExtraAmmo { set; get; }
+    public bool IsUnlockAutoReload { set; get; } = true;
     public int IncreasedPenerstratingPower { set; get; } = 0;
-    public bool IsHaveLastShot { set; get; }
-    public float DecreasedFireRatePercent { set; get; }
+    public bool IsUnlockLastShot { set; get; }
+    public float DecreasedFireDelayPercent { set; get; }
     public float IncreasedReloadSpeedPercent { set; get; }
     public float IncreasedReboundControlPowerPercent { set; get; }
     public float IncreasedReboundRecoverPercent { set; get; }
-    public int IncreasedDamage { set; get; }
 
 
     // 자동장전
@@ -97,7 +96,7 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon == null) return;
 
 
-        if (IsHaveFastReload)
+        if (IsUnlockFastReload)
         {
             _weaponSwaper.CurrentWeapon.FastReload();
         }
@@ -125,7 +124,7 @@ public class Player : MonoBehaviour
 
     private void AutoReload()
     {
-        if (!IsHaveAutoReload) return;
+        if (!IsUnlockAutoReload) return;
 
         for(int i = 0;i < _weaponSwaper.GetWeaponCount(); i++)
         {

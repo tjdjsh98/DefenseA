@@ -15,6 +15,7 @@ public class HelperEditor : EditorWindow
 {
     const string DAUGHTER_CARD_DATA_PATH = "Data/카드정보.csv";
     const string FATHER_CARD_DATA_PATH = "Data/아빠카드.csv";
+    const string DOG_CARD_DATA_PATH = "Data/강아지카드.csv";
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
     static void Init()
@@ -35,6 +36,7 @@ public class HelperEditor : EditorWindow
     void CreateDaughterCardData()
     {
         TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + DAUGHTER_CARD_DATA_PATH);
+        if (textAsset == null) return;
 
         string[] lines = textAsset.text.Split('\n');
 
@@ -55,9 +57,9 @@ public class HelperEditor : EditorWindow
             data.UnlockAutoReload = words[11].Equals("1") ? true : false;
             data.DecreaseFireDelayPercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
             data.IncreaseReloadSpeedPercentage = words[13].Equals("") ? 0 : float.Parse(words[13]);
-            data.IncreaseControlReboundPowerPercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
-            data.IncreasePenerstratePower = words[15].Equals("") ? 0 : int.Parse(words[15]);
-            data.IncreaseAttackPower = words[16].Equals("") ? 0 : int.Parse(words[16]);
+            data.IncreaseReboundControlPowerPercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
+            data.IncreasePenerstratingPower = words[15].Equals("") ? 0 : int.Parse(words[15]);
+            data.IncreaseAttackPoint = words[16].Equals("") ? 0 : int.Parse(words[16]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
@@ -67,6 +69,7 @@ public class HelperEditor : EditorWindow
     void CreateFatherCardData()
     {
         TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + FATHER_CARD_DATA_PATH);
+        if (textAsset == null) return;
 
         string[] lines = textAsset.text.Split('\n');
 
@@ -82,12 +85,12 @@ public class HelperEditor : EditorWindow
             data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-            data.IncreaseAttackPower= words[9].Equals("") ? 0 : int.Parse(words[9]);
+            data.IncreaseAttackPoint= words[9].Equals("") ? 0 : int.Parse(words[9]);
             data.IncreaseNormalAttackSpeedPercentage = words[10].Equals("") ? 0 : float.Parse(words[10]);
             data.UnlockShockwave = words[11].Equals("1") ? true : false;
             data.IncreaseShockwaveDamagePercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
             data.IncreaseShockwaveRangePercentage = words[13].Equals("") ? 0 : float.Parse(words[13]);
-            data.IncreaseShockwaveAttackSpeedPercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
+            data.DecreaseShockwaveCoolTimePercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
             data.IncreaseShockwaveCount = words[15].Equals("") ? 0 : int.Parse(words[15]);
             data.UnlockStempGround = words[16].Equals("1") ? true : false;
             data.IncreaseStempGroundDamagePercentage = words[17].Equals("") ? 0 : float.Parse(words[17]);

@@ -6,14 +6,14 @@ using UnityEngine;
 
 public class FatherCardData : CardData
 {
-    [field: SerializeField] public float IncreaseNormalAttackSpeedPercentage;
-    [field: SerializeField] public bool UnlockShockwave;
-    [field: SerializeField] public float IncreaseShockwaveDamagePercentage;
-    [field: SerializeField] public float IncreaseShockwaveRangePercentage;
-    [field: SerializeField] public float IncreaseShockwaveAttackSpeedPercentage;
-    [field: SerializeField] public int IncreaseShockwaveCount;
-    [field: SerializeField] public bool UnlockStempGround;
-    [field: SerializeField] public float IncreaseStempGroundDamagePercentage;
-    [field: SerializeField] public float IncreaseStempGroundRangePercentage;
+    [field: SerializeField] public float IncreaseNormalAttackSpeedPercentage { get; set; }
+    [field: SerializeField] public bool UnlockShockwave { get; set; }
+    [field: SerializeField] public float IncreaseShockwaveDamagePercentage { get; set; }
+    [field: SerializeField] public float IncreaseShockwaveRangePercentage { get; set; }
+    [field: SerializeField] public float DecreaseShockwaveCoolTimePercentage { get; set; }
+    [field: SerializeField] public int IncreaseShockwaveCount { get; set; }
+    [field: SerializeField] public bool UnlockStempGround { get; set; }
+    [field: SerializeField] public float IncreaseStempGroundDamagePercentage { get; set; }
+    [field: SerializeField] public float IncreaseStempGroundRangePercentage { get; set; }
 
 }

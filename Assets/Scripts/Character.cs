@@ -26,11 +26,11 @@ public class Character : MonoBehaviour
 
     // 증가되는 능력치
     public float IncreasedRecoverHpPower { set; get; }
-    public float IncreasedDamagePercentage { set; get; }
+    public float IncreasedDamageReducePercentage { set; get; }
 
     float _recoverHpTime;
     float _recoverHpAmount;
-
+    public int AttackPoint { set; get; }
     [SerializeField] float _speed;
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
@@ -204,8 +204,8 @@ public class Character : MonoBehaviour
     {
         Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
 
-        damage = IncreasedDamagePercentage > 0 ? Mathf.RoundToInt(damage * (1 + IncreasedDamagePercentage / 100)) :
-            Mathf.RoundToInt(damage / (1 - IncreasedDamagePercentage / 100));
+        damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
+            Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
 
         _hp -= damage;
         _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);

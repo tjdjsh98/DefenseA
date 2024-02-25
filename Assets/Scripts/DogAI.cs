@@ -23,8 +23,8 @@ public class DogAI : MonoBehaviour
 
     [SerializeField]float _reviveTime = 30;
     public float OriginalReviveTime => _reviveTime;
-    public float ReviveTime => IncreasedRevivePercetage > 0 ? 
-        _reviveTime * (1 + IncreasedRevivePercetage/100) : _reviveTime / (1 - IncreasedRevivePercetage / 100);
+    public float ReviveTime => DecreasedReviveTimePercetage > 0 ? 
+        _reviveTime /(1 + DecreasedReviveTimePercetage/100) : _reviveTime * (1 - DecreasedReviveTimePercetage / 100);
     float _reviveElapsedTime = 0;
 
     // 폭파능력
@@ -38,7 +38,7 @@ public class DogAI : MonoBehaviour
     [field: SerializeField] public bool IsReviveWhereDaughterPosition { set; get; } = false;
     // 추가적 능력치
     public int ReflectionDamage { set; get; } = 0;
-    public float IncreasedRevivePercetage { set; get; }
+    public float DecreasedReviveTimePercetage { set; get; }
 
     private void Awake()
     {

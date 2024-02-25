@@ -37,7 +37,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected float _attackMultiplier = 1;
     public float AttackMutiplier => _attackMultiplier;
     [SerializeField] protected int _damage = 1;
-    public int Damage => (_damage + (_player ? Mathf.RoundToInt(_player.IncreasedDamage * _attackMultiplier) : 0));
+    public int Damage => (_damage + (_player ? Mathf.RoundToInt(_character.AttackPoint * _attackMultiplier) : 0));
 
     [SerializeField] int _penerstratingPower;
     public int PenerstratingPower => (_penerstratingPower+ (_player? _player.IncreasedPenerstratingPower:0));
@@ -50,7 +50,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected bool _isAllReloadAmmo;
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _fireDelay;
-    public float FireDelay => _fireDelay + (_player? -(_player.DecreasedFireRatePercent/100f) *_fireDelay:0);
+    public float FireDelay => _fireDelay + (_player? -(_player.DecreasedFireDelayPercent/100f) *_fireDelay:0);
     [SerializeField] protected float _reloadDelay;
     public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercent /100f)* _reloadDelay:0);
 
@@ -130,7 +130,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             int damage = Damage;
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.IsHaveLastShot && _currentAmmo == 0)
+            if (Player.IsUnlockLastShot && _currentAmmo == 0)
                 damage = Damage * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage,Define.CharacterType.Enemy,PenerstratingPower);
             projectile.Fire(fireCharacter, direction.normalized);
@@ -188,7 +188,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         {
             if (_player)
             {
-                if (_player.IsHaveFastReload)
+                if (_player.IsUnlockFastReload)
                 {
                     _reloadGauge.Point(0.7f, 0.9f);
                 }
@@ -221,7 +221,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            if (_player.IsHaveExtraAmmo && !_fastReloadFailed)
+            if (_player.IsUnlockExtraAmmo && !_fastReloadFailed)
                 _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
             else
                 _currentAmmo = _maxAmmo;

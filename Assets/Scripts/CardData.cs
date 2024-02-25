@@ -17,7 +17,7 @@ public class CardData : ScriptableObject,ITypeDefine
     [field: SerializeField] public int IncreaseHp { get; set; }
     [field: SerializeField] public float IncreaseRecoverHpPower { get; set; }
     [field: SerializeField] public float IncreaseDamageReducePercentage { get; set; }
-    [field:SerializeField] public int IncreaseAttackPower { get; set; }
+    [field:SerializeField] public int IncreaseAttackPoint { get; set; }
 
     public int GetEnumToInt()
     {

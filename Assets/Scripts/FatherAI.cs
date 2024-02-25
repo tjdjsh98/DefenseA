@@ -56,8 +56,11 @@ public class FatherAI : MonoBehaviour
     float _shockwaveCoolTime = 20;
     public float ShockwaveCoolTime => DecreasedShockwaveCoolTimePercentage > 0 ? _shockwaveCoolTime / (1 + (DecreasedShockwaveCoolTimePercentage/100)) : _shockwaveCoolTime*(1- (DecreasedShockwaveCoolTimePercentage / 100));
     public float DecreasedShockwaveCoolTimePercentage { set; get; }
-    public int ShockwaveHitCount { set; get; } = 1;
-    public float ShockwaveRange { set; get; } = 20;
+    public int ShockwaveCount { set; get; } = 1;
+    [SerializeField]float _shockwaveRange = 20;
+    public float ShockwaveRange => IncreasedShockwaveRangePercentage >0? _shockwaveRange * (1 + IncreasedShockwaveRangePercentage/100): _shockwaveRange/(1-IncreasedShockwaveRangePercentage/100);
+    public float IncreasedShockwaveRangePercentage { set; get; } = 0;
+
     public float IncreasedShockwaveDamagePercentage { set; get; } = 500;
     public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + IncreasedShockwaveDamagePercentage)) :Mathf.RoundToInt( AttackDamage / (1 + IncreasedShockwaveDamagePercentage));
     [field:SerializeField]public bool IsUnlockShockwave { set; get; } = false;
@@ -71,6 +74,9 @@ public class FatherAI : MonoBehaviour
     float _stempGroundPower = 50;
     public float StempGroundPower => IncreasedStempGroundPowerPercentage > 0 ? _stempGroundPower * (1 + (IncreasedStempGroundPowerPercentage / 100)) : _stempGroundPower / (1 - (IncreasedStempGroundPowerPercentage / 100));
     public float IncreasedStempGroundPowerPercentage { set; get; } = 200;
+    float _stempGroundRange = 10;
+    public float StempGroundRange => IncreasedStempGroundRangePercentage > 0 ? _stempGroundRange * (1 + IncreasedStempGroundRangePercentage / 100) : _stempGroundRange / (1 - IncreasedStempGroundRangePercentage / 100);
+    public float IncreasedStempGroundRangePercentage { set; get; }
 
     // 반경 테스트 변수
     Vector3 _tc;
@@ -175,9 +181,9 @@ public class FatherAI : MonoBehaviour
         {
             if (_shockwaveElasped > ShockwaveCoolTime)
             {
-                if (ShockwaveHitCount >= 1)
+                if (ShockwaveCount >= 1)
                     StartCoroutine(CorShockwaveAttack());
-                if (ShockwaveHitCount >= 2)
+                if (ShockwaveCount >= 2)
                     StartCoroutine(CorShockwaveAttack(0.2f,1));
                 _shockwaveElasped = 0;
             }else

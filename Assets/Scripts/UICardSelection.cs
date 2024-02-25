@@ -197,13 +197,13 @@ public class UICardSelection : UIBase
             if (cardData.CardName == Define.CardName.강아지부활시간감소)
             {
                 DogAI dogAi = Managers.GetManager<GameManager>().DogAI;
-                description = string.Format(description, dogAi.ReviveTime, Util.PreviewPercentage(dogAi.OriginalReviveTime, dogAi.IncreasedRevivePercetage, -20));
+                description = string.Format(description, dogAi.ReviveTime, Util.PreviewPercentage(dogAi.OriginalReviveTime, dogAi.DecreasedReviveTimePercetage, -20));
             }
             if (cardData.CardName == Define.CardName.강아지데미지감소)
             {
                 Character dog = Managers.GetManager<GameManager>().Dog;
                 description = string.Format(description,
-                    dog.IncreasedDamagePercentage, -10);
+                    dog.IncreasedDamageReducePercentage, -10);
             }
             if (cardData.CardName == Define.CardName.강아지데미지반사)
             {
@@ -214,7 +214,7 @@ public class UICardSelection : UIBase
             {
                 Character dog = Managers.GetManager<GameManager>().Dog;
                 description = string.Format(description,
-                    dog.IncreasedDamagePercentage, -10);
+                    dog.IncreasedDamageReducePercentage, -10);
             }
         }
     }

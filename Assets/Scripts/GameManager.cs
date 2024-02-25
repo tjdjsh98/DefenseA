@@ -1,6 +1,8 @@
 using MoreMountains.Feedbacks;
+using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
+using System.Diagnostics.Tracing;
 using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography.X509Certificates;
@@ -271,7 +273,7 @@ public class GameManager : ManagerBase
         // TODO
         // 능력적용
 
-        if(data.CardSelectionType == Define.CardType.Weapon)
+        if (data.CardSelectionType == Define.CardType.Weapon)
         {
             WeaponCardSelection weaponCardSelection = data as WeaponCardSelection;
 
@@ -281,144 +283,58 @@ public class GameManager : ManagerBase
         }
         else
         {
-            switch (data.CardName)
+            DaughterCardData daughterCardData = data as DaughterCardData;
+            FatherCardData fatherCardData = data as FatherCardData;
+            DogCardData dogCardData = data as DogCardData;
+            if(daughterCardData != null)
             {
-                case Define.CardName.None:
-                    break;
-                case Define.CardName.딸최대체력증가:
-                    Daughter.AddMaxHp(5);
-                    break;
-                case Define.CardName.발사간격감소:
-                    Player.DecreasedFireRatePercent += 10;
-                    break;
-                case Define.CardName.재장전속도증가:
-                    Player.IncreasedReloadSpeedPercent += 10;
-                    break;
-                case Define.CardName.반동제어력증가:
-                    Player.IncreasedReboundControlPowerPercent += 10;
-                    break;
-                case Define.CardName.반동회복력증가:
-                    Player.IncreasedReboundRecoverPercent += 10;
-                    break;
-                case Define.CardName.반동삭제:
-                    Player.IsHaveRemoveReboundAMoment = true;
-                    break;
-                case Define.CardName.빠른재장전:
-                    Player.IsHaveFastReload = true;
-                    break;
-                case Define.CardName.추가탄창:
-                    Player.IsHaveExtraAmmo = true;
-                    break;
-                case Define.CardName.관통력증가:
-                    Player.IncreasedPenerstratingPower += 1;
-                    break;
-                case Define.CardName.라스트샷:
-                    Player.IncreasedReloadSpeedPercent -= 30;
-                    Player.IsHaveLastShot = true;
-                    break;
-                case Define.CardName.반동제어력감소데미지증가:
-                    Player.IncreasedReboundControlPowerPercent -= 30;
-                    Player.IncreasedDamage += 1;
-                    break;
-                case Define.CardName.딸체력재생력증가:
-                    Daughter.IncreasedRecoverHpPower += 0.1f;
-                    break;
-                case Define.CardName.엑스트라웨폰:
-                    break;
-                case Define.CardName.웨폰마스터:
-                    break;
-                case Define.CardName.자동장전:
-                    Player.IsHaveAutoReload = true;
-                    break;
-                case Define.CardName.아빠최대체력증가:
-                    Father.AddMaxHp(10);
-                    break;
-                case Define.CardName.아빠공격력증가:
-                    FatherAI.AttackDamage += 1;
-                    break;
-                case Define.CardName.아빠공격속도증가:
-                    FatherAI.IncreasedNormalAttackSpeedPercentage += 10;
-                    FatherAI.DecreasedNormalAttackCoolTimePercentage += 10;
-                    break;
-                case Define.CardName.쇼크웨이브언락:
-                    FatherAI.IsUnlockShockwave = true;
-                    break;
-                case Define.CardName.쇼크웨이브반경증가:
-                    FatherAI.ShockwaveRange += 10;
-                    break;
-                case Define.CardName.쇼크웨이브공격주기감소:
-                    FatherAI.DecreasedShockwaveCoolTimePercentage += 10;
-                    break;
-                case Define.CardName.쇼크웨이브히트휫수증가:
-                    FatherAI.ShockwaveHitCount += 1;
-                    break;
-                case Define.CardName.아빠체력재생력증가:
-                    Father.IncreasedRecoverHpPower += 0.3f;
-                    break;
-                case Define.CardName.꿰뚫기언락:
-                    break;
-                case Define.CardName.꿰뚫기공격주기감소:
-                    break;
-                case Define.CardName.꿰뚫기거리증가:
-                    break;
-                case Define.CardName.꿰뚫기확장:
-                    break;
-                case Define.CardName.꿰뚫기확장거리증가:
-                    break;
-                case Define.CardName.강아지체력증가:
-                    Dog.AddMaxHp(5);
-                    Vector3 scale = Dog.transform.localScale;
-                    scale.x += 0.1f;
-                    scale.y += 0.1f;
-                    scale.z += 0.1f;
-                    Dog.transform.localScale = scale;
-                    break;
-                case Define.CardName.강아지체력재생력증가:
-                    Dog.IncreasedRecoverHpPower += 0.5f;
-                    break;
-                case Define.CardName.강아지데미지감소:
-                    Dog.IncreasedDamagePercentage -= 10f;
-                    break;
-                case Define.CardName.강아지데미지반사:
-                    DogAI.ReflectionDamage += 1;
-                    break;
-                case Define.CardName.강아지부활시간감소:
-                    DogAI.IncreasedRevivePercetage -= 10;
-                    break;
-                case Define.CardName.강아지부활시부호막부여:
-                    break;
-                case Define.CardName.강아지사망시폭발:
-                    DogAI.IsUnlockExplosionWhenDead = true;
-                    break;
-                case Define.CardName.강아지폭발데미지증가:
-                    DogAI.ExplosionDamage += 10;
-                    break;
-                case Define.CardName.강아지폭발범위증가:
-                    DogAI.ExplosionRange += 5;
-                    break;
-                case Define.CardName.강아지부활시딸의위치로이동:
-                    DogAI.IsReviveWhereDaughterPosition = true;
-                    break;
-                case Define.CardName.쇼크웨이브공격력증가:
-                    FatherAI.IncreasedShockwaveDamagePercentage += 100;
-                    break;
-                case Define.CardName.땅구르기해금:
-                    FatherAI.IsUnlockStempGround = true;
-                    break;
-                case Define.CardName.땅구르기데미지증가:
-                    FatherAI.IncreasedStempGroundDamagePercentage += 50;
-                    break;
-                case Define.CardName.땅구르기높이증가:
-                    FatherAI.IncreasedStempGroundPowerPercentage += 20;
-                    break;
-                case Define.CardName.END:
-                    break;
+                Daughter.AddMaxHp(daughterCardData.IncreaseHp);
+                Daughter.IncreasedRecoverHpPower += daughterCardData.IncreaseRecoverHpPower;
+                Daughter.IncreasedDamageReducePercentage += daughterCardData.IncreaseDamageReducePercentage;
+                Daughter.AttackPoint += daughterCardData.IncreaseAttackPoint;
+
+                Player.IsUnlockLastShot|= daughterCardData.UnlockLastShot;
+                Player.IsUnlockFastReload |= daughterCardData.UnlockFastReload;
+                Player.IsUnlockAutoReload |= daughterCardData.UnlockAutoReload;
+                Player.IsUnlockExtraAmmo |= daughterCardData.UnlockExtraAmmo;
+                Player.DecreasedFireDelayPercent += daughterCardData.DecreaseFireDelayPercentage;
+                Player.IncreasedReloadSpeedPercent += daughterCardData.IncreaseReloadSpeedPercentage;
+                Player.IncreasedReboundControlPowerPercent += daughterCardData.IncreaseReboundControlPowerPercentage;
+                Player.IncreasedReboundRecoverPercent += daughterCardData.IncreaseReboundControlPowerPercentage;
+                Player.IncreasedPenerstratingPower += daughterCardData.IncreasePenerstratingPower;
             }
-            if (data.CardName == Define.CardName.딸최대체력증가)
+            if (fatherCardData != null)
             {
-                Daughter.SetMaxHp(Daughter.MaxHp + 2);
+                Father.AddMaxHp(fatherCardData.IncreaseHp);
+                Father.IncreasedRecoverHpPower += fatherCardData.IncreaseRecoverHpPower;
+                Father.IncreasedDamageReducePercentage += fatherCardData.IncreaseDamageReducePercentage;
+                Father.AttackPoint += fatherCardData.IncreaseAttackPoint;
+
+                FatherAI.IncreasedNormalAttackSpeedPercentage += fatherCardData.IncreaseNormalAttackSpeedPercentage;
+                FatherAI.IsUnlockShockwave |= fatherCardData.UnlockShockwave;
+                FatherAI.IncreasedShockwaveDamagePercentage += fatherCardData.IncreaseShockwaveDamagePercentage;
+                FatherAI.IncreasedShockwaveRangePercentage += fatherCardData.IncreaseShockwaveRangePercentage;
+                FatherAI.DecreasedShockwaveCoolTimePercentage += fatherCardData.DecreaseShockwaveCoolTimePercentage;
+                FatherAI.ShockwaveCount += fatherCardData.IncreaseShockwaveCount;
+                FatherAI.IsUnlockStempGround |= fatherCardData.UnlockStempGround;
+                FatherAI.IncreasedStempGroundDamagePercentage += fatherCardData.IncreaseStempGroundDamagePercentage;
+                FatherAI.IncreasedStempGroundRangePercentage += fatherCardData.IncreaseStempGroundRangePercentage;
             }
-        }
+            if (dogCardData != null)
+            {
+                Dog.AddMaxHp(dogCardData.IncreaseHp);
+                Dog.IncreasedRecoverHpPower += dogCardData.IncreaseRecoverHpPower;
+                Dog.IncreasedDamageReducePercentage += dogCardData.IncreaseDamageReducePercentage;
+                Dog.AttackPoint += dogCardData.IncreaseAttackPoint;
+
+                DogAI.ReflectionDamage += dogCardData.IncreaseReflectionDamage;
+                DogAI.DecreasedReviveTimePercetage += dogCardData.DecreaseReviveTimePercentage;
+                DogAI.IsUnlockExplosionWhenDead |= dogCardData.UnlockExplosionWhenDead;
+                DogAI.ExplosionDamage += dogCardData.IncreaseExplosionDamage;
+                DogAI.ExplosionRange += dogCardData.IncreaseExplosionRange;
+                DogAI.IsReviveWhereDaughterPosition |= dogCardData.UnlockReviveWhereDaughterPosition;
+            }
+        }        
     }
     public int GetCardSelectionCount(Define.CardName cardSelection)
     {
