@@ -392,6 +392,8 @@ public class FatherAI : MonoBehaviour
 
     void StempGround()
     {
+        if (!IsUnlockStempGround) return;
+
         if (_stempGroundElaspsedTime < _stempGroundCoolTime)
         {
             _stempGroundElaspsedTime += Time.deltaTime;

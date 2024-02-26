@@ -142,6 +142,11 @@ public class Character : MonoBehaviour
         _prePosition = currentPosition;
     }
 
+    public void SetSpeed(float speed)
+    {
+        _speed =speed;
+    }
+
     void HandleBreak()
     {
         // 브레이크
