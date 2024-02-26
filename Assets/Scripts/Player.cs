@@ -7,6 +7,7 @@ using Unity.Cinemachine;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
@@ -77,6 +78,8 @@ public class Player : MonoBehaviour
         _initBodyAngle = _body.transform.rotation.eulerAngles.z;
         _initFrontArmAngle = _frontArm.transform.rotation.eulerAngles.z;
 
+        _character.CharacterDead += OnCharacterDead;
+
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonDownHandler += UseWeapon;
         Managers.GetManager<InputManager>().MouseButtonHoldHandler += AutoUseWeapon;
@@ -89,6 +92,11 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().Num3KeyDownHandler += () => _weaponSwaper.SelectWeapon(2);
         Managers.GetManager<InputManager>().JumpKeyDownHandler += _character.Jump;
 
+    }
+
+    private void OnCharacterDead()
+    {
+        SceneManager.LoadScene("MainMenu");
     }
 
     private void OnReloadKeyDown()
@@ -298,7 +306,8 @@ public class Player : MonoBehaviour
 
         if(_weaponSwaper.CurrentWeapon && _weaponSwaper.CurrentWeapon.HandlePosition)
             _backArmIK.transform.position = _weaponSwaper.CurrentWeapon.HandlePosition.transform.position;
-        float screenWidth = Screen.width;
+        float screenWidth = Screen.
+            width;
         Vector3 mousePosition = Input.mousePosition;
 
         if (mousePosition.x > screenWidth / 4 * 3)

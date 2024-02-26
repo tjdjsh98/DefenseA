@@ -138,6 +138,15 @@ public static class Define
         Bat,
         END
     }
+
+    public enum WeaponPosition
+    {
+        Nonoe = -1,
+        Main,
+        Sub,
+        Melee,
+        END
+    }
     public enum Passive
     {
         None = 1,

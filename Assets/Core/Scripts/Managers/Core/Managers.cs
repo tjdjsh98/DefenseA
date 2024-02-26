@@ -40,6 +40,8 @@ public class Managers : MonoBehaviour
     static void Init()
     {
         _instance = Util.FindOrCreate("Manager").GetOrAddComponent<Managers>();
+        _coreManagers.Clear();
+        _contentManagers.Clear();
 
         for(int i = 0; i < Define.CORE_MANAGER_COUNT; i++)
         {

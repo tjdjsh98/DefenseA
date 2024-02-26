@@ -11,7 +11,9 @@ public class Character : MonoBehaviour
     Rigidbody2D _rigidBody;
     BoxCollider2D _boxCollider;
     CapsuleCollider2D _capsuleCollider;
+    Animator _animator;
 
+    #region 캐릭터능력치
     [Header("캐릭터 능력치")]
     [SerializeField] Define.CharacterType _characterType;
     public Define.CharacterType CharacterType=>_characterType;
@@ -22,7 +24,7 @@ public class Character : MonoBehaviour
     
     [SerializeField] int _maxMental = 100;
     public int MaxMental => _maxMental;
-    public int Mental { set; get; }
+    [field:SerializeField]public int Mental { set; get; }
 
     // 증가되는 능력치
     public float IncreasedRecoverHpPower { set; get; }
@@ -30,8 +32,13 @@ public class Character : MonoBehaviour
 
     float _recoverHpTime;
     float _recoverHpAmount;
-    public int AttackPoint { set; get; }
     [SerializeField] float _speed;
+
+    [SerializeField] bool _isGainMentalWhenKillIt;
+    [SerializeField] int _gainMentalAmount;
+    #endregion
+    public int AttackPoint { set; get; }
+
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
     [SerializeField] bool _isEnableRevive;
@@ -72,7 +79,6 @@ public class Character : MonoBehaviour
     public List<Define.Passive> CharacterPassive = new List<Define.Passive>();
 
 
-    Animator _animator;
 
     Vector3 _prePosition;
     Vector3 _mySpeed;
@@ -221,7 +227,10 @@ public class Character : MonoBehaviour
         if (_hp <= 0)
         {
             CharacterDead?.Invoke();
-            attacker.Mental += 5;
+            if (_isGainMentalWhenKillIt)
+            {
+                attacker.Mental += _gainMentalAmount;
+            }
 
             if (!_isEnableRevive)
             {

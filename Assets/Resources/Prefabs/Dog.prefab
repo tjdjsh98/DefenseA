@@ -269,9 +269,10 @@ GameObject:
   - component: {fileID: 4669120605170730670}
   - component: {fileID: 1268709811801672397}
   - component: {fileID: 5524488991626720711}
+  - component: {fileID: 4904645516249612683}
   m_Layer: 6
   m_Name: Dog
-  m_TagString: Untagged
+  m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -306,10 +307,10 @@ Rigidbody2D:
   m_Simulated: 1
   m_UseFullKinematicContacts: 0
   m_UseAutoMass: 0
-  m_Mass: 1
+  m_Mass: 5
   m_LinearDrag: 0
   m_AngularDrag: 0.05
-  m_GravityScale: 1
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -379,18 +380,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 0
-  _maxHp: 20
-  _hp: 20
+  _maxHp: 30
+  _hp: 30
   _maxMental: 100
-  _mental: 0
-  _speed: 5
+  <Mental>k__BackingField: 0
+  _speed: 1
+  _isGainMentalWhenKillIt: 0
+  _gainMentalAmount: 0
   _jumpPower: 10
   _isEnableFly: 0
-  <IsEnableMove>k__BackingField: 0
+  _isEnableRevive: 1
+  <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 0, y: 0, z: 0}
+    size: {x: 1, y: 1, z: 0}
     figureType: 0
   _isTurnBodyAlongVelocity: 1
   _hpBar: {fileID: 0}
@@ -413,6 +417,17 @@ MonoBehaviour:
     size: {x: 53.9, y: 18.2, z: 0}
     figureType: 0
   _sitPosition: {fileID: 3040861773646171398}
+  _detecctRange:
+    center: {x: 0, y: 3.32, z: 0}
+    size: {x: 20, y: 15, z: 0}
+    figureType: 0
+  _playerDistance: 5
+  _reviveTime: 30
+  <IsUnlockExplosionWhenDead>k__BackingField: 0
+  <ExplosionRange>k__BackingField: 10
+  <ExplosionPower>k__BackingField: 50
+  <ExplosionDamage>k__BackingField: 50
+  <IsReviveWhereDaughterPosition>k__BackingField: 0
 --- !u!114 &1268709811801672397
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -445,6 +460,27 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 3
   m_SortAtRoot: 0
+--- !u!95 &4904645516249612683
+Animator:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7378709587785658188}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 0}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_StabilizeFeet: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorStateOnDisable: 0
+  m_WriteDefaultValuesOnDisable: 0
 --- !u!1001 &2501236662224489684
 PrefabInstance:
   m_ObjectHideFlags: 0

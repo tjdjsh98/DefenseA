@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -34,6 +35,8 @@ public class InputManager : ManagerBase
     public Action Num3KeyDownHandler;
     public Action ReloadKeyDownHandler;
     public Action JumpKeyDownHandler;
+    public Action InteractKeyDownHandler;
+    public Action SpecialAbilityKeyDownHandler;
 
     public Action RightArrowPressedHandler;
     public Action LeftArrowPressedHandler;
@@ -112,6 +115,10 @@ public class InputManager : ManagerBase
             ReloadKeyDownHandler?.Invoke();
         if(Input.GetKeyDown(KeyCode.Space))
             JumpKeyDownHandler?.Invoke();
+        if(Input.GetKeyDown(KeyCode.E))
+            InteractKeyDownHandler?.Invoke();
+        if (Input.GetKeyDown(KeyCode.Q))
+            SpecialAbilityKeyDownHandler?.Invoke();
 
         _isFinishRaycastUI = false;
     }

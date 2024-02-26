@@ -1891,7 +1891,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!4 &5355260975671581047
 Transform:
   m_ObjectHideFlags: 0
@@ -2585,7 +2585,10 @@ MonoBehaviour:
   _maxHp: 10
   _hp: 10
   _maxMental: 100
+  <Mental>k__BackingField: 100
   _speed: 3
+  _isGainMentalWhenKillIt: 0
+  _gainMentalAmount: 0
   _jumpPower: 60
   _isEnableFly: 0
   _isEnableRevive: 0
@@ -2610,8 +2613,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e8f11ec9a1f884c9d4f1f2aba7164a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _backArm: {fileID: 6568102991650161363}
-  _frontArmIK: {fileID: 2073481125427394391}
+  _frontArm: {fileID: 5810510895877490730}
+  _backArmIK: {fileID: 6631077920848071146}
   _head: {fileID: 517495475735600540}
   _body: {fileID: 8675598446564658201}
   _rightPadding: 0
@@ -2632,7 +2635,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _reloadGauge: {fileID: 0}
-  _weaponNameList: 0000000004000000
+  _weaponNameList: ffffffff03000000
   _weaponSlotList:
   - {fileID: 4743824381584374038}
   - {fileID: 4477150851416204001}
@@ -2790,7 +2793,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &2333043513949845598
 Transform:
   m_ObjectHideFlags: 0

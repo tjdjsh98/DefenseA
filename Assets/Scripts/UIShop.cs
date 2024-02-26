@@ -1,7 +1,9 @@
 using JetBrains.Annotations;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO.IsolatedStorage;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,7 +14,7 @@ public class UIShop : UIBase
     [SerializeField] List<Button> _slotList;
     [SerializeField] List<Image> _slotImageList = new List<Image>();
     [SerializeField] List<TextMeshProUGUI> _slotTextList = new List<TextMeshProUGUI>();
-    [SerializeField] List<SelectionInfo> _selectionList = new List<SelectionInfo>();
+    [SerializeField] List<ShopItem> _selectionList = new List<ShopItem>();
 
     [SerializeField] List<Sprite> _spriteList;
     
@@ -25,7 +27,6 @@ public class UIShop : UIBase
         {
             _slotImageList.Add(slot.transform.Find("Image").GetComponent<Image>());
             _slotTextList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
-            _selectionList.Add(new SelectionInfo());
 
             int tempIndex = index;
             slot.onClick.AddListener(() => {
@@ -33,13 +34,17 @@ public class UIShop : UIBase
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
-                if (_selectionList[tempIndex].price <= gameManager.Money)
+                if (_selectionList[tempIndex].price <= gameManager.Daughter.Mental)
                 {
-                    gameManager.Money -= _selectionList[tempIndex].price;
-                    SelectionInfo info = _selectionList[tempIndex];
+                    gameManager.Daughter.Mental -= _selectionList[tempIndex].price;
+                    ShopItem info = _selectionList[tempIndex];
                     info.isSale = true;
                     _selectionList[tempIndex] = info;
 
+                    if (info.character.Equals("Daughter"))
+                    {
+                        gameManager.Player.WeaponSwaper.ChangeNewWeapon((int)info.weaponPosition, info.weaponName);
+                    }
                    
                     Refresh();
                 }
@@ -59,10 +64,15 @@ public class UIShop : UIBase
 
     public override void Open()
     {
-        for(int i =0; i < _selectionList.Count; i++)
-        {
-            _selectionList[i] = new SelectionInfo { index = Random.Range(0,4), price= Random.Range(5,20), isSale =false};
-        }
+        _selectionList.Clear();
+        Refresh();
+        gameObject.SetActive(true);
+    }
+
+    public void Open(List<ShopItem> list)
+    {
+        _selectionList.Clear();
+        _selectionList.AddRange(list);
         Refresh();
         gameObject.SetActive(true);
     }
@@ -75,42 +85,24 @@ public class UIShop : UIBase
     {
         for (int i = 0; i < _selectionList.Count; i++)
         {
-            _slotImageList[i].sprite = _spriteList[_selectionList[i].index];
             if (!_selectionList[i].isSale)
             {
-
-                _slotTextList[i].text = $"{_selectionList[i].price.ToString()}\\ \n";
-                string addDescription="";
-                if (_selectionList[i].index == 0)
-                {
-                    addDescription = "무기 공격력을 1 증가";
-                }
-                if (_selectionList[i].index == 1)
-                {
-                    addDescription = "무기 밀치는 힘 100 증가";
-                }
-                if (_selectionList[i].index == 2)
-                {
-                    addDescription = "재장전 딜레이 0.1초 감소";
-                }
-                if (_selectionList[i].index == 3)
-                {
-                    addDescription = "무기 탄창 수 3 증가";
-                }
-
-                _slotTextList[i].text += addDescription;
+                _slotTextList[i].text = $"{_selectionList[i].weaponPosition} : {_selectionList[i].weaponName.ToString()}\n";
+                _slotTextList[i].text += $"{_selectionList[i].price.ToString()}";
 
             }
             else
                 _slotTextList[i].text = "판매완료";
         }
     }
-
 }
 
-public struct SelectionInfo
+[System.Serializable]
+public class ShopItem
 {
-    public int index;
+    public string character;
+    public Define.WeaponName weaponName;
+    public Define.WeaponPosition weaponPosition;
     public int price;
     public bool isSale;
 }

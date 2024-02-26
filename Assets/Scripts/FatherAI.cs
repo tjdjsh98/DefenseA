@@ -62,7 +62,7 @@ public class FatherAI : MonoBehaviour
     public float IncreasedShockwaveRangePercentage { set; get; } = 0;
 
     public float IncreasedShockwaveDamagePercentage { set; get; } = 500;
-    public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + IncreasedShockwaveDamagePercentage)) :Mathf.RoundToInt( AttackDamage / (1 + IncreasedShockwaveDamagePercentage));
+    public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + IncreasedShockwaveDamagePercentage/100)) :Mathf.RoundToInt( AttackDamage / (1 + IncreasedShockwaveDamagePercentage/100));
     [field:SerializeField]public bool IsUnlockShockwave { set; get; } = false;
 
     // ¶¥±¸¸£±â
@@ -86,7 +86,9 @@ public class FatherAI : MonoBehaviour
     {
         _character = GetComponent<Character>();
         Managers.GetManager<GameManager>().FatherAI = this;
-        if(_attackRangeList.Count < Define.FatherSkillCount)
+        Managers.GetManager<InputManager>().SpecialAbilityKeyDownHandler += SpecialAbility;
+
+        if (_attackRangeList.Count < Define.FatherSkillCount)
         {
             for(int i = _attackRangeList.Count; i < Define.FatherSkillCount;i++) 
                 _attackRangeList.Add(new Define.Range());
@@ -148,9 +150,10 @@ public class FatherAI : MonoBehaviour
         if (_player == null)
             _player = Managers.GetManager<GameManager>().Player;
 
-        StempGround();
+        _shockwaveElasped += Time.deltaTime;
 
-        if(_normalAttackElapsed < NormalAttackCoolTime)
+
+        if (_normalAttackElapsed < NormalAttackCoolTime)
         {
             _normalAttackElapsed += Time.deltaTime;
             FollwerPlayer();
@@ -177,23 +180,17 @@ public class FatherAI : MonoBehaviour
                 _spearAttackElapsed = 0;
             }
         }
-        if (IsUnlockShockwave)
-        {
-            if (_shockwaveElasped > ShockwaveCoolTime)
-            {
-                if (ShockwaveCount >= 1)
-                    StartCoroutine(CorShockwaveAttack());
-                if (ShockwaveCount >= 2)
-                    StartCoroutine(CorShockwaveAttack(0.2f,1));
-                _shockwaveElasped = 0;
-            }else
-            {
-                _shockwaveElasped += Time.deltaTime;
-            }
-
-        }
+     
     }
 
+    public void SpecialAbility()
+    {
+        if (_player == null) return;
+
+        Shockwave();
+        StempGround();
+    }
+    
     public void AimFrontArmToEnemy()
     {
         Animation anim = GetComponent<Animation>();
@@ -351,6 +348,26 @@ public class FatherAI : MonoBehaviour
                     return;
                 }
             }
+        }
+    }
+
+    void Shockwave()
+    {
+        if (IsUnlockShockwave)
+        {
+            if (_shockwaveElasped > ShockwaveCoolTime)
+            {
+                if (ShockwaveCount >= 1)
+                    StartCoroutine(CorShockwaveAttack());
+                if (ShockwaveCount >= 2)
+                    StartCoroutine(CorShockwaveAttack(0.2f, 1));
+                _shockwaveElasped = 0;
+            }
+            else
+            {
+                _shockwaveElasped += Time.deltaTime;
+            }
+
         }
     }
 

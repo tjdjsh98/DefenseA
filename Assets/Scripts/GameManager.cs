@@ -50,17 +50,19 @@ public class GameManager : ManagerBase
             {
                 _exp = _exp - MaxExp;
                 Level++;
+                _maxExp = Mathf.RoundToInt(_maxExp * 1.5f);
                 Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
             }
         }
         get { return _exp; }
     }
+    int _maxExp = 3;
     public int MaxExp
     {
         get
         {
             if (_allMaxExpFive) return 5;
-            return Level * 3;
+            return _maxExp;
         }
     }
     public int Level { set; get; }
@@ -106,6 +108,8 @@ public class GameManager : ManagerBase
     // 땅과 관련변수
     Map _map;
 
+    [Header("상점 관련 변수")]
+    [field:SerializeField]public List<ShopItem> ShopItemList;
     public override void Init()
     {
         _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) => 
