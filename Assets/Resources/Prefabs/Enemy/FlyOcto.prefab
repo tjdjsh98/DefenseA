@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 2
+  _maxHp: 8
   _hp: 0
   _maxMental: 100
   _speed: 3
@@ -185,6 +185,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _enemyName: 3
+  <IsGroup>k__BackingField: 0
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0

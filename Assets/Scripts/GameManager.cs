@@ -87,7 +87,6 @@ public class GameManager : ManagerBase
     Dictionary<Define.CardName, int> _cardSelectionCount = new Dictionary<Define.CardName, int>();
     [SerializeField]List<PriorCard> _priorCardList = new List<PriorCard>();
 
-    Vector3 _preMousePosition;
 
     private int _money;
     public int Money

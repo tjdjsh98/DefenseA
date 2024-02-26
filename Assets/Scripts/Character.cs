@@ -55,6 +55,7 @@ public class Character : MonoBehaviour
     bool _isMove = false;
     public bool IsDead { set; get; }
     bool _isContactGround = false;
+    public bool IsContactGround => _isContactGround;
     private bool _isJump;
 
     float _groundAccelePower = 60;
