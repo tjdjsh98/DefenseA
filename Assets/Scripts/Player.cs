@@ -66,6 +66,10 @@ public class Player : MonoBehaviour
     [SerializeField] bool _bounce;
     [SerializeField] float _power;
 
+    [SerializeField] PositionLimit _eyeClose;
+    float _eyeCloseElasepdTime;
+    float _eyeCloseTime = 4;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -128,6 +132,14 @@ public class Player : MonoBehaviour
         Riding();
         Roll();
         AutoReload();
+
+        _eyeCloseElasepdTime += Time.deltaTime;
+        if(_eyeCloseElasepdTime > _eyeCloseTime)
+        {
+            _eyeCloseElasepdTime = 0;
+            _eyeCloseTime = UnityEngine.Random.Range(6f,7f);
+            _eyeClose.PlayRound(3);
+        }
     }
 
     private void AutoReload()

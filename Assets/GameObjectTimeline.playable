@@ -20,7 +20,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: {x: -0.020002365, y: 0.3909998, z: 0}
+        value: {x: -0.020002365, y: 0.033999443, z: 0}
         inSlope: {x: 0, y: 0, z: 0}
         outSlope: {x: 3.664463, y: 0, z: 0}
         tangentMode: 0
@@ -135,7 +135,7 @@ AnimationClip:
       m_Curve:
       - serializedVersion: 3
         time: 0
-        value: 0.3909998
+        value: 0.033999443
         inSlope: 0
         outSlope: 0
         tangentMode: 136
@@ -223,7 +223,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030f85c3f73729f4f976f66ffb23b875, type: 3}
   m_Name: AnimationPlayableAsset
   m_EditorClassIdentifier: 
-  m_Clip: {fileID: 7400000, guid: d60d1a119a06e58448b76239eeb6788e, type: 2}
+  m_Clip: {fileID: 7400000, guid: 397c2fe2ce0e9a748a9a37aab9de71fd, type: 2}
   m_Position: {x: 0, y: 0, z: 0}
   m_EulerAngles: {x: 0, y: 0, z: 0}
   m_UseTrackMatchFields: 1
@@ -801,7 +801,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 1
     m_PostExtrapolationTime: 0
     m_PreExtrapolationTime: 0.016666666666666666
-    m_DisplayName: Daughter_Walk
+    m_DisplayName: Girl_Walk
   - m_Version: 1
     m_Start: 4.016666666666667
     m_ClipIn: 0
@@ -870,7 +870,7 @@ MonoBehaviour:
     m_PreExtrapolationMode: 1
     m_PostExtrapolationTime: Infinity
     m_PreExtrapolationTime: 0
-    m_DisplayName: Daughter_Idle
+    m_DisplayName: Girl_Idle
   m_Markers:
     m_Objects: []
   m_InfiniteClipPreExtrapolation: 0
@@ -944,7 +944,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 030f85c3f73729f4f976f66ffb23b875, type: 3}
   m_Name: AnimationPlayableAsset
   m_EditorClassIdentifier: 
-  m_Clip: {fileID: 7400000, guid: b674b5b11807bb64288257b8db57d161, type: 2}
+  m_Clip: {fileID: 7400000, guid: 3f25161dc2e435345935db235e6db8d4, type: 2}
   m_Position: {x: 0, y: 0, z: 0}
   m_EulerAngles: {x: 0, y: 0, z: 0}
   m_UseTrackMatchFields: 1
