@@ -12,15 +12,15 @@ public class GameManager : ManagerBase
 
     public CreatureAI CreatureAI;
 
-    Character _daugther;
-    public Character Daughter { get { if (Player && _daugther == null) _daugther = Player.GetComponent<Character>(); return _daugther; } }
+    Character _girl;
+    public Character Girl { get { if (Player && _girl == null) _girl = Player.GetComponent<Character>(); return _girl; } }
 
-    public DogAI DogAI { set; get; }
-    Character _dog;
-    public Character Wall { get { if (DogAI && _dog == null) _dog = DogAI?.GetComponent<Character>(); return _dog; } }
+    public WallAI WallAI { set; get; }
+    Character _wall;
+    public Character Wall { get { if (WallAI && _wall == null) _wall = WallAI?.GetComponent<Character>(); return _wall; } }
 
-    Character _father;
-    public Character Father { get { if (CreatureAI && _father == null) _father = CreatureAI?.GetComponent<Character>(); return _father; } }
+    Character _creature;
+    public Character Creature { get { if (CreatureAI && _creature == null) _creature = CreatureAI?.GetComponent<Character>(); return _creature; } }
 
 
     [Header("Debug")]
@@ -94,8 +94,8 @@ public class GameManager : ManagerBase
     List<CardData> _remainCardSelectionList;
     Dictionary<Define.CardName, int> _cardSelectionCount = new Dictionary<Define.CardName, int>();
     [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
-    // 땅과 관련변수
 
+    // 땅과 관련변수
     [Header("상점 관련 변수")]
     [field: SerializeField] public List<ShopItem> ShopItemList;
     public override void Init()
@@ -137,9 +137,9 @@ public class GameManager : ManagerBase
     void OffTimeline()
     {
         _isPlayTimeline = false;
-        _father?.SetVelocityForcibly(Vector3.zero);
-        _daugther?.SetVelocityForcibly(Vector3.zero);
-        _dog?.SetVelocityForcibly(Vector3.zero);
+        _creature?.SetVelocityForcibly(Vector3.zero);
+        _girl?.SetVelocityForcibly(Vector3.zero);
+        _wall?.SetVelocityForcibly(Vector3.zero);
     }
     public override void ManagerUpdate()
     {
@@ -226,7 +226,6 @@ public class GameManager : ManagerBase
             }
             else
             {
-                Debug.Log("K");
                 randomPosition.x = Player.transform.position.x + distance;
                 randomPosition.y = _map.YPosition + 1;
             }
@@ -325,10 +324,10 @@ public class GameManager : ManagerBase
             DogCardData dogCardData = data as DogCardData;
             if (daughterCardData != null)
             {
-                Daughter.AddMaxHp(daughterCardData.IncreaseHp);
-                Daughter.IncreasedRecoverHpPower += daughterCardData.IncreaseRecoverHpPower;
-                Daughter.IncreasedDamageReducePercentage += daughterCardData.IncreaseDamageReducePercentage;
-                Daughter.AttackPoint += daughterCardData.IncreaseAttackPoint;
+                Girl.AddMaxHp(daughterCardData.IncreaseHp);
+                Girl.IncreasedRecoverHpPower += daughterCardData.IncreaseRecoverHpPower;
+                Girl.IncreasedDamageReducePercentage += daughterCardData.IncreaseDamageReducePercentage;
+                Girl.AttackPoint += daughterCardData.IncreaseAttackPoint;
 
                 Player.IsUnlockLastShot |= daughterCardData.UnlockLastShot;
                 Player.IsUnlockFastReload |= daughterCardData.UnlockFastReload;
@@ -342,10 +341,10 @@ public class GameManager : ManagerBase
             }
             if (fatherCardData != null)
             {
-                Father.AddMaxHp(fatherCardData.IncreaseHp);
-                Father.IncreasedRecoverHpPower += fatherCardData.IncreaseRecoverHpPower;
-                Father.IncreasedDamageReducePercentage += fatherCardData.IncreaseDamageReducePercentage;
-                Father.AttackPoint += fatherCardData.IncreaseAttackPoint;
+                Creature.AddMaxHp(fatherCardData.IncreaseHp);
+                Creature.IncreasedRecoverHpPower += fatherCardData.IncreaseRecoverHpPower;
+                Creature.IncreasedDamageReducePercentage += fatherCardData.IncreaseDamageReducePercentage;
+                Creature.AttackPoint += fatherCardData.IncreaseAttackPoint;
 
                 CreatureAI.IncreasedNormalAttackSpeedPercentage += fatherCardData.IncreaseNormalAttackSpeedPercentage;
                 CreatureAI.IsUnlockShockwave |= fatherCardData.UnlockShockwave;
@@ -364,12 +363,12 @@ public class GameManager : ManagerBase
                 Wall.IncreasedDamageReducePercentage += dogCardData.IncreaseDamageReducePercentage;
                 Wall.AttackPoint += dogCardData.IncreaseAttackPoint;
 
-                DogAI.ReflectionDamage += dogCardData.IncreaseReflectionDamage;
-                DogAI.DecreasedReviveTimePercetage += dogCardData.DecreaseReviveTimePercentage;
-                DogAI.IsUnlockExplosionWhenDead |= dogCardData.UnlockExplosionWhenDead;
-                DogAI.ExplosionDamage += dogCardData.IncreaseExplosionDamage;
-                DogAI.ExplosionRange += dogCardData.IncreaseExplosionRange;
-                DogAI.IsReviveWhereDaughterPosition |= dogCardData.UnlockReviveWhereDaughterPosition;
+                WallAI.ReflectionDamage += dogCardData.IncreaseReflectionDamage;
+                WallAI.DecreasedReviveTimePercetage += dogCardData.DecreaseReviveTimePercentage;
+                WallAI.IsUnlockExplosionWhenDead |= dogCardData.UnlockExplosionWhenDead;
+                WallAI.ExplosionDamage += dogCardData.IncreaseExplosionDamage;
+                WallAI.ExplosionRange += dogCardData.IncreaseExplosionRange;
+                WallAI.IsReviveWhereDaughterPosition |= dogCardData.UnlockReviveWhereDaughterPosition;
             }
         }
     }

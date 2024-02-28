@@ -436,7 +436,7 @@ public class Player : MonoBehaviour
                         if (go.gameObject.name.Equals("Dog"))
                         {
                             transform.SetParent(go.transform);
-                            transform.position = go.GetComponent<DogAI>().SitPosition.transform.position;
+                            transform.position = go.GetComponent<WallAI>().SitPosition.transform.position;
                             _isRiding = true;
                             _character.AnimatorSetBool("Sit", true);
                             _ridingCharacter = go.GetComponent<Character>();

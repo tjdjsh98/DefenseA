@@ -4,7 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class DogAI : MonoBehaviour
+public class WallAI : MonoBehaviour
 {
     Character _character;
 
@@ -43,7 +43,7 @@ public class DogAI : MonoBehaviour
     private void Awake()
     {
         _character = GetComponent<Character>();
-        Managers.GetManager<GameManager>().DogAI = this;
+        Managers.GetManager<GameManager>().WallAI = this;
 
         _character.CharacterDamaged += OnCharacterDamaged;
         _character.CharacterDead += OnCharacterDead;

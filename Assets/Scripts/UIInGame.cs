@@ -114,9 +114,9 @@ public class UIInGame : UIBase
 
     void HandleBar()
     {
-        Character daughter = Managers.GetManager<GameManager>().Daughter;
+        Character daughter = Managers.GetManager<GameManager>().Girl;
         Character dog = Managers.GetManager<GameManager>().Wall;
-        Character father = Managers.GetManager<GameManager>().Father;
+        Character father = Managers.GetManager<GameManager>().Creature;
 
         if (daughter)
         {

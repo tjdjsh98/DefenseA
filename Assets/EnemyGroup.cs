@@ -61,7 +61,7 @@ public class EnemyGroup : MonoBehaviour
         bool allDestroyed = true; ;
         if (Managers.GetManager<GameManager>().Player)
         {
-            Vector3 playerPosition = Managers.GetManager<GameManager>().Daughter.GetCenter();
+            Vector3 playerPosition = Managers.GetManager<GameManager>().Girl.GetCenter();
             if (!_init)
             {
                 _velocity = (playerPosition - transform.position).normalized;
