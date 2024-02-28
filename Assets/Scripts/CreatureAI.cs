@@ -9,7 +9,7 @@ using UnityEngine;
 using UnityEngine.TextCore.Text;
 
 
-public class FatherAI : MonoBehaviour
+public class CreatureAI : MonoBehaviour
 {
     Character _character;
     Player _player;
@@ -24,7 +24,7 @@ public class FatherAI : MonoBehaviour
     [SerializeField] int _debugAttackRangeIndex;
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
 
-    float _playerDistance = 5f;
+    float _girlToCreatureDistance = 5f;
     Character _enemyToAttack;
     bool _isMove = false;
 
@@ -82,15 +82,24 @@ public class FatherAI : MonoBehaviour
     Vector3 _tc;
     float _tr;
 
+    Define.CreatureSkill _selectedSpecialAbility = Define.CreatureSkill.None;
+    float _specialAbilityElapsedTime;
+    float _specialAbilityCoolTime;
+
+    public Define.CreatureSkill SelectedSpecialAbility => _selectedSpecialAbility;
+    public float SpecialAbilityElaspedTime => _specialAbilityElapsedTime;
+    public float SpecialAbilityCoolTime => _specialAbilityCoolTime;
+
+
     private void Awake()
     {
         _character = GetComponent<Character>();
-        Managers.GetManager<GameManager>().FatherAI = this;
+        Managers.GetManager<GameManager>().CreatureAI = this;
         Managers.GetManager<InputManager>().SpecialAbilityKeyDownHandler += SpecialAbility;
 
-        if (_attackRangeList.Count < Define.FatherSkillCount)
+        if (_attackRangeList.Count < Define.CreatureSkillCount)
         {
-            for(int i = _attackRangeList.Count; i < Define.FatherSkillCount;i++) 
+            for(int i = _attackRangeList.Count; i < Define.CreatureSkillCount;i++) 
                 _attackRangeList.Add(new Define.Range());
         }
     }
@@ -118,7 +127,7 @@ public class FatherAI : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.O))
         {
            
-            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.PenerstrateRange]);
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.PenerstrateRange]);
 
             Character closeOne = null;
             float distance = 100;
@@ -171,6 +180,23 @@ public class FatherAI : MonoBehaviour
             }
         }
 
+        if (_selectedSpecialAbility == Define.CreatureSkill.None)
+        {
+            _selectedSpecialAbility = (Define.CreatureSkill)Random.Range(0, Define.CreatureSkillCount);
+            _specialAbilityElapsedTime = 0;
+            if (_selectedSpecialAbility == Define.CreatureSkill.Shockwave)
+                _specialAbilityCoolTime = _shockwaveCoolTime;
+            if (_selectedSpecialAbility == Define.CreatureSkill.StempGround)
+                _shockwaveCoolTime = _stempGroundCoolTime;
+        }
+        else
+        {
+            if (_specialAbilityElapsedTime < _specialAbilityCoolTime)
+                _specialAbilityElapsedTime += Time.deltaTime;
+            else
+                _specialAbilityElapsedTime = _specialAbilityCoolTime;
+        }
+
         if (IsUnlockSpear)
         {
             _spearAttackElapsed += Time.deltaTime;
@@ -186,9 +212,15 @@ public class FatherAI : MonoBehaviour
     public void SpecialAbility()
     {
         if (_player == null) return;
+        if (_specialAbilityCoolTime > _specialAbilityElapsedTime) return;
 
-        Shockwave();
-        StempGround();
+        if(_selectedSpecialAbility == Define.CreatureSkill.Shockwave)
+            Shockwave();
+        if (_selectedSpecialAbility == Define.CreatureSkill.StempGround)
+            StempGround();
+
+        _selectedSpecialAbility = Define.CreatureSkill.None;
+        _specialAbilityElapsedTime = 0;
     }
     
     public void AimFrontArmToEnemy()
@@ -225,9 +257,9 @@ public class FatherAI : MonoBehaviour
         if(_player ==null) return;
 
         float distacne = _player.transform.position.x - transform.position.x;
-        if (Mathf.Abs(distacne) > _playerDistance)
+        if (Mathf.Abs(distacne) > _girlToCreatureDistance)
         {
-            _character.Move(Vector3.right * (distacne + (distacne > 0? -_playerDistance : _playerDistance))/(_playerDistance));
+            _character.Move(Vector3.right * (distacne + (distacne > 0? -_girlToCreatureDistance : _girlToCreatureDistance))/(_girlToCreatureDistance));
         }
 
     }
@@ -236,7 +268,7 @@ public class FatherAI : MonoBehaviour
     {
         if(_enemyToAttack)
         {
-            Define.Range range = _attackRangeList[(int)Define.FatherSkill.NormalAttackRange];
+            Define.Range range = _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange];
             range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
             float distance = ((Vector2)_enemyToAttack.transform.position - ((Vector2)range.center + (Vector2)transform.position)).magnitude;
 
@@ -264,7 +296,7 @@ public class FatherAI : MonoBehaviour
 
     public void NormalAttack()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -280,7 +312,7 @@ public class FatherAI : MonoBehaviour
     }
     public void AirBorneAttack()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.NormalAttackRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -306,7 +338,7 @@ public class FatherAI : MonoBehaviour
     void FindEnemyToNormalAttack()
     {
         if(_enemyToAttack != null) return;
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.FatherSkill.FindingRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.FindingRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -355,19 +387,11 @@ public class FatherAI : MonoBehaviour
     {
         if (IsUnlockShockwave)
         {
-            if (_shockwaveElasped > ShockwaveCoolTime)
-            {
-                if (ShockwaveCount >= 1)
-                    StartCoroutine(CorShockwaveAttack());
-                if (ShockwaveCount >= 2)
-                    StartCoroutine(CorShockwaveAttack(0.2f, 1));
-                _shockwaveElasped = 0;
-            }
-            else
-            {
-                _shockwaveElasped += Time.deltaTime;
-            }
-
+            if (ShockwaveCount >= 1)
+                StartCoroutine(CorShockwaveAttack());
+            if (ShockwaveCount >= 2)
+                StartCoroutine(CorShockwaveAttack(0.2f, 1));
+            _shockwaveElasped = 0;
         }
     }
 
@@ -411,29 +435,20 @@ public class FatherAI : MonoBehaviour
     {
         if (!IsUnlockStempGround) return;
 
-        if (_stempGroundElaspsedTime < _stempGroundCoolTime)
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
+        Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
+        Effect effect= Managers.GetManager < ResourceManager>().Instantiate(effectOrigin);
+        effect.SetProperty("Range", _attackRangeList[4].size.x);
+        effect.Play(transform.position);
+        if (gos.Length > 0)
         {
-            _stempGroundElaspsedTime += Time.deltaTime;
-        }
-        else
-        {
-            _stempGroundElaspsedTime = 0;
-
-            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
-            Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
-            Effect effect= Managers.GetManager < ResourceManager>().Instantiate(effectOrigin);
-            effect.SetProperty("Range", _attackRangeList[4].size.x);
-            effect.Play(transform.position);
-            if (gos.Length > 0)
+            _spearAttackElapsed = 0;
+            foreach (var go in gos)
             {
-                _spearAttackElapsed = 0;
-                foreach (var go in gos)
+                Character c = go.GetComponent<Character>();
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    Character c = go.GetComponent<Character>();
-                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-                    {
-                        c.Damage(_character, StempGroundDamage, StempGroundPower, Vector3.up, 1);
-                    }
+                    c.Damage(_character, StempGroundDamage, StempGroundPower, Vector3.up, 1);
                 }
             }
         }

@@ -93,7 +93,6 @@ public class UICardSelection : UIBase
     public override void Open()
     {
         Time.timeScale = 0;
-        Managers.GetManager<GameManager>().IsStopWave = true;
         _cardSelectionList.Clear();
 
 
@@ -122,7 +121,6 @@ public class UICardSelection : UIBase
         Time.timeScale = 1;
         gameObject.SetActive(false);
         Managers.GetManager<InputManager>().UIMouseHoverHandler -= OnUIMouseHover;
-        Managers.GetManager<GameManager>().IsStopWave = false;
 
         foreach (var card in _cardList)
         {
@@ -201,7 +199,7 @@ public class UICardSelection : UIBase
             }
             if (cardData.CardName == Define.CardName.강아지데미지감소)
             {
-                Character dog = Managers.GetManager<GameManager>().Dog;
+                Character dog = Managers.GetManager<GameManager>().Wall;
                 description = string.Format(description,
                     dog.IncreasedDamageReducePercentage, -10);
             }
@@ -212,7 +210,7 @@ public class UICardSelection : UIBase
             }
             if (cardData.CardName == Define.CardName.강아지체력재생력증가)
             {
-                Character dog = Managers.GetManager<GameManager>().Dog;
+                Character dog = Managers.GetManager<GameManager>().Wall;
                 description = string.Format(description,
                     dog.IncreasedDamageReducePercentage, -10);
             }

@@ -70,6 +70,12 @@ public class Player : MonoBehaviour
     float _eyeCloseElasepdTime;
     float _eyeCloseTime = 4;
 
+    bool _isRun;
+    bool _isFire;
+
+    float _runToFireCoolTime = 0.2f;
+    float _runToFireElaspedTime = 0f;
+
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -126,7 +132,6 @@ public class Player : MonoBehaviour
         }
 
         TurnBody();
-        HandleMove();
         RotateArm();
         RotateBody();
         Riding();
@@ -138,8 +143,16 @@ public class Player : MonoBehaviour
         {
             _eyeCloseElasepdTime = 0;
             _eyeCloseTime = UnityEngine.Random.Range(6f,7f);
-            _eyeClose.PlayRound(3);
+            _eyeClose.PlayRound(3
+                );
         }
+        if (!_isRun)
+        {
+            _character.IsTurnBodyAlongVelocity= false;
+        }
+        _runToFireElaspedTime += Time.deltaTime;
+        _isRun = false;
+        _isFire = false;
     }
 
     private void AutoReload()
@@ -200,14 +213,19 @@ public class Player : MonoBehaviour
 
     private void TurnBody()
     {
-        if (Managers.GetManager<InputManager>().MouseWorldPosition.x < transform.position.x)
-            _character.TurnBody(Vector2.left);
-        else
-            _character.TurnBody(Vector2.right);
+        if (!_isRun)
+        {
+            if (Managers.GetManager<InputManager>().MouseWorldPosition.x < transform.position.x)
+                _character.TurnBody(Vector2.left);
+            else
+                _character.TurnBody(Vector2.right);
+        }
     }
 
     private void RotateBody()
     {
+        if(_isRun) return;
+
         float bodyAngle = 0;
         float headAngle = 0;
 
@@ -230,6 +248,7 @@ public class Player : MonoBehaviour
     private void RotateArm()
     {
         if (Time.timeScale == 0) return;
+        if(_isRun) return;
 
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
         bool isPressed = false;
@@ -342,16 +361,35 @@ public class Player : MonoBehaviour
 
     void OnRightArrowPressed()
     {
-        _character.Move(Vector2.right);
+        float run = 0.4f;
+        if (!_isFire && Input.GetKey(KeyCode.LeftShift))
+        {
+            run = 1f;
+            _character.IsTurnBodyAlongVelocity= true;
+            _isRun= true;
+            _runToFireElaspedTime = 0;
+        }
+        _character.Move(Vector2.right * run);
     }
     void OnLeftArrowPressed()
     {
-        _character.Move(Vector2.left);
+        float run = 0.4f;
+        if (!_isFire && Input.GetKey(KeyCode.LeftShift))
+        {
+            run = 1f;
+            _character.IsTurnBodyAlongVelocity= true;
+            _isRun = true;
+            _runToFireElaspedTime = 0;
+        }
+        _character.Move(Vector2.left * run);
     }
 
     void UseWeapon()
     {
         if (Time.timeScale == 0) return;
+
+        _isFire= true;
+        if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
         Managers.GetManager<InputManager>().AimTarget = true;
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && !_weaponSwaper.CurrentWeapon.IsAuto)
@@ -364,6 +402,9 @@ public class Player : MonoBehaviour
     void AutoUseWeapon()
     {
         if (Time.timeScale == 0) return;
+
+        _isFire= true;
+        if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);

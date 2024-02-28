@@ -55,7 +55,7 @@ public class Character : MonoBehaviour
     [SerializeField] Define.Range _groundCheckRange;
 
     // 캐릭터 행동상태
-    [SerializeField] bool _isTurnBodyAlongVelocity = true;
+    [field: SerializeField] public bool IsTurnBodyAlongVelocity { set; get; } = true;
     public bool IsStun {private set; get; }
     public bool IsAttack {set; get; }
     public bool IsRoll { set; get; }
@@ -191,7 +191,16 @@ public class Character : MonoBehaviour
         if (!_animator || _animator.runtimeAnimatorController == null) return;
         if(!IsStun)
         {
-            _animator.SetFloat("WalkBlend", Mathf.Clamp(Mathf.Abs(_rigidBody.velocity.x)/_speed,0,1));
+            float speed = _rigidBody.velocity.x * transform.lossyScale.x / Math.Abs(transform.lossyScale.x);
+            if (speed > _speed * 0.9f)
+            {
+                _animator.SetFloat("WalkBlend", 1);
+
+            }
+            else
+            {
+                _animator.SetFloat("WalkBlend", Mathf.Clamp(speed/ _speed, -0.4f, 1));
+            }
         }
     }
 
@@ -258,7 +267,7 @@ public class Character : MonoBehaviour
         if (IsStun) return;
 
         // 진행 방향에 맞게 몸을 회전
-        if (_isTurnBodyAlongVelocity)
+        if (IsTurnBodyAlongVelocity)
         {
             TurnBody(direction);
         }
@@ -350,6 +359,12 @@ public class Character : MonoBehaviour
     public void SetAnimationSpeed(float speed)
     {
         _animator.speed = speed;
+    }
+
+    public void SetAnimationWeight(string layerName, float weight)
+    {
+        int index = _animator.GetLayerIndex(layerName);
+        _animator.SetLayerWeight(index, weight);
     }
     public void TurnBody(Vector2 direction)
     {

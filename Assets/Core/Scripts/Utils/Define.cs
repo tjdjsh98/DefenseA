@@ -60,7 +60,15 @@ public static class Define
         Explosion,
         StempGround,
     }
-    public enum FatherSkill
+    public enum CreatureSkill
+    {
+        None = -1,
+        Shockwave,
+        StempGround,
+        END,
+    }
+    public static int CreatureSkillCount = (int)CreatureSkill.END;
+    public enum CreatureSkillRange
     {
         FindingRange = 0,
         NormalAttackRange,
@@ -68,7 +76,6 @@ public static class Define
         SpearAttackRange,
         END
     }
-    public static int FatherSkillCount = (int)FatherSkill.END;
 
     public enum CardType
     {

@@ -91,7 +91,7 @@ public class HelperEditor : EditorWindow
         {
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
-            FatherCardData data = ScriptableObject.CreateInstance<FatherCardData>();
+            CreatureCardData data = ScriptableObject.CreateInstance<CreatureCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
             data.CardDescription = words[2];

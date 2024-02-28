@@ -2,9 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-[CreateAssetMenu(fileName = "Create Card", menuName = "AddData/Create FatherCardData", order = 2)]
+[CreateAssetMenu(fileName = "Create Card", menuName = "AddData/Create CreatureCardData", order = 2)]
 
-public class FatherCardData : CardData
+public class CreatureCardData : CardData
 {
     [field: SerializeField] public float IncreaseNormalAttackSpeedPercentage { get; set; }
     [field: SerializeField] public bool UnlockShockwave { get; set; }

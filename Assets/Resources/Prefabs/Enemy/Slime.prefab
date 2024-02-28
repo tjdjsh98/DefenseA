@@ -222,7 +222,10 @@ MonoBehaviour:
   _maxHp: 5
   _hp: 5
   _maxMental: 100
+  <Mental>k__BackingField: 0
   _speed: 3
+  _isGainMentalWhenKillIt: 0
+  _gainMentalAmount: 0
   _jumpPower: 10
   _isEnableFly: 0
   _isEnableRevive: 0
@@ -232,7 +235,7 @@ MonoBehaviour:
     center: {x: 0, y: 0, z: 0}
     size: {x: 4.87, y: 0.75, z: 0}
     figureType: 0
-  _isTurnBodyAlongVelocity: 1
+  <IsTurnBodyAlongVelocity>k__BackingField: 1
   _hpBar: {fileID: 0}
   CharacterPassive: 
 --- !u!114 &7385429772454187601

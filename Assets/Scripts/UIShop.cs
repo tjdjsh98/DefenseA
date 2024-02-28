@@ -59,7 +59,6 @@ public class UIShop : UIBase
     {
         if (!_isInitDone) return;
 
-        _currentMoneyText.text = Managers.GetManager<GameManager>().Money.ToString();
     }
 
     public override void Open()

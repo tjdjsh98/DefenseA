@@ -4,7 +4,9 @@ using System.Collections.Generic;
 using System.Net.NetworkInformation;
 using System.Text;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIInGame : UIBase
@@ -30,8 +32,11 @@ public class UIInGame : UIBase
     [SerializeField] MMProgressBar _fatherHpBar;
     [SerializeField] MMProgressBar _dogHpBar;
     [SerializeField] MMProgressBar _daughterMentalBar;
-    [SerializeField] MMProgressBar _fatherMentalBar;
+    [SerializeField] MMProgressBar _creatureMentalBar;
     [SerializeField] MMProgressBar _dogMentalBar;
+
+    [SerializeField] Image _creatureSkillCurtain;
+    [SerializeField] GameObject _wallIndicator;
 
     float _maxHpWidth;
     float _maxHpHeight;
@@ -102,12 +107,14 @@ public class UIInGame : UIBase
         }
         HandleBar();
         ShowMap();
+        ShowAbility();
+        IndicateWall();
     }
 
     void HandleBar()
     {
         Character daughter = Managers.GetManager<GameManager>().Daughter;
-        Character dog = Managers.GetManager<GameManager>().Dog;
+        Character dog = Managers.GetManager<GameManager>().Wall;
         Character father = Managers.GetManager<GameManager>().Father;
 
         if (daughter)
@@ -134,12 +141,12 @@ public class UIInGame : UIBase
         if (father)
         {
             _fatherHpBar.UpdateBar01((float)father.Hp / father.MaxHp);
-            _fatherMentalBar.UpdateBar01((float)father.Mental / father.MaxMental);
+            _creatureMentalBar.UpdateBar01((float)father.Mental / father.MaxMental);
         }
         else
         {
             _fatherHpBar.UpdateBar01(0);
-            _fatherMentalBar.UpdateBar01(0);
+            _creatureMentalBar.UpdateBar01(0);
         }
 
     }
@@ -153,7 +160,49 @@ public class UIInGame : UIBase
         _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + Mathf.Clamp01(playerPosition / mapSize) * mapImageSize,0,0);
     }
 
+    void ShowAbility()
+    {
+        if (_creatureSkillCurtain)
+        {
+            CreatureAI creature = Managers.GetManager<GameManager>().CreatureAI;
+            if (creature.SelectedSpecialAbility != Define.CreatureSkill.None)
+            {
+                _creatureSkillCurtain.transform.localPosition =
+                    new Vector3(0,-100 + 100 * creature.SpecialAbilityElaspedTime / creature.SpecialAbilityCoolTime, 0);
+            }
+            else
+            {
+                _creatureSkillCurtain.transform.localPosition = new Vector3(0, -100, 0);
+            }
+        }
+    }
+    void IndicateWall()
+    {
+        int screenWidth = Screen.width;
+        int screenHeight = Screen.height;
+        Vector3 playerPosition = Camera.main.WorldToScreenPoint(Managers.GetManager<GameManager>().Player.transform.position);
+        Vector3 wallPosition = Camera.main.WorldToScreenPoint(Managers.GetManager<GameManager>().Wall.transform.position);
+        playerPosition.z = 0;
+        wallPosition.z = 0;
 
+        Vector3 direction = wallPosition - playerPosition;
+
+        float angle  = Mathf.Atan2(direction.y, direction.x);
+
+        Vector3 distanceCanvasToPlayerPosition = transform.position - playerPosition;
+        
+        float paddingX = 80* Mathf.Cos(angle);
+        float paddingY = 80 * Mathf.Sin(angle);
+
+        Vector3 indicatorPosition = new Vector3
+            (direction.x > 0? screenWidth/2 + paddingX : -screenWidth/2 - paddingX, 
+            Mathf.Tan(angle)*(direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) + distanceCanvasToPlayerPosition.y, 0);
+
+        if (_wallIndicator)
+        {
+            _wallIndicator.transform.localPosition = indicatorPosition;
+        }
+    }
     public override void Open()
     {
         
