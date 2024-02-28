@@ -84,7 +84,7 @@ public class CreatureAI : MonoBehaviour
 
     Define.CreatureSkill _selectedSpecialAbility = Define.CreatureSkill.None;
     float _specialAbilityElapsedTime;
-    float _specialAbilityCoolTime;
+    float _specialAbilityCoolTime = 1;
 
     public Define.CreatureSkill SelectedSpecialAbility => _selectedSpecialAbility;
     public float SpecialAbilityElaspedTime => _specialAbilityElapsedTime;

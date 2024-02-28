@@ -37,6 +37,7 @@ public class UIInGame : UIBase
 
     [SerializeField] Image _creatureSkillCurtain;
     [SerializeField] GameObject _wallIndicator;
+    [SerializeField] GameObject _wallIndicatorArrow;
 
     float _maxHpWidth;
     float _maxHpHeight;
@@ -186,23 +187,58 @@ public class UIInGame : UIBase
         wallPosition.z = 0;
 
         Vector3 direction = wallPosition - playerPosition;
+        Vector3 wallToCanvasDistance = wallPosition - transform.position;
+        wallToCanvasDistance.x -= screenWidth / 2;
+        wallToCanvasDistance.y -= screenHeight / 2;
+        if (Mathf.Abs(wallToCanvasDistance.x) < screenWidth / 2 + 100 && Mathf.Abs(wallToCanvasDistance.y)+100 < screenHeight / 2 + 100)
+        {
+            _wallIndicator.SetActive(false);
+            return;
+        }
+
+        _wallIndicator.SetActive(true);
 
         float angle  = Mathf.Atan2(direction.y, direction.x);
 
-        Vector3 distanceCanvasToPlayerPosition = transform.position - playerPosition;
+        Vector3 distanceCanvasToPlayerPosition = playerPosition - transform.position;
+        distanceCanvasToPlayerPosition.x -= screenWidth / 2;
+        distanceCanvasToPlayerPosition.y -= screenHeight/ 2;
         
-        float paddingX = 80* Mathf.Cos(angle);
+        float paddingX = 80 * Mathf.Cos(angle);
         float paddingY = 80 * Mathf.Sin(angle);
 
-        Vector3 indicatorPosition = new Vector3
-            (direction.x > 0? screenWidth/2 + paddingX : -screenWidth/2 - paddingX, 
-            Mathf.Tan(angle)*(direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) + distanceCanvasToPlayerPosition.y, 0);
+        if (_wallIndicatorArrow)
+            _wallIndicatorArrow.transform.rotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg+90);
+
+        float x = 0;
+        float y = 0;
+
+        if (Mathf.Abs(direction.x) > screenWidth / 2)
+        {
+            x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
+            y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
+                + distanceCanvasToPlayerPosition.y) - paddingY;
+        }
+        else
+        {
+            y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
+            x = ( (direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y)/ Mathf.Tan(angle)
+                + distanceCanvasToPlayerPosition.x) - paddingX;
+        }
+        if(y < -screenHeight/2 - paddingY)
+            y= -screenHeight/2 - paddingY;
+        else if( y > screenHeight /2 - paddingY)
+            y= screenHeight/2 - paddingY;
+
+
+        Vector3 indicatorPosition = new Vector3(x, y, 0);
 
         if (_wallIndicator)
         {
             _wallIndicator.transform.localPosition = indicatorPosition;
         }
     }
+
     public override void Open()
     {
         
