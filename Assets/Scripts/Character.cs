@@ -37,7 +37,7 @@ public class Character : MonoBehaviour
     [SerializeField] bool _isGainMentalWhenKillIt;
     [SerializeField] int _gainMentalAmount;
     #endregion
-    public int AttackPoint { set; get; }
+    [field:SerializeField]public int AttackPower { set; get; }
 
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableFly;
@@ -70,21 +70,21 @@ public class Character : MonoBehaviour
     float _groundBreakPower = 60;
     float _airBreakPower = 20;
 
-    public Action AttackHandler;
+
+    // 핸들러
+    public Action PlayAttackHandler;
     public Action FinishAttackHandler;
     public Action CharacterDead;
+    public Action<Character,int> AttackHandler; // 공격한 적, 데미지
+    public Action<Character, int, float, Vector3, float> CharacterDamaged { set; get; }
 
     [SerializeField] GaugeBar _hpBar;
-
-    public List<Define.Passive> CharacterPassive = new List<Define.Passive>();
-
 
 
     Vector3 _prePosition;
     Vector3 _mySpeed;
     public Vector3 MySpeed => _mySpeed;
 
-    public Action<Character, int, float, Vector3, float> CharacterDamaged { set; get; }
 
     public Action<Vector2> BodyTurn;
 
@@ -221,7 +221,8 @@ public class Character : MonoBehaviour
     }
 
 
-    public void Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    // 최종적으로 가한 데미지를 반환합니다.
+    int Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
     {
         Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
 
@@ -259,7 +260,20 @@ public class Character : MonoBehaviour
         IsStun = true;
         _stunEleasped = 0;
         _stunTime = stunTime;
+
+        return damage;
     }
+
+    public int Attack(Character target, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    {
+        if (target == null) return 0;
+
+        int resultDamage = target.Damage(this,damage, power, direction, stunTime);
+        AttackHandler?.Invoke(target,resultDamage);
+
+        return resultDamage;
+    }
+
 
     public void Move(Vector2 direction)
     {
@@ -301,9 +315,9 @@ public class Character : MonoBehaviour
         }
     }
 
-    public void Attack()
+    public void PlayAttack()
     {
-        AttackHandler?.Invoke();
+        PlayAttackHandler?.Invoke();
     }
     public void FinishAttack()
     {
@@ -418,6 +432,8 @@ public class Character : MonoBehaviour
 
         return size;
     }
+
+  
 
     public void Revive()
     {

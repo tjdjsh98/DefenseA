@@ -18,7 +18,7 @@ public class EnemyAI : MonoBehaviour
     protected virtual void Awake()
     {
         _character = GetComponent<Character>();
-        _character.AttackHandler += Attack;
+        _character.PlayAttackHandler += OnPlayAttack;
         _character.FinishAttackHandler += FinishAttack;
         _character.CharacterDead += () =>
         {
@@ -100,7 +100,7 @@ public class EnemyAI : MonoBehaviour
                 }
                 else
                 {
-                    Attack();
+                    OnPlayAttack();
                 }
             }
             else
@@ -113,7 +113,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-     void Attack()
+     void OnPlayAttack()
     {
         GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 
@@ -122,7 +122,7 @@ public class EnemyAI : MonoBehaviour
             Character character = go.GetComponent<Character>();
             if(character == null || character.CharacterType == _character.CharacterType) continue;
 
-            character.Damage(_character, 1, 1, Vector3.zero);
+            _character.Attack(character, 1, 1, Vector3.zero);
         }
         _target = null;
     }

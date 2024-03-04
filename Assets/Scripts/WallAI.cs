@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 
 public class WallAI : MonoBehaviour
 {
@@ -72,7 +73,7 @@ public class WallAI : MonoBehaviour
             Character character = gameObject.GetComponent<Character>();
             if (character && character.CharacterType == Define.CharacterType.Enemy)
             {
-                character.Damage(_character, ExplosionDamage, ExplosionPower, character.transform.position
+                _character.Attack(character, ExplosionDamage, ExplosionPower, character.transform.position
                     - _character.GetCenter(), 1);
             }
         }
@@ -81,7 +82,7 @@ public class WallAI : MonoBehaviour
     private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
     {
         if(ReflectionDamage != 0)
-            attacker.Damage(_character, ReflectionDamage, 0, Vector3.zero, 0);
+            _character.Attack(attacker, ReflectionDamage, 0, Vector3.zero, 0);
     }
 
     private void OnDrawGizmos()

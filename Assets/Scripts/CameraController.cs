@@ -59,7 +59,7 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate()
     {
-        if (Managers.GetManager<GameManager>().Player == null) return;
+        if (Managers.GetManager<GameManager>().Player == null) return;  
 
         Vector3 playerPosition = Managers.GetManager<GameManager>().Player.transform.position;
         playerPosition.z = -10f;

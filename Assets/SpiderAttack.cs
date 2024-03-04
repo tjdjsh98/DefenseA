@@ -41,7 +41,7 @@ public class SpiderAttack : MonoBehaviour
                 Character character = gameObject.GetComponent<Character>();
                 if (character && character.CharacterType == Define.CharacterType.Player)
                 {
-                    character.Damage(_character,1,10,_rigidbody.velocity);
+                    _character.Attack(character,1,10,_rigidbody.velocity);
                 }
             }
         }

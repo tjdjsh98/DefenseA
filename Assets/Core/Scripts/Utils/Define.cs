@@ -143,6 +143,8 @@ public static class Define
         DesertEagle,
         Revolver,
         Bat,
+        Stungun,
+        Railgun,
         END
     }
 
@@ -153,12 +155,6 @@ public static class Define
         Sub,
         Melee,
         END
-    }
-    public enum Passive
-    {
-        None = 1,
-        탄약소비무시,
-        빠른재장전,
     }
 
     [System.Serializable]

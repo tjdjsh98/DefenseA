@@ -30,45 +30,19 @@ public class Shotgun : Weapon
 
         angle = angle * Mathf.Deg2Rad;
         
-        if (!_isRaycast)
+        for (int i = 0; i < _fireCount; i++)
         {
-            for (int i = 0; i < _fireCount; i++)
-            {
-                float bulletAngle = angle;
-                bulletAngle += Random.Range(-0.2f * (1-_collectionRate), 0.2f* (1-_collectionRate));
+            float bulletAngle = angle;
+            bulletAngle += Random.Range(-0.2f * (1-_collectionRate), 0.2f* (1-_collectionRate));
 
-                Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
-                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
-                go.transform.position = _firePosition.transform.position;
-                Projectile projectile = go.GetComponent<Projectile>();
-                projectile.Init(_knockBackPower, _bulletSpeed, _damage, Define.CharacterType.Enemy);
+            Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
+            go.transform.position = _firePosition.transform.position;
+            Projectile projectile = go.GetComponent<Projectile>();
+            projectile.Init(_knockBackPower, _bulletSpeed, _damage, Define.CharacterType.Enemy);
 
-                projectile.Fire(fireCharacter, direction.normalized);
-            }
-        }
-        else
-        {
-            Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
-
-            RaycastHit2D hit = Physics2D.Raycast(_firePosition.transform.position, direction.normalized, Mathf.Infinity, LayerMask.GetMask("Character") | LayerMask.GetMask("Ground"));
-
-            if (hit.collider != null)
-            {
-                if (_hitEffect != Define.EffectName.None)
-                {
-                    Effect effect = Managers.GetManager<EffectManager>().GetEffect(_hitEffect);
-                    effect.SetProperty("Direction", direction);
-                    effect.Play(hit.point);
-                }
-
-                Character character = hit.collider.gameObject.GetComponent<Character>();
-
-                if (character != null)
-                {
-                    character.Damage(_character, _damage, _knockBackPower, direction.x > 0 ? Vector3.right : Vector3.left);
-                }
-
-            }
+            projectile.Fire(fireCharacter, direction.normalized);
+       
         }
         Player?.Rebound(_rebound);
     }

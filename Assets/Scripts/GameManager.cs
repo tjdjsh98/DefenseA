@@ -6,8 +6,7 @@ using UnityEngine.TextCore.Text;
 
 public class GameManager : ManagerBase
 {
-
-    // 가족 변수
+    #region 캐릭터
     public Player Player { set; get; }
 
     public CreatureAI CreatureAI;
@@ -21,7 +20,7 @@ public class GameManager : ManagerBase
 
     Character _creature;
     public Character Creature { get { if (CreatureAI && _creature == null) _creature = CreatureAI?.GetComponent<Character>(); return _creature; } }
-
+    #endregion
 
     [Header("Debug")]
     [SerializeField] bool _summonDummy;
@@ -133,7 +132,6 @@ public class GameManager : ManagerBase
             _isPlayTimeline = true;
         }
     }
-
     void OffTimeline()
     {
         _isPlayTimeline = false;
@@ -147,9 +145,9 @@ public class GameManager : ManagerBase
         HandleGround();
         if (_summonDummy)
         {
-            EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Spider);
+            EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Slime);
             EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-            enemy.transform.position = Player.transform.position + Vector3.right * 3;
+            enemy.transform.position = Player.transform.position + Vector3.right * 10;
             Character enemyCharacter = enemy.GetComponent<Character>();
             enemyCharacter.SetHp(_dummyHp);
             _summonDummy = false;
@@ -327,7 +325,7 @@ public class GameManager : ManagerBase
                 Girl.AddMaxHp(daughterCardData.IncreaseHp);
                 Girl.IncreasedRecoverHpPower += daughterCardData.IncreaseRecoverHpPower;
                 Girl.IncreasedDamageReducePercentage += daughterCardData.IncreaseDamageReducePercentage;
-                Girl.AttackPoint += daughterCardData.IncreaseAttackPoint;
+                Girl.AttackPower += daughterCardData.IncreaseAttackPoint;
 
                 Player.IsUnlockLastShot |= daughterCardData.UnlockLastShot;
                 Player.IsUnlockFastReload |= daughterCardData.UnlockFastReload;
@@ -344,7 +342,7 @@ public class GameManager : ManagerBase
                 Creature.AddMaxHp(fatherCardData.IncreaseHp);
                 Creature.IncreasedRecoverHpPower += fatherCardData.IncreaseRecoverHpPower;
                 Creature.IncreasedDamageReducePercentage += fatherCardData.IncreaseDamageReducePercentage;
-                Creature.AttackPoint += fatherCardData.IncreaseAttackPoint;
+                Creature.AttackPower += fatherCardData.IncreaseAttackPoint;
 
                 CreatureAI.IncreasedNormalAttackSpeedPercentage += fatherCardData.IncreaseNormalAttackSpeedPercentage;
                 CreatureAI.IsUnlockShockwave |= fatherCardData.UnlockShockwave;
@@ -361,7 +359,7 @@ public class GameManager : ManagerBase
                 Wall.AddMaxHp(dogCardData.IncreaseHp);
                 Wall.IncreasedRecoverHpPower += dogCardData.IncreaseRecoverHpPower;
                 Wall.IncreasedDamageReducePercentage += dogCardData.IncreaseDamageReducePercentage;
-                Wall.AttackPoint += dogCardData.IncreaseAttackPoint;
+                Wall.AttackPower += dogCardData.IncreaseAttackPoint;
 
                 WallAI.ReflectionDamage += dogCardData.IncreaseReflectionDamage;
                 WallAI.DecreasedReviveTimePercetage += dogCardData.DecreaseReviveTimePercentage;

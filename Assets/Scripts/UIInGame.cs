@@ -64,6 +64,7 @@ public class UIInGame : UIBase
         if(character)
         {
             _sb.Append($"체력: {character.MaxHp}\n");
+            _sb.Append($"전기: {_player.CurrentElectric}\n");
         }
         if(weaponSwaper.CurrentWeapon)
         {

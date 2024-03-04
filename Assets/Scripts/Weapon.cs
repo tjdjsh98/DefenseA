@@ -21,23 +21,25 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public Define.WeaponName WeaponName =>_weaponName;
 
     [SerializeField][Range(0,1)] float _audioLength;
-    Coroutine _audioCoroutine;
+    protected Coroutine _audioCoroutine;
 
     [Header("총기 능력치")]
 
-    [SerializeField]protected bool _isRaycast;
     [SerializeField] protected bool _isAuto;
     public bool IsAuto => _isAuto;
 
     [SerializeField] protected float _knockBackPower = 1;
     public float KnockBackPower => _knockBackPower;
+
+    [SerializeField] protected float _stunTime = 0.1f;
+    public float StunTime => _stunTime;
     [SerializeField] protected float _bulletSpeed = 15;
     public float BulletSpeed => _bulletSpeed;
 
     [SerializeField] protected float _attackMultiplier = 1;
     public float AttackMutiplier => _attackMultiplier;
     [SerializeField] protected int _damage = 1;
-    public int Damage => (_damage + (_player ? Mathf.RoundToInt(_character.AttackPoint * _attackMultiplier) : 0));
+    public int Damage => (_damage + (_player ? Mathf.RoundToInt(_character.AttackPower * _attackMultiplier) : 0));
 
     [SerializeField] int _penerstratingPower;
     public int PenerstratingPower => (_penerstratingPower+ (_player? _player.IncreasedPenerstratingPower:0));
@@ -122,41 +124,19 @@ public class Weapon : MonoBehaviour, ITypeDefine
         fireFlare.transform.localScale = _firePosition.transform.lossyScale;
         fireFlare.transform.rotation = _firePosition.transform.rotation;
 
-        if (!_isRaycast)
-        {
-            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
-            go.transform.position = _firePosition.transform.position;
-            Projectile projectile = go.GetComponent<Projectile>();
-            int damage = Damage;
+        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
+        go.transform.position = _firePosition.transform.position;
+        Projectile projectile = go.GetComponent<Projectile>();
+        int damage = Damage;
+        if (_player)
+            damage =(int)(damage * (100 + (_player.IncreaseAttackPowerPercentage <= -100? -100: _player.IncreaseAttackPowerPercentage))/100f);
 
-            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.IsUnlockLastShot && _currentAmmo == 0)
-                damage = Damage * 3;
-            projectile.Init(KnockBackPower, BulletSpeed, damage,Define.CharacterType.Enemy,PenerstratingPower);
-            projectile.Fire(fireCharacter, direction.normalized);
-        }
-        else
-        {
-            RaycastHit2D hit = Physics2D.Raycast(_firePosition.transform.position, direction.normalized,Mathf.Infinity,LayerMask.GetMask("Character") | LayerMask.GetMask("Ground"));
-
-            if (hit.collider != null)
-            {
-                if (_hitEffect != Define.EffectName.None)
-                {
-                    Effect effect = Managers.GetManager<EffectManager>().GetEffect(_hitEffect);
-                    effect.SetProperty("Direction", direction);
-                    effect.Play(hit.point);
-                }
-
-                Character character = hit.collider.gameObject.GetComponent<Character>();
-
-                if (character != null)
-                {
-                    character.Damage(Character, _damage, _knockBackPower, direction);
-                }
-
-            }
-        }
+        // 플레이어가 라스트샷 능력이 있다면 데미지 3배
+        if (Player.IsUnlockLastShot && _currentAmmo == 0)
+            damage = Damage * 3;
+        projectile.Init(KnockBackPower, BulletSpeed, damage,Define.CharacterType.Enemy,PenerstratingPower,StunTime);
+        projectile.Fire(fireCharacter, direction.normalized);
+       
 
         Player?.Rebound(_rebound);
     }
@@ -177,7 +157,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         }
     }
 
-    public void Reload()
+    public virtual void Reload()
     {
         if (_maxAmmo <= _currentAmmo) return;
         if (_isReload) return;
@@ -276,7 +256,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         return (int)WeaponName;
     }
 
-    IEnumerator CorPlayAudio()
+    protected IEnumerator CorPlayAudio()
     {
         if (_audioSource) { 
         _audioSource.Stop();

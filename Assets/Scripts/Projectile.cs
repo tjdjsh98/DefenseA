@@ -11,13 +11,13 @@ public class Projectile : MonoBehaviour
     Rigidbody2D _rigid;
     TrailRenderer _trailRenderer;
 
-    float _power;
+    float _knockbackPower;
     float _speed;
     int _damage;
     int _penerstratingPower;
     int _penerstrateCount;
     float _time;
-
+    float _stunTime;
     Vector3 _direction;
     private Character _attacker;
 
@@ -36,12 +36,13 @@ public class Projectile : MonoBehaviour
         _trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    public void Init(float power, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0)
+    public void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0.1f)
     {
         _trailRenderer.Clear();
-        _power = power;
+        _knockbackPower = knockbackPower;
         _speed = speed;
         _damage = damage;
+        _stunTime = stunTime;
         _enableAttackCharacterType = enableAttackCharacterType;
         _penerstratingPower = penetratingPower;
         _isAttack = false;
@@ -88,7 +89,7 @@ public class Projectile : MonoBehaviour
                 {
 
                     _direction = _direction.normalized;
-                    character.Damage(_attacker, _damage, _power, _direction);
+                    _attacker.Attack(character, _damage, _knockbackPower, _direction,_stunTime);
                     Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit2);
                     Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
                     hitEffect.Play(transform.position);

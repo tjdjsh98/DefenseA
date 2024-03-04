@@ -1,14 +1,8 @@
-using MoreMountains.FeedbacksForThirdParty;
-using MoreMountains.Tools;
-using System;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Cinemachine;
+using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 
 public class Player : MonoBehaviour
 {
@@ -48,17 +42,28 @@ public class Player : MonoBehaviour
     bool _isRiding;
 
     // 추가적인 능력
+    public int IncreasedPenerstratingPower { set; get; } = 0;
+    public float DecreasedFireDelayPercent { set; get; }
+    public float IncreasedReloadSpeedPercent { set; get; }
+    public float IncreasedReboundControlPowerPercent { set; get; }
+    [field:SerializeField]public float IncreasedReboundRecoverPercent { set; get; }
+
+    
+
+    public float IncreaseAttackPowerPercentage => _plentyOfBulletsIncreasedAttackPointPercentage;
+    // 능력 언락부분
+    [field: SerializeField] public bool IsUnlockBlackSphere { get; set; } = false;
     public bool IsHaveRemoveReboundAMoment { set; get; }
     public bool IsUnlockFastReload { set; get; }
     public bool IsUnlockExtraAmmo { set; get; }
     public bool IsUnlockAutoReload { set; get; } = true;
-    public int IncreasedPenerstratingPower { set; get; } = 0;
     public bool IsUnlockLastShot { set; get; }
-    public float DecreasedFireDelayPercent { set; get; }
-    public float IncreasedReloadSpeedPercent { set; get; }
-    public float IncreasedReboundControlPowerPercent { set; get; }
-    public float IncreasedReboundRecoverPercent { set; get; }
-
+    [field: SerializeField] public bool IsUnlockPlentyOfBullets { set; get; }
+    float _plentyOfBulletsIncreasedAttackPointPercentage;
+    [field:SerializeField]public bool IsUnlockElectric { set; get; }
+    float _maxElectric = 10;
+    public float MaxElectric => _maxElectric;
+    public float CurrentElectric { set;get; }
 
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
@@ -83,6 +88,8 @@ public class Player : MonoBehaviour
         _character = GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
+
+        _character.AttackHandler += OnAttack;
 
         _initHeadAngle = _head.transform.rotation.eulerAngles.z;
         _initBodyAngle = _body.transform.rotation.eulerAngles.z;
@@ -137,7 +144,8 @@ public class Player : MonoBehaviour
         Riding();
         Roll();
         AutoReload();
-
+        PlentyOfBullets();
+        Electric();
         _eyeCloseElasepdTime += Time.deltaTime;
         if(_eyeCloseElasepdTime > _eyeCloseTime)
         {
@@ -155,6 +163,39 @@ public class Player : MonoBehaviour
         _isFire = false;
     }
 
+    private void Electric()
+    {
+        if (!IsUnlockElectric) return;
+
+        if(_maxElectric > CurrentElectric)
+            CurrentElectric += Time.deltaTime * 0.1f;
+        else
+            CurrentElectric = _maxElectric;
+    }
+
+    void PlentyOfBullets()
+    {
+        if (!IsUnlockPlentyOfBullets) return;
+
+        int value = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
+        _plentyOfBulletsIncreasedAttackPointPercentage = value * 10f;
+    }
+
+    void OnAttack(Character target, int damage)
+    {
+        if (IsUnlockBlackSphere)
+        {
+            // 20%의 확률로
+            if (Random.Range(0, 5) == 0)
+            {
+                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
+                go.transform.position = target.transform.position;
+                BlackSphere blackSphere = go.GetComponent<BlackSphere>();
+                blackSphere?.Init(_character);
+            }
+        }
+
+    }
     private void AutoReload()
     {
         if (!IsUnlockAutoReload) return;
@@ -392,12 +433,9 @@ public class Player : MonoBehaviour
         if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
         Managers.GetManager<InputManager>().AimTarget = true;
-        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && !_weaponSwaper.CurrentWeapon.IsAuto)
+        if (_weaponSwaper.CurrentWeapon != null  && !_weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
-        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo <= 0 && !_weaponSwaper.CurrentWeapon.IsReload)
-        {
-            _weaponSwaper.CurrentWeapon.Reload();
-        }
+       
     }
     void AutoUseWeapon()
     {
@@ -406,13 +444,8 @@ public class Player : MonoBehaviour
         _isFire= true;
         if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
-        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo > 0 && _weaponSwaper.CurrentWeapon.IsAuto)
+        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
-
-        if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.CurrentAmmo <= 0 && !_weaponSwaper.CurrentWeapon.IsReload)
-        {
-            _weaponSwaper.CurrentWeapon.Reload();
-        }
 
     }
     void ShowAim()

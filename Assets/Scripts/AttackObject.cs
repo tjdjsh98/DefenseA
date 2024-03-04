@@ -63,7 +63,7 @@ public class AttackObject : MonoBehaviour
             Character c = go.GetComponent<Character>();
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
-                c.Damage(_owner, _damage, 5, Vector3.up);
+                _owner.Attack(c, _damage, 5, Vector3.up);
 
             }
         }
