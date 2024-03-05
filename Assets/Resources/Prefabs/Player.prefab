@@ -55,7 +55,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -202,7 +202,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -286,7 +286,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -370,7 +370,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 2100000, guid: a97c105638bdf8b4a8650670310a4cd3, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -557,12 +557,23 @@ MonoBehaviour:
   _characterType: 0
   _maxHp: 3
   _hp: 3
+  _maxMental: 100
+  <Mental>k__BackingField: 0
   _speed: 4
-  _isEnableFly: 0
-  _isTurnBodyAlongVelocity: 0
+  _isGainMentalWhenKillIt: 0
+  _gainMentalAmount: 0
+  <AttackPower>k__BackingField: 0
+  _jumpPower: 10
+  _isEnableRevive: 0
+  <IsEnableFly>k__BackingField: 0
   <IsEnableMove>k__BackingField: 1
+  <IsEnableTurn>k__BackingField: 1
+  _groundCheckRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    figureType: 0
+  <IsTurnBodyAlongVelocity>k__BackingField: 1
   _hpBar: {fileID: 0}
-  CharacterPassive: 
 --- !u!114 &1597927242932312505
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -575,9 +586,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a9e8f11ec9a1f884c9d4f1f2aba7164a, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _arm: {fileID: 1420064848041316696}
+  _frontArm: {fileID: 0}
+  _backArmIK: {fileID: 0}
+  _head: {fileID: 0}
+  _body: {fileID: 0}
   _rightPadding: 0
   _upPadding: 0
+  _reboundRecoverPower: 20
+  <IncreasedReboundRecoverPercent>k__BackingField: 0
+  _bounce: 0
+  _power: 0
+  _eyeClose: {fileID: 0}
 --- !u!114 &4499074843622204943
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -590,6 +609,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 56587cb851c430849b8c304ea6960fe2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _reloadGauge: {fileID: 0}
   _weaponNameList: 000000000300000002000000
   _weaponSlotList:
   - {fileID: 9095316390562851474}

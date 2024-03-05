@@ -368,7 +368,7 @@ public class GameManager : ManagerBase
 }
 
 [System.Serializable]
-struct Wave
+public struct Wave
 {
     public int time;
     public float genTime;

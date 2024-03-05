@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour
@@ -20,9 +21,9 @@ public class Player : MonoBehaviour
 
     public int ReduceReloadTime { set; get; } = 0;
 
-    float _initHeadAngle;
-    float _initBodyAngle;
-    float _initFrontArmAngle;
+    [SerializeField] float _initHeadAngle;
+    [SerializeField] float _initBodyAngle;
+    [SerializeField]float _initFrontArmAngle;
 
     WeaponSwaper _weaponSwaper;
     public WeaponSwaper WeaponSwaper => _weaponSwaper;
@@ -152,6 +153,8 @@ public class Player : MonoBehaviour
             _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
             _bounce = false;
         }
+        Debug.Log(_frontArm.transform.eulerAngles.z);
+
 
         TurnBody();
         RotateArm();
@@ -382,6 +385,7 @@ public class Player : MonoBehaviour
             angle = 0;
             float armAngle = _frontArm.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1 : -1);
             weaponAngle = _weaponSwaper.CurrentWeapon.FirePosition.transform.eulerAngles.z * (transform.lossyScale.x > 0 ? 1 : -1);
+
             Vector3 firePointToTarget = mousePos - _weaponSwaper.CurrentWeapon.FirePosition.transform.position;
             float firePointToTargetAngle = Mathf.Atan2(firePointToTarget.y, Mathf.Abs(firePointToTarget.x)) * Mathf.Rad2Deg;
 
@@ -420,18 +424,15 @@ public class Player : MonoBehaviour
                 }
             }
             angle = armAngle ;
-            
+
         }
 
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
-
         if (_weaponSwaper.CurrentWeapon && _weaponSwaper.CurrentWeapon.HandlePosition)
         {
             _backArmIK.transform.position = _weaponSwaper.CurrentWeapon.HandlePosition.transform.position;
-            Debug.Log("K");
         }
-        float screenWidth = Screen.
-            width;
+        float screenWidth = Screen.width;
         Vector3 mousePosition = Input.mousePosition;
 
         if (mousePosition.x > screenWidth / 4 * 3)

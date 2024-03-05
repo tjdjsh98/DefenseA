@@ -46,6 +46,7 @@ public static class Define
         WhiteBat,
         OctoHead,
         BatGroup,
+        FatGuy,
         END,
     }
 

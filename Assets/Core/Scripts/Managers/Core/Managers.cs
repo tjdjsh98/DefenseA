@@ -39,7 +39,7 @@ public class Managers : MonoBehaviour
 
     static void Init()
     {
-        _instance = Util.FindOrCreate("Manager").GetOrAddComponent<Managers>();
+        _instance = Util.FindOrCreate("[Manager]------------").GetOrAddComponent<Managers>();
         _coreManagers.Clear();
         _contentManagers.Clear();
 
@@ -51,6 +51,7 @@ public class Managers : MonoBehaviour
         {
             AddContentManager((Define.ContentManagers)i);
         }
+
     }
 
     private void Update()
@@ -71,18 +72,19 @@ public class Managers : MonoBehaviour
         switch (managerName)
         {
             case Define.CoreManagers.Data:
-                manager = _instance.gameObject.GetOrAddComponent<InputManager>();
+                manager = new GameObject("DataManager").GetOrAddComponent<DataManager>();
                 break;
             case Define.CoreManagers.Input:
-                manager = _instance.gameObject.GetOrAddComponent<DataManager>();
+                manager = new GameObject("InputManager").GetOrAddComponent<InputManager>();
                 break;
             case Define.CoreManagers.Resource:
-                manager = _instance.gameObject.GetOrAddComponent<ResourceManager>();
+                manager = new GameObject("ResourceManager").GetOrAddComponent<ResourceManager>();
                 break;
         }
 
         if (manager)
         {
+            DontDestroyOnLoad(manager.gameObject);
             _coreManagers.Add(managerName,manager);
             manager.Init();
         }
@@ -95,16 +97,20 @@ public class Managers : MonoBehaviour
             case Define.ContentManagers.None:
                 break;
             case Define.ContentManagers.Game:
-                manager = _instance.gameObject.GetOrAddComponent<GameManager>();
+                manager = Util.FindOrCreate("GameManager").GetOrAddComponent<GameManager>();
+                manager.transform.parent = _instance.gameObject.transform;
                 break;
             case Define.ContentManagers.UI:
-                manager = _instance.gameObject.GetOrAddComponent<UIManager>();
+                manager = Util.FindOrCreate("UIManager").GetOrAddComponent<UIManager>();
+                manager.transform.parent = _instance.gameObject.transform;
                 break;
             case Define.ContentManagers.Effect:
-                manager = _instance.gameObject.GetOrAddComponent<EffectManager>();
+                manager = Util.FindOrCreate("EffectManager").GetOrAddComponent<EffectManager>();
+                manager.transform.parent = _instance.gameObject.transform;
                 break;
             case Define.ContentManagers.Text:
-                manager = _instance.gameObject.GetOrAddComponent<TextManager>();
+                manager = Util.FindOrCreate("TextManager").GetOrAddComponent<TextManager>();
+                manager.transform.parent = _instance.gameObject.transform;
                 break;
             case Define.ContentManagers.END:
                 break;
