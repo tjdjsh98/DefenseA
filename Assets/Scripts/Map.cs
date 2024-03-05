@@ -2,13 +2,14 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+[System.Serializable]
 public class Map
 {
+    public int MapSize = 100;
+    public int mechineCount = 3;
     int currentIndex = -10002;
     int moreBackBuildingIndex = -1000;
     int groundCount = 5;
-
-    Dictionary<int, GameObject> grounds = new Dictionary<int, GameObject>();
 
     GameObject leftBuilding;
     GameObject centerBuilding;
@@ -29,10 +30,12 @@ public class Map
     public Map(float groundTenm)
     {
         this.groundTerm = groundTenm;
-        groundFolder = new GameObject("GroundFolder");
-        groundFolder.layer = LayerMask.NameToLayer("Ground");
-        groundFolder.AddComponent<Rigidbody2D>().isKinematic = true;
-        groundFolder.AddComponent<CompositeCollider2D>();
+
+        for(int i =0; i< mechineCount; i++)
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/VendingMechine");
+            go.transform.position = new Vector3(MapSize / mechineCount * i, YPosition, 0);
+        }
     }
 
     public void Update(Player player)
@@ -40,7 +43,7 @@ public class Map
         if (player == null) return;
 
         Vector3 pos = player.transform.position;
-        SetGround(GetIndex(pos.x));
+        //SetGround(GetIndex(pos.x));
 
         int mul = 4;
 
@@ -58,7 +61,6 @@ public class Map
                 Vector3 position = new Vector3(index * groundTerm * mul, 0, 0);
                 position.y = -2f;
                 moreBackCenterBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index) % moreBackBuildingPresetPathList.Count]);
-                moreBackCenterBuilding.transform.parent = groundFolder.transform;
                 // 왼쪽
                 Random.InitState(Mathf.RoundToInt((index - 1) / moreBackBuildingPresetPathList.Count));
                 random = (int)(Random.value * 1000);
@@ -68,7 +70,6 @@ public class Map
                 position = new Vector3((index - 1) * groundTerm * mul, 0, 0);
                 position.y = -2f;
                 moreBackLeftBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index - 1) % moreBackBuildingPresetPathList.Count]);
-                moreBackLeftBuilding.transform.parent = groundFolder.transform;
                 //오른쪽
                 Random.InitState(Mathf.RoundToInt((index + 1) / moreBackBuildingPresetPathList.Count));
                 random = (int)(Random.value * 1000);
@@ -78,7 +79,6 @@ public class Map
                 position = new Vector3((index + 1) * groundTerm * mul, 0, 0);
                 position.y = -2f;
                 moreBackRightBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index + 1) % moreBackBuildingPresetPathList.Count]);
-                moreBackRightBuilding.transform.parent = groundFolder.transform;
             }
 
             moreBackBuildingIndex = index;
@@ -100,86 +100,86 @@ public class Map
         Random.InitState(Mathf.RoundToInt(index / groundCount));
         int groundRandom = (int)(Random.value * 1000);
 
-        List<int> indexList = grounds.Keys.ToList();
+        //List<int> indexList = grounds.Keys.ToList();
 
-        for (int i = 0; i < groundCount; i++)
-        {
-            int groundIndex = index + ((i % 2) == 0 ? -1 : 1) * (Mathf.FloorToInt((i - 1) / 2) + 1) * (i == 0 ? 0 : 1);
-            // int randomGroundTile = (groundRandom + groundIndex) % groundCount;
+        //for (int i = 0; i < groundCount; i++)
+        //{
+        //    int groundIndex = index + ((i % 2) == 0 ? -1 : 1) * (Mathf.FloorToInt((i - 1) / 2) + 1) * (i == 0 ? 0 : 1);
+        //    // int randomGroundTile = (groundRandom + groundIndex) % groundCount;
 
-            if (!grounds.ContainsKey(groundIndex))
-            {
-                grounds.Add(groundIndex, Managers.GetManager<ResourceManager>().Instantiate("Ground"));
-                grounds[groundIndex]?.transform.SetParent(groundFolder.transform);
-                grounds[groundIndex].transform.position = new Vector3(groundTerm * groundIndex, YPosition, 0);
-            }
+        //    if (!grounds.ContainsKey(groundIndex))
+        //    {
+        //        grounds.Add(groundIndex, Managers.GetManager<ResourceManager>().Instantiate("Ground"));
+        //        grounds[groundIndex]?.transform.SetParent(groundFolder.transform);
+        //        grounds[groundIndex].transform.position = new Vector3(groundTerm * groundIndex, YPosition, 0);
+        //    }
 
-            indexList.Remove(groundIndex);
-        }
+        //    indexList.Remove(groundIndex);
+        //}
 
-        for (int i = indexList.Count - 1; i >= 0; i--)
-        {
-            Managers.GetManager<ResourceManager>().Destroy(grounds[indexList[i]]);
-            grounds.Remove(indexList[i]);
-        }
+        //for (int i = indexList.Count - 1; i >= 0; i--)
+        //{
+        //    Managers.GetManager<ResourceManager>().Destroy(grounds[indexList[i]]);
+        //    grounds.Remove(indexList[i]);
+        //}
 
 
         currentIndex = index;
 
 
-        if (buildingPresetPathList.Count > 0)
-        {
+        //if (buildingPresetPathList.Count > 0)
+        //{
 
-            // 중간
-            Random.InitState(Mathf.RoundToInt(index / buildingPresetPathList.Count));
-            int random = (int)(Random.value * 1000);
+        //    // 중간
+        //    Random.InitState(Mathf.RoundToInt(index / buildingPresetPathList.Count));
+        //    int random = (int)(Random.value * 1000);
 
-            if (centerBuilding)
-                Managers.GetManager<ResourceManager>().Destroy(centerBuilding);
-            Vector3 position = grounds[currentIndex].transform.position;
-            position.y = Random.Range(-1f, -4f);
-            centerBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index) % buildingPresetPathList.Count]);
-            centerBuilding.transform.parent = groundFolder.transform;
-            centerBuilding.transform.position = position;
+        //    if (centerBuilding)
+        //        Managers.GetManager<ResourceManager>().Destroy(centerBuilding);
+        //    Vector3 position = grounds[currentIndex].transform.position;
+        //    position.y = Random.Range(-1f, -4f);
+        //    centerBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index) % buildingPresetPathList.Count]);
+        //    centerBuilding.transform.parent = groundFolder.transform;
+        //    centerBuilding.transform.position = position;
 
-            // 왼쪽
-            Random.InitState(Mathf.RoundToInt((index - 1) / buildingPresetPathList.Count));
-            random = (int)(Random.value * 1000);
+        //    // 왼쪽
+        //    Random.InitState(Mathf.RoundToInt((index - 1) / buildingPresetPathList.Count));
+        //    random = (int)(Random.value * 1000);
 
-            if (leftBuilding)
-                Managers.GetManager<ResourceManager>().Destroy(leftBuilding);
-            position = grounds[currentIndex - 1].transform.position;
-            position.y = Random.Range(-1f, -4f);
-            leftBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index - 1) % buildingPresetPathList.Count]);
-            leftBuilding.transform.parent = groundFolder.transform;
-            leftBuilding.transform.position = position;
+        //    if (leftBuilding)
+        //        Managers.GetManager<ResourceManager>().Destroy(leftBuilding);
+        //    position = grounds[currentIndex - 1].transform.position;
+        //    position.y = Random.Range(-1f, -4f);
+        //    leftBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index - 1) % buildingPresetPathList.Count]);
+        //    leftBuilding.transform.parent = groundFolder.transform;
+        //    leftBuilding.transform.position = position;
 
-            //오른쪽
-            Random.InitState(Mathf.RoundToInt((index + 1) / buildingPresetPathList.Count));
-            random = (int)(Random.value * 1000);
+        //    //오른쪽
+        //    Random.InitState(Mathf.RoundToInt((index + 1) / buildingPresetPathList.Count));
+        //    random = (int)(Random.value * 1000);
 
-            if (rightBuilding)
-                Managers.GetManager<ResourceManager>().Destroy(rightBuilding);
-            position = grounds[currentIndex + 1].transform.position;
-            position.y = Random.Range(-1f, -4f);
-            rightBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index + 1) % buildingPresetPathList.Count]);
-            rightBuilding.transform.parent = groundFolder.transform;
-            rightBuilding.transform.position = position;
-        }
+        //    if (rightBuilding)
+        //        Managers.GetManager<ResourceManager>().Destroy(rightBuilding);
+        //    position = grounds[currentIndex + 1].transform.position;
+        //    position.y = Random.Range(-1f, -4f);
+        //    rightBuilding = Managers.GetManager<ResourceManager>().Instantiate(buildingPresetPathList[(random + index + 1) % buildingPresetPathList.Count]);
+        //    rightBuilding.transform.parent = groundFolder.transform;
+        //    rightBuilding.transform.position = position;
+        //}
     }
 
-    public void SetCenterGround(GameObject ground)
-    {
-        grounds.Add(0, ground);
+    //public void SetCenterGround(GameObject ground)
+    //{
+    //    grounds.Add(0, ground);
 
-        for (int i = 1; i < groundCount; i++)
-        {
-            int groundIndex = ((i % 2) == 0 ? -1 : 1) * (Mathf.FloorToInt((i - 1) / 2) + 1);
-            grounds.Add(groundIndex, Managers.GetManager<ResourceManager>().Instantiate("Ground"));
-            grounds[groundIndex]?.transform.SetParent(groundFolder.transform);
-            grounds[groundIndex].transform.position = new Vector3(groundTerm * groundIndex, YPosition, 0);
-        }
-    }
+    //    for (int i = 1; i < groundCount; i++)
+    //    {
+    //        int groundIndex = ((i % 2) == 0 ? -1 : 1) * (Mathf.FloorToInt((i - 1) / 2) + 1);
+    //        grounds.Add(groundIndex, Managers.GetManager<ResourceManager>().Instantiate("Ground"));
+    //        grounds[groundIndex]?.transform.SetParent(groundFolder.transform);
+    //        grounds[groundIndex].transform.position = new Vector3(groundTerm * groundIndex, YPosition, 0);
+    //    }
+    //}
 
     public void AddBuildingPreset(string path)
     {

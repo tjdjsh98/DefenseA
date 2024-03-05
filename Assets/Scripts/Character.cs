@@ -86,7 +86,7 @@ public class Character : MonoBehaviour
     public Vector3 MySpeed => _mySpeed;
 
 
-    public Action<Vector2> BodyTurn;
+    public Action<Vector2> BodyTurnHandler;
 
     private void Awake()
     {
@@ -392,13 +392,13 @@ public class Character : MonoBehaviour
             scale.x = Mathf.Abs(scale.x);
             transform.localScale = scale;
 
-            BodyTurn?.Invoke(direction);
+            BodyTurnHandler?.Invoke(direction);
         }
         else if (transform.localScale.x > 0 && direction.x < 0)
         {
             scale.x = -Mathf.Abs(scale.x);
             transform.localScale = scale;
-            BodyTurn?.Invoke(direction);
+            BodyTurnHandler?.Invoke(direction);
         }
     }
 

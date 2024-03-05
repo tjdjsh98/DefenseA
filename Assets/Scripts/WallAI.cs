@@ -9,6 +9,9 @@ using UnityEngine.Timeline;
 public class WallAI : MonoBehaviour
 {
     Character _character;
+    BoxCollider2D _boxCollider;
+    GameObject _model;
+    GameObject _soulModel;
 
     [SerializeField] WeaponSwaper _weaponSwaper;
 
@@ -50,9 +53,15 @@ public class WallAI : MonoBehaviour
     public int ReflectionDamage { set; get; } = 0;
     public float DecreasedReviveTimePercetage { set; get; }
 
+    bool _isSoulForm;
+
     private void Awake()
     {
         _character = GetComponent<Character>();
+        _boxCollider = GetComponent<BoxCollider2D>();
+        _model = transform.Find("Model").gameObject;
+        _soulModel = transform.Find("SoulModel").gameObject;
+
         Managers.GetManager<GameManager>().WallAI = this;
 
         _character.CharacterDamaged += OnCharacterDamaged;
@@ -116,6 +125,25 @@ public class WallAI : MonoBehaviour
     }
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.C))
+        {
+            Transform();
+        }
+        if (_isSoulForm)
+        {
+            Player player = Managers.GetManager<GameManager>().Player;
+
+            _character.TurnBody(player.transform.position - transform.position);
+            Vector3 offset = new Vector3(-2, 6, 0);
+            offset.y += Mathf.Sin(Time.time*0.5f +gameObject.GetInstanceID());
+            if (player.transform.localScale.x < 0)
+                offset.x = -offset.x;
+
+            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.01f);
+
+            return;
+        }
+
         Revive();
 
         if (_character.IsDead) return;
@@ -152,6 +180,28 @@ public class WallAI : MonoBehaviour
         }
     }
 
+    void Transform()
+    {
+        if (!_isSoulForm)
+        {
+            _boxCollider.enabled = false;
+            _isSoulForm = true;
+            _model.gameObject.SetActive(false);
+            _soulModel.gameObject.SetActive(true);
+            _character.IsEnableFly = true;
+        }
+        else
+        {
+            Vector3? position = Util.GetGroundPosition(transform.position);
+            if (position != null)
+                transform.position = Util.GetGroundPosition(transform.position).Value;
+            _boxCollider.enabled = true;
+            _isSoulForm = false;
+            _model.gameObject.SetActive(true);
+            _soulModel.gameObject.SetActive(false);
+            _character.IsEnableFly = false;
+        }
+    }
  
     void Revive()
     {

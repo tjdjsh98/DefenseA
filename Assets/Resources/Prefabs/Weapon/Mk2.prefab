@@ -133,9 +133,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponName: 1
   _audioLength: 1
-  _isRaycast: 0
   _isAuto: 1
-  _knockBackPower: 1
+  _knockBackPower: 100
+  _stunTime: 0.1
   _bulletSpeed: 400
   _attackMultiplier: 5
   _damage: 10

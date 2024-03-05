@@ -149,11 +149,13 @@ public class CreatureAI : MonoBehaviour
         {
             Player player = Managers.GetManager<GameManager>().Player;
 
+            _character.TurnBody(player.transform.position - transform.position);
             Vector3 offset = new Vector3(-3, 5, 0);
+            offset.y += Mathf.Sin(Time.time *0.5f + gameObject.GetInstanceID());
             if (player.transform.localScale.x < 0)
                 offset.x = -offset.x;
 
-            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.05f);
+            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.01f);
 
             return;
         }
@@ -258,6 +260,10 @@ public class CreatureAI : MonoBehaviour
         }
         else
         {
+            Vector3? position = Util.GetGroundPosition(transform.position);
+            if(position!= null) 
+                transform.position = Util.GetGroundPosition(transform.position).Value;
+
             _boxCollider.enabled = true;
             _isSoulForm = false;
             _model.gameObject.SetActive(true);

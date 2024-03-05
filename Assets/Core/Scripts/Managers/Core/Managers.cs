@@ -83,8 +83,8 @@ public class Managers : MonoBehaviour
 
         if (manager)
         {
-            manager.Init();
             _coreManagers.Add(managerName,manager);
+            manager.Init();
         }
     }
     static void AddContentManager(Define.ContentManagers managerName)
@@ -112,8 +112,8 @@ public class Managers : MonoBehaviour
 
         if (manager)
         {
-            manager.Init();
             _contentManagers.Add(managerName, manager);
+            manager.Init();
         }
     }
 }

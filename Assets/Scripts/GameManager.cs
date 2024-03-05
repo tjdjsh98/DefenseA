@@ -28,8 +28,8 @@ public class GameManager : ManagerBase
 
     [Header("게임 진행")]
     [SerializeField] bool _stop;
-    Map _map;
-    [field: SerializeField] public float MapSize { set; get; }
+    [SerializeField]Map _map;
+    public float MapSize => _map.MapSize;
     float _farDistance;
 
 
@@ -99,7 +99,6 @@ public class GameManager : ManagerBase
     [field: SerializeField] public List<ShopItem> ShopItemList;
     public override void Init()
     {
-        Debug.Log(Managers.GetManager<DataManager>().GetDataList<CardData>().Count);
         _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) =>
         {
             if (d.IsStartCard)
@@ -117,7 +116,6 @@ public class GameManager : ManagerBase
             }
         });
         _map = new Map(60f);
-        _map.SetCenterGround(GameObject.Find("Ground"));
         _map.AddBuildingPreset("Prefabs/BuildingPreset1");
         _map.AddBuildingPreset("Prefabs/BuildingPreset2");
         _map.AddBuildingPreset("Prefabs/BuildingPreset3");

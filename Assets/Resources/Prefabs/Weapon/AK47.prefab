@@ -133,13 +133,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _weaponName: 0
   _audioLength: 0.31
-  _isRaycast: 0
   _isAuto: 1
-  _knockBackPower: 1
+  _knockBackPower: 50
+  _stunTime: 0.1
   _bulletSpeed: 100
   _attackMultiplier: 0.7
-  _damage: 1
-  _penerstratingPower: 1
+  _damage: 2
+  _penerstratingPower: 0
   _maxAmmo: 20
   _currentAmmo: 20
   _isAllReloadAmmo: 1

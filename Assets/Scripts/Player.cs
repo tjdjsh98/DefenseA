@@ -36,9 +36,8 @@ public class Player : MonoBehaviour
     float _reboundControlPower = 50f;
     public float ReboundControlPower => IncreasedReboundControlPowerPercent > 0 ? _reboundControlPower * (1 + IncreasedReboundControlPowerPercent / 100) : _reboundControlPower / (1 - IncreasedReboundControlPowerPercent / 100);
 
-    [SerializeField]float _reboundRecoverPower = 10f;
+    [SerializeField]float _reboundRecoverPower = 20f;
     public float ReboundRecoverPower => IncreasedReboundRecoverPercent > 0 ? _reboundRecoverPower * (1 + IncreasedReboundRecoverPercent / 100) : _reboundRecoverPower / (1 - IncreasedReboundRecoverPercent / 100);
-    float _reboundRecoverTime = 0;
     bool _isRiding;
 
     // 추가적인 능력
@@ -347,40 +346,30 @@ public class Player : MonoBehaviour
         if(_isRun) return;
 
         Vector3 mousePos = Managers.GetManager<InputManager>().MouseWorldPosition;
-        bool isPressed = false;
-
-        if (Input.GetMouseButton(0))
-        {
-            isPressed = true;
-            _reboundRecoverTime = 0.5f;
-        }
-        _reboundRecoverTime += Time.deltaTime*3;
+     
         if (_rebound > 0)
         {
-            if ((_rebound - ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime) < 0)
+            if ((_rebound - ReboundRecoverPower * Time.deltaTime) < 0)
             {
                 _rebound = 0;
             }
             else
             {
-                _rebound -= ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
+                _rebound -= ReboundRecoverPower  * Time.deltaTime;
             }
         }
-        if(!isPressed && _rebound < 0)
+        if(_rebound < 0)
         {
-            if ((_rebound + ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime) > 0)
+            if ((_rebound + ReboundRecoverPower  * Time.deltaTime) > 0)
             {
                 _rebound = 0;
             }
             else
             {
-                _rebound += ReboundRecoverPower * _reboundRecoverTime * Time.deltaTime;
+                _rebound += ReboundRecoverPower * Time.deltaTime;
             }
         }
-        if (isPressed)
-        {
-            _rebound += Managers.GetManager<InputManager>().MouseDelta.y;
-        }
+      
 
         Vector3 distance = Vector3.zero;
         mousePos.z = 0;
@@ -412,10 +401,15 @@ public class Player : MonoBehaviour
             {
                 if (weaponAngle < firePointToTargetAngle)
                 {
-                    if (firePointToTarget.magnitude > 5) 
+                    if (firePointToTarget.magnitude > 5)
+                    {
                         armAngle += (firePointToTargetAngle - weaponAngle);
+                    }
                     else
-                        armAngle += (firePointToTargetAngle - weaponAngle) * Time.deltaTime*10f;
+                    {
+
+                        armAngle += (firePointToTargetAngle - weaponAngle) * Time.deltaTime * 10f;
+                    }
                 }
                 else
                 {
@@ -431,8 +425,11 @@ public class Player : MonoBehaviour
 
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
 
-        if(_weaponSwaper.CurrentWeapon && _weaponSwaper.CurrentWeapon.HandlePosition)
+        if (_weaponSwaper.CurrentWeapon && _weaponSwaper.CurrentWeapon.HandlePosition)
+        {
             _backArmIK.transform.position = _weaponSwaper.CurrentWeapon.HandlePosition.transform.position;
+            Debug.Log("K");
+        }
         float screenWidth = Screen.
             width;
         Vector3 mousePosition = Input.mousePosition;

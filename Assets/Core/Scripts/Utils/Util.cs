@@ -9,7 +9,7 @@ public static class Util
         GameObject go = null;
 
         go = GameObject.Find(name);
-        if(go == null)
+        if (go == null)
             go = new GameObject(name);
 
         return go;
@@ -130,12 +130,23 @@ public static class Util
     {
         float percentage = currentPercentage + increasedPercentage;
 
-        return percentage > 0 ? orginValue * (1 + percentage/100) : orginValue/(1-percentage / 100);
+        return percentage > 0 ? orginValue * (1 + percentage / 100) : orginValue / (1 - percentage / 100);
     }
     public static int PreviewPercentage(int orginValue, float currentPercentage, float increasedPercentage)
     {
         float percentage = currentPercentage + increasedPercentage;
 
-        return percentage > 0 ? Mathf.RoundToInt(orginValue * (1 + percentage/100)) :Mathf.RoundToInt( orginValue / (1 - percentage/100));
+        return percentage > 0 ? Mathf.RoundToInt(orginValue * (1 + percentage / 100)) : Mathf.RoundToInt(orginValue / (1 - percentage / 100));
     }
+    
+
+    public static Vector3? GetGroundPosition(Vector3 position)
+    {
+        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.down, 100, LayerMask.GetMask("Ground"));
+
+        if(hit.collider == null) return null;
+
+        return hit.point;
+    }
+
 }

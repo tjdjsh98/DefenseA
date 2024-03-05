@@ -11,7 +11,7 @@ public class MaintainScaleOnCharacter : MonoBehaviour
     {
         if(_character)
         {
-            _character.BodyTurn += OnBodyTurn;
+            _character.BodyTurnHandler += OnBodyTurn;
         }
     }
 

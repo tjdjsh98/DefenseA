@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
 using UnityEngine;
 
@@ -8,8 +9,11 @@ public class CameraController : MonoBehaviour
 {
 
     [SerializeField]Vector3 _fixedPos;
-    [SerializeField]GameObject _baseEnvironment;
+    [SerializeField]SpriteRenderer _baseEnvironment;
     [SerializeField] Vector3 _baseEnvironmenInitLocalPosition;
+    float _baseEnvironmentWidth;
+
+    float _cameraWidth;
 
     Vector3 _initCameraPosition;
 
@@ -34,9 +38,13 @@ public class CameraController : MonoBehaviour
     {
         _screenSpriteRenderer = transform.Find("ScreenEffect").GetComponent<SpriteRenderer>();
         _initCameraPosition = transform.position;
-        if(_baseEnvironment)
+        if (_baseEnvironment)
+        {
             _baseEnvironmenInitLocalPosition = _baseEnvironment.transform.localPosition;
+            _baseEnvironmentWidth = _baseEnvironment.size.x * _baseEnvironment.transform.lossyScale.x;
+        }
         _screenSpriteRenderer.material.SetFloat(_cameraSizeID, Camera.main.orthographicSize);
+        _cameraWidth = GetCameraWidth();
     }
     private void Update()
     {
@@ -60,6 +68,7 @@ public class CameraController : MonoBehaviour
     private void FixedUpdate()
     {
         if (Managers.GetManager<GameManager>().Player == null) return;  
+        HandleBaseEnvironent();
 
         Vector3 playerPosition = Managers.GetManager<GameManager>().Player.transform.position;
         playerPosition.z = -10f;
@@ -71,7 +80,6 @@ public class CameraController : MonoBehaviour
 
         transform.position = Vector3.Lerp(transform.position, playerPosition + _fixedPos + _mouseView, 0.1f);
 
-        HandleBaseEnvironent();
     }
 
     void HandleBaseEnvironent()
@@ -79,13 +87,17 @@ public class CameraController : MonoBehaviour
         if (_baseEnvironment == null) return;
 
         float mapSize = Managers.GetManager<GameManager>().MapSize;
-        float distance = transform.position.x - _initCameraPosition.x;
+        float distance = transform.position.x;
 
-        Vector3 position = _baseEnvironmenInitLocalPosition;
+        distance = Mathf.Clamp(distance, 0, mapSize);
 
-        position.x -= Mathf.Abs(_baseEnvironmenInitLocalPosition.x)*(distance / mapSize)*2;
-        position.x -= _mouseView.x * (distance / mapSize)*2;
-        _baseEnvironment.transform.localPosition = position;
+        Vector3 position = new Vector3(-_baseEnvironmentWidth / 2 + _cameraWidth/2
+            , transform.position.y, 0) ;
+
+        position.x = Mathf.Lerp(-_baseEnvironmentWidth / 2 + _cameraWidth / 2 , mapSize - _cameraWidth / 2 + _baseEnvironmentWidth / 2 , (distance / mapSize));
+
+        position.x = Mathf.Clamp(position.x, (-_baseEnvironmentWidth / 2 + _cameraWidth / 2), mapSize - _cameraWidth / 2 + _baseEnvironmentWidth / 2);
+        _baseEnvironment.transform.position = position;
         
     }
   
@@ -163,5 +175,12 @@ public class CameraController : MonoBehaviour
             yield return null;
         }
         _screenSpriteRenderer.material.SetInt(_reverseID, 0);
+    }
+
+    public float GetCameraWidth()
+    {
+        float size = Camera.main.orthographicSize;
+
+        return Screen.width / Screen.height * size*2;
     }
 }
