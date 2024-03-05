@@ -271,7 +271,7 @@ GameObject:
   - component: {fileID: 5524488991626720711}
   - component: {fileID: 4904645516249612683}
   m_Layer: 6
-  m_Name: Dog
+  m_Name: Wall
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -387,6 +387,7 @@ MonoBehaviour:
   _speed: 1
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
+  <AttackPower>k__BackingField: 0
   _jumpPower: 10
   _isEnableFly: 0
   _isEnableRevive: 1
@@ -396,9 +397,8 @@ MonoBehaviour:
     center: {x: 0, y: 0, z: 0}
     size: {x: 1, y: 1, z: 0}
     figureType: 0
-  _isTurnBodyAlongVelocity: 1
+  <IsTurnBodyAlongVelocity>k__BackingField: 1
   _hpBar: {fileID: 0}
-  CharacterPassive: 
 --- !u!114 &4669120605170730670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -424,10 +424,11 @@ MonoBehaviour:
   _playerDistance: 5
   _reviveTime: 30
   <IsUnlockExplosionWhenDead>k__BackingField: 0
+  <IsReviveWhereDaughterPosition>k__BackingField: 0
+  <IsUnlockBlackSphere>k__BackingField: 0
   <ExplosionRange>k__BackingField: 10
   <ExplosionPower>k__BackingField: 50
   <ExplosionDamage>k__BackingField: 50
-  <IsReviveWhereDaughterPosition>k__BackingField: 0
 --- !u!114 &1268709811801672397
 MonoBehaviour:
   m_ObjectHideFlags: 0

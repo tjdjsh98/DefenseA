@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
+using UnityEngine.Timeline;
 
 public class WallAI : MonoBehaviour
 {
@@ -28,15 +29,25 @@ public class WallAI : MonoBehaviour
         _reviveTime /(1 + DecreasedReviveTimePercetage/100) : _reviveTime * (1 - DecreasedReviveTimePercetage / 100);
     float _reviveElapsedTime = 0;
 
+    // 능력 언락
+    [field:SerializeField]public bool IsUnlockExplosionWhenDead { set; get; } = false;
+    [field: SerializeField] public bool IsReviveWhereDaughterPosition { set; get; } = false;
+    [field: SerializeField] public bool IsUnlockBlackSphere { set; get; } = false;
+
+
     // 폭파능력
     [field:Header("폭파 능력")]
-    [field:SerializeField]public bool IsUnlockExplosionWhenDead { set; get; } = false;
     [field:SerializeField]public float ExplosionRange { set; get; } = 10;
     [field: SerializeField] public float ExplosionPower { set; get; } = 50;
     [field: SerializeField] public int ExplosionDamage { set; get; } = 50;
 
+    // 베리어
+    float _barrierCoolTime;
+    float _barrierDurationTime = 10;
+    float _barrierElaspedTime;
+    float _barrierRange = 30;
+    Barrier _barrier;
 
-    [field: SerializeField] public bool IsReviveWhereDaughterPosition { set; get; } = false;
     // 추가적 능력치
     public int ReflectionDamage { set; get; } = 0;
     public float DecreasedReviveTimePercetage { set; get; }
@@ -83,6 +94,17 @@ public class WallAI : MonoBehaviour
     {
         if(ReflectionDamage != 0)
             _character.Attack(attacker, ReflectionDamage, 0, Vector3.zero, 0);
+
+        if (IsUnlockBlackSphere)
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
+            BlackSphere blackSphere = go.GetComponent<BlackSphere>();
+            if(blackSphere != null)
+            {
+                blackSphere.transform.position = transform.position;
+                blackSphere.Init(_character);
+            }
+        }
     }
 
     private void OnDrawGizmos()
@@ -98,8 +120,38 @@ public class WallAI : MonoBehaviour
         if (_character.IsDead) return;
         MoveForward();
         Targeting();
+
+        // 임시
+        if (_barrier == null&&Input.GetKeyDown(KeyCode.T))
+        {
+            ActivateBarrier();
+        }
+        Barrier();
     }
 
+    void ActivateBarrier()
+    {
+        _barrier = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Barrier").GetComponent<Barrier>();
+        _barrier.transform.parent = transform;
+        _barrier.transform.position= transform.position;
+        _barrier?.StartExpansion(_barrierRange);
+    }
+
+    void Barrier()
+    {
+        if(_barrier)
+        {
+            _barrierElaspedTime += Time.deltaTime;
+            if (_barrierElaspedTime > _barrierDurationTime)
+            {
+                _barrierElaspedTime = 0;
+                Managers.GetManager<ResourceManager>().Destroy(_barrier.gameObject);
+                _barrier = null;
+            }
+        }
+    }
+
+ 
     void Revive()
     {
         if (_character.IsDead)
@@ -120,6 +172,8 @@ public class WallAI : MonoBehaviour
     }
     protected virtual void MoveForward()
     {
+        if (_barrier) return;
+
         if (_detectEnemyCoroutine == null)
             _detectEnemyCoroutine = StartCoroutine(CorDetectEnemy());
 

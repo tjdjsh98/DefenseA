@@ -944,7 +944,7 @@ GameObject:
   - component: {fileID: 8291804802324025878}
   - component: {fileID: 7782893659294764709}
   m_Layer: 6
-  m_Name: Father
+  m_Name: Creature
   m_TagString: Player
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1080,6 +1080,7 @@ MonoBehaviour:
   _speed: 10
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
+  <AttackPower>k__BackingField: 0
   _jumpPower: 10
   _isEnableFly: 0
   _isEnableRevive: 1
@@ -1089,9 +1090,8 @@ MonoBehaviour:
     center: {x: 0, y: 0, z: 0}
     size: {x: 1, y: 1, z: 0}
     figureType: 0
-  _isTurnBodyAlongVelocity: 1
+  <IsTurnBodyAlongVelocity>k__BackingField: 1
   _hpBar: {fileID: 0}
-  CharacterPassive: 
 --- !u!114 &8291804802324025878
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1126,7 +1126,7 @@ MonoBehaviour:
   <IsUnlockSpear>k__BackingField: 0
   _spearAttackCoolTime: 3
   _shockwaveRange: 20
-  <IsUnlockShockwave>k__BackingField: 0
+  <IsUnlockShockwave>k__BackingField: 1
   <IsUnlockStempGround>k__BackingField: 0
 --- !u!210 &7782893659294764709
 SortingGroup:

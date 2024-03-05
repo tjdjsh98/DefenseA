@@ -5,6 +5,7 @@ using UnityEngine;
 
 public static class Define 
 {
+    public static int CharacterMask = LayerMask.GetMask("Character");
     public enum CoreManagers
     {
         None = -1,

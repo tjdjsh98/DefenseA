@@ -39,8 +39,19 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected float _attackMultiplier = 1;
     public float AttackMutiplier => _attackMultiplier;
     [SerializeField] protected int _damage = 1;
-    public int Damage => (_damage + (_player ? Mathf.RoundToInt(_character.AttackPower * _attackMultiplier) : 0));
-
+    public int Damage
+    {
+        get
+        {
+            int result = 0;
+            int multiDamage = _damage+ (_player ? Mathf.RoundToInt(_character.AttackPower * _attackMultiplier) : 0);
+            result += multiDamage;
+            int increasedDamage = (int)(_player ? multiDamage * _player.GetIncreasedDamagePercentage()/100f : 0);
+            result += increasedDamage;
+            return result;
+        }
+    }
+    
     [SerializeField] int _penerstratingPower;
     public int PenerstratingPower => (_penerstratingPower+ (_player? _player.IncreasedPenerstratingPower:0));
 
@@ -52,7 +63,8 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected bool _isAllReloadAmmo;
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _fireDelay;
-    public float FireDelay => _fireDelay + (_player? -(_player.DecreasedFireDelayPercent/100f) *_fireDelay:0);
+    public float FireDelay => 
+        (_player?(_player.GetIncreasedDamagePercentage()>0?_fireDelay/(1 + _player.GetIncreasedAttackSpeedPercentage()/100f): _fireDelay * (1 - _player.GetIncreasedAttackSpeedPercentage() / 100f)) :_fireDelay);
     [SerializeField] protected float _reloadDelay;
     public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercent /100f)* _reloadDelay:0);
 
@@ -114,6 +126,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
 
+        _player?.ResetRebound();
         float angle = FirePosition.transform.rotation.eulerAngles.z;
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
@@ -128,8 +141,6 @@ public class Weapon : MonoBehaviour, ITypeDefine
         go.transform.position = _firePosition.transform.position;
         Projectile projectile = go.GetComponent<Projectile>();
         int damage = Damage;
-        if (_player)
-            damage =(int)(damage * (100 + (_player.IncreaseAttackPowerPercentage <= -100? -100: _player.IncreaseAttackPowerPercentage))/100f);
 
         // 플레이어가 라스트샷 능력이 있다면 데미지 3배
         if (Player.IsUnlockLastShot && _currentAmmo == 0)
@@ -180,6 +191,15 @@ public class Weapon : MonoBehaviour, ITypeDefine
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
         }
+    }
+    public virtual void ReloadHold()
+    {
+     
+    }
+
+    public virtual void ReloadUp()
+    {
+
     }
 
     public void FastReload()

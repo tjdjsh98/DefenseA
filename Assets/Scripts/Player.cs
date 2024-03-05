@@ -44,10 +44,15 @@ public class Player : MonoBehaviour
     // 추가적인 능력
     public int IncreasedPenerstratingPower { set; get; } = 0;
     public float DecreasedFireDelayPercent { set; get; }
+    public float IncreasedAttackSpeedPercentage { set; get; }
     public float IncreasedReloadSpeedPercent { set; get; }
     public float IncreasedReboundControlPowerPercent { set; get; }
     [field:SerializeField]public float IncreasedReboundRecoverPercent { set; get; }
 
+    float _plentyOfBulletsIncreasedAttackPointPercentage;
+    float _maxElectric = 10;
+    public float MaxElectric => _maxElectric;
+    public float CurrentElectric { set;get; }
     
 
     public float IncreaseAttackPowerPercentage => _plentyOfBulletsIncreasedAttackPointPercentage;
@@ -59,11 +64,8 @@ public class Player : MonoBehaviour
     public bool IsUnlockAutoReload { set; get; } = true;
     public bool IsUnlockLastShot { set; get; }
     [field: SerializeField] public bool IsUnlockPlentyOfBullets { set; get; }
-    float _plentyOfBulletsIncreasedAttackPointPercentage;
     [field:SerializeField]public bool IsUnlockElectric { set; get; }
-    float _maxElectric = 10;
-    public float MaxElectric => _maxElectric;
-    public float CurrentElectric { set;get; }
+    [field:SerializeField]public bool IsUnlockLastStruggling { set; get; }
 
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
@@ -102,6 +104,8 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().MouseButtonHoldHandler += AutoUseWeapon;
         Managers.GetManager<InputManager>().MouseButtonUpHandler += ShowAim;
         Managers.GetManager<InputManager>().ReloadKeyDownHandler += OnReloadKeyDown;
+        Managers.GetManager<InputManager>().ReloadKeyHoldHandler += OnReloadKeyHold;
+        Managers.GetManager<InputManager>().ReloadKeyUpHandler += OnReloadKeyUp;
         HandleMove();
 
         Managers.GetManager<InputManager>().Num1KeyDownHandler += () => _weaponSwaper.SelectWeapon(0);
@@ -128,6 +132,18 @@ public class Player : MonoBehaviour
         _weaponSwaper.CurrentWeapon.Reload();
     }
 
+    private void OnReloadKeyHold()
+    {
+        if (_weaponSwaper.CurrentWeapon == null) return;
+
+        _weaponSwaper.CurrentWeapon.ReloadHold();
+    }
+    private void OnReloadKeyUp()
+    {
+        if (_weaponSwaper.CurrentWeapon == null) return;
+
+        _weaponSwaper.CurrentWeapon.ReloadUp();
+    }
     public void Update()
     {
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
@@ -161,6 +177,35 @@ public class Player : MonoBehaviour
         _runToFireElaspedTime += Time.deltaTime;
         _isRun = false;
         _isFire = false;
+    }
+
+    public float GetIncreasedDamagePercentage()
+    {
+        Character wall = Managers.GetManager<GameManager>().Wall;
+        Character creature = Managers.GetManager<GameManager>().Creature;
+
+        float percentage = 0;
+        percentage += _plentyOfBulletsIncreasedAttackPointPercentage;
+
+        if (IsUnlockLastStruggling && (wall == null || wall.IsDead) && (creature == null || creature.IsDead))
+            percentage += 100f;
+             
+        return percentage;
+    }
+
+    public float GetIncreasedAttackSpeedPercentage()
+    {
+        Character wall = Managers.GetManager<GameManager>().Wall;
+        Character creature = Managers.GetManager<GameManager>().Creature;
+
+        float percentage = 0;
+
+        percentage += IncreasedAttackSpeedPercentage;
+
+        if (IsUnlockLastStruggling && (wall == null || wall.IsDead) && (creature == null || creature.IsDead))
+            percentage += 100f;
+
+        return percentage;
     }
 
     private void Electric()
@@ -245,7 +290,7 @@ public class Player : MonoBehaviour
     }
     public void Rebound(float angle)
     {
-        _rebound += angle * (1-(ReboundControlPower / (100 + ReboundControlPower)));
+        _rebound = angle;
 
         if (_rebound > 45)
             _rebound = 45;
@@ -488,5 +533,11 @@ public class Player : MonoBehaviour
                 _character.AnimatorSetBool("Sit", false);
             }
         }
+    }
+
+    public void ResetRebound()
+    {
+        _rebound = 0;
+        RotateArm();
     }
 }

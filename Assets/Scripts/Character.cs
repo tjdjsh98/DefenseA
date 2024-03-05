@@ -157,7 +157,7 @@ public class Character : MonoBehaviour
     void HandleBreak()
     {
         // 브레이크
-        if (!_isMove)
+        if (!_isMove && !IsStun)
         {
             float xSpeed = _rigidBody.velocity.x;
             if (xSpeed != 0)
@@ -194,12 +194,12 @@ public class Character : MonoBehaviour
             float speed = _rigidBody.velocity.x * transform.lossyScale.x / Math.Abs(transform.lossyScale.x);
             if (speed > _speed * 0.9f)
             {
-                _animator.SetFloat("WalkBlend", 1);
+                _animator?.SetFloat("WalkBlend", 1);
 
             }
             else
             {
-                _animator.SetFloat("WalkBlend", Mathf.Clamp(speed/ _speed, -0.4f, 1));
+                _animator?.SetFloat("WalkBlend", Mathf.Clamp(speed/ _speed, -0.4f, 1));
             }
         }
     }
@@ -222,12 +222,15 @@ public class Character : MonoBehaviour
 
 
     // 최종적으로 가한 데미지를 반환합니다.
-    int Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    public int Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
     {
-        Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
 
         damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
             Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
+
+        if(damage != 0)
+            Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
+
 
         _hp -= damage;
         _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);

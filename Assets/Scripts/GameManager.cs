@@ -196,41 +196,43 @@ public class GameManager : ManagerBase
 
             EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)_timeWaveList[_currentWave].enemyList.GetRandom());
             EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-            Character enemyCharacter = enemy.GetComponent<Character>();
-            if (enemy.IsGroup)
-                enemy.GetComponent<EnemyGroup>().SetHp(_timeWaveList[_currentWave].hpMultiply);
-            else
-                enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _timeWaveList[_currentWave].hpMultiply));
-
-            Vector3 randomPosition = Vector3.zero;
-            float distance = 50;
-            if (enemy.EnemyName == Define.EnemyName.BatGroup)
-            {
-                randomPosition.x = Player.transform.position.x + Random.Range(0, 2) == 0 ? -30 : 30;
-                randomPosition.y = Player.transform.position.y + 20;
-            }
-            else if (enemyCharacter != null && enemyCharacter.IsEnableFly)
-            {
-                float angle = 0;
-                if (Random.Range(0, 2) == 0)
-                    angle = Random.Range(30, 70);
-                else
-                    angle = Random.Range(110, 150);
-
-                angle = angle * Mathf.Deg2Rad;
-                randomPosition.x = Player.transform.position.x + Mathf.Cos(angle) * distance;
-                randomPosition.y = Player.transform.position.y + Mathf.Sin(angle) * distance;
-
-            }
-            else
-            {
-                randomPosition.x = Player.transform.position.x + distance;
-                randomPosition.y = _map.YPosition + 1;
-            }
-            enemy.transform.position = randomPosition;
             if (enemy)
-                _enemySpawnList.Add(enemy.gameObject);
+            {
+                Character enemyCharacter = enemy.GetComponent<Character>();
+                if (enemy.IsGroup)
+                    enemy.GetComponent<EnemyGroup>().SetHp(_timeWaveList[_currentWave].hpMultiply);
+                else
+                    enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _timeWaveList[_currentWave].hpMultiply));
 
+                Vector3 randomPosition = Vector3.zero;
+                float distance = 50;
+                if (enemy.EnemyName == Define.EnemyName.BatGroup)
+                {
+                    randomPosition.x = Player.transform.position.x + Random.Range(0, 2) == 0 ? -30 : 30;
+                    randomPosition.y = Player.transform.position.y + 20;
+                }
+                else if (enemyCharacter != null && enemyCharacter.IsEnableFly)
+                {
+                    float angle = 0;
+                    if (Random.Range(0, 2) == 0)
+                        angle = Random.Range(30, 70);
+                    else
+                        angle = Random.Range(110, 150);
+
+                    angle = angle * Mathf.Deg2Rad;
+                    randomPosition.x = Player.transform.position.x + Mathf.Cos(angle) * distance;
+                    randomPosition.y = Player.transform.position.y + Mathf.Sin(angle) * distance;
+
+                }
+                else
+                {
+                    randomPosition.x = Player.transform.position.x + distance;
+                    randomPosition.y = _map.YPosition + 1;
+                }
+                enemy.transform.position = randomPosition;
+                if (enemy)
+                    _enemySpawnList.Add(enemy.gameObject);
+            }
         }
         else
         {

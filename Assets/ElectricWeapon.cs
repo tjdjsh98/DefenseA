@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.XR.OpenVR;
 using UnityEngine;
 
 public class ElectricWeapon : Weapon
@@ -7,36 +8,9 @@ public class ElectricWeapon : Weapon
     float _electric;
     public override void Fire(Character fireCharacter)
     {
-        Debug.Log("Charge");
         if (_fireElapsed < FireDelay) return;
 
-        if (_currentAmmo < _maxAmmo)
-        {
-
-            if(_player.CurrentElectric > 0)
-            {
-                Player.CurrentElectric -= Time.deltaTime;
-                _electric += Time.deltaTime;
-                if (_electric >= 1)
-                {
-                    _currentAmmo += 1;
-                    _electric -= 1;
-                }
-                if (_reloadGauge)
-                {
-                    _reloadGauge.gameObject.SetActive(true);
-                    _reloadGauge.SetRatio(_currentAmmo + _electric, _maxAmmo);
-                }
-
-            }
-            else
-            {
-                _reloadGauge.gameObject.SetActive(false);
-                _electric = 0;
-                _currentAmmo = 0;
-            }
-        }
-        else
+        if(_currentAmmo == _maxAmmo)
         {
             _reloadGauge.gameObject.SetActive(false);
 
@@ -72,10 +46,56 @@ public class ElectricWeapon : Weapon
 
             Player?.Rebound(_rebound);
         }
+       
     }
 
     public override void Reload()
     {
         
+    }
+
+    public override void ReloadHold()
+    {
+        if (_currentAmmo < _maxAmmo)
+        {
+            if (_player.CurrentElectric > 0.1)
+            {
+                Player.CurrentElectric -= Time.deltaTime;
+                _electric += Time.deltaTime;
+                if (_electric >= 1)
+                {
+                    _currentAmmo += 1;
+                    _electric -= 1;
+                }
+                if (_reloadGauge)
+                {
+                    _reloadGauge.gameObject.SetActive(true);
+                    _reloadGauge.SetRatio(_currentAmmo + _electric, _maxAmmo);
+                }
+
+            }
+            else
+            {
+                _reloadGauge.gameObject.SetActive(false);
+                _electric = 0;
+                _currentAmmo = 0;
+            }
+        }
+        else
+        {
+            _reloadGauge.gameObject.SetActive(false);
+            _electric = 0;
+            _currentAmmo = 0;
+        }
+    }
+
+    public override void ReloadUp()
+    {
+        _reloadGauge.gameObject.SetActive(false);
+
+        if(_currentAmmo < _maxAmmo)
+        {
+            _currentAmmo = 0;
+        }
     }
 }

@@ -34,6 +34,8 @@ public class InputManager : ManagerBase
     public Action Num2KeyDownHandler;
     public Action Num3KeyDownHandler;
     public Action ReloadKeyDownHandler;
+    public Action ReloadKeyHoldHandler;
+    public Action ReloadKeyUpHandler;
     public Action JumpKeyDownHandler;
     public Action InteractKeyDownHandler;
     public Action SpecialAbilityKeyDownHandler;
@@ -111,9 +113,15 @@ public class InputManager : ManagerBase
             RightArrowPressedHandler?.Invoke();
         if (Input.GetKey(KeyCode.A))
             LeftArrowPressedHandler?.Invoke();
+
         if (Input.GetKeyDown(KeyCode.R))
             ReloadKeyDownHandler?.Invoke();
-        if(Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKey(KeyCode.R))
+            ReloadKeyHoldHandler?.Invoke();
+        if (Input.GetKeyUp(KeyCode.R))
+            ReloadKeyUpHandler?.Invoke();
+
+        if (Input.GetKeyDown(KeyCode.Space))
             JumpKeyDownHandler?.Invoke();
         if(Input.GetKeyDown(KeyCode.E))
             InteractKeyDownHandler?.Invoke();
