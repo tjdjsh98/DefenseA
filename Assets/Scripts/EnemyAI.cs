@@ -48,7 +48,7 @@ public class EnemyAI : MonoBehaviour
         if (!IsAutoMove) return;
         Player player = Managers.GetManager<GameManager>().Player;
         if(player == null) return;
-        _character.Move(player.transform.position - transform.position);
+        _character.Move((player.transform.position - transform.position).normalized);
     }
 
     protected virtual void CheckTarget()

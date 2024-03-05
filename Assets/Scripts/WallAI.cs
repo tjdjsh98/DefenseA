@@ -29,10 +29,8 @@ public class WallAI : MonoBehaviour
         _reviveTime /(1 + DecreasedReviveTimePercetage/100) : _reviveTime * (1 - DecreasedReviveTimePercetage / 100);
     float _reviveElapsedTime = 0;
 
-    // 능력 언락
-    [field:SerializeField]public bool IsUnlockExplosionWhenDead { set; get; } = false;
-    [field: SerializeField] public bool IsReviveWhereDaughterPosition { set; get; } = false;
-    [field: SerializeField] public bool IsUnlockBlackSphere { set; get; } = false;
+    // 능력 해금
+    public Dictionary<Define.WallAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.WallAbility, bool>();
 
 
     // 폭파능력
@@ -63,29 +61,32 @@ public class WallAI : MonoBehaviour
 
     private void OnCharacterDead()
     {
-        if (!IsUnlockExplosionWhenDead) return;
-
-        Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Explosion);
-        Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
-        effect.SetProperty("Radius", (ExplosionRange-10)/2);   
-        effect.SetProperty("BubbleCount", (int)Mathf.Pow(ExplosionRange/5,2));
-
-        effect.Play(_character.GetCenter());
-
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, new Define.Range()
+        if (AbilityUnlocks.TryGetValue(Define.WallAbility.SelfDestruct,out bool value) && value)
         {
-            center = _character.GetCenter(),
-            size = new Vector3(ExplosionRange, ExplosionRange, ExplosionRange),
-            figureType = Define.FigureType.Circle
-        });
 
-        foreach(var gameObject in gameObjects)
-        {
-            Character character = gameObject.GetComponent<Character>();
-            if (character && character.CharacterType == Define.CharacterType.Enemy)
+            Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Explosion);
+            Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
+            effect.SetProperty("Radius", (ExplosionRange - 10) / 2);
+            effect.SetProperty("BubbleCount", (int)Mathf.Pow(ExplosionRange / 5, 2));
+            effect.transform.position = transform.position;
+
+            effect.Play(_character.GetCenter());
+
+            GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, new Define.Range()
             {
-                _character.Attack(character, ExplosionDamage, ExplosionPower, character.transform.position
-                    - _character.GetCenter(), 1);
+                center = _character.GetCenter(),
+                size = new Vector3(ExplosionRange, ExplosionRange, ExplosionRange),
+                figureType = Define.FigureType.Circle
+            });
+
+            foreach (var gameObject in gameObjects)
+            {
+                Character character = gameObject.GetComponent<Character>();
+                if (character && character.CharacterType == Define.CharacterType.Enemy)
+                {
+                    _character.Attack(character, ExplosionDamage, ExplosionPower, character.transform.position
+                        - _character.GetCenter(), 1);
+                }
             }
         }
     }
@@ -95,7 +96,7 @@ public class WallAI : MonoBehaviour
         if(ReflectionDamage != 0)
             _character.Attack(attacker, ReflectionDamage, 0, Vector3.zero, 0);
 
-        if (IsUnlockBlackSphere)
+        if (AbilityUnlocks.TryGetValue(Define.WallAbility.GenerateSphere, out bool value) && value)
         {
             GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
             BlackSphere blackSphere = go.GetComponent<BlackSphere>();
@@ -164,8 +165,9 @@ public class WallAI : MonoBehaviour
             {
                 _reviveTime = 0;
                 _character.Revive();
-                if (IsReviveWhereDaughterPosition)
-                    transform.position = Managers.GetManager<GameManager>().Player.transform.position;
+                //if (AbilityUnlocks.TryGetValue(Define.WallAbility.SelfDestruct, out bool value) && value)
+                
+                //    transform.position = Managers.GetManager<GameManager>().Player.transform.position;
             }
         }
 

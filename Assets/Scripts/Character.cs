@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Properties;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -40,9 +41,8 @@ public class Character : MonoBehaviour
     [field:SerializeField]public int AttackPower { set; get; }
 
     [SerializeField] float _jumpPower = 10;
-    [SerializeField] bool _isEnableFly;
     [SerializeField] bool _isEnableRevive;
-    public bool IsEnableFly => _isEnableFly;
+    [field:SerializeField]public bool IsEnableFly { set; get; }
 
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     // 스턴 후 전 움직임 가능상태로 변경
@@ -171,7 +171,7 @@ public class Character : MonoBehaviour
                 }
             }
             float ySpeed = _rigidBody.velocity.y;
-            if (_isEnableFly)
+            if (IsEnableFly)
             {
                 xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
                 if (xSpeed < Time.deltaTime * _airBreakPower * xSpeed)
@@ -299,13 +299,13 @@ public class Character : MonoBehaviour
 
             Vector2 currentSpeed = _rigidBody.velocity;
 
-            if (_isEnableFly || _isContactGround)
+            if (IsEnableFly || _isContactGround)
             {
                 currentSpeed.x += (direction.x > 0 ? 1 : -1) *  (_isContactGround?_groundAccelePower:_airAccelePower) * Time.deltaTime;
                 if (Mathf.Abs(currentSpeed.x) > maxXSpeed)
                     currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
             }
-            if (_isEnableFly)
+            if (IsEnableFly)
             {
                 currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
                 if (Mathf.Abs(currentSpeed.y) > maxYSpeed)

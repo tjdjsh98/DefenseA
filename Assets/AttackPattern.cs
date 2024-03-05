@@ -6,6 +6,7 @@ using UnityEngine;
 public class AttackPattern : MonoBehaviour
 {
     Character _owner;
+    SpriteRenderer _tempSprite;
 
     [SerializeField]bool _debug;
 
@@ -20,6 +21,10 @@ public class AttackPattern : MonoBehaviour
 
     Coroutine _attackPatternCoroutine;
 
+    private void Awake()
+    {
+        _tempSprite = transform.Find("Model").GetComponent<SpriteRenderer>();
+    }
     private void OnDrawGizmos()
     {
         if (!_debug) return;
@@ -48,11 +53,22 @@ public class AttackPattern : MonoBehaviour
         _direction = direction;
         _stunTime = stunTime;
         _attackingCharacterType= attackingCharacterType;
+        _tempSprite.transform.localScale = _attackRange.size;
+        _tempSprite.transform.localPosition = _attackRange.center;
+        _tempSprite.color = new Color(1, 0, 0, 0f);
     }
 
     IEnumerator CorPlayerAttackPattern(float delay)
     {
-        yield return new WaitForSeconds(_delay);
+        float time = 0;
+        while(time < delay)
+        {
+            time += Time.deltaTime;
+
+            Color color = new Color(1, 0, 0, time/delay);
+            _tempSprite.color = color;
+            yield return null;
+        }
 
         GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange, Define.CharacterMask);
 
@@ -71,5 +87,7 @@ public class AttackPattern : MonoBehaviour
         }
 
         Managers.GetManager<ResourceManager>().Destroy(gameObject);
+
+        yield return null;
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,6 +11,10 @@ public class BossAI : MonoBehaviour
     float _attackInterval = 5;
     float _idleElapsed = 0;
 
+    Coroutine _attackPatternCoroutine;
+
+
+
     private void Awake()
     {
         _character = GetComponent<Character>();
@@ -17,12 +22,13 @@ public class BossAI : MonoBehaviour
     void Update()
     {
         if (_stop) return;
+        if (_attackPatternCoroutine != null) return;
 
         _idleElapsed+= Time.deltaTime;
         if(_idleElapsed > _attackInterval)
         {
             _idleElapsed = 0;
-            StartCoroutine(AttackPattern1());
+            _attackPatternCoroutine = StartCoroutine(AttackPattern1());
         }
     }
 

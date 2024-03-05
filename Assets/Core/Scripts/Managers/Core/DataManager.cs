@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -12,10 +13,10 @@ public class DataManager : ManagerBase
 
     public override void Init()
     {
+        LoadData<CardData>("Datas/Card");
         LoadData<EnemyNameDefine>("Prefabs/Enemy");
         LoadData<Effect>("Prefabs/Effect");
         LoadData<Weapon>("Prefabs/Weapon");
-        LoadData<CardData>("Datas/Card");
     }
 
     public override void ManagerUpdate()
@@ -24,6 +25,7 @@ public class DataManager : ManagerBase
 
     void LoadData<T>(string path) where T : Object, ITypeDefine
     {
+       
         T[] list = Resources.LoadAll<T>(path);
 
         if (!_data.ContainsKey(typeof(T)))
@@ -32,6 +34,8 @@ public class DataManager : ManagerBase
         foreach (T t in list)
         {
             _data[typeof(T)].Add(t.GetEnumToInt(), t);
+
+          
         }
     }
 
@@ -51,16 +55,14 @@ public class DataManager : ManagerBase
     public List<T> GetDataList<T>(Func<T,bool> condition = null) where T : Object, ITypeDefine
     {
         List<T> list = new List<T>();
+
         if (_data.ContainsKey(typeof(T)))
         {
-            if (_data[typeof(T)].ContainsKey(1))
+            foreach(var value in _data[typeof(T)].Values)
             {
-                foreach(var value in _data[typeof(T)].Values)
+                if(condition == null || condition.Invoke(value as T))
                 {
-                    if(condition == null || condition.Invoke(value as T))
-                    {
-                        list.Add(value as T);
-                    }
+                    list.Add(value as T);
                 }
             }
         }

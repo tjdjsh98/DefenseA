@@ -99,6 +99,7 @@ public class GameManager : ManagerBase
     [field: SerializeField] public List<ShopItem> ShopItemList;
     public override void Init()
     {
+        Debug.Log(Managers.GetManager<DataManager>().GetDataList<CardData>().Count);
         _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) =>
         {
             if (d.IsStartCard)
@@ -319,56 +320,43 @@ public class GameManager : ManagerBase
         }
         else
         {
-            DaughterCardData daughterCardData = data as DaughterCardData;
-            CreatureCardData fatherCardData = data as CreatureCardData;
-            DogCardData dogCardData = data as DogCardData;
-            if (daughterCardData != null)
+            GirlCardData girlCardData = data as GirlCardData;
+            CreatureCardData creatureCardData = data as CreatureCardData;
+            WallCardData wallCardData = data as WallCardData;
+            if (girlCardData != null)
             {
-                Girl.AddMaxHp(daughterCardData.IncreaseHp);
-                Girl.IncreasedRecoverHpPower += daughterCardData.IncreaseRecoverHpPower;
-                Girl.IncreasedDamageReducePercentage += daughterCardData.IncreaseDamageReducePercentage;
-                Girl.AttackPower += daughterCardData.IncreaseAttackPoint;
+                Girl.AddMaxHp(girlCardData.IncreaseHp);
+                Girl.IncreasedRecoverHpPower += girlCardData.IncreaseRecoverHpPower;
+                Girl.IncreasedDamageReducePercentage += girlCardData.IncreaseDamageReducePercentage;
+                Girl.AttackPower += girlCardData.IncreaseAttackPoint;
 
-                Player.IsUnlockLastShot |= daughterCardData.UnlockLastShot;
-                Player.IsUnlockFastReload |= daughterCardData.UnlockFastReload;
-                Player.IsUnlockAutoReload |= daughterCardData.UnlockAutoReload;
-                Player.IsUnlockExtraAmmo |= daughterCardData.UnlockExtraAmmo;
-                Player.DecreasedFireDelayPercent += daughterCardData.DecreaseFireDelayPercentage;
-                Player.IncreasedReloadSpeedPercent += daughterCardData.IncreaseReloadSpeedPercentage;
-                Player.IncreasedReboundControlPowerPercent += daughterCardData.IncreaseReboundControlPowerPercentage;
-                Player.IncreasedReboundRecoverPercent += daughterCardData.IncreaseReboundControlPowerPercentage;
-                Player.IncreasedPenerstratingPower += daughterCardData.IncreasePenerstratingPower;
+                if(girlCardData.UnlockAbility != Define.GirlAbility.None && !Player.AbilityUnlocks.ContainsKey(girlCardData.UnlockAbility))
+                    Player.AbilityUnlocks.Add(girlCardData.UnlockAbility,true);
+                Player.DecreasedFireDelayPercent += girlCardData.DecreaseFireDelayPercentage;
+                Player.IncreasedReloadSpeedPercent += girlCardData.IncreaseReloadSpeedPercentage;
+                Player.IncreasedReboundControlPowerPercent += girlCardData.IncreaseReboundControlPowerPercentage;
+                Player.IncreasedReboundRecoverPercent += girlCardData.IncreaseReboundControlPowerPercentage;
+                Player.IncreasedPenerstratingPower += girlCardData.IncreasePenerstratingPower;
             }
-            if (fatherCardData != null)
+            if (creatureCardData != null)
             {
-                Creature.AddMaxHp(fatherCardData.IncreaseHp);
-                Creature.IncreasedRecoverHpPower += fatherCardData.IncreaseRecoverHpPower;
-                Creature.IncreasedDamageReducePercentage += fatherCardData.IncreaseDamageReducePercentage;
-                Creature.AttackPower += fatherCardData.IncreaseAttackPoint;
+                Creature.AddMaxHp(creatureCardData.IncreaseHp);
+                Creature.IncreasedRecoverHpPower += creatureCardData.IncreaseRecoverHpPower;
+                Creature.IncreasedDamageReducePercentage += creatureCardData.IncreaseDamageReducePercentage;
+                Creature.AttackPower += creatureCardData.IncreaseAttackPoint;
 
-                CreatureAI.IncreasedNormalAttackSpeedPercentage += fatherCardData.IncreaseNormalAttackSpeedPercentage;
-                CreatureAI.IsUnlockShockwave |= fatherCardData.UnlockShockwave;
-                CreatureAI.IncreasedShockwaveDamagePercentage += fatherCardData.IncreaseShockwaveDamagePercentage;
-                CreatureAI.IncreasedShockwaveRangePercentage += fatherCardData.IncreaseShockwaveRangePercentage;
-                CreatureAI.DecreasedShockwaveCoolTimePercentage += fatherCardData.DecreaseShockwaveCoolTimePercentage;
-                CreatureAI.ShockwaveCount += fatherCardData.IncreaseShockwaveCount;
-                CreatureAI.IsUnlockStempGround |= fatherCardData.UnlockStempGround;
-                CreatureAI.IncreasedStempGroundDamagePercentage += fatherCardData.IncreaseStempGroundDamagePercentage;
-                CreatureAI.IncreasedStempGroundRangePercentage += fatherCardData.IncreaseStempGroundRangePercentage;
+                if (creatureCardData.UnlockAbility != Define.CreatureAbility.None && !CreatureAI.AbilityUnlocks.ContainsKey(creatureCardData.UnlockAbility))
+                    CreatureAI.AbilityUnlocks.Add(creatureCardData.UnlockAbility, true);
             }
-            if (dogCardData != null)
+            if (wallCardData != null)
             {
-                Wall.AddMaxHp(dogCardData.IncreaseHp);
-                Wall.IncreasedRecoverHpPower += dogCardData.IncreaseRecoverHpPower;
-                Wall.IncreasedDamageReducePercentage += dogCardData.IncreaseDamageReducePercentage;
-                Wall.AttackPower += dogCardData.IncreaseAttackPoint;
+                Wall.AddMaxHp(wallCardData.IncreaseHp);
+                Wall.IncreasedRecoverHpPower += wallCardData.IncreaseRecoverHpPower;
+                Wall.IncreasedDamageReducePercentage += wallCardData.IncreaseDamageReducePercentage;
+                Wall.AttackPower += wallCardData.IncreaseAttackPoint;
 
-                WallAI.ReflectionDamage += dogCardData.IncreaseReflectionDamage;
-                WallAI.DecreasedReviveTimePercetage += dogCardData.DecreaseReviveTimePercentage;
-                WallAI.IsUnlockExplosionWhenDead |= dogCardData.UnlockExplosionWhenDead;
-                WallAI.ExplosionDamage += dogCardData.IncreaseExplosionDamage;
-                WallAI.ExplosionRange += dogCardData.IncreaseExplosionRange;
-                WallAI.IsReviveWhereDaughterPosition |= dogCardData.UnlockReviveWhereDaughterPosition;
+                if(wallCardData.UnlockAbility != Define.WallAbility.None && !WallAI.AbilityUnlocks.ContainsKey(wallCardData.UnlockAbility))
+                    WallAI.AbilityUnlocks.Add(wallCardData.UnlockAbility,true);
             }
         }
     }

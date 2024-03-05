@@ -38,7 +38,7 @@ public class ElectricWeapon : Weapon
                 damage = (int)(damage * (100 + (_player.IncreaseAttackPowerPercentage <= -100 ? -100 : _player.IncreaseAttackPowerPercentage)) / 100f);
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.IsUnlockLastShot && _currentAmmo == 0)
+            if (Player.AbilityUnlocks.ContainsKey(Define.GirlAbility.LastShot) && _currentAmmo == 0)
                 damage = Damage * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);

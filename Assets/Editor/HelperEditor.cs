@@ -1,21 +1,16 @@
-using MoreMountains.Feedbacks;
-using PlasticGui.Configuration;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Runtime.InteropServices.WindowsRuntime;
-using Unity.VisualScripting;
 using UnityEditor;
-using UnityEditor.PackageManager.UI;
-using UnityEditor.VersionControl;
+using UnityEditor.Rendering;
 using UnityEngine;
+using static Define;
 
 public class HelperEditor : EditorWindow
 {
-    const string DAUGHTER_CARD_DATA_PATH = "Data/딸카드.csv";
-    const string FATHER_CARD_DATA_PATH = "Data/아빠카드.csv";
-    const string DOG_CARD_DATA_PATH = "Data/강아지카드.csv";
+    const string GIRL_CARD_DATA_PATH = "Data/소녀카드.csv";
+    const string CREATURE_CARD_DATA_PATH = "Data/괴물카드.csv";
+    const string WALL_CARD_DATA_PATH = "Data/벽카드.csv";
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
     static void Init()
@@ -28,14 +23,14 @@ public class HelperEditor : EditorWindow
     {
         if (GUILayout.Button(new GUIContent("카드데이터 생성")))
         {
-            CreateDaughterCardData();
-            CreateFatherCardData();
-            CreateDogCardData();
+            CreateGirlCardData();
+            CreateCreatureCardData();
+            CreateWallCardData();
         }
     }
-    void CreateDaughterCardData()
+    void CreateGirlCardData()
     {
-        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + DAUGHTER_CARD_DATA_PATH);
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + GIRL_CARD_DATA_PATH);
         if (textAsset == null) return;
 
         string[] lines = textAsset.text.Split('\n');
@@ -47,7 +42,7 @@ public class HelperEditor : EditorWindow
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
 
-            DaughterCardData data = ScriptableObject.CreateInstance<DaughterCardData>();
+            GirlCardData data = ScriptableObject.CreateInstance<GirlCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
             data.CardDescription = words[2];
@@ -63,25 +58,22 @@ public class HelperEditor : EditorWindow
             data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-            data.UnlockLastShot = words[9].Equals("1") ? true : false;
-            data.UnlockFastReload = words[10].Equals("1") ? true : false;
-            data.UnlockAutoReload = words[11].Equals("1") ? true : false;
-            data.UnlockExtraAmmo = words[12].Equals("1") ? true : false;
-            data.DecreaseFireDelayPercentage = words[13].Equals("") ? 0 : float.Parse(words[13]);
-            data.IncreaseReloadSpeedPercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
-            data.IncreaseReboundControlPowerPercentage = words[15].Equals("") ? 0 : float.Parse(words[15]);
-            data.IncreasePenerstratingPower = words[16].Equals("") ? 0 : int.Parse(words[16]);
-            data.IncreaseAttackPoint = ParseInt(words[17]);
+
+            data.UnlockAbility = GetGirlAbility(words[9]);
+            data.DecreaseFireDelayPercentage = words[10].Equals("") ? 0 : float.Parse(words[10]);
+            data.IncreaseReloadSpeedPercentage = words[11].Equals("") ? 0 : float.Parse(words[11]);
+            data.IncreasePenerstratingPower = words[12].Equals("") ? 0 : int.Parse(words[12]);
+            data.IncreaseAttackPoint = ParseInt(words[13]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
     }
-    void CreateFatherCardData()
+    void CreateCreatureCardData()
     {
-        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + FATHER_CARD_DATA_PATH);
-        if (textAsset == null) return;
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + CREATURE_CARD_DATA_PATH);
+        if (textAsset == null) return;  
 
         string[] lines = textAsset.text.Split('\n');
 
@@ -107,24 +99,18 @@ public class HelperEditor : EditorWindow
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
             data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-            data.IncreaseNormalAttackSpeedPercentage = words[10].Equals("") ? 0 : float.Parse(words[10]);
-            data.UnlockShockwave = words[11].Equals("1") ? true : false;
-            data.IncreaseShockwaveDamagePercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
-            data.IncreaseShockwaveRangePercentage = words[13].Equals("") ? 0 : float.Parse(words[13]);
-            data.DecreaseShockwaveCoolTimePercentage = words[14].Equals("") ? 0 : float.Parse(words[14]);
-            data.IncreaseShockwaveCount = words[15].Equals("") ? 0 : int.Parse(words[15]);
-            data.UnlockStempGround = words[16].Equals("1") ? true : false;
-            data.IncreaseStempGroundDamagePercentage = words[17].Equals("") ? 0 : float.Parse(words[17]);
-            data.IncreaseStempGroundRangePercentage = ParseFloat(words[18]);
+            words[10] =  words[10].Remove(words[10].Length - 1, 1);
+            data.UnlockAbility = GetCreatureAbility(words[10]);
+
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
     }
-    void CreateDogCardData()
+    void CreateWallCardData()
     {
-        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + DOG_CARD_DATA_PATH);
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
         if (textAsset == null) return;
 
         string[] lines = textAsset.text.Split('\n');
@@ -135,7 +121,7 @@ public class HelperEditor : EditorWindow
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
 
-            DogCardData data = ScriptableObject.CreateInstance<DogCardData>();
+            WallCardData data = ScriptableObject.CreateInstance<WallCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
             data.CardDescription = words[2];
@@ -151,39 +137,16 @@ public class HelperEditor : EditorWindow
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
             data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-            data.IncreaseReflectionDamage = words[10].Equals("") ? 0 : int.Parse(words[10]);
-            data.DecreaseReviveTimePercentage = words[11].Equals("") ?0 : float.Parse(words[11]);
-            data.UnlockExplosionWhenDead = words[13].Equals("1") ? true : false;
-            data.IncreaseExplosionDamage = words[14].Equals("") ? 0 : int.Parse(words[14]);
-            data.IncreaseExplosionRange = words[15].Equals("") ? 0 : float.Parse(words[15]);
-            data.UnlockReviveWhereDaughterPosition = words[16].Equals("1") ? true : false;
+
+            words[10] =  words[10].Remove(words[10].Length - 1, 1);
+            data.UnlockAbility = GetWallAbility(words[10]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
     }
-    void CreateCardData()
-    {
-        for (int i = 0; i < Define.CARD_COUNT; i++)
-        {
-            Define.CardName cardName = (Define.CardName)i;
-
-            Object tempObj = UnityEditor.AssetDatabase.LoadAssetAtPath<UnityEngine.Object>("Assets/" + DAUGHTER_CARD_DATA_PATH + cardName.ToString() + ".prefab");
-            if (tempObj == null)
-            {
-                CardData tempData = ScriptableObject.CreateInstance<CardData>();
-                GameObject temp = Instantiate(tempObj) as GameObject; //인스턴스 만들기
-                temp.name = cardName.ToString();
-                UnityEditor.PrefabUtility.SaveAsPrefabAsset(temp, "Assets/" + DAUGHTER_CARD_DATA_PATH + temp.name + ".prefab", out bool isSuccess); //저장
-
-                if (temp)
-                    DestroyImmediate(temp);
-                if (isSuccess)
-                    AssetDatabase.DeleteAsset("Assets/" + DAUGHTER_CARD_DATA_PATH + cardName.ToString() + ".prefab");
-            }
-        }
-    }
+ 
     public static T[] GetAssetsAtPath<T>(string path) where T : Object
     {
         List<T> returnList = new List<T>();
@@ -220,7 +183,39 @@ public class HelperEditor : EditorWindow
         }
         return Define.CardName.None;
     }
-
+    Define.GirlAbility GetGirlAbility(string name)
+    {
+        for (int i = 0; i < Define.GIRLABILITY_COUNT; i++)
+        {
+            if (name.Equals(((Define.GirlAbility)i).ToString()))
+            {
+                return (Define.GirlAbility)i;
+            }
+        }
+        return GirlAbility.None;
+    }
+    Define.WallAbility GetWallAbility(string name)
+    {
+        for (int i = 0; i < Define.WALLABILITY_COUNT; i++)
+        {
+            if (name.Equals(((Define.WallAbility)i).ToString()))
+            {
+                return (Define.WallAbility)i;
+            }
+        }
+        return WallAbility.None;
+    }
+    Define.CreatureAbility GetCreatureAbility(string name)
+    {
+        for (int i = 0; i < Define.CREATUREABILITY_COUNT; i++)
+        {
+            if (name.Equals(((Define.CreatureAbility)i).ToString()))
+            {
+                return (Define.CreatureAbility)i;
+            }
+        }
+        return CreatureAbility.None;
+    }
     int ParseInt(string value)
     {
         int result = 0;

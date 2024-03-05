@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,6 +14,9 @@ public class CreatureAI : MonoBehaviour
 {
     Character _character;
     Player _player;
+    BoxCollider2D _boxCollider;
+    GameObject _model;
+    GameObject _soulModel;
 
     /*
      * 0 = 일반 공격 적 인식 범위
@@ -27,8 +31,13 @@ public class CreatureAI : MonoBehaviour
     float _girlToCreatureDistance = 5f;
     Character _enemyToAttack;
     bool _isMove = false;
+    bool _isSoulForm = false;
 
     public int AttackDamage { set; get; } = 1;
+
+    // 능력 해금
+    public Dictionary<Define.CreatureAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.CreatureAbility, bool>();
+
     // 관통공격
     [Header("관통공격")]
     [SerializeField] PenetrateAttack _penetrateAttack;
@@ -36,7 +45,6 @@ public class CreatureAI : MonoBehaviour
     Character _closeOne;
 
     //생존본능
-    [field:SerializeField]public bool IsUnlockSurvialIntinct { set; get; }
     [SerializeField] bool _debugSurvivalIntinctRange;
     [SerializeField] Define.Range _survivalIntinctRange;
     [SerializeField] int _survivalIntinctCount;
@@ -54,7 +62,6 @@ public class CreatureAI : MonoBehaviour
 
 
     // 스피어 공격 변수
-    [field: SerializeField] public bool IsUnlockSpear { set; get; } = false;
     float _spearAttackElapsed = 0;
     [SerializeField] float _spearAttackCoolTime = 3f;
 
@@ -70,10 +77,8 @@ public class CreatureAI : MonoBehaviour
 
     public float IncreasedShockwaveDamagePercentage { set; get; } = 500;
     public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + IncreasedShockwaveDamagePercentage / 100)) : Mathf.RoundToInt(AttackDamage / (1 + IncreasedShockwaveDamagePercentage / 100));
-    [field: SerializeField] public bool IsUnlockShockwave { set; get; } = false;
 
     // 땅구르기
-    [field: SerializeField] public bool IsUnlockStempGround { set; get; }
     float _stempGroundElaspsedTime;
     float _stempGroundCoolTime = 5;
     int StempGroundDamage => IncreasedStempGroundDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + (IncreasedStempGroundDamagePercentage / 100))) : Mathf.RoundToInt(AttackDamage / (1 - (IncreasedStempGroundDamagePercentage / 100)));
@@ -99,11 +104,12 @@ public class CreatureAI : MonoBehaviour
     public float SpecialAbilityElaspedTime => _specialAbilityElapsedTime;
     public float SpecialAbilityCoolTime => _specialAbilityCoolTime;
 
-
-
     private void Awake()
     {
         _character = GetComponent<Character>();
+        _boxCollider = GetComponent<BoxCollider2D>();
+        _model = transform.Find("Model").gameObject;
+        _soulModel = transform.Find("SoulModel").gameObject;
         Managers.GetManager<GameManager>().CreatureAI = this;
         Managers.GetManager<InputManager>().SpecialAbilityKeyDownHandler += SpecialAbility;
 
@@ -135,6 +141,22 @@ public class CreatureAI : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.X))
+        {
+            Transform();
+        }
+        if (_isSoulForm)
+        {
+            Player player = Managers.GetManager<GameManager>().Player;
+
+            Vector3 offset = new Vector3(-3, 5, 0);
+            if (player.transform.localScale.x < 0)
+                offset.x = -offset.x;
+
+            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.05f);
+
+            return;
+        }
         if (_character.IsAttack) return;
 
         if (Input.GetKeyDown(KeyCode.O))
@@ -211,7 +233,7 @@ public class CreatureAI : MonoBehaviour
                 _specialAbilityElapsedTime = _specialAbilityCoolTime;
         }
 
-        if (IsUnlockSpear)
+        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.Spear,out bool value) && value)
         {
             _spearAttackElapsed += Time.deltaTime;
             if (_spearAttackElapsed > _spearAttackCoolTime)
@@ -224,6 +246,25 @@ public class CreatureAI : MonoBehaviour
 
     }
 
+    public void Transform()
+    {
+        if(!_isSoulForm)
+        {
+            _boxCollider.enabled = false;
+            _isSoulForm = true;
+            _model.gameObject.SetActive(false);
+            _soulModel.gameObject.SetActive(true);
+            _character.IsEnableFly = true;
+        }
+        else
+        {
+            _boxCollider.enabled = true;
+            _isSoulForm = false;
+            _model.gameObject.SetActive(true);
+            _soulModel.gameObject.SetActive(false);
+            _character.IsEnableFly = false;
+        }
+    }
     public void SpecialAbility()
     {
         if (_player == null) return;
@@ -378,22 +419,24 @@ public class CreatureAI : MonoBehaviour
 
     void SpearAttack()
     {
-        if (!IsUnlockSpear) return;
-
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[2]);
-
-        if (gos.Length > 0)
+        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.Spear, out bool value) && value)
         {
-            _spearAttackElapsed = 0;
-            foreach (var go in gos)
+
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[2]);
+
+            if (gos.Length > 0)
             {
-                Character c = go.GetComponent<Character>();
-                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                _spearAttackElapsed = 0;
+                foreach (var go in gos)
                 {
-                    GameObject spear = Managers.GetManager<ResourceManager>().Instantiate("Spear");
-                    spear.transform.position = c.transform.position;
-                    spear.GetComponent<AttackObject>().StartAttack(_character, 10);
-                    return;
+                    Character c = go.GetComponent<Character>();
+                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        GameObject spear = Managers.GetManager<ResourceManager>().Instantiate("Spear");
+                        spear.transform.position = c.transform.position;
+                        spear.GetComponent<AttackObject>().StartAttack(_character, 10);
+                        return;
+                    }
                 }
             }
         }
@@ -401,29 +444,32 @@ public class CreatureAI : MonoBehaviour
 
     void SurvivalInstinct()
     {
-        if(!IsUnlockSurvialIntinct) return;
+        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.SurvialIntinct, out bool value) && value)
+        {
 
-        _survivalIntinctElapsed += Time.deltaTime;
-        if (_survivalIntinctElapsed > 2) {
-            _survivalIntinctElapsed = 0;
-            GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _survivalIntinctRange, LayerMask.GetMask("Character"));
-
-            _survivalIntinctCount = 0;
-            foreach (var gameObject in gameObjects)
+            _survivalIntinctElapsed += Time.deltaTime;
+            if (_survivalIntinctElapsed > 2)
             {
-                Character character = gameObject.GetComponent<Character>();
-                if (character)
+                _survivalIntinctElapsed = 0;
+                GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _survivalIntinctRange, LayerMask.GetMask("Character"));
+
+                _survivalIntinctCount = 0;
+                foreach (var gameObject in gameObjects)
                 {
-                    _survivalIntinctCount++;
+                    Character character = gameObject.GetComponent<Character>();
+                    if (character)
+                    {
+                        _survivalIntinctCount++;
+                    }
                 }
+                CalcHpRecoverPower();
             }
-            CalcHpRecoverPower();
         }
 
     }
     void Shockwave()
     {
-        if (IsUnlockShockwave)
+        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.Shockwave, out bool value) && value)
         {
             if (ShockwaveCount >= 1)
                 StartCoroutine(CorShockwaveAttack());
@@ -472,22 +518,23 @@ public class CreatureAI : MonoBehaviour
 
     void StempGround()
     {
-        if (!IsUnlockStempGround) return;
-
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
-        Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
-        Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
-        effect.SetProperty("Range", _attackRangeList[4].size.x);
-        effect.Play(transform.position);
-        if (gos.Length > 0)
+        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.StempGround, out bool value) && value)
         {
-            _spearAttackElapsed = 0;
-            foreach (var go in gos)
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
+            Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
+            Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
+            effect.SetProperty("Range", _attackRangeList[4].size.x);
+            effect.Play(transform.position);
+            if (gos.Length > 0)
             {
-                Character c = go.GetComponent<Character>();
-                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                _spearAttackElapsed = 0;
+                foreach (var go in gos)
                 {
-                    _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, 1);
+                    Character c = go.GetComponent<Character>();
+                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, 1);
+                    }
                 }
             }
         }
@@ -496,7 +543,7 @@ public class CreatureAI : MonoBehaviour
     void CalcHpRecoverPower()
     {
         float hpRecoverPower = 0;
-        if (IsUnlockSurvialIntinct)
+        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.SurvialIntinct, out bool value) && value)
         {
             hpRecoverPower += (int)(_survivalIntinctCount / 3) * 0.1f;
         }

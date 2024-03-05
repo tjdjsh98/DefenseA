@@ -86,53 +86,61 @@ public static class Define
     public enum CardName
     {
         None = - 1,
-        딸최대체력증가,
-        발사간격감소,
-        재장전속도증가,
-        반동제어력증가,
-        반동회복력증가,
-        반동삭제,
+        라스트샷,
+        연사광,
         빠른재장전,
         추가탄창,
-        관통력증가,
-        라스트샷,
-        반동제어력감소데미지증가,
-        딸체력재생력증가,
-        엑스트라웨폰,
-        웨폰마스터,
-        자동장전,
-        아빠최대체력증가,
-        아빠체력재생력증가,
-        아빠공격력증가,
-        아빠공격속도증가,
-        쇼크웨이브해금,
-        쇼크웨이브반경증가,
-        쇼크웨이브공격주기감소,
-        쇼크웨이브히트휫수증가,
-        꿰뚫기해금,
-        꿰뚫기공격주기감소,
-        꿰뚫기거리증가,
-        꿰뚫기확장,
-        꿰뚫기확장거리증가,
-        강아지최대체력증가,
-        강아지체력재생력증가,
-        강아지데미지감소,
-        강아지데미지반사,
-        강아지부활시간감소,
-        강아지부활시부호막부여,
-        강아지사망시폭발,
-        강아지폭발데미지증가,
-        강아지폭발범위증가,
-        강아지부활시딸의위치로이동,
-        쇼크웨이브공격력증가,
-        땅구르기해금,
-        땅구르기데미지증가,
-        땅구르기범위증가,
-        땅구르기높이증가,
+        넉넉한총알,
+        검은구체_소녀,
+        마지막발악,
+        검은구체,
+        전기발전,
+
+        쇼크웨이브,
+        땅구르기,
+        생존본능,
+
+        구체생성,
+        방벽,
+        자폭,
+        검은구체_벽,
         END,
     }
-
     public static int CARD_COUNT = (int)CardName.END;
+
+    public enum GirlAbility
+    {
+        None = -1,
+        BlackSphere,
+        FastReload,
+        ExtraAmmo,
+        AutoReload,
+        LastShot,
+        PlentyOfBullets,
+        Electric,
+        LastStruggle,
+        END
+    }
+    public static int GIRLABILITY_COUNT = (int)GirlAbility.END;
+    public enum WallAbility
+    {
+        None = -1,
+        GenerateSphere,
+        Barrier,
+        SelfDestruct,
+        END
+    }
+    public static int WALLABILITY_COUNT = (int)WallAbility.END;
+     public enum CreatureAbility
+    {
+        None = -1,
+        Shockwave,
+        StempGround,
+        SurvialIntinct,
+        Spear,
+        END
+    }
+    public static int CREATUREABILITY_COUNT = (int)CreatureAbility.END;
 
     public enum WeaponName
     {

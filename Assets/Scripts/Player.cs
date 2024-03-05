@@ -57,15 +57,16 @@ public class Player : MonoBehaviour
 
     public float IncreaseAttackPowerPercentage => _plentyOfBulletsIncreasedAttackPointPercentage;
     // 능력 언락부분
-    [field: SerializeField] public bool IsUnlockBlackSphere { get; set; } = false;
-    public bool IsHaveRemoveReboundAMoment { set; get; }
-    public bool IsUnlockFastReload { set; get; }
-    public bool IsUnlockExtraAmmo { set; get; }
-    public bool IsUnlockAutoReload { set; get; } = true;
-    public bool IsUnlockLastShot { set; get; }
-    [field: SerializeField] public bool IsUnlockPlentyOfBullets { set; get; }
-    [field:SerializeField]public bool IsUnlockElectric { set; get; }
-    [field:SerializeField]public bool IsUnlockLastStruggling { set; get; }
+    public Dictionary<Define.GirlAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.GirlAbility, bool>();
+    //[field: SerializeField] public bool IsUnlockBlackSphere { get; set; } = false;
+    //public bool IsHaveRemoveReboundAMoment { set; get; }
+    //public bool IsUnlockFastReload { set; get; }
+    //public bool IsUnlockExtraAmmo { set; get; }
+    //public bool IsUnlockAutoReload { set; get; } = true;
+    //public bool IsUnlockLastShot { set; get; }
+    //[field: SerializeField] public bool IsUnlockPlentyOfBullets { set; get; }
+    //[field:SerializeField]public bool IsUnlockElectric { set; get; }
+    //[field:SerializeField]public bool IsUnlockLastStruggling { set; get; }
 
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
@@ -102,7 +103,6 @@ public class Player : MonoBehaviour
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonDownHandler += UseWeapon;
         Managers.GetManager<InputManager>().MouseButtonHoldHandler += AutoUseWeapon;
-        Managers.GetManager<InputManager>().MouseButtonUpHandler += ShowAim;
         Managers.GetManager<InputManager>().ReloadKeyDownHandler += OnReloadKeyDown;
         Managers.GetManager<InputManager>().ReloadKeyHoldHandler += OnReloadKeyHold;
         Managers.GetManager<InputManager>().ReloadKeyUpHandler += OnReloadKeyUp;
@@ -125,7 +125,7 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon == null) return;
 
 
-        if (IsUnlockFastReload)
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.FastReload,out bool value)&& value)
         {
             _weaponSwaper.CurrentWeapon.FastReload();
         }
@@ -187,8 +187,11 @@ public class Player : MonoBehaviour
         float percentage = 0;
         percentage += _plentyOfBulletsIncreasedAttackPointPercentage;
 
-        if (IsUnlockLastStruggling && (wall == null || wall.IsDead) && (creature == null || creature.IsDead))
-            percentage += 100f;
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.LastStruggle, out bool value) && value)
+        {
+            if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
+                percentage += 100f;
+        }
              
         return percentage;
     }
@@ -202,33 +205,38 @@ public class Player : MonoBehaviour
 
         percentage += IncreasedAttackSpeedPercentage;
 
-        if (IsUnlockLastStruggling && (wall == null || wall.IsDead) && (creature == null || creature.IsDead))
-            percentage += 100f;
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.LastStruggle, out bool value) && value)
+        {
+            if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
+                percentage += 100f;
+        }
 
         return percentage;
     }
 
     private void Electric()
     {
-        if (!IsUnlockElectric) return;
-
-        if(_maxElectric > CurrentElectric)
-            CurrentElectric += Time.deltaTime * 0.1f;
-        else
-            CurrentElectric = _maxElectric;
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.Electric, out bool value) && value)
+        {
+            if (_maxElectric > CurrentElectric)
+                CurrentElectric += Time.deltaTime * 0.1f;
+            else
+                CurrentElectric = _maxElectric;
+        }
     }
 
     void PlentyOfBullets()
     {
-        if (!IsUnlockPlentyOfBullets) return;
-
-        int value = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
-        _plentyOfBulletsIncreasedAttackPointPercentage = value * 10f;
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.PlentyOfBullets, out bool value) && value)
+        {
+            int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
+            _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
+        }
     }
 
     void OnAttack(Character target, int damage)
     {
-        if (IsUnlockBlackSphere)
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.BlackSphere, out bool value) && value)
         {
             // 20%의 확률로
             if (Random.Range(0, 5) == 0)
@@ -243,37 +251,39 @@ public class Player : MonoBehaviour
     }
     private void AutoReload()
     {
-        if (!IsUnlockAutoReload) return;
-
-        for(int i = 0;i < _weaponSwaper.GetWeaponCount(); i++)
+        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.AutoReload, out bool value) && value)
         {
-            if (_autoReloadElaspedTimeList.Count <= i)
-                _autoReloadElaspedTimeList.Add(0);
-            if (_weaponSwaper.WeaponIndex == i)
-            {
-                _autoReloadElaspedTimeList[i] = 0;
-                continue;
-            }
 
-            Weapon weapon = _weaponSwaper.GetWeapon(i);
-            if (weapon== null) continue;
-
-            if (weapon.CurrentAmmo < weapon.MaxAmmo)
+            for (int i = 0; i < _weaponSwaper.GetWeaponCount(); i++)
             {
-                if (_autoReloadElaspedTimeList[i] > weapon.ReloadDelay)
+                if (_autoReloadElaspedTimeList.Count <= i)
+                    _autoReloadElaspedTimeList.Add(0);
+                if (_weaponSwaper.WeaponIndex == i)
                 {
-                    weapon.CompleteReload();
                     _autoReloadElaspedTimeList[i] = 0;
+                    continue;
                 }
-                else
+
+                Weapon weapon = _weaponSwaper.GetWeapon(i);
+                if (weapon == null) continue;
+
+                if (weapon.CurrentAmmo < weapon.MaxAmmo)
                 {
-                    _autoReloadElaspedTimeList[i] += Time.deltaTime;
+                    if (_autoReloadElaspedTimeList[i] > weapon.ReloadDelay)
+                    {
+                        weapon.CompleteReload();
+                        _autoReloadElaspedTimeList[i] = 0;
+                    }
+                    else
+                    {
+                        _autoReloadElaspedTimeList[i] += Time.deltaTime;
+                    }
                 }
             }
         }
     }
 
-    public void SetReboundControlPower(float power)
+        public void SetReboundControlPower(float power)
     {
         _reboundControlPower = power;
     }
@@ -477,7 +487,6 @@ public class Player : MonoBehaviour
         _isFire= true;
         if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
-        Managers.GetManager<InputManager>().AimTarget = true;
         if (_weaponSwaper.CurrentWeapon != null  && !_weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
        
@@ -492,11 +501,6 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
 
-    }
-    void ShowAim()
-    {
-
-        Managers.GetManager<InputManager>().AimTarget = false;
     }
 
     void Riding()
