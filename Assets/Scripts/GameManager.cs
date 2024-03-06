@@ -1,5 +1,6 @@
 using MoreMountains.Tools;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.TextCore.Text;
@@ -28,6 +29,7 @@ public class GameManager : ManagerBase
 
     [Header("게임 진행")]
     [SerializeField] bool _stop;
+    [SerializeField] MapData _mapData;
     [SerializeField]Map _map;
     public float MapSize => _map.MapSize;
     float _farDistance;
@@ -116,12 +118,20 @@ public class GameManager : ManagerBase
             }
         });
         _map = new Map(60f);
-        _map.AddBuildingPreset("Prefabs/BuildingPreset1");
-        _map.AddBuildingPreset("Prefabs/BuildingPreset2");
-        _map.AddBuildingPreset("Prefabs/BuildingPreset3");
-        _map.AddBuildingPreset("Prefabs/BuildingPreset4");
-        _map.AddMoreBackBuildingPreset("Prefabs/MoreBackBuildingPreset1");
+        foreach (var buildingName in _mapData.buildingNameList)
+        {
+            _map.AddBuildingPreset(buildingName);
+        }
+        foreach (var buildingName in _mapData.moreBackBuildingNameList)
+        {
+            _map.AddMoreBackBuildingPreset(buildingName);
+        }
 
+        if (_mapData)
+        {
+            _timeWaveList = _mapData.timeWave.ToList();
+            _distanceWaveList = _mapData.distanceWave.ToList();
+        }
 
         if (!_isSkip)
         {

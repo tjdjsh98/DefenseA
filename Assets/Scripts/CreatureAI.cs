@@ -256,7 +256,7 @@ public class CreatureAI : MonoBehaviour
             _isSoulForm = true;
             _model.gameObject.SetActive(false);
             _soulModel.gameObject.SetActive(true);
-            _character.IsEnableFly = true;
+            _character.ChangeEnableFly(true);
         }
         else
         {
@@ -268,7 +268,7 @@ public class CreatureAI : MonoBehaviour
             _isSoulForm = false;
             _model.gameObject.SetActive(true);
             _soulModel.gameObject.SetActive(false);
-            _character.IsEnableFly = false;
+            _character.ChangeEnableFly(false);
         }
     }
     public void SpecialAbility()

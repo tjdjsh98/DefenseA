@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -42,7 +43,8 @@ public class Character : MonoBehaviour
 
     [SerializeField] float _jumpPower = 10;
     [SerializeField] bool _isEnableRevive;
-    [field:SerializeField]public bool IsEnableFly { set; get; }
+    [SerializeField] bool _isEnableFly = false;
+    public bool IsEnableFly => _isEnableFly;
 
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     // 스턴 후 전 움직임 가능상태로 변경
@@ -402,6 +404,10 @@ public class Character : MonoBehaviour
         }
     }
 
+    public void ChangeEnableFly(bool isFly)
+    {
+        _isEnableFly = isFly;
+    }
     public Vector3 GetCenter()
     {
         Vector3 center = Vector3.zero;

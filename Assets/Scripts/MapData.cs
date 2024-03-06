@@ -9,6 +9,8 @@ public class MapData : ScriptableObject
 {
     public string sceneName;
     public float mentalDownTime;
+    public List<string> buildingNameList;
+    public List<string> moreBackBuildingNameList;
     public List<Wave> timeWave;
     public List<Wave> distanceWave;
 }

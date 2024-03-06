@@ -155,6 +155,7 @@ public static class Define
         Bat,
         Stungun,
         Railgun,
+        Black,
         END
     }
 

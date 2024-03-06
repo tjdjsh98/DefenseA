@@ -112,7 +112,7 @@ public class WallAI : MonoBehaviour
             if(blackSphere != null)
             {
                 blackSphere.transform.position = transform.position;
-                blackSphere.Init(_character);
+                blackSphere.Init(_character,new Vector3(-3,5));
             }
         }
     }
@@ -188,7 +188,7 @@ public class WallAI : MonoBehaviour
             _isSoulForm = true;
             _model.gameObject.SetActive(false);
             _soulModel.gameObject.SetActive(true);
-            _character.IsEnableFly = true;
+            _character.ChangeEnableFly(true);
         }
         else
         {
@@ -199,7 +199,7 @@ public class WallAI : MonoBehaviour
             _isSoulForm = false;
             _model.gameObject.SetActive(true);
             _soulModel.gameObject.SetActive(false);
-            _character.IsEnableFly = false;
+            _character.ChangeEnableFly(false);
         }
     }
  

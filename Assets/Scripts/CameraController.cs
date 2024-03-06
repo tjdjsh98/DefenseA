@@ -9,9 +9,10 @@ public class CameraController : MonoBehaviour
 {
 
     [SerializeField]Vector3 _fixedPos;
-    [SerializeField]SpriteRenderer _baseEnvironment;
-    [SerializeField] Vector3 _baseEnvironmenInitLocalPosition;
-    float _baseEnvironmentWidth;
+
+    [SerializeField] List<BackgroundLayer> _backgroundLayerList;
+
+    [SerializeField]
 
     float _cameraWidth;
 
@@ -38,11 +39,6 @@ public class CameraController : MonoBehaviour
     {
         _screenSpriteRenderer = transform.Find("ScreenEffect").GetComponent<SpriteRenderer>();
         _initCameraPosition = transform.position;
-        if (_baseEnvironment)
-        {
-            _baseEnvironmenInitLocalPosition = _baseEnvironment.transform.localPosition;
-            _baseEnvironmentWidth = _baseEnvironment.size.x * _baseEnvironment.transform.lossyScale.x;
-        }
         _screenSpriteRenderer.material.SetFloat(_cameraSizeID, Camera.main.orthographicSize);
         _cameraWidth = GetCameraWidth();
     }
@@ -67,8 +63,8 @@ public class CameraController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        HandleBackgroundLayers();
         if (Managers.GetManager<GameManager>().Player == null) return;  
-        HandleBaseEnvironent();
 
         Vector3 playerPosition = Managers.GetManager<GameManager>().Player.transform.position;
         playerPosition.z = -10f;
@@ -82,23 +78,19 @@ public class CameraController : MonoBehaviour
 
     }
 
-    void HandleBaseEnvironent()
+    void HandleBackgroundLayers()
     {
-        if (_baseEnvironment == null) return;
-
         float mapSize = Managers.GetManager<GameManager>().MapSize;
         float distance = transform.position.x;
 
         distance = Mathf.Clamp(distance, 0, mapSize);
 
-        Vector3 position = new Vector3(-_baseEnvironmentWidth / 2 + _cameraWidth/2
-            , transform.position.y, 0) ;
-
-        position.x = Mathf.Lerp(-_baseEnvironmentWidth / 2 + _cameraWidth / 2 , mapSize - _cameraWidth / 2 + _baseEnvironmentWidth / 2 , (distance / mapSize));
-
-        position.x = Mathf.Clamp(position.x, (-_baseEnvironmentWidth / 2 + _cameraWidth / 2), mapSize - _cameraWidth / 2 + _baseEnvironmentWidth / 2);
-        _baseEnvironment.transform.position = position;
-        
+        foreach(var layer in _backgroundLayerList)
+        {
+            Vector3 position = Vector3.zero;
+            position.x = Mathf.Lerp(layer.width / 2 - _cameraWidth / 2 , mapSize + _cameraWidth / 2 - layer.width / 2 , (distance / mapSize));
+            layer.layer.transform.position = position;
+        }
     }
   
 
@@ -179,8 +171,15 @@ public class CameraController : MonoBehaviour
 
     public float GetCameraWidth()
     {
-        float size = Camera.main.orthographicSize;
+        float screenHeightInUnits = Camera.main.orthographicSize * 2;
 
-        return Screen.width / Screen.height * size*2;
+        return screenHeightInUnits * Screen.width / Screen.height;
     }
+}
+
+[System.Serializable]
+public class BackgroundLayer
+{
+    public GameObject layer;
+    public float width;
 }

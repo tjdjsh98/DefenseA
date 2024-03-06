@@ -58,18 +58,14 @@ public class Player : MonoBehaviour
     public float IncreaseAttackPowerPercentage => _plentyOfBulletsIncreasedAttackPointPercentage;
     // 능력 언락부분
     public Dictionary<Define.GirlAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.GirlAbility, bool>();
-    //[field: SerializeField] public bool IsUnlockBlackSphere { get; set; } = false;
-    //public bool IsHaveRemoveReboundAMoment { set; get; }
-    //public bool IsUnlockFastReload { set; get; }
-    //public bool IsUnlockExtraAmmo { set; get; }
-    //public bool IsUnlockAutoReload { set; get; } = true;
-    //public bool IsUnlockLastShot { set; get; }
-    //[field: SerializeField] public bool IsUnlockPlentyOfBullets { set; get; }
-    //[field:SerializeField]public bool IsUnlockElectric { set; get; }
-    //[field:SerializeField]public bool IsUnlockLastStruggling { set; get; }
-
+    
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
+
+    // 검은구체
+    List<BlackSphere> _blackSphereList = new List<BlackSphere>();
+    public List<BlackSphere> BlackSphereList => _blackSphereList;
+
 
     [SerializeField] bool _bounce;
     [SerializeField] float _power;
@@ -153,9 +149,6 @@ public class Player : MonoBehaviour
             _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
             _bounce = false;
         }
-        Debug.Log(_frontArm.transform.eulerAngles.z);
-
-
         TurnBody();
         RotateArm();
         RotateBody();
@@ -172,13 +165,23 @@ public class Player : MonoBehaviour
             _eyeClose.PlayRound(3
                 );
         }
+
+        for(int i = _blackSphereList.Count-1; i >= 0 ; i--) 
+        {
+            if (_blackSphereList[i] == null)
+                _blackSphereList.RemoveAt(i);
+        }
+
+        // 달리는 중에는 방향에 따라 이동, 걷는 중에는 총방향에 따라서
         if (!_isRun)
         {
             _character.IsTurnBodyAlongVelocity= false;
         }
+        // 달리기 -> 총 전환 시 약간의 텀
         _runToFireElaspedTime += Time.deltaTime;
         _isRun = false;
         _isFire = false;
+
     }
 
     public float GetIncreasedDamagePercentage()
@@ -246,7 +249,8 @@ public class Player : MonoBehaviour
                 GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
                 go.transform.position = target.transform.position;
                 BlackSphere blackSphere = go.GetComponent<BlackSphere>();
-                blackSphere?.Init(_character);
+                blackSphere.Init(_character, new Vector3(-3, 5));
+                _blackSphereList.Add(blackSphere);
             }
         }
 

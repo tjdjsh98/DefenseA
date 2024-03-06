@@ -6,14 +6,9 @@ using UnityEngine;
 public class Map
 {
     public int MapSize = 100;
-    public int mechineCount = 3;
     int currentIndex = -10002;
     int moreBackBuildingIndex = -1000;
     int groundCount = 5;
-
-    GameObject leftBuilding;
-    GameObject centerBuilding;
-    GameObject rightBuilding;
 
     GameObject moreBackLeftBuilding;
     GameObject moreBackCenterBuilding;
@@ -31,64 +26,59 @@ public class Map
     {
         this.groundTerm = groundTenm;
 
-        for(int i =0; i< mechineCount; i++)
-        {
-            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/VendingMechine");
-            go.transform.position = new Vector3(MapSize / mechineCount * i, YPosition, 0);
-        }
     }
 
     public void Update(Player player)
     {
-        if (player == null) return;
+        //if (player == null) return;
 
-        Vector3 pos = player.transform.position;
-        //SetGround(GetIndex(pos.x));
+        //Vector3 pos = player.transform.position;
+        ////SetGround(GetIndex(pos.x));
 
-        int mul = 4;
+        //int mul = 4;
 
-        int index = Mathf.RoundToInt(pos.x / (groundTerm * mul));
-        if (index != moreBackBuildingIndex)
-        {
-            if (moreBackBuildingPresetPathList.Count > 0)
-            {
-                // 중간
-                Random.InitState(Mathf.RoundToInt(index / moreBackBuildingPresetPathList.Count));
-                int random = (int)(Random.value * 1000);
+        //int index = Mathf.RoundToInt(pos.x / (groundTerm * mul));
+        //if (index != moreBackBuildingIndex)
+        //{
+        //    if (moreBackBuildingPresetPathList.Count > 0)
+        //    {
+        //        // 중간
+        //        Random.InitState(Mathf.RoundToInt(index / moreBackBuildingPresetPathList.Count));
+        //        int random = (int)(Random.value * 1000);
 
-                if (moreBackCenterBuilding)
-                    Managers.GetManager<ResourceManager>().Destroy(moreBackCenterBuilding);
-                Vector3 position = new Vector3(index * groundTerm * mul, 0, 0);
-                position.y = -2f;
-                moreBackCenterBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index) % moreBackBuildingPresetPathList.Count]);
-                // 왼쪽
-                Random.InitState(Mathf.RoundToInt((index - 1) / moreBackBuildingPresetPathList.Count));
-                random = (int)(Random.value * 1000);
+        //        if (moreBackCenterBuilding)
+        //            Managers.GetManager<ResourceManager>().Destroy(moreBackCenterBuilding);
+        //        Vector3 position = new Vector3(index * groundTerm * mul, 0, 0);
+        //        position.y = -2f;
+        //        moreBackCenterBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index) % moreBackBuildingPresetPathList.Count]);
+        //        // 왼쪽
+        //        Random.InitState(Mathf.RoundToInt((index - 1) / moreBackBuildingPresetPathList.Count));
+        //        random = (int)(Random.value * 1000);
 
-                if (moreBackLeftBuilding)
-                    Managers.GetManager<ResourceManager>().Destroy(moreBackLeftBuilding);
-                position = new Vector3((index - 1) * groundTerm * mul, 0, 0);
-                position.y = -2f;
-                moreBackLeftBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index - 1) % moreBackBuildingPresetPathList.Count]);
-                //오른쪽
-                Random.InitState(Mathf.RoundToInt((index + 1) / moreBackBuildingPresetPathList.Count));
-                random = (int)(Random.value * 1000);
+        //        if (moreBackLeftBuilding)
+        //            Managers.GetManager<ResourceManager>().Destroy(moreBackLeftBuilding);
+        //        position = new Vector3((index - 1) * groundTerm * mul, 0, 0);
+        //        position.y = -2f;
+        //        moreBackLeftBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index - 1) % moreBackBuildingPresetPathList.Count]);
+        //        //오른쪽
+        //        Random.InitState(Mathf.RoundToInt((index + 1) / moreBackBuildingPresetPathList.Count));
+        //        random = (int)(Random.value * 1000);
 
-                if (moreBackRightBuilding)
-                    Managers.GetManager<ResourceManager>().Destroy(moreBackRightBuilding);
-                position = new Vector3((index + 1) * groundTerm * mul, 0, 0);
-                position.y = -2f;
-                moreBackRightBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index + 1) % moreBackBuildingPresetPathList.Count]);
-            }
+        //        if (moreBackRightBuilding)
+        //            Managers.GetManager<ResourceManager>().Destroy(moreBackRightBuilding);
+        //        position = new Vector3((index + 1) * groundTerm * mul, 0, 0);
+        //        position.y = -2f;
+        //        moreBackRightBuilding = Managers.GetManager<ResourceManager>().Instantiate(moreBackBuildingPresetPathList[(random + index + 1) % moreBackBuildingPresetPathList.Count]);
+        //    }
 
-            moreBackBuildingIndex = index;
-        }
+        //    moreBackBuildingIndex = index;
+        //}
 
-        float distacne = Camera.main.transform.position.x - moreBackBuildingIndex * groundTerm * mul;
+        //float distacne = Camera.main.transform.position.x - moreBackBuildingIndex * groundTerm * mul;
 
-        moreBackCenterBuilding.transform.position = new Vector3(moreBackBuildingIndex * groundTerm * mul + distacne / 2, 0, 0);
-        moreBackRightBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x + groundTerm * 2, 0, 0);
-        moreBackLeftBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x - groundTerm * 2, 0, 0);
+        //moreBackCenterBuilding.transform.position = new Vector3(moreBackBuildingIndex * groundTerm * mul + distacne / 2, 0, 0);
+        //moreBackRightBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x + groundTerm * 2, 0, 0);
+        //moreBackLeftBuilding.transform.position = new Vector3(moreBackCenterBuilding.transform.position.x - groundTerm * 2, 0, 0);
 
     }
 

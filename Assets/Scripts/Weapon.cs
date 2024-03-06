@@ -86,7 +86,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected Define.EffectName _hitEffect;
 
-    bool _fastReloadFailed;
+    protected bool _fastReloadFailed;
 
     public GameObject HandlePosition;
 
@@ -153,21 +153,25 @@ public class Weapon : MonoBehaviour, ITypeDefine
     }
     public void Update()
     {
+        // πﬂªÁ µÙ∑π¿Ã
         if (_fireElapsed < FireDelay)
             _fireElapsed += Time.deltaTime;
+        Reloading();
+    }
 
+    public virtual void Reloading()
+    {
         if (_isReload && _reloadElapsed < ReloadDelay)
         {
             _reloadElapsed += Time.deltaTime;
-            if(_reloadGauge)
+            if (_reloadGauge)
                 _reloadGauge.SetRatio(_reloadElapsed, ReloadDelay);
         }
-        else if(_isReload && _reloadElapsed >= ReloadDelay)
+        else if (_isReload && _reloadElapsed >= ReloadDelay)
         {
             CompleteReload();
         }
     }
-
     public virtual void Reload()
     {
         if (_maxAmmo <= _currentAmmo) return;
@@ -216,7 +220,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             _fastReloadFailed = true;
         }
     }
-    public void CompleteReload()
+    public virtual void CompleteReload()
     {
         if (_isAllReloadAmmo)
         {
@@ -243,7 +247,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         }
     }
 
-    public void CancelReload()
+    public virtual void CancelReload()
     {
         _isReload = false;
         _reloadGauge.gameObject.SetActive(false);

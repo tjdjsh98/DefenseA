@@ -12,7 +12,7 @@ public class SpiderAttack : MonoBehaviour
     GameObject _targetingPlayer;
     Player _player;
 
-    Vector3 _fireDirection = new Vector3(0.7f, 0.3f);
+    [SerializeField]Vector3 _fireDirection = new Vector3(0.7f, 0.3f);
     [SerializeField] float _jumpPower = 50;
 
     bool _isJumpAttack = false;

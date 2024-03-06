@@ -7,6 +7,6 @@ public class MainMenu : MonoBehaviour
 {
     public void LoadInGame()
     {
-        SceneManager.LoadScene("InGame");
+        SceneManager.LoadScene("City_01");
     }
 }
