@@ -61,6 +61,7 @@ public static class Define
         Hit2,
         Explosion,
         StempGround,
+        Hit3,
     }
     public enum CreatureSkill
     {

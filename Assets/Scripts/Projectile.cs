@@ -90,8 +90,9 @@ public class Projectile : MonoBehaviour
 
                     _direction = _direction.normalized;
                     _attacker.Attack(character, _damage, _knockbackPower, _direction,_stunTime);
-                    Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit2);
+                    Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit3);
                     Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
+                    hitEffect.SetProperty("Direction", direction);
                     hitEffect.Play(transform.position);
                     _penerstrateCount++;
 
