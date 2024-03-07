@@ -163,7 +163,7 @@ public class WallAI : MonoBehaviour
         _barrier = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Barrier").GetComponent<Barrier>();
         _barrier.transform.parent = transform;
         _barrier.transform.position= transform.position;
-        _barrier?.StartExpansion(_barrierRange);
+        _barrier?.StartExpansion(_character,_barrierRange,_barrierDurationTime);
     }
 
     void Barrier()

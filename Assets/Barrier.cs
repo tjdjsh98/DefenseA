@@ -1,3 +1,4 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -6,18 +7,18 @@ public class Barrier : MonoBehaviour
 {
     Character _character;
     CircleCollider2D _circle;
-    GameObject _model;
+    Effect _barrierEffect;
 
     bool _isExpansion;
 
     float _maxExpansionSize;
     float _currentExpansionSize;
-
+    float _durationTime;
+    float _elasepdTime;
 
     private void Awake()
     {
         _character = GetComponent<Character>();
-        _model = transform.Find("Model").gameObject;
         _circle = GetComponent<CircleCollider2D>();
     }
 
@@ -25,13 +26,12 @@ public class Barrier : MonoBehaviour
     {
         if (_isExpansion)
         {
-
             if (_currentExpansionSize < _maxExpansionSize)
                 _currentExpansionSize += Time.deltaTime*2 * _maxExpansionSize;
             else
                 _currentExpansionSize = _maxExpansionSize;
             _circle.radius= _currentExpansionSize/2;
-            _model.transform.localScale = new Vector3(_currentExpansionSize, _currentExpansionSize, 1);
+            _barrierEffect.SetProperty("Size", _currentExpansionSize);
 
             Define.Range range = new Define.Range() {
                 center = Vector3.zero,
@@ -51,15 +51,31 @@ public class Barrier : MonoBehaviour
                     character.transform.position += Time.deltaTime * 2 * _maxExpansionSize * direction;
                 }
             }
+            _elasepdTime += Time.deltaTime;
+            if(_character)
+                _barrierEffect.transform.position = _character.transform.position;
+            if(_elasepdTime >= _durationTime)
+            {
+                Managers.GetManager<ResourceManager>().Destroy(_barrierEffect.gameObject);
+                Managers.GetManager<ResourceManager>().Destroy(gameObject);
+            }
         }
     }
 
 
-    public void StartExpansion(float expansionSize)
+    public void StartExpansion(Character character, float expansionSize, float durationTime)
     {
-        _maxExpansionSize= expansionSize;
+        _character = character;
         _currentExpansionSize = 0;
+        _maxExpansionSize= expansionSize;
         _isExpansion= true;
+        _elasepdTime = 0;
+        _durationTime = durationTime;
+
+        _barrierEffect = Managers.GetManager<ResourceManager>().Instantiate(Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Barrier));
+        _barrierEffect.SetProperty("Size", _currentExpansionSize);
+        _barrierEffect.SetProperty("Duration", durationTime);
+        _barrierEffect.Play(_character.transform.position);
     }
 
 }
