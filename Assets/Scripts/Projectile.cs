@@ -94,6 +94,7 @@ public class Projectile : MonoBehaviour
                     Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
                     hitEffect.SetProperty("Direction", direction);
                     hitEffect.Play(transform.position);
+                 
                     _penerstrateCount++;
 
                     if (_penerstrateCount > _penerstratingPower)

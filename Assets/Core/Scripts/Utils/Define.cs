@@ -63,6 +63,7 @@ public static class Define
         StempGround,
         Hit3,
         Barrier,
+        Blooding,
     }
     public enum CreatureSkill
     {
