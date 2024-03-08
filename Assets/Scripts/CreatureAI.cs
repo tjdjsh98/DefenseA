@@ -33,7 +33,27 @@ public class CreatureAI : MonoBehaviour
     bool _isMove = false;
     bool _isSoulForm = false;
 
-    public int AttackDamage { set; get; } = 1;
+    public int AttackDamage
+    {
+        get
+        {
+            int ap =  _character.AttackPower;
+            if (GetIsHaveAbility(Define.CreatureAbility.Rage))
+                ap = Mathf.RoundToInt( ap* 1.5f);
+            return ap;
+        }
+    }
+    public float AttackSpeed
+    {
+        get
+        {
+            float attackSpeed = 1;
+            if (GetIsHaveAbility(Define.CreatureAbility.Rage))
+                attackSpeed *= 1.5f;
+
+            return attackSpeed;
+        }
+    }
 
     // 능력 해금
     public Dictionary<Define.CreatureAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.CreatureAbility, bool>();
@@ -53,14 +73,14 @@ public class CreatureAI : MonoBehaviour
 
     // 일반공격 변수
     float _normalAttackElapsed = 0;
-    float _normalAttackCoolTime = 5f;
+    float _normalAttackCoolTime = 2f;
     float NormalAttackCoolTime => DecreasedNormalAttackCoolTimePercentage > 0 ? _normalAttackCoolTime / (1 + (DecreasedNormalAttackCoolTimePercentage / 100)) : _normalAttackCoolTime * (1 - (DecreasedNormalAttackCoolTimePercentage / 100));
     public int NormalAttackDamage => IncreasedNormalAttackPercentage > 0 ? AttackDamage * (1 + IncreasedNormalAttackPercentage / 100) : AttackDamage / (1 - IncreasedNormalAttackPercentage / 100);
     public int IncreasedNormalAttackPercentage { set; get; }
     public float IncreasedNormalAttackSpeedPercentage { set; get; }
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
 
-
+    
     // 스피어 공격 변수
     float _spearAttackElapsed = 0;
     [SerializeField] float _spearAttackCoolTime = 3f;
@@ -200,14 +220,14 @@ public class CreatureAI : MonoBehaviour
         _shockwaveElasped += Time.deltaTime;
 
 
-        if (_normalAttackElapsed < NormalAttackCoolTime)
+        if (_enemyToAttack == null)
         {
-            _normalAttackElapsed += Time.deltaTime;
-            FollwerPlayer();
+            FindEnemyToNormalAttack();
+            if(_closeOne== null)
+                FollwerPlayer();
         }
         else
         {
-            FindEnemyToNormalAttack();
             if (_enemyToAttack == null)
             {
                 FollwerPlayer();
@@ -217,7 +237,7 @@ public class CreatureAI : MonoBehaviour
                 PlayNormalAttack();
             }
         }
-
+       
         if (_selectedSpecialAbility == Define.CreatureSkill.None)
         {
             _selectedSpecialAbility = (Define.CreatureSkill)Random.Range(0, Define.CreatureSkillCount);
@@ -333,6 +353,7 @@ public class CreatureAI : MonoBehaviour
             Define.Range range = _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange];
             range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
             float distance = ((Vector2)_enemyToAttack.transform.position - ((Vector2)range.center + (Vector2)transform.position)).magnitude;
+            range.size = range.size / 4 * 3;
 
             if (distance > Mathf.Abs(range.center.x) + range.size.x / 2)
             {
@@ -343,12 +364,12 @@ public class CreatureAI : MonoBehaviour
                 _character.TurnBody(_enemyToAttack.transform.position - transform.position);
                 _normalAttackElapsed = 0;
 
+                _character.SetAnimationSpeed(AttackSpeed);
                 if (Random.Range(0, 2) == 0)
                     _character.AnimatorSetTrigger("NormalAttack");
                 else
                     _character.AnimatorSetTrigger("AirBorneAttack");
 
-                _character.SetAnimationSpeed(IncreasedNormalAttackSpeedPercentage > 0 ? 1 + IncreasedNormalAttackSpeedPercentage / 100 : 1f / (1 - IncreasedNormalAttackSpeedPercentage / 100));
                 _character.IsEnableMove = false;
                 _character.IsEnableTurn = false;
                 _enemyToAttack = null;
@@ -401,7 +422,8 @@ public class CreatureAI : MonoBehaviour
     void FindEnemyToNormalAttack()
     {
         if (_enemyToAttack != null) return;
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.FindingRange], LayerMask.GetMask("Character"));
+
+        GameObject[] gos = Util.RangeCastAll2D(Managers.GetManager<GameManager>().Girl.gameObject, _attackRangeList[(int)Define.CreatureSkillRange.FindingRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {
@@ -544,6 +566,13 @@ public class CreatureAI : MonoBehaviour
                 }
             }
         }
+    }
+    public bool GetIsHaveAbility(Define.CreatureAbility ability)
+    {
+        if (AbilityUnlocks.TryGetValue(ability, out bool value) && value)
+            return true;
+
+        return false;
     }
 
     void CalcHpRecoverPower()

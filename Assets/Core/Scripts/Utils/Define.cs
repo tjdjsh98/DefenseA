@@ -98,10 +98,12 @@ public static class Define
         마지막발악,
         검은구체,
         전기발전,
+        일제사격,
 
         쇼크웨이브,
         땅구르기,
         생존본능,
+        분노,
 
         구체생성,
         방벽,
@@ -122,6 +124,7 @@ public static class Define
         PlentyOfBullets,
         Electric,
         LastStruggle,
+        VolleyFiring,
         END
     }
     public static int GIRLABILITY_COUNT = (int)GirlAbility.END;
@@ -141,7 +144,8 @@ public static class Define
         StempGround,
         SurvialIntinct,
         Spear,
-        END
+        Rage,
+        END,
     }
     public static int CREATUREABILITY_COUNT = (int)CreatureAbility.END;
 

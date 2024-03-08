@@ -2,6 +2,7 @@ using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 using UnityEngine.Timeline;
@@ -49,11 +50,23 @@ public class WallAI : MonoBehaviour
     float _barrierRange = 30;
     Barrier _barrier;
 
+    // 죽음 효과
+    int _brickIndex = 0;
+    [SerializeField] List<GameObject> _wallBricks= new List<GameObject>();
+    [SerializeField] List<Vector3> _wallBricksPosition= new List<Vector3>();
+    [SerializeField] LineRenderer _lineRenderer;
+    float _onewayTime;
+    float _onewayElapsedTime;
+    bool _isBrickAttach;
+
     // 추가적 능력치
     public int ReflectionDamage { set; get; } = 0;
     public float DecreasedReviveTimePercetage { set; get; }
 
     bool _isSoulForm;
+    [SerializeField] bool _brickTest = false;
+   
+
 
     private void Awake()
     {
@@ -70,6 +83,7 @@ public class WallAI : MonoBehaviour
 
     private void OnCharacterDead()
     {
+        _character.AnimatorSetBool("Dead", true);
         if (AbilityUnlocks.TryGetValue(Define.WallAbility.SelfDestruct,out bool value) && value)
         {
 
@@ -98,6 +112,16 @@ public class WallAI : MonoBehaviour
                 }
             }
         }
+
+        _wallBricks.Clear();
+        for (int i = 0; i < 6; i++)
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/WallBrick");
+            go.transform.position = transform.position + Vector3.up;
+            go.GetComponent<Rigidbody2D>().AddForce((new Vector3(UnityEngine.Random.Range(-1f, 1f), 1)).normalized * 100, ForceMode2D.Impulse);
+            _wallBricks.Add(go);
+        }
+        _onewayTime = _reviveTime / _wallBricks.Count/2;
     }
 
     private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
@@ -125,6 +149,45 @@ public class WallAI : MonoBehaviour
     }
     private void Update()
     {
+        if (_brickTest)
+        {
+          
+            _brickTest = false;
+        }
+
+        if (_character.IsDead)
+        {
+            float remainTime = _reviveTime - _reviveElapsedTime;
+            int remainCount = _wallBricks.Count - _brickIndex;
+            Vector3 brickVector = _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position;
+
+            if (!_isBrickAttach)
+                _onewayElapsedTime += Time.deltaTime;
+            else
+                _onewayElapsedTime -= Time.deltaTime;
+            if (_isBrickAttach)
+            {
+                _wallBricks[_brickIndex].transform.position = _lineRenderer.transform.position + _lineRenderer.GetPosition(1);
+            }
+
+            _lineRenderer.SetPosition(1, Vector3.Lerp(_lineRenderer.GetPosition(0), _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position, _onewayElapsedTime / _onewayTime));
+
+            if(_onewayElapsedTime>= _onewayTime && !_isBrickAttach)
+            {
+                _isBrickAttach = true;
+            }
+            if (_onewayElapsedTime <= 0 && _isBrickAttach)
+            {
+                _onewayElapsedTime = 0;
+                _isBrickAttach = false;
+                Managers.GetManager<ResourceManager>().Destroy(_wallBricks[_brickIndex]);
+                _brickIndex++;
+            }
+        }
+
+        Revive();
+
+        if (_character.IsDead) return;
         if (Input.GetKeyDown(KeyCode.C))
         {
             Transform();
@@ -135,7 +198,7 @@ public class WallAI : MonoBehaviour
 
             _character.TurnBody(player.transform.position - transform.position);
             Vector3 offset = new Vector3(-2, 6, 0);
-            offset.y += Mathf.Sin(Time.time*0.5f +gameObject.GetInstanceID());
+            offset.y += Mathf.Sin(Time.time * 0.5f + gameObject.GetInstanceID());
             if (player.transform.localScale.x < 0)
                 offset.x = -offset.x;
 
@@ -143,10 +206,6 @@ public class WallAI : MonoBehaviour
 
             return;
         }
-
-        Revive();
-
-        if (_character.IsDead) return;
         MoveForward();
         Targeting();
 
@@ -215,6 +274,7 @@ public class WallAI : MonoBehaviour
             {
                 _reviveTime = 0;
                 _character.Revive();
+                _character.AnimatorSetBool("Dead",false);
                 //if (AbilityUnlocks.TryGetValue(Define.WallAbility.SelfDestruct, out bool value) && value)
                 
                 //    transform.position = Managers.GetManager<GameManager>().Player.transform.position;

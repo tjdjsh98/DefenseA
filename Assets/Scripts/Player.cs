@@ -64,6 +64,7 @@ public class Player : MonoBehaviour
 
     // 검은구체
     List<BlackSphere> _blackSphereList = new List<BlackSphere>();
+    int _maxBlackSphereCount = 10;
     public List<BlackSphere> BlackSphereList => _blackSphereList;
 
 
@@ -166,6 +167,7 @@ public class Player : MonoBehaviour
                 );
         }
 
+
         for(int i = _blackSphereList.Count-1; i >= 0 ; i--) 
         {
             if (_blackSphereList[i] == null)
@@ -232,7 +234,7 @@ public class Player : MonoBehaviour
 
     void PlentyOfBullets()
     {
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.PlentyOfBullets, out bool value) && value)
+        if (GetIsHaveAbility(Define.GirlAbility.PlentyOfBullets))
         {
             int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
             _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
@@ -241,18 +243,35 @@ public class Player : MonoBehaviour
 
     void OnAttack(Character target, int damage)
     {
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.BlackSphere, out bool value) && value)
+        if (GetIsHaveAbility(Define.GirlAbility.BlackSphere))
         {
-            // 20%의 확률로
-            if (Random.Range(0, 5) == 0)
+            if (_maxBlackSphereCount > _blackSphereList.Count)
             {
-                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
-                go.transform.position = target.transform.position;
-                BlackSphere blackSphere = go.GetComponent<BlackSphere>();
-                blackSphere.Init(_character, new Vector3(-3, 5));
-                _blackSphereList.Add(blackSphere);
+                // 20%의 확률로
+                if (Random.Range(0, 5) == 0)
+                {
+                    GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
+                    go.transform.position = target.transform.position;
+                    BlackSphere blackSphere = go.GetComponent<BlackSphere>();
+                    blackSphere.Init(_character, new Vector3(-3, 5));
+                    _blackSphereList.Add(blackSphere);
+                }
             }
         }
+        if (GetIsHaveAbility(Define.GirlAbility.VolleyFiring))
+        {
+            if(_maxBlackSphereCount <= _blackSphereList.Count)
+            {
+                float delay = 0;
+                foreach(BlackSphere blackSphere in _blackSphereList)
+                {
+                    blackSphere.ChangeAttackMode(target,delay);
+                    delay += 0.1f;
+                }
+                _blackSphereList.Clear();
+            }
+        }
+
 
     }
     private void AutoReload()
@@ -541,6 +560,13 @@ public class Player : MonoBehaviour
         }
     }
 
+    public bool GetIsHaveAbility(Define.GirlAbility girlAbility)
+    {
+        if (AbilityUnlocks.TryGetValue(girlAbility, out bool value) && value)
+            return true;
+
+        return false;
+    }
     public void ResetRebound()
     {
         _rebound = 0;
