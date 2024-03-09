@@ -97,6 +97,8 @@ public class Character : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>(); 
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _hp = _maxHp;
+        if(_animator)
+            _animator.logWarnings = false;
     }
 
     private void OnDrawGizmosSelected()
@@ -167,7 +169,9 @@ public class Character : MonoBehaviour
                 if (_isContactGround)
                 {
                     xSpeed += Time.deltaTime * _groundBreakPower * (xSpeed > 0 ? -1 : 1);
-                    if (xSpeed < Time.deltaTime * _groundBreakPower * xSpeed)
+                    if (xSpeed > 0 && xSpeed +Time.deltaTime * _groundBreakPower * xSpeed < 0)
+                        xSpeed = 0;
+                    if (xSpeed <0 &&  xSpeed + Time.deltaTime * _groundBreakPower * xSpeed > 0)
                         xSpeed = 0;
 
                 }
@@ -196,6 +200,7 @@ public class Character : MonoBehaviour
             float speed = _rigidBody.velocity.x * transform.lossyScale.x / Math.Abs(transform.lossyScale.x);
             if (speed > _speed * 0.9f)
             {
+                
                 _animator?.SetFloat("WalkBlend", 1);
 
             }

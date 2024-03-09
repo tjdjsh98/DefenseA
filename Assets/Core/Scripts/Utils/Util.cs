@@ -1,5 +1,7 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading.Tasks;
 using UnityEngine;
 
 public static class Util
@@ -57,7 +59,7 @@ public static class Util
 
         return hit.collider ? hit.collider.gameObject : null;
     }
-    public static GameObject[] RangeCastAll2D(GameObject go, Define.Range range, int layerMask = -1)
+    public static GameObject[] RangeCastAll2D(GameObject go, Define.Range range, int layerMask = -1, Func<GameObject,bool> condition = null)
     {
         if (go.transform.localScale.x < 0)
             range.center.x = -range.center.x;
@@ -102,7 +104,8 @@ public static class Util
         GameObject[] gos = new GameObject[hits.Length];
         for (int i = 0; i < hits.Length; i++)
         {
-            gos[i] = hits[i].collider.gameObject;
+            if (condition == null || condition.Invoke(hits[i].collider.gameObject))
+                gos[i] = hits[i].collider.gameObject;
         }
 
         return gos;

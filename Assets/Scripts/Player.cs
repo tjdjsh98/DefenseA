@@ -1,4 +1,6 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System.Collections.Generic;
+using TMPro;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -13,6 +15,11 @@ public class Player : MonoBehaviour
     public Character Character => _character;
     Rigidbody2D _rigidbody;
     Character _ridingCharacter;
+
+    [SerializeField] bool _debug;
+
+    [SerializeField] Define.Range _meleeAttackRange;
+
 
     [SerializeField] GameObject _frontArm;
     [SerializeField] GameObject _backArmIK;
@@ -75,6 +82,7 @@ public class Player : MonoBehaviour
     float _eyeCloseElasepdTime;
     float _eyeCloseTime = 4;
 
+    bool _isSliding;
     bool _isRun;
     bool _isFire;
 
@@ -111,10 +119,16 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().JumpKeyDownHandler += _character.Jump;
 
     }
+    private void OnDrawGizmos()
+    {
+        if (!_debug) return;
 
+        Util.DrawRangeOnGizmos(gameObject, _meleeAttackRange, Color.red);
+    }
     private void OnCharacterDead()
     {
         SceneManager.LoadScene("MainMenu");
+
     }
 
     private void OnReloadKeyDown()
@@ -150,6 +164,46 @@ public class Player : MonoBehaviour
             _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
             _bounce = false;
         }
+        // 임시 공격
+
+        if (Input.GetMouseButtonDown(1) && !_isSliding)
+        {
+            _character.IsAttack = true;
+            _animator.SetTrigger("MeleeAttack");
+        }
+        //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+
+        // 임시 슬라이딩
+
+        if (!_isSliding)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                bool isRight = transform.lossyScale.x > 0;
+                _rigidbody.AddForce(Vector2.right * 150 * (isRight? 1:-1), ForceMode2D.Impulse);
+                _isSliding = true;
+                _character.IsEnableMove = false;
+                _character.AnimatorSetBool("Sliding", _isSliding);
+            }
+        }
+        else
+        {
+            if (Input.GetKeyUp(KeyCode.LeftControl))
+            { 
+                _isSliding = false;
+                _character.IsEnableMove = true;
+                _character.AnimatorSetBool("Sliding", _isSliding);
+            }
+
+            if (Mathf.Abs(_rigidbody.velocity.x) < 0.01f)
+            { 
+                _isSliding = false;
+                _character.IsEnableMove = true;
+                _character.AnimatorSetBool("Sliding", _isSliding);
+            }
+        }
+
+        //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
         TurnBody();
         RotateArm();
         RotateBody();
@@ -232,12 +286,29 @@ public class Player : MonoBehaviour
         }
     }
 
+    public void MeleeAttack()
+    {
+        Util.RangeCastAll2D(gameObject, _meleeAttackRange, Define.CharacterMask,
+            (go) =>
+            {
+                Character characrer = go.GetComponent<Character>();
+                if (characrer && characrer.CharacterType == Define.CharacterType.Enemy)
+                {
+                    _character.Attack(characrer, _character.AttackPower, 100, characrer.transform.position - transform.position,0.2f);
+                }
+                return true;
+            });
+    }
+
     void PlentyOfBullets()
     {
-        if (GetIsHaveAbility(Define.GirlAbility.PlentyOfBullets))
+        if (_weaponSwaper.CurrentWeapon)
         {
-            int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
-            _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
+            if (GetIsHaveAbility(Define.GirlAbility.PlentyOfBullets))
+            {
+                int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
+                _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
+            }
         }
     }
 
@@ -345,7 +416,7 @@ public class Player : MonoBehaviour
 
     private void RotateBody()
     {
-        if(_isRun) return;
+        if(_isRun || _isSliding) return;
 
         float bodyAngle = 0;
         float headAngle = 0;
@@ -478,6 +549,13 @@ public class Player : MonoBehaviour
 
     void OnRightArrowPressed()
     {
+        if (_character.IsAttack)
+        {
+            _isRun = false;
+            return;
+        }
+
+
         float run = 0.4f;
         if (!_isFire && Input.GetKey(KeyCode.LeftShift))
         {
@@ -490,6 +568,12 @@ public class Player : MonoBehaviour
     }
     void OnLeftArrowPressed()
     {
+        if (_character.IsAttack)
+        {
+            _isRun = false;
+            return;
+        }
+
         float run = 0.4f;
         if (!_isFire && Input.GetKey(KeyCode.LeftShift))
         {
@@ -521,7 +605,28 @@ public class Player : MonoBehaviour
 
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
+    }
 
+    bool CheckIsCloseEnemy()
+    {
+        Define.Range range = new Define.Range()
+        {
+            center = new Vector3(0, 0.5f, 0),
+            size = new Vector3(1, 1, 0),
+            figureType = Define.FigureType.Box
+        };
+
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, range, Define.CharacterMask, (go)=>
+        {
+            Character character = go.GetComponent<Character>();
+            if (character == null) return false;
+
+            return character.CharacterType == Define.CharacterType.Enemy;
+        });
+
+        if (gameObjects.Length <= 0) return false;
+
+        return true;
     }
 
     void Riding()

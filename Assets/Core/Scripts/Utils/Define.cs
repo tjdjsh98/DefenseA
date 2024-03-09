@@ -64,6 +64,7 @@ public static class Define
         Hit3,
         Barrier,
         Blooding,
+        Slash,
     }
     public enum CreatureSkill
     {
