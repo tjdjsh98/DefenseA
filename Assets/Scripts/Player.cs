@@ -171,39 +171,8 @@ public class Player : MonoBehaviour
             _character.IsAttack = true;
             _animator.SetTrigger("MeleeAttack");
         }
-        //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
 
-        // 임시 슬라이딩
-
-        if (!_isSliding)
-        {
-            if (Input.GetKeyDown(KeyCode.LeftControl))
-            {
-                bool isRight = transform.lossyScale.x > 0;
-                _rigidbody.AddForce(Vector2.right * 150 * (isRight? 1:-1), ForceMode2D.Impulse);
-                _isSliding = true;
-                _character.IsEnableMove = false;
-                _character.AnimatorSetBool("Sliding", _isSliding);
-            }
-        }
-        else
-        {
-            if (Input.GetKeyUp(KeyCode.LeftControl))
-            { 
-                _isSliding = false;
-                _character.IsEnableMove = true;
-                _character.AnimatorSetBool("Sliding", _isSliding);
-            }
-
-            if (Mathf.Abs(_rigidbody.velocity.x) < 0.01f)
-            { 
-                _isSliding = false;
-                _character.IsEnableMove = true;
-                _character.AnimatorSetBool("Sliding", _isSliding);
-            }
-        }
-
-        //ㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡㅡ
+        HandleSliding();
         TurnBody();
         RotateArm();
         RotateBody();
@@ -240,6 +209,32 @@ public class Player : MonoBehaviour
 
     }
 
+    void HandleSliding()
+    {
+        if (!_isSliding)
+        {
+            if (Input.GetKeyDown(KeyCode.LeftControl))
+            {
+                bool isRight = _character.MySpeed.x > 0;
+                if(isRight)
+                    _character.TurnBody(isRight ? Vector3.right : Vector3.left);
+                _rigidbody.AddForce(Vector2.right * 150 * (isRight ? 1 : -1), ForceMode2D.Impulse);
+                _isSliding = true;
+                _character.IsEnableMove = false;
+                _character.AnimatorSetBool("Sliding", _isSliding);
+            }
+        }
+        else
+        {
+            if (Mathf.Abs(_rigidbody.velocity.x) < 0.1f)
+            {
+                _isSliding = false;
+                _character.IsEnableMove = true;
+                _character.AnimatorSetBool("Sliding", _isSliding);
+            }
+        }
+
+    }
     public float GetIncreasedDamagePercentage()
     {
         Character wall = Managers.GetManager<GameManager>().Wall;
@@ -405,7 +400,7 @@ public class Player : MonoBehaviour
 
     private void TurnBody()
     {
-        if (!_isRun)
+        if (!_isRun && !_isSliding)
         {
             if (Managers.GetManager<InputManager>().MouseWorldPosition.x < transform.position.x)
                 _character.TurnBody(Vector2.left);

@@ -71,6 +71,7 @@ public static class Define
         None = -1,
         Shockwave,
         StempGround,
+        Throw,
         END,
     }
     public static int CreatureSkillCount = (int)CreatureSkill.END;

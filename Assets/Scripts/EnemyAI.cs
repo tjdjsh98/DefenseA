@@ -1,3 +1,4 @@
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -8,12 +9,19 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField] protected Character _target;
 
+    // 공격과 공격사이의 딜레이
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
+
+    // 공격하는 중의 딜레이
+    protected float _attackingDelay = 2;
+    protected float _attackingElasepd = 0;
 
     [SerializeField] bool _isRangedAttack;
     public bool IsAutoMove { set; get; } = true;
     [SerializeField] string _attackTriggerName;
+
+    SpriteRenderer _attackRangeSprite;
 
     protected virtual void Awake()
     {
@@ -24,6 +32,16 @@ public class EnemyAI : MonoBehaviour
         {
             Managers.GetManager<GameManager>().Exp += 1;
         };
+
+        if (transform.Find("AttackRange"))
+        {
+            _attackRangeSprite = transform.Find("AttackRange").GetComponent<SpriteRenderer>();
+        }else
+        {
+            _attackRangeSprite = Managers.GetManager<ResourceManager>().Instantiate("AttackRange").GetComponent<SpriteRenderer>();
+            _attackRangeSprite.transform.SetParent(transform);
+        }
+        _attackRangeSprite.gameObject.SetActive(false);
     }
 
     private void OnDrawGizmosSelected()
@@ -35,8 +53,6 @@ public class EnemyAI : MonoBehaviour
     }
     void Update()
     {
-        if (_character.IsAttack || _character.IsStun) return;
-
         CheckTarget();
         Move();
         PlayAttack();
@@ -45,6 +61,9 @@ public class EnemyAI : MonoBehaviour
     protected virtual void Move()
     {
         if (_target != null) return;
+        if (_character.IsAttack) return;
+        if (_character.IsStun) return;
+
         if (!IsAutoMove) return;
         Player player = Managers.GetManager<GameManager>().Player;
         if(player == null) return;
@@ -53,6 +72,8 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void CheckTarget()
     {
+        if (_character.IsAttack) return;
+        if (_character.IsStun) return;
         if (_target != null) return;
         GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
 
@@ -86,10 +107,10 @@ public class EnemyAI : MonoBehaviour
         {
             if (_target == null) return;
 
-            _attackElapsed = 0;
             
             if (!_isRangedAttack)
             {
+                // 공격 모션이 따로 있을 때
                 if (!_attackTriggerName.Equals(""))
                 {
                     _character.IsEnableMove = false;
@@ -98,9 +119,38 @@ public class EnemyAI : MonoBehaviour
                     _character.TurnBody(_target.transform.position - transform.position);
                     _character.AnimatorSetTrigger(_attackTriggerName);
                 }
+                // 공격 모션이 따로 없을 때
                 else
                 {
-                    OnPlayAttack();
+                    if (_attackingElasepd == 0)
+                    {
+                        Color color = _attackRangeSprite.color;
+                        color.a = 0;
+                        _attackRangeSprite.color = color;
+                        _attackRangeSprite.transform.localScale = _attackRange.size;
+                        _attackRangeSprite.transform.localPosition = _attackRange.center;
+
+                        _attackRangeSprite.gameObject.SetActive(true);
+                        _character.IsAttack = true;
+                    }
+
+                    if (_attackingDelay > _attackingElasepd)
+                    {
+                        _attackingElasepd += Time.deltaTime;
+                        Color color = _attackRangeSprite.color;
+                        if(_attackingDelay != 0)
+                            color.a = _attackingElasepd/_attackingDelay;
+                        _attackRangeSprite.color = color;
+
+                    }
+                    else
+                    {
+                        _attackingElasepd = 0;
+                        _attackRangeSprite.gameObject.SetActive(false);
+                        OnPlayAttack();
+                        _attackElapsed = 0;
+                        _character.IsAttack = false;
+                    }
                 }
             }
             else
@@ -132,7 +182,7 @@ public class EnemyAI : MonoBehaviour
         _character.IsAttack = false;
         _character.IsEnableMove = true;
         _character.IsEnableTurn = true;
-
+        _attackElapsed = 0;
     }
-  
+
 }

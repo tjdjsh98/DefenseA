@@ -173,12 +173,6 @@ public class GameManager : ManagerBase
         if (Player && Player.transform.position.x > MapSize)
         {
             _stop = true;
-
-            for (int i = _enemySpawnList.Count - 1; i >= 0; i--)
-            {
-                Managers.GetManager<ResourceManager>().Destroy(_enemySpawnList[i]);
-                _enemySpawnList.RemoveAt(i);
-            }
         }
     }
 

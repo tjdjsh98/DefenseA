@@ -63,6 +63,7 @@ public class Character : MonoBehaviour
     public bool IsRoll { set; get; }
     bool _isMove = false;
     public bool IsDead { set; get; }
+    bool _isKnockBack;
     bool _isContactGround = false;
     public bool IsContactGround => _isContactGround;
     private bool _isJump;
@@ -134,10 +135,11 @@ public class Character : MonoBehaviour
             _hpBar.SetRatio(_hp, _maxHp);
         }
 
+        // 넉백 
         if (IsStun)
         {
             _stunEleasped += Time.deltaTime;
-            if (_stunEleasped > _stunTime)
+            if (_stunEleasped > _stunTime && _rigidBody.velocity.magnitude < 0.1f)
             {
                 IsStun = false;
                 _stunEleasped = 0;
@@ -161,7 +163,7 @@ public class Character : MonoBehaviour
     void HandleBreak()
     {
         // 브레이크
-        if (!_isMove && !IsStun)
+        if (!_isMove )
         {
             float xSpeed = _rigidBody.velocity.x;
             if (xSpeed != 0)
@@ -308,15 +310,21 @@ public class Character : MonoBehaviour
 
             if (IsEnableFly || _isContactGround)
             {
-                currentSpeed.x += (direction.x > 0 ? 1 : -1) *  (_isContactGround?_groundAccelePower:_airAccelePower) * Time.deltaTime;
-                if (Mathf.Abs(currentSpeed.x) > maxXSpeed)
-                    currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
+                if (Mathf.Abs(currentSpeed.x) < Mathf.Abs(_speed))
+                {
+                    currentSpeed.x += (direction.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime;
+                    if (Mathf.Abs(currentSpeed.x) > maxXSpeed)
+                        currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
+                }
             }
             if (IsEnableFly)
             {
-                currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
-                if (Mathf.Abs(currentSpeed.y) > maxYSpeed)
-                    currentSpeed.y = currentSpeed.y > 0 ? maxYSpeed : -maxYSpeed;
+                if (Mathf.Abs(currentSpeed.y) < Mathf.Abs(_speed))
+                {
+                    currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
+                    if (Mathf.Abs(currentSpeed.y) > maxYSpeed)
+                        currentSpeed.y = currentSpeed.y > 0 ? maxYSpeed : -maxYSpeed;
+                }
             }
 
             _rigidBody.velocity = currentSpeed;
@@ -356,7 +364,7 @@ public class Character : MonoBehaviour
         if (_groundCheckRange.size == Vector3.zero) return;
         if (Mathf.Approximately(_rigidBody.velocity.y,0)) return;
 
-        if (_isJump && !_isContactGround && _rigidBody.velocity.y > 0) return;
+        if(!_isContactGround && _rigidBody.velocity.y > 0) return;
         
         GameObject[] gos = Util.RangeCastAll2D(gameObject, _groundCheckRange, LayerMask.GetMask("Ground"));
 

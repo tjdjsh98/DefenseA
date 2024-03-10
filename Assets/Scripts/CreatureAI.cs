@@ -116,10 +116,13 @@ public class CreatureAI : MonoBehaviour
 
 
     // 특수 능력
-    Define.CreatureSkill _selectedSpecialAbility = Define.CreatureSkill.None;
+    [field:SerializeField]Define.CreatureSkill _selectedSpecialAbility = Define.CreatureSkill.None;
     float _specialAbilityElapsedTime;
     float _specialAbilityCoolTime = 1;
+    bool _isActiveSpecialAbility;
 
+    // 던지기
+    [SerializeField]float _throwPower;
     public Define.CreatureSkill SelectedSpecialAbility => _selectedSpecialAbility;
     public float SpecialAbilityElaspedTime => _specialAbilityElapsedTime;
     public float SpecialAbilityCoolTime => _specialAbilityCoolTime;
@@ -131,13 +134,17 @@ public class CreatureAI : MonoBehaviour
         _model = transform.Find("Model").gameObject;
         _soulModel = transform.Find("SoulModel").gameObject;
         Managers.GetManager<GameManager>().CreatureAI = this;
-        Managers.GetManager<InputManager>().SpecialAbilityKeyDownHandler += SpecialAbility;
+        Managers.GetManager<InputManager>().SpecialAbilityKeyDownHandler += OnSpecialAbilityKeyDown;
 
         if (_attackRangeList.Count < Define.CreatureSkillCount)
         {
             for (int i = _attackRangeList.Count; i < Define.CreatureSkillCount; i++)
                 _attackRangeList.Add(new Define.Range());
         }
+
+        // Temp
+        _selectedSpecialAbility = Define.CreatureSkill.Throw;
+        // ------------------
     }
 
     private void OnDrawGizmos()
@@ -219,53 +226,26 @@ public class CreatureAI : MonoBehaviour
 
         _shockwaveElasped += Time.deltaTime;
 
-
-        if (_enemyToAttack == null)
-        {
-            FindEnemyToNormalAttack();
-            if(_closeOne== null)
-                FollwerPlayer();
-        }
-        else
-        {
-            if (_enemyToAttack == null)
-            {
-                FollwerPlayer();
-            }
-            else
-            {
-                PlayNormalAttack();
-            }
-        }
-       
-        if (_selectedSpecialAbility == Define.CreatureSkill.None)
-        {
-            _selectedSpecialAbility = (Define.CreatureSkill)Random.Range(0, Define.CreatureSkillCount);
-            _specialAbilityElapsedTime = 0;
-            if (_selectedSpecialAbility == Define.CreatureSkill.Shockwave)
-                _specialAbilityCoolTime = _shockwaveCoolTime;
-            if (_selectedSpecialAbility == Define.CreatureSkill.StempGround)
-                _shockwaveCoolTime = _stempGroundCoolTime;
-        }
-        else
-        {
-            if (_specialAbilityElapsedTime < _specialAbilityCoolTime)
-                _specialAbilityElapsedTime += Time.deltaTime;
-            else
-                _specialAbilityElapsedTime = _specialAbilityCoolTime;
-        }
-
-        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.Spear,out bool value) && value)
-        {
-            _spearAttackElapsed += Time.deltaTime;
-            if (_spearAttackElapsed > _spearAttackCoolTime)
-            {
-                SpearAttack();
-                _spearAttackElapsed = 0;
-            }
-        }
+        FindingEnemyToNormalAttack();
+        FollowPlayer();
+        PlayNormalAttack();
+        HandleSpecialAbility();
+        ThrowPlayer();
         SurvivalInstinct();
 
+    }
+
+    void FollowPlayer()
+    {
+        if (_character.IsAttack) return;
+        if (_player == null) return;
+        if (_enemyToAttack != null) return;
+
+        Vector3 distacne = _player.transform.position - transform.position;
+        if (Mathf.Abs(distacne.y) < 3 && Mathf.Abs(distacne.x) > _girlToCreatureDistance)
+        {
+            _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -_girlToCreatureDistance : _girlToCreatureDistance)) / (_girlToCreatureDistance));
+        }
     }
 
     public void Transform()
@@ -291,20 +271,66 @@ public class CreatureAI : MonoBehaviour
             _character.ChangeEnableFly(false);
         }
     }
-    public void SpecialAbility()
+
+    public void HandleSpecialAbility()
+    {
+        if (_selectedSpecialAbility == Define.CreatureSkill.None)
+        {
+            _selectedSpecialAbility = (Define.CreatureSkill)Random.Range(0, Define.CreatureSkillCount);
+            _specialAbilityElapsedTime = 0;
+            if (_selectedSpecialAbility == Define.CreatureSkill.Shockwave)
+                _specialAbilityCoolTime = _shockwaveCoolTime;
+            if (_selectedSpecialAbility == Define.CreatureSkill.StempGround)
+                _specialAbilityCoolTime = _stempGroundCoolTime;
+            if (_selectedSpecialAbility == Define.CreatureSkill.Throw)
+                _specialAbilityCoolTime = 1;
+        }
+        else
+        {
+            if (_specialAbilityElapsedTime < _specialAbilityCoolTime)
+                _specialAbilityElapsedTime += Time.deltaTime;
+            else
+                _specialAbilityElapsedTime = _specialAbilityCoolTime;
+        }
+    }
+    public void OnSpecialAbilityKeyDown()
     {
         if (_player == null) return;
         if (_specialAbilityCoolTime > _specialAbilityElapsedTime) return;
 
         if (_selectedSpecialAbility == Define.CreatureSkill.Shockwave)
+        {
             Shockwave();
+        }
         if (_selectedSpecialAbility == Define.CreatureSkill.StempGround)
+        {
             StempGround();
-
-        _selectedSpecialAbility = Define.CreatureSkill.None;
-        _specialAbilityElapsedTime = 0;
+        }
+        if (_selectedSpecialAbility == Define.CreatureSkill.Throw)
+        {
+            _player.transform.position = transform.position;
+            _isActiveSpecialAbility = true;
+        }
     }
 
+    void ThrowPlayer()
+    {
+        if(_isActiveSpecialAbility && SelectedSpecialAbility == Define.CreatureSkill.Throw)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
+                Vector3 directionVel = mousePosition - transform.position;
+
+                float power = directionVel.magnitude * _throwPower;
+                if (power > 200)
+                    power = 200;
+                _player.Character.Damage(_character, 0, power, directionVel, 0);
+                _specialAbilityElapsedTime = 0;
+                _isActiveSpecialAbility = false;
+            }
+        }
+    }
     public void AimFrontArmToEnemy()
     {
         Animation anim = GetComponent<Animation>();
@@ -334,18 +360,6 @@ public class CreatureAI : MonoBehaviour
         _penetrateAttack.StartAttack(_character, _closeOne.GetCenter() - _penetrateAttack.transform.position, 20);
 
     }
-    void FollwerPlayer()
-    {
-        if (_player == null) return;
-
-        float distacne = _player.transform.position.x - transform.position.x;
-        if (Mathf.Abs(distacne) > _girlToCreatureDistance)
-        {
-            _character.Move(Vector3.right * (distacne + (distacne > 0 ? -_girlToCreatureDistance : _girlToCreatureDistance)) / (_girlToCreatureDistance));
-        }
-
-    }
-
     void PlayNormalAttack()
     {
         if (_enemyToAttack)
@@ -370,6 +384,7 @@ public class CreatureAI : MonoBehaviour
                 else
                     _character.AnimatorSetTrigger("AirBorneAttack");
 
+                _character.IsAttack = true;
                 _character.IsEnableMove = false;
                 _character.IsEnableTurn = false;
                 _enemyToAttack = null;
@@ -413,13 +428,14 @@ public class CreatureAI : MonoBehaviour
 
     public void FinishNormalAttack()
     {
+        _character.IsAttack = false;
         _character.IsEnableMove = true;
         _character.IsEnableTurn = true;
         _character.SetAnimationSpeed(1);
     }
 
 
-    void FindEnemyToNormalAttack()
+    void FindingEnemyToNormalAttack()
     {
         if (_enemyToAttack != null) return;
 
@@ -504,6 +520,8 @@ public class CreatureAI : MonoBehaviour
             if (ShockwaveCount >= 2)
                 StartCoroutine(CorShockwaveAttack(0.2f, 1));
             _shockwaveElasped = 0;
+            _selectedSpecialAbility = Define.CreatureSkill.None;
+            _specialAbilityElapsedTime = 0;
         }
     }
 
@@ -565,6 +583,8 @@ public class CreatureAI : MonoBehaviour
                     }
                 }
             }
+            _selectedSpecialAbility = Define.CreatureSkill.None;
+            _specialAbilityElapsedTime = 0;
         }
     }
     public bool GetIsHaveAbility(Define.CreatureAbility ability)

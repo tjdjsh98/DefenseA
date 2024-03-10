@@ -134,7 +134,7 @@ MonoBehaviour:
   _weaponName: 9
   _audioLength: 0
   _isAuto: 0
-  _knockBackPower: 30
+  _knockBackPower: 200
   _stunTime: 0.1
   _bulletSpeed: 100
   _attackMultiplier: 1
@@ -143,7 +143,7 @@ MonoBehaviour:
   _maxAmmo: 7
   _currentAmmo: 0
   _isAllReloadAmmo: 0
-  _fireDelay: 0.2
+  _fireDelay: 0.5
   _reloadDelay: 1
   _firePosition: {fileID: 321610210134309561}
   _rebound: 20

@@ -14,35 +14,43 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: City_01
   mentalDownTime: 180
+  buildingNameList: []
+  moreBackBuildingNameList: []
   timeWave:
   - time: 0
-    genTime: 2
+    genTime: 5
     distace: 3
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1
   - time: 30
-    genTime: 1.8
+    genTime: 4.5
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 0000000002000000
     hpMultiply: 1.2
-  - time: 80
-    genTime: 1.7
+  - time: 60
+    genTime: 4.3
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 0000000002000000
+    enemyList: 0000000002000000000000000200000003000000
     hpMultiply: 1.4
-  - time: 120
-    genTime: 1.4
-    distace: 0
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 010000000300000002000000
-    hpMultiply: 1.6
-  - time: 150
-    genTime: 1.2
-    distace: 0
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 000000000200000003000000
-    hpMultiply: 1.8
-  distanceWave: []
+  distanceWave:
+  - time: 0
+    genTime: 0
+    distace: 20
+    genLocalPosition: {x: 20, y: 0, z: 0}
+    enemyList: 0700000007000000
+    hpMultiply: 1
+  - time: 0
+    genTime: 0
+    distace: 50
+    genLocalPosition: {x: 30, y: 30, z: 0}
+    enemyList: 06000000
+    hpMultiply: 1
+  - time: 0
+    genTime: 0
+    distace: 60
+    genLocalPosition: {x: 20, y: 0, z: 0}
+    enemyList: 0500000007000000
+    hpMultiply: 1

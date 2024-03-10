@@ -220,17 +220,17 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 20
-  _hp: 20
+  _maxHp: 10
+  _hp: 10
   _maxMental: 100
   <Mental>k__BackingField: 0
-  _speed: 3
+  _speed: 5
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
   <AttackPower>k__BackingField: 0
   _jumpPower: 10
   _isEnableRevive: 0
-  <IsEnableFly>k__BackingField: 0
+  _isEnableFly: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
@@ -300,7 +300,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0.82, z: 0}
-  m_LocalScale: {x: -1, y: 1, z: 1}
+  m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7131186442551501919}
