@@ -72,9 +72,16 @@ public class CameraController : MonoBehaviour
 
         Vector3 destination = playerPosition + _fixedPos + _mouseView;
 
-        if (destination.x < 0 || destination.x > Managers.GetManager<GameManager>().MapSize ) return;
+        if (destination.x < 0)
+        {
+            destination.x = 0;
+        }
+        if (destination.x > Managers.GetManager<GameManager>().MapSize)
+        {
+            destination.x = Managers.GetManager<GameManager>().MapSize;
+        }
 
-        transform.position = Vector3.Lerp(transform.position, playerPosition + _fixedPos + _mouseView, 0.1f);
+            transform.position = Vector3.Lerp(transform.position, destination, 0.1f);
 
     }
 
