@@ -182,11 +182,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _attackDetectRange:
+    center: {x: 0, y: 0.52, z: 0}
+    size: {x: 37.01, y: 15.12, z: 0}
+    figureType: 0
   _attackRange:
-    center: {x: 0.82, y: 0.86, z: 0}
-    size: {x: 3.73, y: 1.86, z: 0}
+    center: {x: 0.07, y: 0.86, z: 0}
+    size: {x: 4.22, y: 1.86, z: 0}
     figureType: 0
   _target: {fileID: 0}
+  _noAttack: 0
   _attackDelay: 3
   _isRangedAttack: 0
   _attackTriggerName: 

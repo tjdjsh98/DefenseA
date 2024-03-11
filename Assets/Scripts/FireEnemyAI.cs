@@ -10,7 +10,7 @@ public class FireEnemyAI : EnemyAI
     [SerializeField]Vector3 _defaultFireDirection = new Vector3(-0.3f, 0.7f, 0f);
     [SerializeField] float _power = 10;
 
-    protected override void CheckTarget()
+    protected override void CheckTargetInAttackRange()
     {
         GameObject go = PredictTrajectory(transform.position, _defaultFireDirection.normalized * _power);
 

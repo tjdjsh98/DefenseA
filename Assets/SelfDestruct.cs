@@ -6,6 +6,7 @@ public class SelfDestruct : MonoBehaviour
 {
     Character _character;
     EnemyAI enemyAI;
+    protected SpriteRenderer _attackRangeSprite;
 
     bool _isStartSelfDestruct;
     float _selfDestructTime;
@@ -18,12 +19,37 @@ public class SelfDestruct : MonoBehaviour
     {
         _character = GetComponent<Character>();
         enemyAI = GetComponent<EnemyAI>();
+
+        if (transform.Find("AttackRange"))
+        {
+            _attackRangeSprite = transform.Find("AttackRange").GetComponent<SpriteRenderer>();
+        }
+        else
+        {
+            _attackRangeSprite = Managers.GetManager<ResourceManager>().Instantiate("AttackRange").GetComponent<SpriteRenderer>();
+            _attackRangeSprite.transform.SetParent(transform);
+            _attackRangeSprite.gameObject.SetActive(false);
+        }
+
         _isStartSelfDestruct = false;
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        Util.DrawRangeOnGizmos(gameObject, _explosionRange, Color.yellow);
     }
 
     private void Update()
     {
-        if(enemyAI.Target!= null) _isStartSelfDestruct = true;
+        if (enemyAI.Target != null && !_isStartSelfDestruct)
+        {
+            _isStartSelfDestruct = true;
+            _character.SetSpeed(10);
+            _attackRangeSprite.color = new Color(1, 0, 0, 0);
+            _attackRangeSprite.transform.localScale = _explosionRange.size;
+            _attackRangeSprite.transform.localPosition = _explosionRange.center;
+            _attackRangeSprite.gameObject.SetActive(true);
+        }
 
 
         if (_isStartSelfDestruct)
@@ -31,11 +57,15 @@ public class SelfDestruct : MonoBehaviour
             if(_selfDestructDuration > _selfDestructTime)
             {
                 _selfDestructTime += Time.deltaTime;
+                Color color = _attackRangeSprite.color;
+                if (_selfDestructDuration != 0)
+                    color.a = _selfDestructTime / _selfDestructDuration;
+                        _attackRangeSprite.color = color;
             }
             else
             {
+                _attackRangeSprite.gameObject.SetActive(false);
                 _selfDestructTime = 0;
-
                 Explosion();
             }
         }

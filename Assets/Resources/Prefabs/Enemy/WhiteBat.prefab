@@ -180,15 +180,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _attackDetectRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    figureType: 0
   _attackRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 30.01, y: 8.12, z: 0}
+    size: {x: 30.01, y: 12.97, z: 0}
     figureType: 0
   _target: {fileID: 0}
+  _noAttack: 0
   _attackDelay: 1
   _isRangedAttack: 1
   _attackTriggerName: 
   _flyHeight: 3.5
+  _flyAttackSpeed: 10
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0

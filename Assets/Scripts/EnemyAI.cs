@@ -7,6 +7,7 @@ public class EnemyAI : MonoBehaviour
     protected Character _character;
     protected Rigidbody2D _rigidbody;
 
+    [SerializeField] protected Define.Range _attackDetectRange;
     [SerializeField]protected Define.Range _attackRange;
 
     [SerializeField] protected Character _target;
@@ -16,6 +17,7 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] bool _noAttack;
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
+    bool _targetInRange;
 
     // 공격하는 중의 딜레이
     protected float _attackingDelay = 2;
@@ -53,17 +55,19 @@ public class EnemyAI : MonoBehaviour
     protected virtual void OnDrawGizmosSelected()
     {
         Util.DrawRangeOnGizmos(gameObject, _attackRange, Color.red);
+        Util.DrawRangeOnGizmos(gameObject, _attackDetectRange, Color.blue);
     }
     void Update()
     {
-        CheckTarget();
+        DetectCharacter();
+        CheckTargetInAttackRange();
         Move();
         PlayAttack();
     }
 
     protected virtual void Move()
     {
-        if (_target != null) return;
+        if (_targetInRange) return;
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
 
@@ -73,16 +77,13 @@ public class EnemyAI : MonoBehaviour
         _character.Move((player.transform.position - transform.position).normalized);
     }
 
-    protected virtual void CheckTarget()
+    protected virtual void DetectCharacter()
     {
-        if (_character.IsAttack) return;
-        if (_character.IsStun) return;
-        if (_target != null) return;
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackDetectRange);
 
-        if(gameObjects.Length > 0 ) 
-        { 
-            foreach(var gameObject in gameObjects)
+        if (gameObjects.Length > 0)
+        {
+            foreach (var gameObject in gameObjects)
             {
                 if (gameObject == this.gameObject) continue;
                 Character character = gameObject.GetComponent<Character>();
@@ -97,7 +98,29 @@ public class EnemyAI : MonoBehaviour
             }
         }
 
-        _target = null;
+    }
+    protected virtual void CheckTargetInAttackRange()
+    {
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
+
+        if(gameObjects.Length > 0 ) 
+        { 
+            foreach(var gameObject in gameObjects)
+            {
+                if (gameObject == this.gameObject) continue;
+                Character character = gameObject.GetComponent<Character>();
+                if (character)
+                {
+                    if (character.CharacterType == Define.CharacterType.Player)
+                    {
+                        _targetInRange = true;
+                        return ;
+                    }
+                }
+            }
+        }
+
+        _targetInRange = false;
     }
 
     protected virtual void PlayAttack()
@@ -110,13 +133,10 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            if (_target == null) return;
-
-            
             if (!_isRangedAttack)
             {
                 // 공격 모션이 따로 있을 때
-                if (!_attackTriggerName.Equals(""))
+                if (!_attackTriggerName.Equals("") && _targetInRange)
                 {
                     _attackedList.Clear();
                     _character.IsEnableMove = false;
@@ -129,7 +149,7 @@ public class EnemyAI : MonoBehaviour
                 // 공격 모션이 따로 없을 때
                 else
                 {
-                    if (_attackingElasepd == 0)
+                    if (_attackingElasepd == 0 && _targetInRange)
                     {
                         _attackedList.Clear();
                         Color color = _attackRangeSprite.color;
@@ -142,7 +162,7 @@ public class EnemyAI : MonoBehaviour
                         _character.IsAttack = true;
                     }
 
-                    if (_attackingDelay > _attackingElasepd)
+                    if (_attackingDelay > _attackingElasepd && _character.IsAttack)
                     {
                         _attackingElasepd += Time.deltaTime;
                         Color color = _attackRangeSprite.color;
@@ -151,8 +171,8 @@ public class EnemyAI : MonoBehaviour
                         _attackRangeSprite.color = color;
 
                     }
-                    else
-                    {
+                    if (_attackingDelay <= _attackingElasepd && _character.IsAttack)
+                            {
                         _attackingElasepd = 0;
                         _attackRangeSprite.gameObject.SetActive(false);
                         OnPlayAttack();

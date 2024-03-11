@@ -166,19 +166,20 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _attackDetectRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 25, y: 25, z: 0}
+    figureType: 0
   _attackRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 2, y: 3, z: 0}
     figureType: 0
   _target: {fileID: 0}
+  _noAttack: 0
   _attackDelay: 3
   _isRangedAttack: 0
   _attackTriggerName: 
   _flyHeight: 7
-  _attackDetectRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 19, y: 24.55, z: 0}
-    figureType: 0
   _flyAttackSpeed: 20
 --- !u!114 &-1096205499464472584
 MonoBehaviour:

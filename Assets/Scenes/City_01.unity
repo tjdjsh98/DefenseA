@@ -12520,6 +12520,18 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 1407228293079910462, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
+      propertyPath: _attackRange.size.x
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1407228293079910462, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
+      propertyPath: _attackRange.size.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 1407228293079910462, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
+      propertyPath: _attackRange.center.y
+      value: 2.5
+      objectReference: {fileID: 0}
     - target: {fileID: 1672530305225436297, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -12560,6 +12572,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4141512292536065471, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
+      propertyPath: m_Size.y
+      value: 4.802545
+      objectReference: {fileID: 0}
+    - target: {fileID: 4141512292536065471, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
+      propertyPath: m_Offset.y
+      value: 2.419213
+      objectReference: {fileID: 0}
     - target: {fileID: 6071519267454476926, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
       propertyPath: m_Name
       value: Mine
@@ -12575,6 +12595,10 @@ PrefabInstance:
     - target: {fileID: 8868825867563598330, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
       propertyPath: _explosionRange.size.y
       value: 8.49
+      objectReference: {fileID: 0}
+    - target: {fileID: 8868825867563598330, guid: 619ec03d8202ef94ab182bf066539628, type: 3}
+      propertyPath: _explosionRange.center.y
+      value: 3.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

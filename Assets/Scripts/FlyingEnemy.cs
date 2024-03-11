@@ -6,7 +6,6 @@ using static UnityEngine.RuleTile.TilingRuleOutput;
 public class FlyingEnemy : EnemyAI
 {
     [SerializeField] protected float _flyHeight;
-    [SerializeField] protected Define.Range _attackDetectRange;
 
     float _normalSpeed;
     [SerializeField] float _flyAttackSpeed = 10;
@@ -20,12 +19,6 @@ public class FlyingEnemy : EnemyAI
     {
         base.Awake();
         _normalSpeed = _character.Speed;
-    }
-
-    protected override void OnDrawGizmosSelected()
-    {
-        base.OnDrawGizmosSelected();
-        Util.DrawRangeOnGizmos(gameObject, _attackDetectRange, Color.blue);
     }
 
 
@@ -54,7 +47,7 @@ public class FlyingEnemy : EnemyAI
         }
         _character.Move(moveDirection*0.5f);
     }
-    protected override void CheckTarget()
+    protected override void DetectCharacter()
     {
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
