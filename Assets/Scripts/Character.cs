@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.Properties;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.TextCore.Text;
@@ -35,6 +36,7 @@ public class Character : MonoBehaviour
     float _recoverHpTime;
     float _recoverHpAmount;
     [SerializeField] float _speed;
+    public float Speed => _speed;
 
     [SerializeField] bool _isGainMentalWhenKillIt;
     [SerializeField] int _gainMentalAmount;
@@ -170,23 +172,30 @@ public class Character : MonoBehaviour
             {
                 if (_isContactGround)
                 {
-                    xSpeed += Time.deltaTime * _groundBreakPower * (xSpeed > 0 ? -1 : 1);
-                    if (xSpeed > 0 && xSpeed +Time.deltaTime * _groundBreakPower * xSpeed < 0)
+                    if (xSpeed > 0 && xSpeed - Time.deltaTime * _groundBreakPower < 0)
                         xSpeed = 0;
-                    if (xSpeed <0 &&  xSpeed + Time.deltaTime * _groundBreakPower * xSpeed > 0)
+                    else if (xSpeed <0 &&  xSpeed + Time.deltaTime * _groundBreakPower > 0)
                         xSpeed = 0;
-
+                    else 
+                        xSpeed += Time.deltaTime * _groundBreakPower * (xSpeed > 0 ? -1 : 1);
                 }
             }
             float ySpeed = _rigidBody.velocity.y;
             if (IsEnableFly)
             {
-                xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
-                if (xSpeed < Time.deltaTime * _airBreakPower * xSpeed)
+                if (xSpeed > 0 && xSpeed - Time.deltaTime * _airBreakPower < 0)
                     xSpeed = 0;
-                ySpeed -= Time.deltaTime * _airBreakPower;
-                if (ySpeed < Time.deltaTime * _groundBreakPower * ySpeed)
+                else if (xSpeed < 0 && xSpeed + Time.deltaTime * _airBreakPower > 0)
+                    xSpeed = 0;
+                else
+                    xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
+
+                if (ySpeed > 0 && ySpeed - Time.deltaTime * _airBreakPower < 0)
                     ySpeed = 0;
+                else if (ySpeed < 0 && xSpeed + Time.deltaTime * _airBreakPower > 0)
+                    ySpeed = 0;
+                else
+                    ySpeed += Time.deltaTime * _airBreakPower * (ySpeed > 0 ? -1 : 1);
             }
             _rigidBody.velocity = new Vector3(xSpeed, ySpeed);
         }
@@ -211,6 +220,9 @@ public class Character : MonoBehaviour
                 _animator?.SetFloat("WalkBlend", Mathf.Clamp(speed/ _speed, -0.4f, 1));
             }
         }
+
+        _animator?.SetFloat("YSpeed", _rigidBody.velocity.y);
+
     }
 
     public void SetHp(int hp)
@@ -218,7 +230,12 @@ public class Character : MonoBehaviour
         _maxHp = hp;
         _hp = hp;
     }
-    
+    public void MulHp(float mul)
+    {
+        _maxHp = Mathf.RoundToInt(_maxHp * mul);
+        _hp = _maxHp;
+    }
+
     public void SetMaxHp(int maxHp) 
     {
         _maxHp = maxHp;
@@ -310,25 +327,23 @@ public class Character : MonoBehaviour
 
             if (IsEnableFly || _isContactGround)
             {
-                if (Mathf.Abs(currentSpeed.x) < Mathf.Abs(_speed))
-                {
+                if (Mathf.Abs(currentSpeed.x + (direction.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) > maxXSpeed)
+                    currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
+                else
                     currentSpeed.x += (direction.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime;
-                    if (Mathf.Abs(currentSpeed.x) > maxXSpeed)
-                        currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
-                }
             }
             if (IsEnableFly)
             {
-                if (Mathf.Abs(currentSpeed.y) < Mathf.Abs(_speed))
+                if (Mathf.Abs(currentSpeed.y + (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime) > maxYSpeed)
+                {
+                    currentSpeed.y = currentSpeed.y > 0 ? maxYSpeed : -maxYSpeed;
+                }
+                else
                 {
                     currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
-                    if (Mathf.Abs(currentSpeed.y) > maxYSpeed)
-                        currentSpeed.y = currentSpeed.y > 0 ? maxYSpeed : -maxYSpeed;
                 }
             }
-
             _rigidBody.velocity = currentSpeed;
-
             _isMove = true;
         }
     }
@@ -349,7 +364,6 @@ public class Character : MonoBehaviour
 
         _rigidBody.AddForce(Vector2.up * _jumpPower,ForceMode2D.Impulse);
 
-        _isContactGround = false;
         _isJump = true;
     }
     public void Jump(Vector3 direction, float power)
@@ -362,7 +376,6 @@ public class Character : MonoBehaviour
     void CheckGround()
     {
         if (_groundCheckRange.size == Vector3.zero) return;
-        if (Mathf.Approximately(_rigidBody.velocity.y,0)) return;
 
         if(!_isContactGround && _rigidBody.velocity.y > 0) return;
         
@@ -372,25 +385,30 @@ public class Character : MonoBehaviour
         {
             _isContactGround = true;
             _isJump = false;
+            AnimatorSetBool("IsContactGround", _isContactGround);
         }
         else
         {
             _isContactGround = false;
+            AnimatorSetBool("IsContactGround", _isContactGround);
         }
-        
+
     }
 
     public void AnimatorSetBool(string name, bool value)
     {
-        _animator?.SetBool(name, value);
+        if(_animator)
+            _animator.SetBool(name, value);
     }
     public void AnimatorSetTrigger(string name)
     {
-        _animator?.SetTrigger(name);
+        if (_animator)
+            _animator.SetTrigger(name);
     }
     public void SetAnimationSpeed(float speed)
     {
-        _animator.speed = speed;
+        if (_animator)
+            _animator.speed = speed;
     }
 
     public void SetAnimationWeight(string layerName, float weight)

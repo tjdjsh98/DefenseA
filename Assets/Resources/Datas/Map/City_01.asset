@@ -44,13 +44,19 @@ MonoBehaviour:
     hpMultiply: 1
   - time: 0
     genTime: 0
-    distace: 50
+    distace: 20
     genLocalPosition: {x: 30, y: 30, z: 0}
-    enemyList: 06000000
+    enemyList: 0600000006000000
     hpMultiply: 1
   - time: 0
     genTime: 0
     distace: 60
     genLocalPosition: {x: 20, y: 0, z: 0}
-    enemyList: 0500000007000000
+    enemyList: 05000000
+    hpMultiply: 1
+  - time: 0
+    genTime: 0
+    distace: 60
+    genLocalPosition: {x: -20, y: 0, z: 0}
+    enemyList: 05000000
     hpMultiply: 1

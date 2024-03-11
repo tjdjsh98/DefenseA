@@ -1,15 +1,19 @@
+using System.Collections.Generic;
 using UnityEditor.Rendering;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
 {
     protected Character _character;
-    
+    protected Rigidbody2D _rigidbody;
+
     [SerializeField]protected Define.Range _attackRange;
 
     [SerializeField] protected Character _target;
+    public Character Target=>_target;
 
     // 공격과 공격사이의 딜레이
+    [SerializeField] bool _noAttack;
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
 
@@ -21,11 +25,13 @@ public class EnemyAI : MonoBehaviour
     public bool IsAutoMove { set; get; } = true;
     [SerializeField] string _attackTriggerName;
 
-    SpriteRenderer _attackRangeSprite;
+    protected SpriteRenderer _attackRangeSprite;
+    protected List<Character> _attackedList = new List<Character>();
 
     protected virtual void Awake()
     {
         _character = GetComponent<Character>();
+        _rigidbody = _character.GetComponent<Rigidbody2D>();
         _character.PlayAttackHandler += OnPlayAttack;
         _character.FinishAttackHandler += FinishAttack;
         _character.CharacterDead += () =>
@@ -44,12 +50,9 @@ public class EnemyAI : MonoBehaviour
         _attackRangeSprite.gameObject.SetActive(false);
     }
 
-    private void OnDrawGizmosSelected()
+    protected virtual void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-        Define.Range range = _attackRange;
-        range.center.x = transform.localScale.x > 0 ? range.center.x : -range.center.x;
-        Gizmos.DrawWireCube(transform.position + range.center, range.size);
+        Util.DrawRangeOnGizmos(gameObject, _attackRange, Color.red);
     }
     void Update()
     {
@@ -99,6 +102,8 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void PlayAttack()
     {
+        if(_noAttack) return;
+
         if (_attackElapsed < _attackDelay)
         {
             _attackElapsed += Time.deltaTime;
@@ -113,17 +118,20 @@ public class EnemyAI : MonoBehaviour
                 // 공격 모션이 따로 있을 때
                 if (!_attackTriggerName.Equals(""))
                 {
+                    _attackedList.Clear();
                     _character.IsEnableMove = false;
                     _character.IsEnableTurn = false;
                     _character.IsAttack = true;
                     _character.TurnBody(_target.transform.position - transform.position);
                     _character.AnimatorSetTrigger(_attackTriggerName);
+                    _attackElapsed = 0;
                 }
                 // 공격 모션이 따로 없을 때
                 else
                 {
                     if (_attackingElasepd == 0)
                     {
+                        _attackedList.Clear();
                         Color color = _attackRangeSprite.color;
                         color.a = 0;
                         _attackRangeSprite.color = color;
@@ -163,7 +171,7 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-     void OnPlayAttack()
+    protected virtual void OnPlayAttack()
     {
         GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 

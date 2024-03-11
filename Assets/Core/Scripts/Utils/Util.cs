@@ -98,17 +98,18 @@ public static class Util
                 hits = Physics2D.RaycastAll(go.transform.position + range.center, range.size, range.size.magnitude, layerMask);
             }
         }
-
         if (hits == null) return null;
 
-        GameObject[] gos = new GameObject[hits.Length];
+        List<GameObject> list = new List<GameObject>();
         for (int i = 0; i < hits.Length; i++)
         {
             if (condition == null || condition.Invoke(hits[i].collider.gameObject))
-                gos[i] = hits[i].collider.gameObject;
+            {
+                list.Add(hits[i].collider.gameObject);
+            }
         }
 
-        return gos;
+        return list.ToArray();
 
     }
 

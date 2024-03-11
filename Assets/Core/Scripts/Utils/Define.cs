@@ -47,6 +47,7 @@ public static class Define
         OctoHead,
         BatGroup,
         FatGuy,
+        Mine,
         END,
     }
 

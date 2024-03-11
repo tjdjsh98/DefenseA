@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using System.Collections;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -73,6 +74,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField]protected float _rebound;
     public float Rebound => _rebound;
+    [SerializeField] protected float _knockBack;
 
     protected float _fireElapsed;
 
@@ -131,11 +133,14 @@ public class Weapon : MonoBehaviour, ITypeDefine
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
         direction = direction.normalized;
+
+        // ¿Ã∆Â∆Æ
         Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
         Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
         fireFlare.Play(_firePosition.transform.position);
         fireFlare.transform.localScale = _firePosition.transform.lossyScale;
         fireFlare.transform.rotation = _firePosition.transform.rotation;
+        // ---------------
 
         GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
         go.transform.position = _firePosition.transform.position;
@@ -147,7 +152,8 @@ public class Weapon : MonoBehaviour, ITypeDefine
             damage = Damage * 3;
         projectile.Init(KnockBackPower, BulletSpeed, damage,Define.CharacterType.Enemy,PenerstratingPower,StunTime);
         projectile.Fire(fireCharacter, direction.normalized);
-       
+
+        Character.Damage(Character, 0, _knockBack, -direction,0);
 
         Player?.Rebound(_rebound);
     }
