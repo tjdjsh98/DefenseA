@@ -67,6 +67,11 @@ public class Character : MonoBehaviour
     public bool IsDead { set; get; }
     bool _isKnockBack;
     bool _isContactGround = false;
+    [field:SerializeField]public bool IsSuperArmer { get; set; }
+
+    public bool IsFaceRight => transform.lossyScale.x > 0;
+    public bool IsInvincibility { set; get; }
+
     public bool IsContactGround => _isContactGround;
     private bool _isJump;
 
@@ -250,6 +255,7 @@ public class Character : MonoBehaviour
     // 최종적으로 가한 데미지를 반환합니다.
     public int Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
     {
+        if (IsInvincibility) return 0;
 
         damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
             Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
@@ -259,7 +265,14 @@ public class Character : MonoBehaviour
 
 
         _hp -= damage;
-        _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);
+
+        if (!IsSuperArmer)
+        {
+            _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);
+            IsStun = true;
+            _stunEleasped = 0;
+            _stunTime = stunTime;
+        }
 
         CharacterDamaged?.Invoke(attacker, damage, power, direction, stunTime);
 
@@ -286,9 +299,7 @@ public class Character : MonoBehaviour
             }
         }
 
-        IsStun = true;
-        _stunEleasped = 0;
-        _stunTime = stunTime;
+   
 
         return damage;
     }

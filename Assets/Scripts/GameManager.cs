@@ -1,6 +1,7 @@
 using MoreMountains.Tools;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.TextCore.Text;
@@ -202,37 +203,30 @@ public class GameManager : ManagerBase
             if (enemy)
             {
                 Character enemyCharacter = enemy.GetComponent<Character>();
+
+                // 체력 설정
                 if (enemy.IsGroup)
                     enemy.GetComponent<EnemyGroup>().SetHp(_timeWaveList[_currentWave].hpMultiply);
                 else
                     enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _timeWaveList[_currentWave].hpMultiply));
 
-                Vector3 randomPosition = Vector3.zero;
-                float distance = 50;
-                if (enemy.EnemyName == Define.EnemyName.BatGroup)
-                {
-                    randomPosition.x = Player.transform.position.x + Random.Range(0, 2) == 0 ? -30 : 30;
-                    randomPosition.y = Player.transform.position.y + 20;
-                }
-                else if (enemyCharacter != null && enemyCharacter.IsEnableFly)
-                {
-                    float angle = 0;
-                    if (Random.Range(0, 2) == 0)
-                        angle = Random.Range(30, 70);
-                    else
-                        angle = Random.Range(110, 150);
 
-                    angle = angle * Mathf.Deg2Rad;
-                    randomPosition.x = Player.transform.position.x + Mathf.Cos(angle) * distance;
-                    randomPosition.y = Player.transform.position.y + Mathf.Sin(angle) * distance;
+                // 위치 설정
+                Vector3 position = Player.transform.position + Vector3.right * 60;
+                Vector3? topPosition = GetGroundTop(position);
+                if(topPosition.HasValue)
+                    position.y = GetGroundTop(position).Value.y;
 
-                }
-                else
+                if (enemyCharacter.IsEnableFly)
                 {
-                    randomPosition.x = Player.transform.position.x + distance;
-                    randomPosition.y = _map.YPosition + 1;
+                    FlyingEnemy flyingEnemy = enemyCharacter.GetComponent<FlyingEnemy>();
+                    if (flyingEnemy)
+                        position.y += flyingEnemy.FlyingHeight;
                 }
-                enemy.transform.position = randomPosition;
+
+                enemyCharacter.transform.position = position;
+
+                // 맵 적 스폰추가
                 if (enemy)
                     _enemySpawnList.Add(enemy.gameObject);
             }
@@ -368,6 +362,16 @@ public class GameManager : ManagerBase
         _cardSelectionCount.TryGetValue(cardSelection, out count);
 
         return count;
+    }
+
+    public Vector3? GetGroundTop(Vector3 position)
+    {
+        position.y = 50;
+        RaycastHit2D hit = Physics2D.Raycast(position, Vector2.down, 500, LayerMask.GetMask("Ground"));
+
+        if (hit.collider == null) return null;
+
+        return hit.point;
     }
 }
 

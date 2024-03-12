@@ -200,7 +200,7 @@ BoxCollider2D:
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
-  m_Offset: {x: 0.111195326, y: 0.89498854}
+  m_Offset: {x: 0.111195326, y: 2.419213}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0, y: 0}
@@ -211,7 +211,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 4.9899592, y: 1.7540956}
+  m_Size: {x: 4.9899592, y: 4.802545}
   m_EdgeRadius: 0
 --- !u!50 &7114567978768896219
 Rigidbody2D:
@@ -315,8 +315,8 @@ MonoBehaviour:
     size: {x: 30, y: 20, z: 0}
     figureType: 0
   _attackRange:
-    center: {x: 0, y: 0.86, z: 0}
-    size: {x: 30, y: 20, z: 0}
+    center: {x: 0, y: 2.5, z: 0}
+    size: {x: 5, y: 5, z: 0}
     figureType: 0
   _target: {fileID: 0}
   _noAttack: 1
@@ -336,7 +336,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _explosionRange:
-    center: {x: 0, y: 0, z: 0}
+    center: {x: 0, y: 3.5, z: 0}
     size: {x: 15.15, y: 8.49, z: 0}
     figureType: 0
   _selfDestructDuration: 3

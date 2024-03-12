@@ -48,6 +48,8 @@ public static class Define
         BatGroup,
         FatGuy,
         Mine,
+        Boar,
+        UpEnemy,
         END,
     }
 
@@ -183,6 +185,7 @@ public static class Define
     {
         public Vector3 center;
         public Vector3 size;
+        public float angle;
         public FigureType figureType;
     }
 

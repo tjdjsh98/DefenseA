@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using UnityEngine;
+using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public static class Util
 {
@@ -24,20 +25,25 @@ public static class Util
 
         RaycastHit2D hit = new RaycastHit2D();
 
+        float originAngle = Mathf.Atan2(range.center.y, range.center.x);
+        Vector3 rangePosition = Vector3.zero;
+        rangePosition.x = range.center.magnitude * Mathf.Cos(range.angle * Mathf.Deg2Rad + originAngle);
+        rangePosition.y = range.center.magnitude * Mathf.Sin(range.angle * Mathf.Deg2Rad + originAngle);
         // 레이어 마스크사용 안함
         if (layerMask == -1)
         {
+
             if (range.figureType == Define.FigureType.Box)
             {
-                hit = Physics2D.BoxCast(go.transform.position + range.center, range.size, 0, Vector2.zero, 0);
+                hit = Physics2D.BoxCast(go.transform.position + rangePosition, range.size, range.angle, Vector2.zero, 0);
             }
             else if (range.figureType == Define.FigureType.Circle)
             {
-                hit = Physics2D.CircleCast(go.transform.position + range.center, range.size.x, Vector2.zero);
+                hit = Physics2D.CircleCast(go.transform.position + rangePosition, range.size.x, Vector2.zero);
             }
             else if (range.figureType == Define.FigureType.Raycast)
             {
-                hit = Physics2D.Raycast(go.transform.position + range.center, range.size, range.size.magnitude);
+                hit = Physics2D.Raycast(go.transform.position + rangePosition, range.size, range.size.magnitude);
             }
         }
         // 레이어 마스크 사용
@@ -45,15 +51,15 @@ public static class Util
         {
             if (range.figureType == Define.FigureType.Box)
             {
-                hit = Physics2D.BoxCast(go.transform.position + range.center, range.size, 0, Vector2.zero, 0, layerMask);
+                hit = Physics2D.BoxCast(go.transform.position + rangePosition, range.size, range.angle, Vector2.zero, 0, layerMask);
             }
             else if (range.figureType == Define.FigureType.Circle)
             {
-                hit = Physics2D.CircleCast(go.transform.position + range.center, range.size.x, Vector2.zero, 0, layerMask);
+                hit = Physics2D.CircleCast(go.transform.position + rangePosition, range.size.x, Vector2.zero, 0, layerMask);
             }
             else if (range.figureType == Define.FigureType.Raycast)
             {
-                hit = Physics2D.Raycast(go.transform.position + range.center, range.size, range.size.magnitude, layerMask);
+                hit = Physics2D.Raycast(go.transform.position + rangePosition, range.size, range.size.magnitude, layerMask);
             }
         }
 
@@ -66,20 +72,24 @@ public static class Util
 
         RaycastHit2D[] hits = null;
 
+        float originAngle = Mathf.Atan2(range.center.y, range.center.x);
+        Vector3 rangePosition = Vector3.zero;
+        rangePosition.x = range.center.magnitude * Mathf.Cos(range.angle * Mathf.Deg2Rad + originAngle);
+        rangePosition.y = range.center.magnitude * Mathf.Sin(range.angle * Mathf.Deg2Rad + originAngle);
         // 레이어 마스크사용 안함
         if (layerMask == -1)
         {
             if (range.figureType == Define.FigureType.Box)
             {
-                hits = Physics2D.BoxCastAll(go.transform.position + range.center, range.size, 0, Vector2.zero, 0);
+                hits = Physics2D.BoxCastAll(go.transform.position + rangePosition, range.size, range.angle, Vector2.zero, 0);
             }
             else if (range.figureType == Define.FigureType.Circle)
             {
-                hits = Physics2D.CircleCastAll(go.transform.position + range.center, range.size.x, Vector2.zero);
+                hits = Physics2D.CircleCastAll(go.transform.position + rangePosition, range.size.x, Vector2.zero);
             }
             else if (range.figureType == Define.FigureType.Raycast)
             {
-                hits = Physics2D.RaycastAll(go.transform.position + range.center, range.size);
+                hits = Physics2D.RaycastAll(go.transform.position + rangePosition, range.size);
             }
         }
         // 레이어 마스크 사용
@@ -87,15 +97,16 @@ public static class Util
         {
             if (range.figureType == Define.FigureType.Box)
             {
-                hits = Physics2D.BoxCastAll(go.transform.position + range.center, range.size, 0, Vector2.zero, 0, layerMask);
+                hits = Physics2D.BoxCastAll(go.transform.position + rangePosition, range.size, range.angle, Vector2.zero, 0, layerMask);
             }
             else if (range.figureType == Define.FigureType.Circle)
             {
-                hits = Physics2D.CircleCastAll(go.transform.position + range.center, range.size.x, Vector2.zero, 0, layerMask);
+                hits = Physics2D.CircleCastAll(go.transform.position + rangePosition, range.size.x, Vector2.zero, 0, layerMask);
             }
             else if (range.figureType == Define.FigureType.Raycast)
             {
-                hits = Physics2D.RaycastAll(go.transform.position + range.center, range.size, range.size.magnitude, layerMask);
+
+                hits = Physics2D.RaycastAll(go.transform.position + rangePosition, range.size, range.size.magnitude, layerMask);
             }
         }
         if (hits == null) return null;
@@ -121,13 +132,23 @@ public static class Util
     public static void DrawRangeOnGizmos(GameObject go, Define.Range range, Color color)
     {
         Gizmos.color = color;
+        if (go.transform.localScale.x < 0)
+            range.center.x = -range.center.x;
+
+        Matrix4x4 matrix = Matrix4x4.TRS(go.transform.position, Quaternion.Euler(0, 0, range.angle), go.transform.lossyScale);
+        Gizmos.matrix = matrix;
+
+        if (go.transform.localScale.x < 0)
+            range.center.x = -range.center.x;
 
         if (range.figureType == Define.FigureType.Box)
-            Gizmos.DrawWireCube(go.transform.position + range.center, range.size);
+            Gizmos.DrawWireCube(range.center, range.size);
         if (range.figureType == Define.FigureType.Circle)
-            Gizmos.DrawWireSphere(go.transform.position + range.center, range.size.x);
+            Gizmos.DrawWireSphere(range.center, range.size.x);
         if (range.figureType == Define.FigureType.Raycast)
-            Gizmos.DrawRay(go.transform.position + range.center, range.size);
+            Gizmos.DrawRay(range.center, range.size);
+
+        Gizmos.matrix = Matrix4x4.identity;
     }
 
     public static float PreviewPercentage(float orginValue, float currentPercentage, float increasedPercentage)

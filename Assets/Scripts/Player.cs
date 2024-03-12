@@ -47,6 +47,9 @@ public class Player : MonoBehaviour
     [SerializeField]float _reboundRecoverPower = 20f;
     public float ReboundRecoverPower => IncreasedReboundRecoverPercent > 0 ? _reboundRecoverPower * (1 + IncreasedReboundRecoverPercent / 100) : _reboundRecoverPower / (1 - IncreasedReboundRecoverPercent / 100);
     bool _isRiding;
+    // 슬라이딩
+    float _slidingTime;
+    float _invincibilityDuration = 0.5f;
 
     // 추가적인 능력
     public int IncreasedPenerstratingPower { set; get; } = 0;
@@ -215,21 +218,32 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.LeftControl))
             {
-                bool isRight = _character.MySpeed.x > 0;
-                if(isRight)
-                    _character.TurnBody(isRight ? Vector3.right : Vector3.left);
+                
+                bool isRight = _rigidbody.velocity.x > 0;
+                _character.TurnBody(isRight ? Vector3.right : Vector3.left);
                 _rigidbody.AddForce(Vector2.right * 150 * (isRight ? 1 : -1), ForceMode2D.Impulse);
                 _isSliding = true;
+                _character.IsInvincibility = true;
+                _character.IsEnableTurn = false;
                 _character.IsEnableMove = false;
                 _character.AnimatorSetBool("Sliding", _isSliding);
+                _slidingTime = 0;
             }
         }
         else
         {
+            _slidingTime += Time.deltaTime;
+            if (_invincibilityDuration < _slidingTime)
+            {
+                _character.IsInvincibility = false;
+            }
+
             if (Mathf.Abs(_rigidbody.velocity.x) < 0.1f)
             {
                 _isSliding = false;
+                _character.IsInvincibility = false;
                 _character.IsEnableMove = true;
+                _character.IsEnableTurn = true;
                 _character.AnimatorSetBool("Sliding", _isSliding);
             }
         }

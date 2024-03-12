@@ -7,8 +7,11 @@ public class EnemyAI : MonoBehaviour
     protected Character _character;
     protected Rigidbody2D _rigidbody;
 
-    [SerializeField] protected Define.Range _attackDetectRange;
+    [SerializeField] protected Define.Range _targetDetectRange;
+    [SerializeField]protected Define.Range _enableAttackRange;
+    public Define.Range EnableAttackRange => _enableAttackRange;
     [SerializeField]protected Define.Range _attackRange;
+    public Define.Range AttackRange => _attackRange;
 
     [SerializeField] protected Character _target;
     public Character Target=>_target;
@@ -17,14 +20,14 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] bool _noAttack;
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
-    bool _targetInRange;
+    protected bool _targetInRange;
 
     // 공격하는 중의 딜레이
     protected float _attackingDelay = 2;
     protected float _attackingElasepd = 0;
 
     [SerializeField] bool _isRangedAttack;
-    public bool IsAutoMove { set; get; } = true;
+    [field:SerializeField] public bool IsAutoMove { set; get; } = true;
     [SerializeField] string _attackTriggerName;
 
     protected SpriteRenderer _attackRangeSprite;
@@ -55,11 +58,12 @@ public class EnemyAI : MonoBehaviour
     protected virtual void OnDrawGizmosSelected()
     {
         Util.DrawRangeOnGizmos(gameObject, _attackRange, Color.red);
-        Util.DrawRangeOnGizmos(gameObject, _attackDetectRange, Color.blue);
+        Util.DrawRangeOnGizmos(gameObject, _enableAttackRange, Color.green);
+        Util.DrawRangeOnGizmos(gameObject, _targetDetectRange, Color.blue);
     }
     void Update()
     {
-        DetectCharacter();
+        DetectTarget();
         CheckTargetInAttackRange();
         Move();
         PlayAttack();
@@ -77,9 +81,9 @@ public class EnemyAI : MonoBehaviour
         _character.Move((player.transform.position - transform.position).normalized);
     }
 
-    protected virtual void DetectCharacter()
+    protected virtual void DetectTarget()
     {
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackDetectRange);
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _targetDetectRange);
 
         if (gameObjects.Length > 0)
         {
@@ -101,21 +105,22 @@ public class EnemyAI : MonoBehaviour
     }
     protected virtual void CheckTargetInAttackRange()
     {
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
+        if (_target == null)
+        {
+            _targetInRange = false;
+            return;
+        }
+
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _enableAttackRange);
 
         if(gameObjects.Length > 0 ) 
         { 
             foreach(var gameObject in gameObjects)
             {
-                if (gameObject == this.gameObject) continue;
-                Character character = gameObject.GetComponent<Character>();
-                if (character)
+                if (_target.gameObject == gameObject)
                 {
-                    if (character.CharacterType == Define.CharacterType.Player)
-                    {
-                        _targetInRange = true;
-                        return ;
-                    }
+                    _targetInRange = true;
+                    return;
                 }
             }
         }

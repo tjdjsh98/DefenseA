@@ -40,10 +40,6 @@ public class EnemySpawner : MonoBehaviour
 
         if(gos.Length > 0)
         {
-            foreach(var go in gos)
-            {
-                Debug.Log(go);
-            }
             foreach (var data in _spawnDataList)
                 StartCoroutine(CorSpawnEnemey(data));
             _isSpawn = true;
