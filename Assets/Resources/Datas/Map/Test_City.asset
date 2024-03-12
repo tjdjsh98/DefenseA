@@ -1,0 +1,26 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8c11d98e6ff59b549b0c614037e907f9, type: 3}
+  m_Name: Test_City
+  m_EditorClassIdentifier: 
+  sceneName: City_01
+  mentalDownTime: 180
+  buildingNameList: []
+  moreBackBuildingNameList: []
+  timeWave:
+  - time: 0
+    genTime: 3
+    distace: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 000000000100000002000000000000000300000004000000080000000700000005000000
+    hpMultiply: 1
+  distanceWave: []

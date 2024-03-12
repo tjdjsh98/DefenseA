@@ -12,9 +12,9 @@ GameObject:
   - component: {fileID: 2001862777640968701}
   - component: {fileID: 4330924401004467543}
   - component: {fileID: 4413086375596073726}
-  - component: {fileID: 721163610294590693}
   - component: {fileID: -993404685145601219}
   - component: {fileID: -4507659182994723316}
+  - component: {fileID: -2398554618650049096}
   m_Layer: 6
   m_Name: FlyOcto
   m_TagString: Untagged
@@ -123,7 +123,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 8
+  _maxHp: 15
   _hp: 0
   _maxMental: 100
   <Mental>k__BackingField: 0
@@ -139,36 +139,11 @@ MonoBehaviour:
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    angle: 0
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
+  <IsSuperArmer>k__BackingField: 0
   _hpBar: {fileID: 0}
---- !u!114 &721163610294590693
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1338747963396321650}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  _attackDetectRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 39.78, y: 4.86, z: 0}
-    figureType: 0
-  _attackRange:
-    center: {x: 0, y: 0.13, z: 0}
-    size: {x: 5.01, y: 4.85, z: 0}
-    figureType: 0
-  _target: {fileID: 0}
-  _noAttack: 0
-  _attackDelay: 1
-  _isRangedAttack: 0
-  _attackTriggerName: 
-  _flyHeight: 8
-  _flyAttackSpeed: 10
 --- !u!210 &-993404685145601219
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -195,6 +170,39 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyName: 3
   <IsGroup>k__BackingField: 0
+--- !u!114 &-2398554618650049096
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338747963396321650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _targetDetectRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 40, y: 40, z: 0}
+    angle: 0
+    figureType: 0
+  _enableAttackRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 1, y: 1, z: 0}
+    angle: 0
+    figureType: 0
+  _attackRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 5, y: 5, z: 0}
+    angle: 0
+    figureType: 0
+  _target: {fileID: 0}
+  _noAttack: 0
+  _attackDelay: 1
+  _isRangedAttack: 0
+  <IsAutoMove>k__BackingField: 1
+  _attackTriggerName: 
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0

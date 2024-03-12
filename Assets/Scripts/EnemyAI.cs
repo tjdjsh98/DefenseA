@@ -76,15 +76,24 @@ public class EnemyAI : MonoBehaviour
         if (_character.IsStun) return;
 
         if (!IsAutoMove) return;
-        Player player = Managers.GetManager<GameManager>().Player;
-        if(player == null) return;
-        _character.Move((player.transform.position - transform.position).normalized);
+        if (_target == null)
+        {
+            Player player = Managers.GetManager<GameManager>().Player;
+            if (player == null) return;
+            _character.Move((player.transform.position - transform.position).normalized);
+        }else
+        {
+            _character.Move((_target.transform.position - transform.position).normalized);
+        }
     }
 
     protected virtual void DetectTarget()
     {
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _targetDetectRange);
+        if (_character.IsAttack) return;
 
+        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
+
+        Character closeOne = null;
         if (gameObjects.Length > 0)
         {
             foreach (var gameObject in gameObjects)
@@ -95,12 +104,15 @@ public class EnemyAI : MonoBehaviour
                 {
                     if (character.CharacterType == Define.CharacterType.Player)
                     {
-                        _target = character;
-                        return;
+                        if (closeOne == null || (transform.position - closeOne.transform.position).magnitude > (transform.position - character.transform.position).magnitude)
+                        {
+                            closeOne = character;
+                        }
                     }
                 }
             }
         }
+        _target = closeOne;
 
     }
     protected virtual void CheckTargetInAttackRange()
@@ -177,7 +189,7 @@ public class EnemyAI : MonoBehaviour
 
                     }
                     if (_attackingDelay <= _attackingElasepd && _character.IsAttack)
-                            {
+                    {
                         _attackingElasepd = 0;
                         _attackRangeSprite.gameObject.SetActive(false);
                         OnPlayAttack();

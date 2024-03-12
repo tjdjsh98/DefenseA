@@ -50,6 +50,7 @@ public static class Define
         Mine,
         Boar,
         UpEnemy,
+        PartTestEnemy,
         END,
     }
 

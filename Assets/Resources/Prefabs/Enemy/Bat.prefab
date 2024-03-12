@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 3
+  _maxHp: 10
   _hp: 0
   _maxMental: 100
   <Mental>k__BackingField: 0
@@ -151,8 +151,10 @@ MonoBehaviour:
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    angle: 0
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
+  <IsSuperArmer>k__BackingField: 0
   _hpBar: {fileID: 0}
 --- !u!114 &2113099806782836820
 MonoBehaviour:
@@ -166,20 +168,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _attackDetectRange:
+  _targetDetectRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 25, y: 25, z: 0}
+    size: {x: 40, y: 25, z: 0}
+    angle: 0
+    figureType: 0
+  _enableAttackRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 40, y: 25, z: 0}
+    angle: 0
     figureType: 0
   _attackRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 2, y: 3, z: 0}
+    angle: 0
     figureType: 0
   _target: {fileID: 0}
   _noAttack: 0
   _attackDelay: 3
   _isRangedAttack: 0
+  <IsAutoMove>k__BackingField: 1
   _attackTriggerName: 
-  _flyHeight: 7
+  _flyHeight: 10
   _flyAttackSpeed: 20
 --- !u!114 &-1096205499464472584
 MonoBehaviour:

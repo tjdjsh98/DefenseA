@@ -1,6 +1,7 @@
 using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
 using UnityEngine.Assertions.Must;
 using UnityEngine.Rendering;
@@ -82,26 +83,35 @@ public class Projectile : MonoBehaviour
 
             _attackCharacterList.Add(hit.collider.gameObject);
 
-            Character character = null;
-            if (character = hit.collider.GetComponent<Character>())
+            IHp hpComponent = hit.collider.GetComponent<IHp>();
+            if (hpComponent != null)
             {
-                if (character.Hp > 0 && character.CharacterType == _enableAttackCharacterType)
+                Character character = hpComponent as Character;
+                CharacterPart characterPart = hpComponent as CharacterPart;
+
+                if (characterPart != null)
+                    character = characterPart.Character;
+
+                if (character)
                 {
-
-                    _direction = _direction.normalized;
-                    _attacker.Attack(character, _damage, _knockbackPower, _direction,_stunTime);
-                    Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit3);
-                    Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
-                    hitEffect.SetProperty("Direction", direction);
-                    hitEffect.Play(transform.position);
-                 
-                    _penerstrateCount++;
-
-                    if (_penerstrateCount > _penerstratingPower)
+                    if (character.Hp > 0 && character.CharacterType == _enableAttackCharacterType)
                     {
-                        Managers.GetManager<ResourceManager>().Destroy(gameObject);
-                        _isAttack = true;
-                        return;
+
+                        _direction = _direction.normalized;
+                        _attacker.Attack(characterPart? characterPart:character, _damage, _knockbackPower, _direction, _stunTime);
+                        Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit3);
+                        Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
+                        hitEffect.SetProperty("Direction", direction);
+                        hitEffect.Play(transform.position);
+
+                        _penerstrateCount++;
+
+                        if (_penerstrateCount > _penerstratingPower)
+                        {
+                            Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                            _isAttack = true;
+                            return;
+                        }
                     }
                 }
             }

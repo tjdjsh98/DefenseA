@@ -1,15 +1,9 @@
 using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
-using System.Collections.Generic;
-using Unity.Properties;
-using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Rendering;
-using UnityEngine.TextCore.Text;
 
-public class Character : MonoBehaviour
+public class Character : MonoBehaviour,IHp
 {
     Rigidbody2D _rigidBody;
     BoxCollider2D _boxCollider;
@@ -253,9 +247,11 @@ public class Character : MonoBehaviour
 
 
     // 최종적으로 가한 데미지를 반환합니다.
-    public int Damage(Character attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    public int Damage(IHp attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
     {
         if (IsInvincibility) return 0;
+
+        Character attackerCharacter = attacker as Character;
 
         damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
             Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
@@ -274,14 +270,14 @@ public class Character : MonoBehaviour
             _stunTime = stunTime;
         }
 
-        CharacterDamaged?.Invoke(attacker, damage, power, direction, stunTime);
+        CharacterDamaged?.Invoke(attackerCharacter, damage, power, direction, stunTime);
 
         if (_hp <= 0)
         {
             CharacterDead?.Invoke();
             if (_isGainMentalWhenKillIt)
             {
-                attacker.Mental += _gainMentalAmount;
+                attackerCharacter.Mental += _gainMentalAmount;
             }
 
             if (!_isEnableRevive)
@@ -304,12 +300,12 @@ public class Character : MonoBehaviour
         return damage;
     }
 
-    public int Attack(Character target, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    public int Attack(IHp target, int damage, float power, Vector3 direction, float stunTime = 0.1f)
     {
         if (target == null) return 0;
 
         int resultDamage = target.Damage(this,damage, power, direction, stunTime);
-        AttackHandler?.Invoke(target,resultDamage);
+        AttackHandler?.Invoke(target as Character,resultDamage);
 
         return resultDamage;
     }
@@ -474,6 +470,8 @@ public class Character : MonoBehaviour
 
     public Define.Range GetSize()
     {
+        if (_boxCollider == null)
+            _boxCollider = GetComponent<BoxCollider2D>();
         Define.Range size = new Define.Range()
         {
             center = _boxCollider ? _boxCollider.offset : _capsuleCollider ? _capsuleCollider.offset : Vector3.zero,

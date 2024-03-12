@@ -24,12 +24,13 @@ public class SpiderAttack : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _lineRenderer = GetComponentInChildren<LineRenderer>();
         _attackRange = _character.GetSize();
+        Debug.Log(_attackRange.center + " " + _attackRange.size);
     }
 
 
     void Update()
     {
-        if(_isJumpAttack )
+        if(_isJumpAttack)
         {
             GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 
@@ -43,6 +44,10 @@ public class SpiderAttack : MonoBehaviour
                 {
                     _character.Attack(character,1,10,_rigidbody.velocity);
                 }
+            }
+            if (_character.IsContactGround)
+            {
+                EndJumpAttack();
             }
         }
 
@@ -65,10 +70,9 @@ public class SpiderAttack : MonoBehaviour
         _character.Jump(_fireDirection, _jumpPower);
         _isJumpAttack= true;
         _attackList.Clear();
-        Invoke("After", 2);
     }
 
-    void After()
+    void EndJumpAttack()
     {
         _character.IsAttack =false;
         _isJumpAttack = false;
