@@ -51,6 +51,7 @@ public static class Define
         Boar,
         UpEnemy,
         PartTestEnemy,
+        Spore,
         END,
     }
 

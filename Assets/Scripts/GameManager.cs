@@ -78,8 +78,8 @@ public class GameManager : ManagerBase
     // 적 소환 관련 변수
     [Header("적관련변수")]
     List<GameObject> _enemySpawnList = new List<GameObject>();
-    [SerializeField] List<Wave> _timeWaveList;
-    [SerializeField] List<Wave> _distanceWaveList;
+    List<Wave> _timeWaveList;
+    List<Wave> _distanceWaveList;
 
     [SerializeField] int _currentWave = 0;
     public int CurrentWave => _currentWave;

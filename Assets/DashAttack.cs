@@ -40,6 +40,7 @@ public class DashAttack : MonoBehaviour
             _character.SetSpeed(_dashSpeed);
             _isStartDash = true;
             _dashDirection = _enemyAI.Target.transform.position - transform.position;
+            _character.IsSuperArmer = true;
         }
 
         if(_isStartDash)
@@ -70,6 +71,7 @@ public class DashAttack : MonoBehaviour
                 _isStartDash = false;
                 _dashCoolTimeElased = 0;
                 _character.IsAttack = false;
+                _character.IsSuperArmer = false;
             }
         }
     }

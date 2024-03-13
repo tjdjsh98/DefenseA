@@ -17,7 +17,7 @@ public class EnemyAI : MonoBehaviour
     public Character Target=>_target;
 
     // 공격과 공격사이의 딜레이
-    [SerializeField] bool _noAttack;
+    [SerializeField] protected bool _noAttack;
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
     protected bool _targetInRange;
@@ -39,7 +39,7 @@ public class EnemyAI : MonoBehaviour
         _rigidbody = _character.GetComponent<Rigidbody2D>();
         _character.PlayAttackHandler += OnPlayAttack;
         _character.FinishAttackHandler += FinishAttack;
-        _character.CharacterDead += () =>
+        _character.CharacterDeadHandler += () =>
         {
             Managers.GetManager<GameManager>().Exp += 1;
         };
@@ -93,6 +93,7 @@ public class EnemyAI : MonoBehaviour
 
         GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
 
+        float distance = 0;
         Character closeOne = null;
         if (gameObjects.Length > 0)
         {
@@ -104,9 +105,10 @@ public class EnemyAI : MonoBehaviour
                 {
                     if (character.CharacterType == Define.CharacterType.Player)
                     {
-                        if (closeOne == null || (transform.position - closeOne.transform.position).magnitude > (transform.position - character.transform.position).magnitude)
+                        if (closeOne == null || distance > (transform.position - character.transform.position).magnitude)
                         {
                             closeOne = character;
+                            distance= (transform.position - closeOne.transform.position).magnitude;
                         }
                     }
                 }

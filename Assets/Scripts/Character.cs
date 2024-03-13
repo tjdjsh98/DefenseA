@@ -31,6 +31,8 @@ public class Character : MonoBehaviour,IHp
     float _recoverHpAmount;
     [SerializeField] float _speed;
     public float Speed => _speed;
+    [SerializeField] float _standing;
+    public float Standing => _standing;
 
     [SerializeField] bool _isGainMentalWhenKillIt;
     [SerializeField] int _gainMentalAmount;
@@ -78,7 +80,7 @@ public class Character : MonoBehaviour,IHp
     // 핸들러
     public Action PlayAttackHandler;
     public Action FinishAttackHandler;
-    public Action CharacterDead;
+    public Action CharacterDeadHandler;
     public Action<Character,int> AttackHandler; // 공격한 적, 데미지
     public Action<Character, int, float, Vector3, float> CharacterDamaged { set; get; }
 
@@ -264,7 +266,9 @@ public class Character : MonoBehaviour,IHp
 
         if (!IsSuperArmer)
         {
-            _rigidBody.AddForce(direction.normalized * power, ForceMode2D.Impulse);
+            float knockBack = power;
+            knockBack *= (1 - _standing/100f);
+            _rigidBody.AddForce(direction.normalized * knockBack, ForceMode2D.Impulse);
             IsStun = true;
             _stunEleasped = 0;
             _stunTime = stunTime;
@@ -274,7 +278,7 @@ public class Character : MonoBehaviour,IHp
 
         if (_hp <= 0)
         {
-            CharacterDead?.Invoke();
+            CharacterDeadHandler?.Invoke();
             if (_isGainMentalWhenKillIt)
             {
                 attackerCharacter.Mental += _gainMentalAmount;
@@ -463,6 +467,29 @@ public class Character : MonoBehaviour,IHp
         return center;
     }
 
+    public Vector3 GetTop()
+    {
+        Vector3 center = Vector3.zero;
+
+        center += transform.position;
+
+        if (_capsuleCollider != null)
+        {
+            center.x += _capsuleCollider.offset.x;
+            center.y += _capsuleCollider.size.y;
+        }
+        if (_boxCollider != null)
+        {
+            center.x += _boxCollider.offset.x;
+            center.y += _boxCollider.size.y;
+        }
+
+        return center;
+    }
+
+
+
+
     public void SetVelocityForcibly(Vector3 velocity)
     {
         _rigidBody.velocity = velocity;
@@ -482,7 +509,12 @@ public class Character : MonoBehaviour,IHp
         return size;
     }
 
-  
+  public void SetStanding(float standing)
+    {
+        if (standing > 100)
+            standing = 100;
+        _standing = standing;
+    }
 
     public void Revive()
     {

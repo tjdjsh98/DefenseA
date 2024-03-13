@@ -1,15 +1,15 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using static UnityEngine.RuleTile.TilingRuleOutput;
+using Random = UnityEngine.Random;
 
 public class FlyingEnemy : EnemyAI
 {
     [SerializeField] protected float _flyHeight;
     public float FlyingHeight => _flyHeight;
+    [SerializeField] protected float _flyRange;
     float _normalSpeed;
     [SerializeField] float _flyAttackSpeed = 10;
-    
+
     
     private Vector3 _flyAttackDirection;
 
@@ -18,6 +18,8 @@ public class FlyingEnemy : EnemyAI
     {
         base.Awake();
         _normalSpeed = _character.Speed;
+
+        _flyHeight += Random.Range(-_flyRange, _flyRange);
     }
 
 
@@ -34,7 +36,13 @@ public class FlyingEnemy : EnemyAI
             Player player = Managers.GetManager<GameManager>().Player;
             if (player == null) return;
 
-            moveDirection.x = player.transform.position.x - transform.position.x;
+            float targetPositionX = player.transform.position.x;
+            targetPositionX += transform.position.x < player.transform.position.x ? -_targetDetectRange.size.x / 3 : _targetDetectRange.size.x / 3;
+
+            if (Mathf.Abs(targetPositionX - transform.position.x) < 2)
+                moveDirection.x = 0;
+            else
+                moveDirection.x = targetPositionX - transform.position.x;
             if (transform.position.y - player.transform.position.y > _flyHeight)
             {
                 moveDirection.y = -1;
@@ -49,7 +57,13 @@ public class FlyingEnemy : EnemyAI
         }
         else
         {
-            moveDirection.x = _target.transform.position.x - transform.position.x;
+            float targetPositionX = _target.transform.position.x;
+            targetPositionX += transform.position.x < _target.transform.position.x ? -_targetDetectRange.size.x / 3 : _targetDetectRange.size.x / 3;
+
+            if (Mathf.Abs(targetPositionX - transform.position.x) < 2)
+                moveDirection.x = 0;
+            else
+                moveDirection.x = targetPositionX - transform.position.x;   
             if (transform.position.y - _target.transform.position.y > _flyHeight)
             {
                 moveDirection.y = -1;
@@ -62,7 +76,6 @@ public class FlyingEnemy : EnemyAI
                     moveDirection.y = _target.transform.position.y + _flyHeight - transform.position.y;
             }
         }
-        if (_targetInRange) moveDirection.x =0;
 
         _character.Move(moveDirection);
     }
@@ -95,28 +108,44 @@ public class FlyingEnemy : EnemyAI
 
     protected override void PlayAttack()
     {
+        if (_noAttack) return;
+
         if (_attackElapsed < _attackDelay)
         {
             _attackElapsed += Time.deltaTime;
         }
         else
         {
+            // 공격 종료
+            if(_target == null || (_character.IsAttack && transform.position.y >= _target.transform.position.y + _flyHeight))
+            {
+                _character.SetSpeed(_normalSpeed);
+                _attackElapsed = 0;
+                _character.IsEnableTurn = true;
+                _target = null;
+                _character.IsAttack = false;
+                _character.IsSuperArmer = false;
+                return;
+
+            }
+            // 공격 시작
             if (!_character.IsAttack &&_target && Mathf.Abs(transform.position.y - (_target.transform.position.y + _flyHeight)) <= 1f && _targetInRange)
             {
                 _character.SetSpeed(_flyAttackSpeed);
                 _attackedList.Clear();
-                _flyAttackDirection = (_target.GetCenter() - _character.GetCenter()).normalized;
+                _flyAttackDirection = (_target.GetTop() - _character.GetCenter()).normalized;
                 _character.IsEnableTurn = false;
                 _character.IsAttack = true;
+                _character.IsSuperArmer = true;
+
             }
+            // 공격 중
             if (_character.IsAttack&&transform.position.y < (_target.transform.position.y + _flyHeight))
             {
                 if (_flyAttackDirection.x > 0)
                 {
                     if (_target.transform.position.x < transform.position.x)
                     {
-
-                        _flyAttackDirection.x = 1;
                         _flyAttackDirection.y = Mathf.Abs(_flyAttackDirection.y);
                     }
                 }
@@ -125,22 +154,13 @@ public class FlyingEnemy : EnemyAI
                     if (_target.transform.position.x > transform.position.x)
                     {
 
-                        _flyAttackDirection.x = -1;
                         _flyAttackDirection.y = Mathf.Abs(_flyAttackDirection.y);
                     }
                 }
                 _character.Move(_flyAttackDirection);
                 OnPlayAttack();
             }
-            else if(_character.IsAttack&&transform.position.y >= _target.transform.position.y + _flyHeight )
-            {
-                _character.SetSpeed(_normalSpeed);
-                _attackElapsed = 0;
-                _character.IsEnableTurn = true;
-                _target = null;
-                _character.IsAttack = false;
-                Debug.Log("End");
-            }
+           
 
         }
     }

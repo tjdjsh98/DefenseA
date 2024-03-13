@@ -136,15 +136,19 @@ public class CreatureAI : MonoBehaviour
         Managers.GetManager<GameManager>().CreatureAI = this;
         Managers.GetManager<InputManager>().SpecialAbilityKeyDownHandler += OnSpecialAbilityKeyDown;
 
+        _character.CharacterDeadHandler += OnCharacterDead;
+
         if (_attackRangeList.Count < Define.CreatureSkillCount)
         {
             for (int i = _attackRangeList.Count; i < Define.CreatureSkillCount; i++)
                 _attackRangeList.Add(new Define.Range());
         }
+    }
 
-        // Temp
-        _selectedSpecialAbility = Define.CreatureSkill.Throw;
-        // ------------------
+    private void OnCharacterDead()
+    {
+        _model.gameObject.SetActive(false);
+        _character.Move(Vector2.zero);
     }
 
     private void OnDrawGizmos()
@@ -366,7 +370,7 @@ public class CreatureAI : MonoBehaviour
         {
             Define.Range range = _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange];
             range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
-            float distance = ((Vector2)_enemyToAttack.transform.position - ((Vector2)range.center + (Vector2)transform.position)).magnitude;
+            float distance = (_enemyToAttack.transform.position - transform.position).magnitude;
             range.size = range.size / 4 * 3;
 
             if (distance > Mathf.Abs(range.center.x) + range.size.x / 2)
@@ -439,7 +443,7 @@ public class CreatureAI : MonoBehaviour
     {
         if (_enemyToAttack != null) return;
 
-        GameObject[] gos = Util.RangeCastAll2D(Managers.GetManager<GameManager>().Girl.gameObject, _attackRangeList[(int)Define.CreatureSkillRange.FindingRange], LayerMask.GetMask("Character"));
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.FindingRange], LayerMask.GetMask("Character"));
 
         if (gos.Length > 0)
         {

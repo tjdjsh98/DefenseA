@@ -106,7 +106,7 @@ public class Player : MonoBehaviour
         _initBodyAngle = _body.transform.rotation.eulerAngles.z;
         _initFrontArmAngle = _frontArm.transform.rotation.eulerAngles.z;
 
-        _character.CharacterDead += OnCharacterDead;
+        _character.CharacterDeadHandler += OnCharacterDead;
 
         Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonDownHandler += UseWeapon;

@@ -162,6 +162,7 @@ MonoBehaviour:
   _maxMental: 100
   <Mental>k__BackingField: 0
   _speed: 3
+  _standing: 0
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
   <AttackPower>k__BackingField: 0
@@ -173,8 +174,10 @@ MonoBehaviour:
   _groundCheckRange:
     center: {x: 0, y: 1.36, z: 0}
     size: {x: 0.5, y: 0.5, z: 0}
+    angle: 0
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
+  <IsSuperArmer>k__BackingField: 0
   _hpBar: {fileID: 0}
 --- !u!114 &4326452225187102782
 MonoBehaviour:
@@ -202,18 +205,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3c1ee1fe7f9d8994798eb03ba1561ddd, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _attackDetectRange:
-    center: {x: 0, y: 0.33, z: 0}
-    size: {x: 30.81, y: 18.44, z: 0}
+  _targetDetectRange:
+    center: {x: 0, y: 4.41, z: 0}
+    size: {x: 49.08, y: 19.23, z: 0}
+    angle: 0
+    figureType: 0
+  _enableAttackRange:
+    center: {x: 3.2, y: 3.41, z: 0}
+    size: {x: 6.35, y: 5.58, z: 0}
+    angle: 0
     figureType: 0
   _attackRange:
-    center: {x: 2.3, y: 3.5, z: 0}
-    size: {x: 6.68, y: 5.09, z: 0}
+    center: {x: 2.91, y: 3.5, z: 0}
+    size: {x: 8.92, y: 5.09, z: 0}
+    angle: 0
     figureType: 0
   _target: {fileID: 0}
   _noAttack: 0
   _attackDelay: 1
   _isRangedAttack: 0
+  <IsAutoMove>k__BackingField: 1
   _attackTriggerName: Attack
 --- !u!1 &3856559377835060577
 GameObject:

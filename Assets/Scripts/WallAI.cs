@@ -27,10 +27,10 @@ public class WallAI : MonoBehaviour
     bool _isDetectEnemy;
     Coroutine _detectEnemyCoroutine;
 
-    [SerializeField]float _reviveTime = 30;
-    public float OriginalReviveTime => _reviveTime;
+    [SerializeField]float _reviveCoolTime = 30;
+    public float OriginalReviveTime => _reviveCoolTime;
     public float ReviveTime => DecreasedReviveTimePercetage > 0 ? 
-        _reviveTime /(1 + DecreasedReviveTimePercetage/100) : _reviveTime * (1 - DecreasedReviveTimePercetage / 100);
+        _reviveCoolTime /(1 + DecreasedReviveTimePercetage/100) : _reviveCoolTime * (1 - DecreasedReviveTimePercetage / 100);
     float _reviveElapsedTime = 0;
 
     // 능력 해금
@@ -78,7 +78,7 @@ public class WallAI : MonoBehaviour
         Managers.GetManager<GameManager>().WallAI = this;
 
         _character.CharacterDamaged += OnCharacterDamaged;
-        _character.CharacterDead += OnCharacterDead;
+        _character.CharacterDeadHandler += OnCharacterDead;
     }
 
     private void OnCharacterDead()
@@ -121,7 +121,7 @@ public class WallAI : MonoBehaviour
             go.GetComponent<Rigidbody2D>().AddForce((new Vector3(UnityEngine.Random.Range(-1f, 1f), 1)).normalized * 100, ForceMode2D.Impulse);
             _wallBricks.Add(go);
         }
-        _onewayTime = _reviveTime / _wallBricks.Count/2;
+        _onewayTime = _reviveCoolTime / _wallBricks.Count/2;
     }
 
     private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
@@ -157,7 +157,7 @@ public class WallAI : MonoBehaviour
 
         if (_character.IsDead)
         {
-            float remainTime = _reviveTime - _reviveElapsedTime;
+            float remainTime = _reviveCoolTime - _reviveElapsedTime;
             int remainCount = _wallBricks.Count - _brickIndex;
             Vector3 brickVector = _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position;
 
@@ -266,15 +266,15 @@ public class WallAI : MonoBehaviour
     {
         if (_character.IsDead)
         {
-            if (_reviveElapsedTime < _reviveTime)
+            if (_reviveElapsedTime < _reviveCoolTime)
             {
                 _reviveElapsedTime += Time.deltaTime;
             }
             else
             {
-                _reviveTime = 0;
                 _character.Revive();
                 _character.AnimatorSetBool("Dead",false);
+                _reviveElapsedTime = 0;
                 //if (AbilityUnlocks.TryGetValue(Define.WallAbility.SelfDestruct, out bool value) && value)
                 
                 //    transform.position = Managers.GetManager<GameManager>().Player.transform.position;
