@@ -18,45 +18,9 @@ MonoBehaviour:
   moreBackBuildingNameList: []
   timeWave:
   - time: 0
-    genTime: 5
-    distace: 3
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 00000000
-    hpMultiply: 1
-  - time: 30
-    genTime: 4.5
-    distace: 0
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 0000000002000000
-    hpMultiply: 1.2
-  - time: 60
     genTime: 4.3
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 000000000200000000000000020000000300000005000000090000000b0000000a000000
-    hpMultiply: 1.4
-  distanceWave:
-  - time: 0
-    genTime: 0
-    distace: 20
-    genLocalPosition: {x: 20, y: 0, z: 0}
-    enemyList: 0700000007000000
+    enemyList: 0000000002000000
     hpMultiply: 1
-  - time: 0
-    genTime: 0
-    distace: 20
-    genLocalPosition: {x: 30, y: 30, z: 0}
-    enemyList: 0600000006000000
-    hpMultiply: 1
-  - time: 0
-    genTime: 0
-    distace: 60
-    genLocalPosition: {x: 20, y: 0, z: 0}
-    enemyList: 05000000
-    hpMultiply: 1
-  - time: 0
-    genTime: 0
-    distace: 60
-    genLocalPosition: {x: -20, y: 0, z: 0}
-    enemyList: 05000000
-    hpMultiply: 1
+  distanceWave: []

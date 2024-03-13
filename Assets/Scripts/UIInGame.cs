@@ -42,6 +42,10 @@ public class UIInGame : UIBase
     float _maxHpWidth;
     float _maxHpHeight;
 
+    [SerializeField] List<Image> _skillMaskList;
+    [SerializeField] List<TextMeshProUGUI> _skillNameList;
+
+
     public override void Init()
     {
         _isInitDone = true;
@@ -109,7 +113,8 @@ public class UIInGame : UIBase
         }
         HandleBar();
         ShowMap();
-        ShowAbility();
+        ShowSkill();
+        //ShowAbility();
         IndicateWall();
     }
 
@@ -162,21 +167,35 @@ public class UIInGame : UIBase
         _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + Mathf.Clamp01(playerPosition / mapSize) * mapImageSize,0,0);
     }
 
-    void ShowAbility()
+    //void ShowAbility()
+    //{
+    //    if (_creatureSkillCurtain)
+    //    {
+    //        CreatureAI creature = Managers.GetManager<GameManager>().CreatureAI;
+    //        if (creature.SelectedSpecialAbility != Define.CreatureSkill.None)
+    //        {
+    //            _creatureSkillCurtain.transform.localPosition =
+    //                new Vector3(0,-100 + 100 * creature.SpecialAbilityElaspedTime / creature.SpecialAbilityCoolTime, 0);
+    //        }
+    //        else
+    //        {
+    //            _creatureSkillCurtain.transform.localPosition = new Vector3(0, -100, 0);
+    //        }
+    //    }
+    //}
+
+    void ShowSkill()
     {
-        if (_creatureSkillCurtain)
+        CreatureAI creatureAI = Managers.GetManager<GameManager>().CreatureAI;
+        List<CreatureSkillSlot> creatureSkillSlotList = creatureAI.CreatureSkillSlotList;
+
+        for(int i = 0; i < _skillMaskList.Count; i++)
         {
-            CreatureAI creature = Managers.GetManager<GameManager>().CreatureAI;
-            if (creature.SelectedSpecialAbility != Define.CreatureSkill.None)
-            {
-                _creatureSkillCurtain.transform.localPosition =
-                    new Vector3(0,-100 + 100 * creature.SpecialAbilityElaspedTime / creature.SpecialAbilityCoolTime, 0);
-            }
-            else
-            {
-                _creatureSkillCurtain.transform.localPosition = new Vector3(0, -100, 0);
-            }
+            if (creatureSkillSlotList.Count <= i) return;
+            _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 -(creatureSkillSlotList[i].skillTime / creatureSkillSlotList[i].skillCoolTime)));
+            _skillNameList[i].text = creatureSkillSlotList[i].creatureSkill.ToString();
         }
+        
     }
     void IndicateWall()
     {

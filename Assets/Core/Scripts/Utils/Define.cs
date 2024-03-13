@@ -74,6 +74,7 @@ public static class Define
     public enum CreatureSkill
     {
         None = -1,
+        NormalAttack,
         Shockwave,
         StempGround,
         Throw,

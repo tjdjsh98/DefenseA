@@ -188,10 +188,10 @@ public class WallAI : MonoBehaviour
         Revive();
 
         if (_character.IsDead) return;
-        if (Input.GetKeyDown(KeyCode.C))
-        {
-            Transform();
-        }
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+        //    Transform();
+        //}
         if (_isSoulForm)
         {
             Player player = Managers.GetManager<GameManager>().Player;

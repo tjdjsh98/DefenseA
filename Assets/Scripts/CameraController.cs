@@ -41,6 +41,7 @@ public class CameraController : MonoBehaviour
         _initCameraPosition = transform.position;
         _screenSpriteRenderer.material.SetFloat(_cameraSizeID, Camera.main.orthographicSize);
         _cameraWidth = GetCameraWidth();
+        _screenSpriteRenderer.transform.localScale = new Vector3(_cameraWidth,Camera.main.orthographicSize*2);
     }
     private void Update()
     {

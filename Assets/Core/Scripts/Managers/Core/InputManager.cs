@@ -38,7 +38,11 @@ public class InputManager : ManagerBase
     public Action ReloadKeyUpHandler;
     public Action JumpKeyDownHandler;
     public Action InteractKeyDownHandler;
-    public Action SpecialAbilityKeyDownHandler;
+
+    public Action Skill1KeyDownHandler;
+    public Action Skill2KeyDownHandler;
+    public Action Skill3KeyDownHandler;
+    public Action Skill4KeyDownHandler;
 
     public Action RightArrowPressedHandler;
     public Action LeftArrowPressedHandler;
@@ -125,8 +129,15 @@ public class InputManager : ManagerBase
             JumpKeyDownHandler?.Invoke();
         if(Input.GetKeyDown(KeyCode.E))
             InteractKeyDownHandler?.Invoke();
-        if (Input.GetKeyDown(KeyCode.Q))
-            SpecialAbilityKeyDownHandler?.Invoke();
+
+        if (Input.GetKeyDown(KeyCode.Z))
+            Skill1KeyDownHandler?.Invoke();
+        if (Input.GetKeyDown(KeyCode.X))
+            Skill2KeyDownHandler?.Invoke();
+        if (Input.GetKeyDown(KeyCode.C))
+            Skill3KeyDownHandler?.Invoke();
+        if (Input.GetKeyDown(KeyCode.V))
+            Skill4KeyDownHandler?.Invoke();
 
         _isFinishRaycastUI = false;
     }

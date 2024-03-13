@@ -140,6 +140,7 @@ MonoBehaviour:
   _maxMental: 100
   <Mental>k__BackingField: 0
   _speed: 5
+  _standing: 0
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
   <AttackPower>k__BackingField: 0
@@ -190,6 +191,7 @@ MonoBehaviour:
   <IsAutoMove>k__BackingField: 1
   _attackTriggerName: 
   _flyHeight: 10
+  _flyRange: 0
   _flyAttackSpeed: 20
 --- !u!114 &-1096205499464472584
 MonoBehaviour:
