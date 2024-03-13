@@ -51,7 +51,6 @@ public class GameManager : ManagerBase
                 _exp = _exp - MaxExp;
                 Level++;
                 _maxExp = Mathf.RoundToInt(_maxExp * 1.5f);
-                Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
             }
         }
         get { return _exp; }

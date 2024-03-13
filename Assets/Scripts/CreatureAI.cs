@@ -417,6 +417,7 @@ public class CreatureAI : MonoBehaviour
             attackRange.size = new Vector3(attackRange.size.x / 4 * 3, attackRange.size.y / 4 * 3, 0);
             while (true)
             {
+                if (enemy == null) break;
                 _character.Move(enemy.transform.position - transform.position);
 
                 if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (go) =>

@@ -171,12 +171,12 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _targetDetectRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 40, y: 25, z: 0}
+    size: {x: 40, y: 40, z: 0}
     angle: 0
     figureType: 0
   _enableAttackRange:
     center: {x: 0, y: 0, z: 0}
-    size: {x: 40, y: 25, z: 0}
+    size: {x: 40, y: 40, z: 0}
     angle: 0
     figureType: 0
   _attackRange:
@@ -186,12 +186,12 @@ MonoBehaviour:
     figureType: 0
   _target: {fileID: 0}
   _noAttack: 0
-  _attackDelay: 3
+  _attackDelay: 2
   _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 1
   _attackTriggerName: 
-  _flyHeight: 10
-  _flyRange: 0
+  _flyHeight: 15
+  _flyRange: 3
   _flyAttackSpeed: 20
 --- !u!114 &-1096205499464472584
 MonoBehaviour:
