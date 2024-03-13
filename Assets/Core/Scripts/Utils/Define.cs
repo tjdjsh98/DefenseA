@@ -24,6 +24,7 @@ public static class Define
         UI,
         Effect,
         Text,
+        Save,
         END,
     }
     public static int CONTENT_MANAGER_COUNT = (int)ContentManagers.END;

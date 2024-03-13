@@ -24,7 +24,6 @@ public class SpiderAttack : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _lineRenderer = GetComponentInChildren<LineRenderer>();
         _attackRange = _character.GetSize();
-        Debug.Log(_attackRange.center + " " + _attackRange.size);
     }
 
 

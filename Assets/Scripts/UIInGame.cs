@@ -14,6 +14,7 @@ public class UIInGame : UIBase
     StringBuilder _sb = new StringBuilder();
     [SerializeField]TextMeshProUGUI _characterStateText;
 
+    [SerializeField] TextMeshProUGUI _levelName;
     [SerializeField] Image[] _weaponImage;
 
     int _currentWeaponIndex = -1;
@@ -50,6 +51,7 @@ public class UIInGame : UIBase
     {
         _isInitDone = true;
         _mainWeaponPos = _weaponImage[0].transform.localPosition;
+        StartCoroutine(CorShowLevelName());
     }
 
     private void Update()
@@ -268,6 +270,37 @@ public class UIInGame : UIBase
         
     }
 
+    IEnumerator CorShowLevelName()
+    {
+        float alpha = 0;
+        Color color = new Color(1, 1, 1, alpha);
+        _levelName.color = color;
+        if (_levelName)
+        {
+            _levelName.text = Managers.GetManager<GameManager>().LevelName;
+            while (alpha < 1)
+            {
+                color = new Color(1, 1, 1, alpha);
+                alpha += Time.deltaTime / 3;
+
+                _levelName.color = color;
+                yield return null;
+            }
+            alpha = 1;
+
+            yield return new WaitForSeconds(1);
+
+
+            while (alpha > 0)
+            {
+                color = new Color(1, 1, 1, alpha);
+                alpha -= Time.deltaTime / 3;
+
+                _levelName.color = color;
+                yield return null;
+            }
+        }
+    }
     IEnumerator CorChangeWeapon(int index)
     {
         for(int i =1; i <= 60; i++)

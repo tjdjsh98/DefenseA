@@ -75,8 +75,6 @@ public class WallAI : MonoBehaviour
         _model = transform.Find("Model").gameObject;
         _soulModel = transform.Find("SoulModel").gameObject;
 
-        Managers.GetManager<GameManager>().WallAI = this;
-
         _character.CharacterDamaged += OnCharacterDamaged;
         _character.CharacterDeadHandler += OnCharacterDead;
     }

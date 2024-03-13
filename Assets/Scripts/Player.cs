@@ -108,7 +108,6 @@ public class Player : MonoBehaviour
 
         _character.CharacterDeadHandler += OnCharacterDead;
 
-        Managers.GetManager<GameManager>().Player = this;
         Managers.GetManager<InputManager>().MouseButtonDownHandler += UseWeapon;
         Managers.GetManager<InputManager>().MouseButtonHoldHandler += AutoUseWeapon;
         Managers.GetManager<InputManager>().ReloadKeyDownHandler += OnReloadKeyDown;
@@ -180,7 +179,6 @@ public class Player : MonoBehaviour
         RotateArm();
         RotateBody();
         Riding();
-        Roll();
         AutoReload();
         PlentyOfBullets();
         Electric();
@@ -393,16 +391,7 @@ public class Player : MonoBehaviour
         _reboundControlPower = power;
     }
 
-    void Roll()
-    {
-        if (Input.GetKeyDown(KeyCode.Q))
-        {
-            if (!_character.IsStun)
-            {
-                _character.AnimatorSetTrigger("Roll");
-            }
-        }
-    }
+  
     public void Rebound(float angle)
     {
         _rebound = angle;
@@ -685,5 +674,13 @@ public class Player : MonoBehaviour
     {
         _rebound = 0;
         RotateArm();
+    }
+
+    public string SaveData()
+    {
+        string data = "";
+
+
+        return data;
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.SceneManagement;
 using UnityEngine.TextCore.Text;
 
 public class GameManager : ManagerBase
@@ -29,9 +30,10 @@ public class GameManager : ManagerBase
     [SerializeField] int _dummyHp;
 
     [Header("게임 진행")]
+    [field: SerializeField] public string LevelName;
     [SerializeField] bool _stop;
     [SerializeField] MapData _mapData;
-    [SerializeField]Map _map;
+    [SerializeField] Map _map;
     public float MapSize => _map.MapSize;
     float _farDistance;
 
@@ -93,6 +95,7 @@ public class GameManager : ManagerBase
 
     [Header("카드 선택지")]
     List<CardData> _remainCardSelectionList;
+    List<CardData> _earnCardSelectionList;
     Dictionary<Define.CardName, int> _cardSelectionCount = new Dictionary<Define.CardName, int>();
     [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
 
@@ -101,6 +104,42 @@ public class GameManager : ManagerBase
     [field: SerializeField] public List<ShopItem> ShopItemList;
     public override void Init()
     {
+        if (GameObject.Find("Girl") != null)
+        {
+            _girl = GameObject.Find("Girl").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            _girl = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Girl").GetComponent<Character>();
+        }
+        DontDestroyOnLoad(_girl);
+        Player = _girl.GetComponent<Player>();
+        if (GameObject.Find("Wall") != null)
+        {
+            _wall = GameObject.Find("Wall").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            _wall = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wall").GetComponent<Character>();
+        }
+        DontDestroyOnLoad(_wall);
+        WallAI = _wall.GetComponent<WallAI>();
+        if (GameObject.Find("Creature") != null)
+        {
+            _creature = GameObject.Find("Creature").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            _creature = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Creature").GetComponent<Character>(); 
+        }
+        DontDestroyOnLoad(_creature);
+        CreatureAI = _creature.GetComponent<CreatureAI>();
+
+
+        _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
+        _wall.transform.position = GetGroundTop(new Vector3(-43, 0, 0)).Value;
+        _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
+
         _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) =>
         {
             if (d.IsStartCard)
@@ -213,7 +252,7 @@ public class GameManager : ManagerBase
                 // 위치 설정
                 Vector3 position = Player.transform.position + Vector3.right * 60;
                 Vector3? topPosition = GetGroundTop(position);
-                if(topPosition.HasValue)
+                if (topPosition.HasValue)
                     position.y = GetGroundTop(position).Value.y;
 
                 if (enemyCharacter.IsEnableFly)
@@ -325,8 +364,8 @@ public class GameManager : ManagerBase
                 Girl.IncreasedDamageReducePercentage += girlCardData.IncreaseDamageReducePercentage;
                 Girl.AttackPower += girlCardData.IncreaseAttackPoint;
 
-                if(girlCardData.UnlockAbility != Define.GirlAbility.None && !Player.AbilityUnlocks.ContainsKey(girlCardData.UnlockAbility))
-                    Player.AbilityUnlocks.Add(girlCardData.UnlockAbility,true);
+                if (girlCardData.UnlockAbility != Define.GirlAbility.None && !Player.AbilityUnlocks.ContainsKey(girlCardData.UnlockAbility))
+                    Player.AbilityUnlocks.Add(girlCardData.UnlockAbility, true);
                 Player.DecreasedFireDelayPercent += girlCardData.DecreaseFireDelayPercentage;
                 Player.IncreasedReloadSpeedPercent += girlCardData.IncreaseReloadSpeedPercentage;
                 Player.IncreasedReboundControlPowerPercent += girlCardData.IncreaseReboundControlPowerPercentage;
@@ -350,8 +389,8 @@ public class GameManager : ManagerBase
                 Wall.IncreasedDamageReducePercentage += wallCardData.IncreaseDamageReducePercentage;
                 Wall.AttackPower += wallCardData.IncreaseAttackPoint;
 
-                if(wallCardData.UnlockAbility != Define.WallAbility.None && !WallAI.AbilityUnlocks.ContainsKey(wallCardData.UnlockAbility))
-                    WallAI.AbilityUnlocks.Add(wallCardData.UnlockAbility,true);
+                if (wallCardData.UnlockAbility != Define.WallAbility.None && !WallAI.AbilityUnlocks.ContainsKey(wallCardData.UnlockAbility))
+                    WallAI.AbilityUnlocks.Add(wallCardData.UnlockAbility, true);
             }
         }
     }
