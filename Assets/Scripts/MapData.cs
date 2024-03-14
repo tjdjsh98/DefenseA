@@ -13,6 +13,7 @@ public class MapData : ScriptableObject
     public List<Wave> timeWave;
     public List<Wave> distanceWave;
     public float mapSize;
+    public MapData nextMapData;
 }
 
 [System.Serializable]

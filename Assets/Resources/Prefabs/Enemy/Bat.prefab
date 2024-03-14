@@ -135,7 +135,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 10
+  _maxHp: 5
   _hp: 0
   _maxMental: 100
   <Mental>k__BackingField: 0
@@ -190,6 +190,7 @@ MonoBehaviour:
   _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 1
   _attackTriggerName: 
+  _itemDropPercentage: 0
   _flyHeight: 15
   _flyRange: 3
   _flyAttackSpeed: 20

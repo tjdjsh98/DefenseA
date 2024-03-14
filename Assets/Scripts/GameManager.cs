@@ -202,9 +202,11 @@ public class GameManager : ManagerBase
         if (Player)
             _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
 
-        if (Player && Player.transform.position.x > MapSize)
+        // 벽이 맵의 끝에 도착하면 다음 스테이지로
+        if (Wall && Wall.transform.position.x > MapSize)
         {
-            _stop = true;
+            if (_mapData.nextMapData != null)
+                LoadScene(_mapData.nextMapData);
         }
     }
 
@@ -436,8 +438,8 @@ public class GameManager : ManagerBase
         _mapData = mapData;
         if (_mapData)
         {
-            _timeWaveList = Util.DeepClone<List<Wave>>(_mapData.timeWave);
-            _distanceWaveList = _mapData.distanceWave.ToList();
+            _timeWaveList = _mapData.timeWave;
+            _distanceWaveList = _mapData.distanceWave;
         }
 
         if (!_isSkip)

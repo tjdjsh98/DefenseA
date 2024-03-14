@@ -53,6 +53,7 @@ public static class Define
         UpEnemy,
         PartTestEnemy,
         Spore,
+        Thrower,
         END,
     }
 

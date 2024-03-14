@@ -6,11 +6,8 @@ using UnityEngine;
 public class Managers : MonoBehaviour
 {
     static Managers _instance;
-
-
     // Core
     static Dictionary<Define.CoreManagers, ManagerBase>  _coreManagers = new Dictionary<Define.CoreManagers, ManagerBase>();
-
     // Content
     static Dictionary<Define.ContentManagers, ManagerBase> _contentManagers = new Dictionary<Define.ContentManagers, ManagerBase>();
 
@@ -57,6 +54,12 @@ public class Managers : MonoBehaviour
 
     private void Update()
     {
+        if (_instance == null) return;
+        if (_instance.gameObject != gameObject)
+        {
+            Destroy(gameObject);
+            return;
+        }
         foreach(var manager in _coreManagers.Values)
         {
             manager.ManagerUpdate();

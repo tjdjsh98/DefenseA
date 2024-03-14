@@ -10,6 +10,7 @@ public class TextManager : ManagerBase
     public override void Init()
     {
         _textFolder = new GameObject("TextContainer");
+        _textFolder.transform.SetParent(transform);
     }
 
     public override void ManagerUpdate()

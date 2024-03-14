@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8c11d98e6ff59b549b0c614037e907f9, type: 3}
   m_Name: City_02
   m_EditorClassIdentifier: 
-  sceneName: City_01
+  sceneName: City_02
   mentalDownTime: 180
   timeWave:
   - startTime: 0
@@ -48,4 +48,5 @@ MonoBehaviour:
     genLocalPosition: {x: 30, y: 0, z: 0}
     enemyList: 07000000
     hpMultiply: 2
-  mapSize: 300
+  mapSize: 100
+  nextMapData: {fileID: 11400000, guid: 200b06cc3a8f48b408124f6cf9059571, type: 2}

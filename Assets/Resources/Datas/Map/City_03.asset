@@ -10,27 +10,35 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c11d98e6ff59b549b0c614037e907f9, type: 3}
-  m_Name: City_01
+  m_Name: City_03
   m_EditorClassIdentifier: 
-  sceneName: City_01
-  mentalDownTime: 50
+  sceneName: City_03
+  mentalDownTime: 180
   timeWave:
   - startTime: 0
-    endTime: 9999
-    genTime: 4
-    elapsedTime: 1.1724873
-    distace: 0
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 02000000
-    hpMultiply: 1
-  - startTime: 0
-    endTime: 9999
-    genTime: 3.5
-    elapsedTime: 1.1724873
+    endTime: 999999
+    genTime: 3
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1
+  - startTime: 0
+    endTime: 99999
+    genTime: 2
+    elapsedTime: 0
+    distace: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 02000000
+    hpMultiply: 1.5
+  - startTime: 0
+    endTime: 100
+    genTime: 20
+    elapsedTime: 0
+    distace: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 07000000
+    hpMultiply: 1
   distanceWave: []
   mapSize: 100
-  nextMapData: {fileID: 11400000, guid: 200b06cc3a8f48b408124f6cf9059571, type: 2}
+  nextMapData: {fileID: 11400000, guid: 14240f8f275b1494081fb12ac529681d, type: 2}
