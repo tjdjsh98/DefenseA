@@ -214,6 +214,10 @@ public class UIInGame : UIBase
 
         Vector3 direction = wallPosition - playerPosition;
         Vector3 wallToCanvasDistance = wallPosition - transform.position;
+
+        wallToCanvasDistance.x -= screenWidth / 2;
+        wallToCanvasDistance.y -= screenHeight / 2;
+
         if (Mathf.Abs(wallToCanvasDistance.x) < screenWidth / 2 + 100 && Mathf.Abs(wallToCanvasDistance.y)+100 < screenHeight / 2 + 100)
         {
             _wallIndicator.SetActive(false);
@@ -225,6 +229,9 @@ public class UIInGame : UIBase
 
         Vector3 distanceCanvasToPlayerPosition = playerPosition - transform.position;
         
+        distanceCanvasToPlayerPosition.x -= screenWidth / 2;
+        distanceCanvasToPlayerPosition.y -= screenHeight/ 2;
+
         float paddingX = 80 * Mathf.Cos(angle);
         float paddingY = 80 * Mathf.Sin(angle);
 
@@ -234,17 +241,51 @@ public class UIInGame : UIBase
         float x = 0;
         float y = 0;
 
-        if (Mathf.Abs(direction.x) > screenWidth / 2)
+        float distanceX = wallPosition.x < 0 ? Mathf.Abs(wallPosition.x) : wallPosition.x - screenWidth;
+        float distanceY = wallPosition.y < 0 ? Mathf.Abs(wallPosition.y) : wallPosition.y - screenWidth;
+
+        if (wallPosition.x < screenWidth && wallPosition.x > 0)
         {
-            x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
-            y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
-                + distanceCanvasToPlayerPosition.y) - paddingY;
+            if (wallPosition.y > screenHeight || wallPosition.y < 0)
+            {
+                y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
+                x = (((direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y) - paddingY)/ Mathf.Tan(angle)
+                    + distanceCanvasToPlayerPosition.x);
+                if (x - paddingX < transform.position.x - screenWidth/2)
+                    x -= paddingX;
+                if (x - paddingX > transform.position.x + screenWidth / 2)
+                    x -= paddingX;
+            }
+        }
+        else if (wallPosition.y <= screenHeight && wallPosition.y > 0)
+        {
+            if (wallPosition.x > screenWidth || wallPosition.x < 0)
+            {
+
+                x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
+                y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
+                    + distanceCanvasToPlayerPosition.y) - paddingY;
+            }
         }
         else
         {
-            y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
-            x = ( (direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y)/ Mathf.Tan(angle)
-                + distanceCanvasToPlayerPosition.x) - paddingX;
+            if(distanceX > distanceY)
+            {
+                x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
+                y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
+                    + distanceCanvasToPlayerPosition.y) - paddingY;
+            }
+            else
+            {
+                y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
+                x = ((direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y) / Mathf.Tan(angle)
+                    + distanceCanvasToPlayerPosition.x) - paddingX;
+
+                if (x - paddingX < transform.position.x - screenWidth / 2)
+                    x -= paddingX;
+                if (x - paddingX > transform.position.x + screenWidth / 2)
+                    x -= paddingX;
+            }
         }
         if(y < -screenHeight/2 - paddingY)
             y= -screenHeight/2 - paddingY;
