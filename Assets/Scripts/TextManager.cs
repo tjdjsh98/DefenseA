@@ -47,15 +47,18 @@ public class TextManager : ManagerBase
   
     IEnumerator CorTextMeshUp(TextMeshPro textMesh)
     {
-        Vector3 initPos = textMesh.transform.position;
+        Vector3 initPos = Vector3.zero;
+        if (textMesh)
+            initPos = textMesh.transform.position;
 
         for(int i =1 ; i <= 60; i++)
         {
-            textMesh.transform.position += Vector3.up * Time.fixedDeltaTime;
+            if(textMesh)
+                textMesh.transform.position += Vector3.up * Time.fixedDeltaTime;
 
             yield return new WaitForFixedUpdate();
         }
-
-        textMesh.gameObject.SetActive(false);
+        if (textMesh)
+            textMesh.gameObject.SetActive(false);
     }
 }

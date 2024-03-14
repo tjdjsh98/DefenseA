@@ -4,15 +4,24 @@ using UnityEngine;
 
 public class UIManager : ManagerBase
 {
+    const string _uiFolderName = "[UI]-----------";
     const string _canvasName = "Canvas";
-    GameObject _canvas;
+    GameObject _uiFolder;
+    Canvas _canvas;
 
     List<UIBase> _uiList = new List<UIBase>();
 
     public override void Init()
     {
-        _canvas = GameObject.Find(_canvasName);
+        _uiFolder = GameObject.Find(_uiFolderName);
+        if (_uiFolder == null)
+        {
+            _uiFolder = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/" + _uiFolderName);
+        }
+        DontDestroyOnLoad(_uiFolder);
+        _canvas = GameObject.Find(_canvasName).GetComponent<Canvas>();
 
+        _canvas.transform.SetParent(_uiFolder.transform);
         for (int i = 0; i < _canvas.transform.childCount; i++)
         {
             UIBase ui = _canvas.transform.GetChild(i).GetComponent<UIBase>();
@@ -27,7 +36,8 @@ public class UIManager : ManagerBase
 
     public override void ManagerUpdate()
     {
-        
+        if(_canvas.worldCamera == null)
+            _canvas.worldCamera = Camera.main;
     }
 
     public T GetUI<T>() where T : UIBase

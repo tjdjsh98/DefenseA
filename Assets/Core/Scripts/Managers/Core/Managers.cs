@@ -40,6 +40,7 @@ public class Managers : MonoBehaviour
     static void Init()
     {
         _instance = Util.FindOrCreate("[Manager]------------").GetOrAddComponent<Managers>();
+        DontDestroyOnLoad(_instance);
         _coreManagers.Clear();
         _contentManagers.Clear();
 
@@ -84,7 +85,7 @@ public class Managers : MonoBehaviour
 
         if (manager)
         {
-            DontDestroyOnLoad(manager.gameObject);
+            manager.transform.parent = _instance.transform;
             _coreManagers.Add(managerName,manager);
             manager.Init();
         }
@@ -118,6 +119,7 @@ public class Managers : MonoBehaviour
 
         if (manager)
         {
+            manager.transform.parent = _instance.transform;
             _contentManagers.Add(managerName, manager);
             manager.Init();
         }

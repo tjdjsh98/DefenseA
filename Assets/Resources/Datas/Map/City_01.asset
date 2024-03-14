@@ -14,8 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: City_01
   mentalDownTime: 180
-  buildingNameList: []
-  moreBackBuildingNameList: []
   timeWave:
   - time: 0
     genTime: 4.3
@@ -24,3 +22,4 @@ MonoBehaviour:
     enemyList: 0000000002000000
     hpMultiply: 1
   distanceWave: []
+  mapSize: 300

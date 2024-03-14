@@ -1,7 +1,11 @@
 using MoreMountains.Tools;
+using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http.Headers;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -30,13 +34,14 @@ public class GameManager : ManagerBase
     [SerializeField] int _dummyHp;
 
     [Header("게임 진행")]
-    [field: SerializeField] public string LevelName;
     [SerializeField] bool _stop;
     [SerializeField] MapData _mapData;
-    [SerializeField] Map _map;
-    public float MapSize => _map.MapSize;
+    public string LevelName=>_mapData != null ? _mapData.name : "";
+    public float MapSize => _mapData.mapSize;
     float _farDistance;
 
+    public bool IsLoadEnd { set; get; }
+    public Action<MapData> LoadNewSceneHandler { set; get; }
 
     // 플레이 경험 관련
     [Header("경험치")]
@@ -83,15 +88,10 @@ public class GameManager : ManagerBase
     List<Wave> _distanceWaveList;
 
     [SerializeField] int _currentWave = 0;
-    public int CurrentWave => _currentWave;
-    int _spawnCount;
-    int _maxSpawnCount = 5;
     bool _isStartWave;
     public bool IsStartWave => _isStartWave;
     float _totalTime;
-    float _genTime;
-
-    int _nextTime;
+    float _stageTime;
 
     [Header("카드 선택지")]
     List<CardData> _remainCardSelectionList;
@@ -156,20 +156,11 @@ public class GameManager : ManagerBase
                 return false;
             }
         });
-        _map = new Map(60f);
-        foreach (var buildingName in _mapData.buildingNameList)
-        {
-            _map.AddBuildingPreset(buildingName);
-        }
-        foreach (var buildingName in _mapData.moreBackBuildingNameList)
-        {
-            _map.AddMoreBackBuildingPreset(buildingName);
-        }
-
+        
         if (_mapData)
         {
-            _timeWaveList = _mapData.timeWave.ToList();
-            _distanceWaveList = _mapData.distanceWave.ToList();
+            _timeWaveList = _mapData.timeWave;
+            _distanceWaveList = _mapData.distanceWave;
         }
 
         if (!_isSkip)
@@ -179,6 +170,8 @@ public class GameManager : ManagerBase
             Invoke("OffTimeline", (float)_playableDirector.duration - 0.1f);
             _isPlayTimeline = true;
         }
+
+        IsLoadEnd = true;
     }
     void OffTimeline()
     {
@@ -190,7 +183,7 @@ public class GameManager : ManagerBase
     public override void ManagerUpdate()
     {
         _totalTime += Time.deltaTime;
-        HandleGround();
+        _stageTime += Time.deltaTime;
         if (_summonDummy)
         {
             EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Slime);
@@ -215,63 +208,57 @@ public class GameManager : ManagerBase
         }
     }
 
-    void HandleGround()
-    {
-        if (Player == null) return;
-
-        _map.Update(Player);
-    }
-
     void TimeWave()
     {
         if (IsPlayTimeline) return;
-        if (_currentWave < _timeWaveList.Count - 1)
+        foreach (var timeWave in _timeWaveList)
         {
-            if (_totalTime > _timeWaveList[_currentWave + 1].time)
-                _currentWave++;
-        }
+            if (_stageTime > timeWave.endTime || _stageTime < timeWave.startTime)
+                continue;
 
-        if (_genTime > _timeWaveList[_currentWave].genTime)
-        {
-            _genTime = 0;
-            if (_timeWaveList[_currentWave].enemyList == null) return;
-
-            EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)_timeWaveList[_currentWave].enemyList.GetRandom());
-            EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-            if (enemy)
+            if (timeWave.elapsedTime > timeWave.genTime)
             {
-                Character enemyCharacter = enemy.GetComponent<Character>();
+                timeWave.elapsedTime = 0;
 
-                // 체력 설정
-                if (enemy.IsGroup)
-                    enemy.GetComponent<EnemyGroup>().SetHp(_timeWaveList[_currentWave].hpMultiply);
-                else
-                    enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * _timeWaveList[_currentWave].hpMultiply));
+                if (timeWave.enemyList == null) return;
 
-
-                // 위치 설정
-                Vector3 position = Player.transform.position + Vector3.right * 60;
-                Vector3? topPosition = GetGroundTop(position);
-                if (topPosition.HasValue)
-                    position.y = GetGroundTop(position).Value.y;
-
-                if (enemyCharacter.IsEnableFly)
-                {
-                    FlyingEnemy flyingEnemy = enemyCharacter.GetComponent<FlyingEnemy>();
-                    if (flyingEnemy)
-                        position.y += flyingEnemy.FlyingHeight;
-                }
-
-                enemyCharacter.transform.position = position;
-
-                // 맵 적 스폰추가
+                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWave.enemyList.GetRandom());
+                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                 if (enemy)
-                    _enemySpawnList.Add(enemy.gameObject);
+                {
+                    Character enemyCharacter = enemy.GetComponent<Character>();
+
+                    // 체력 설정
+                    if (enemy.IsGroup)
+                        enemy.GetComponent<EnemyGroup>().SetHp(timeWave.hpMultiply);
+                    else
+                        enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * timeWave.hpMultiply));
+
+
+                    // 위치 설정
+                    Vector3 position = Player.transform.position + Vector3.right * 60;
+                    Vector3? topPosition = GetGroundTop(position);
+                    if (topPosition.HasValue)
+                        position.y = GetGroundTop(position).Value.y;
+
+                    if (enemyCharacter.IsEnableFly)
+                    {
+                        FlyingEnemy flyingEnemy = enemyCharacter.GetComponent<FlyingEnemy>();
+                        if (flyingEnemy)
+                            position.y += flyingEnemy.FlyingHeight;
+                    }
+
+                    enemyCharacter.transform.position = position;
+
+                    // 맵 적 스폰추가
+                    if (enemy)
+                        _enemySpawnList.Add(enemy.gameObject);
+                }
             }
-        }
-        else
-        {
-            _genTime += Time.deltaTime;
+            else
+            {
+                timeWave.elapsedTime += Time.deltaTime;
+            }
         }
     }
 
@@ -287,15 +274,23 @@ public class GameManager : ManagerBase
                     EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                     if (!enemy.IsGroup)
                     {
-                        Character character = enemy.GetComponent<Character>();
-                        enemy.transform.position = new Vector3(_farDistance, _map.YPosition) + wave.genLocalPosition;
-                        character.SetHp(Mathf.RoundToInt(character.Hp * wave.hpMultiply));
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + wave.genLocalPosition).Value;
+                        if (topPosition.HasValue)
+                        {
+                            Character character = enemy.GetComponent<Character>();
+                            enemy.transform.position = topPosition.Value;
+                            character.SetHp(Mathf.RoundToInt(character.Hp * wave.hpMultiply));
+                        }
                     }
                     else
                     {
-                        EnemyGroup group = enemy.GetComponent<EnemyGroup>();
-                        group.transform.position = new Vector3(_farDistance, _map.YPosition) + wave.genLocalPosition;
-                        group.SetHp(wave.hpMultiply);
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + wave.genLocalPosition).Value;
+                        if (topPosition.HasValue)
+                        {
+                            EnemyGroup group = enemy.GetComponent<EnemyGroup>();
+                            group.transform.position = topPosition.Value;
+                            group.SetHp(wave.hpMultiply);
+                        }
                     }
                 }
                 _distanceWaveList.Remove(wave);
@@ -411,20 +406,56 @@ public class GameManager : ManagerBase
 
         return hit.point;
     }
+
+    int count = 0;
+    public void LoadScene(MapData mapData)
+    {
+        if (!IsLoadEnd) return;
+        Debug.Log("Load");
+
+        count++;
+        if (count > 20)
+        {
+            Debug.Log("count");
+            return;
+        }
+        StartCoroutine(CorLoadScene(mapData));
+    }
+
+    IEnumerator CorLoadScene(MapData mapData)
+    {
+        IsLoadEnd = false;
+
+        Managers.GetManager<UIManager>().GetUI<UIInGame>().LoadSceneFadeOut();
+        yield return new WaitForSeconds(2);
+        _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
+        _wall.transform.position = GetGroundTop(new Vector3(-43, 0, 0)).Value;
+        _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
+        SceneManager.LoadScene(mapData.name);
+
+        _mapData = mapData;
+        if (_mapData)
+        {
+            _timeWaveList = Util.DeepClone<List<Wave>>(_mapData.timeWave);
+            _distanceWaveList = _mapData.distanceWave.ToList();
+        }
+
+        if (!_isSkip)
+        {
+            _playableDirector.playableAsset = _enteracneTimeline;
+            _playableDirector.Play();
+            Invoke("OffTimeline", (float)_playableDirector.duration - 0.1f);
+            _isPlayTimeline = true;
+        }
+        _stageTime = 0;
+
+        IsLoadEnd = true;
+
+        LoadNewSceneHandler?.Invoke(mapData);
+    }
+
 }
 
-[System.Serializable]
-public struct Wave
-{
-    public int time;
-    public float genTime;
-
-    public float distace;
-    public Vector3 genLocalPosition;
-
-    public List<Define.EnemyName> enemyList;
-    public float hpMultiply;
-}
 
 [System.Serializable]
 public class PriorCard

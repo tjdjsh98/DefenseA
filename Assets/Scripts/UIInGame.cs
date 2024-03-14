@@ -46,12 +46,16 @@ public class UIInGame : UIBase
     [SerializeField] List<Image> _skillMaskList;
     [SerializeField] List<TextMeshProUGUI> _skillNameList;
 
-
+    [SerializeField] Image _fadeOut;
     public override void Init()
     {
         _isInitDone = true;
         _mainWeaponPos = _weaponImage[0].transform.localPosition;
         StartCoroutine(CorShowLevelName());
+        Managers.GetManager<GameManager>().LoadNewSceneHandler += (mapData) =>
+        {
+            StartCoroutine(CorShowLevelName());
+        };
     }
 
     private void Update()
@@ -210,21 +214,16 @@ public class UIInGame : UIBase
 
         Vector3 direction = wallPosition - playerPosition;
         Vector3 wallToCanvasDistance = wallPosition - transform.position;
-        wallToCanvasDistance.x -= screenWidth / 2;
-        wallToCanvasDistance.y -= screenHeight / 2;
         if (Mathf.Abs(wallToCanvasDistance.x) < screenWidth / 2 + 100 && Mathf.Abs(wallToCanvasDistance.y)+100 < screenHeight / 2 + 100)
         {
             _wallIndicator.SetActive(false);
             return;
         }
-
         _wallIndicator.SetActive(true);
 
         float angle  = Mathf.Atan2(direction.y, direction.x);
 
         Vector3 distanceCanvasToPlayerPosition = playerPosition - transform.position;
-        distanceCanvasToPlayerPosition.x -= screenWidth / 2;
-        distanceCanvasToPlayerPosition.y -= screenHeight/ 2;
         
         float paddingX = 80 * Mathf.Cos(angle);
         float paddingY = 80 * Mathf.Sin(angle);
@@ -333,5 +332,43 @@ public class UIInGame : UIBase
         _weaponImage[_currentWeaponIndex].transform.position = _mainWeaponPos - Vector3.right * 20f;
         _weaponImage[3 - index - _currentWeaponIndex].transform.position = _mainWeaponPos - Vector3.right * 40f;
         _currentWeaponIndex = index;
+    }
+
+    public void LoadSceneFadeOut()
+    {
+        StartCoroutine(CorLoadSceneFadeOut());
+    }
+    IEnumerator CorLoadSceneFadeOut()
+    {
+        Color color = new Color(0, 0, 0, 0);
+        _fadeOut.color = color;
+
+        while (true) 
+        { 
+            color.a += Time.deltaTime/2;
+            _fadeOut.color = color;
+            if (color.a >= 1)
+                break;
+            yield return null;
+        }
+
+
+        while (true)
+        {
+            if (Managers.GetManager<GameManager>().IsLoadEnd)
+                break;
+
+            yield return null;
+        }
+        yield return new WaitForSeconds(0.5f);
+
+        while (true)
+        {
+            color.a -= Time.deltaTime / 2;
+            _fadeOut.color = color;
+            if (color.a <= 0)
+                break;
+            yield return null;
+        }
     }
 }

@@ -5,23 +5,26 @@ using UnityEngine;
 public class ResourceManager : ManagerBase
 {
     Dictionary<string, List<Poolable>> _pool = new Dictionary<string, List<Poolable>>();
+    GameObject _poolFolder;
     public override void Init()
     {
+        _poolFolder = new GameObject("[Pool]----------");
+        DontDestroyOnLoad(_poolFolder);
     }
 
     public override void ManagerUpdate()
     {
     }
 
-    public GameObject Instantiate(string name)
+    public GameObject Instantiate(string path)
     {
         GameObject result = null;
 
-        GameObject origin = Resources.Load<GameObject>(name);
+        GameObject origin = Resources.Load<GameObject>(path);
 
         if (origin == null)
         {
-            Debug.LogWarning($"{name}에 해당하는 리소스가 없습니다.");
+            Debug.LogWarning($"{path}에 해당하는 리소스가 없습니다.");
             return null;
         }
         Poolable pool = null;
@@ -60,6 +63,7 @@ public class ResourceManager : ManagerBase
             }
         }
 
+        result.transform.SetParent(null);
         result.gameObject.SetActive(true);
 
         return result;
@@ -111,6 +115,7 @@ public class ResourceManager : ManagerBase
                 _pool[origin.name][_pool[origin.name].Count - 1].IsUse = true;
             }
         }
+        result.transform.SetParent(null);
         result.gameObject.SetActive(true);
 
         return result;
@@ -159,6 +164,7 @@ public class ResourceManager : ManagerBase
                 _pool[origin.name][_pool[origin.name].Count - 1].IsUse = true;
             }
         }
+        result.transform.SetParent(null);
         result.gameObject.SetActive(true);
 
         return result;
@@ -172,6 +178,7 @@ public class ResourceManager : ManagerBase
             {
                 pool.IsUse = false;
                 gameObject.SetActive(false);
+                gameObject.transform.parent = _poolFolder.transform;
             }
             else
             {

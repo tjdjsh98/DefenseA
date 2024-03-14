@@ -33,6 +33,8 @@ public class EnemyAI : MonoBehaviour
     protected SpriteRenderer _attackRangeSprite;
     protected List<Character> _attackedList = new List<Character>();
 
+    [SerializeField] float _itemDropPercentage;
+
     protected virtual void Awake()
     {
         _character = GetComponent<Character>();
@@ -42,6 +44,11 @@ public class EnemyAI : MonoBehaviour
         _character.CharacterDeadHandler += () =>
         {
             Managers.GetManager<GameManager>().Exp += 1;
+            float random = _itemDropPercentage * 100;
+            if(Random.Range(0, 10000) < random)
+            {
+                Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
+            }
         };
 
         if (transform.Find("AttackRange"))

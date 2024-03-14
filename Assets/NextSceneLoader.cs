@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,7 +8,8 @@ public class NextSceneLoader : MonoBehaviour
 {
     [SerializeField] bool _debug;
     [SerializeField]Define.Range _trigger;
-    [SerializeField] string _nextScene;
+    [SerializeField] MapData _nextMapData;
+    [SerializeField] bool _end;
 
     private void OnDrawGizmosSelected()
     {
@@ -24,16 +26,25 @@ public class NextSceneLoader : MonoBehaviour
     {
         while (true)
         {
-            Util.RangeCastAll2D(gameObject, _trigger, Define.CharacterMask, (go) =>
-            {
-                if (go == Managers.GetManager<GameManager>().Wall.gameObject)
-                {
-                    SceneManager.LoadScene(_nextScene);
-                }
-                return false;
-            });
-
             yield return new WaitForSeconds(1);
+
+            if (Managers.GetManager<GameManager>().IsLoadEnd)
+            {
+                Util.RangeCastAll2D(gameObject, _trigger, Define.CharacterMask, (go) =>
+                {
+                    if (!_end)
+                    {
+                        if (go == Managers.GetManager<GameManager>().Wall.gameObject)
+                        {
+                            Managers.GetManager<GameManager>().LoadScene(_nextMapData);
+                            _end = true;
+                        }
+                    }
+                    return false;
+                });
+
+                if (_end) break;
+            }
         }
     }
 }

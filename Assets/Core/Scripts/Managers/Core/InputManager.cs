@@ -15,7 +15,8 @@ public class InputManager : ManagerBase
     GraphicRaycaster GraphicRaycaster { set { _graphicRaycaster = value; } get { if (_graphicRaycaster == null) GetRaycaster(); return _graphicRaycaster; } }
 
     Camera _mainCamera;
-    public Vector3 MouseWorldPosition { get { return _mainCamera.ScreenToWorldPoint(Input.mousePosition); } }
+    Camera MainCamera { get { if (_mainCamera == null) _mainCamera = Camera.main; return _mainCamera; }  } 
+    public Vector3 MouseWorldPosition { get { return MainCamera.ScreenToWorldPoint(Input.mousePosition); } }
 
     public Action<List<GameObject>> UIMouseDownHandler;
     public Action<List<GameObject>> UIMouseDragHandler;
@@ -47,39 +48,14 @@ public class InputManager : ManagerBase
     public Action RightArrowPressedHandler;
     public Action LeftArrowPressedHandler;
 
-    [SerializeField]Vector3 _preMousePosition;
-    Vector2 _mouseDelta;
-    public Vector2 MouseDelta =>_mouseDelta;
-
-    public bool AimTarget { set; get; }
-    bool _saveMousePosition;
     public override void Init()
     {
-        _mainCamera= Camera.main;
+        
     }
 
     public override void ManagerUpdate()
     {
-        if (AimTarget && !_saveMousePosition)
-        {
-            _preMousePosition = Input.mousePosition;
-            UnityEngine.Cursor.visible = false;
-            _saveMousePosition = true;
-        }
-        if (AimTarget)
-        {
-            _mouseDelta = _mainCamera.ScreenToWorldPoint(Input.mousePosition) - _mainCamera.ScreenToWorldPoint(_preMousePosition);
-            Mouse.current.WarpCursorPosition(_preMousePosition);
-        }
-        if (!AimTarget && _saveMousePosition)
-        {
-            _saveMousePosition= false;
-            Mouse.current.WarpCursorPosition(_preMousePosition);
-            UnityEngine.Cursor.visible = true;
-
-            _preMousePosition = Vector2.zero;
-        }
-
+       
         if(UIMouseHoverHandler != null)
         {
             RaycastUI();
@@ -193,18 +169,6 @@ public class InputManager : ManagerBase
         {
             if (hit.collider == null) continue;
             _mouseRaycastGameobjects.Add(hit.collider.gameObject);
-        }
-    }
-    private void OnApplicationFocus(bool focus)
-    {
-        if (!focus)
-            AimTarget = false;
-    }
-    private void OnApplicationPause(bool pause)
-    {
-        if (pause)
-        {
-            AimTarget = false;
         }
     }
 }
