@@ -15,40 +15,54 @@ MonoBehaviour:
   sceneName: Subway_01
   mentalDownTime: 180
   timeWave:
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 0
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 
     hpMultiply: 0
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 0
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 
     hpMultiply: 0
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 0
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 
     hpMultiply: 0
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 0
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 
     hpMultiply: 0
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 0
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 
     hpMultiply: 0
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 0
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 
     hpMultiply: 0
   distanceWave: []
+  mapSize: 300
+  nextMapData: {fileID: 11400000, guid: 14240f8f275b1494081fb12ac529681d, type: 2}

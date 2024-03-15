@@ -142,6 +142,7 @@ MonoBehaviour:
   _maxMental: 100
   <Mental>k__BackingField: 0
   _speed: 5
+  _standing: 0
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
   <AttackPower>k__BackingField: 0
@@ -171,13 +172,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _targetDetectRange:
-    center: {x: 0, y: -1.89, z: 0}
-    size: {x: 33.08, y: 20.09, z: 0}
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 50, y: 50, z: 0}
     angle: 0
     figureType: 0
   _enableAttackRange:
-    center: {x: 0, y: -1.89, z: 0}
-    size: {x: 33.08, y: 20.09, z: 0}
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 50, y: 50, z: 0}
     angle: 0
     figureType: 0
   _attackRange:
@@ -191,6 +192,7 @@ MonoBehaviour:
   _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 0
   _attackTriggerName: 
+  _itemDropPercentage: 0
 --- !u!114 &570808304168965782
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -217,6 +219,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d18d7acd2cf876249b024534a45f9e9c, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _fireSpeed: 10
+  _fireDelay: 1
+  _fireCoolTime: 3
+  _fireMaxCount: 3
 --- !u!1 &2400841572927851089
 GameObject:
   m_ObjectHideFlags: 0

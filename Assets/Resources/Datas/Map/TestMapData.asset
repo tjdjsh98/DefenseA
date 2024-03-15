@@ -10,17 +10,19 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 8c11d98e6ff59b549b0c614037e907f9, type: 3}
-  m_Name: Test_City
+  m_Name: TestMapData
   m_EditorClassIdentifier: 
   sceneName: City_01
   mentalDownTime: 180
-  buildingNameList: []
-  moreBackBuildingNameList: []
   timeWave:
-  - time: 0
+  - startTime: 0
+    endTime: 0
     genTime: 3
+    elapsedTime: 0
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 000000000100000002000000000000000300000004000000080000000700000005000000
     hpMultiply: 1
   distanceWave: []
+  mapSize: 100
+  nextMapData: {fileID: 0}

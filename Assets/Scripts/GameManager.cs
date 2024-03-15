@@ -102,43 +102,23 @@ public class GameManager : ManagerBase
     // 땅과 관련변수
     [Header("상점 관련 변수")]
     [field: SerializeField] public List<ShopItem> ShopItemList;
+
+
+    CameraController _cameraController;
+    CameraController CameraController
+    {
+        get
+        {
+            if(_cameraController == null)
+                _cameraController = Camera.main.GetComponent<CameraController>();
+            return _cameraController;
+        }
+    }
+
+
     public override void Init()
     {
-        if (GameObject.Find("Girl") != null)
-        {
-            _girl = GameObject.Find("Girl").gameObject.GetComponent<Character>();
-        }
-        else
-        {
-            _girl = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Girl").GetComponent<Character>();
-        }
-        DontDestroyOnLoad(_girl);
-        Player = _girl.GetComponent<Player>();
-        if (GameObject.Find("Wall") != null)
-        {
-            _wall = GameObject.Find("Wall").gameObject.GetComponent<Character>();
-        }
-        else
-        {
-            _wall = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wall").GetComponent<Character>();
-        }
-        DontDestroyOnLoad(_wall);
-        WallAI = _wall.GetComponent<WallAI>();
-        if (GameObject.Find("Creature") != null)
-        {
-            _creature = GameObject.Find("Creature").gameObject.GetComponent<Character>();
-        }
-        else
-        {
-            _creature = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Creature").GetComponent<Character>(); 
-        }
-        DontDestroyOnLoad(_creature);
-        CreatureAI = _creature.GetComponent<CreatureAI>();
-
-
-        _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
-        _wall.transform.position = GetGroundTop(new Vector3(-43, 0, 0)).Value;
-        _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
+        LoadMainCharacters();
 
         _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) =>
         {
@@ -171,7 +151,47 @@ public class GameManager : ManagerBase
             _isPlayTimeline = true;
         }
 
+        _cameraController = Camera.main.GetComponent<CameraController>();
         IsLoadEnd = true;
+    }
+
+    void LoadMainCharacters()
+    {
+        if (GameObject.Find("Girl") != null)
+        {
+            _girl = GameObject.Find("Girl").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            _girl = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/MainCharacter/Girl").GetComponent<Character>();
+        }
+        DontDestroyOnLoad(_girl);
+        Player = _girl.GetComponent<Player>();
+        if (GameObject.Find("Wall") != null)
+        {
+            _wall = GameObject.Find("Wall").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            _wall = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/MainCharacter/Wall").GetComponent<Character>();
+        }
+        DontDestroyOnLoad(_wall);
+        WallAI = _wall.GetComponent<WallAI>();
+        if (GameObject.Find("Creature") != null)
+        {
+            _creature = GameObject.Find("Creature").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            _creature = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/MainCharacter/Creature").GetComponent<Character>();
+        }
+        DontDestroyOnLoad(_creature);
+        CreatureAI = _creature.GetComponent<CreatureAI>();
+
+
+        _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
+        _wall.transform.position = GetGroundTop(new Vector3(-43, 0, 0)).Value;
+        _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
     }
     void OffTimeline()
     {
@@ -238,7 +258,8 @@ public class GameManager : ManagerBase
 
 
                     // 위치 설정
-                    Vector3 position = Player.transform.position + Vector3.right * 60;
+                    Vector3 position = GetRightOutScreenPosition();
+                    position.x += 10;
                     Vector3? topPosition = GetGroundTop(position);
                     if (topPosition.HasValue)
                         position.y = GetGroundTop(position).Value.y;
@@ -385,6 +406,7 @@ public class GameManager : ManagerBase
                 Wall.IncreasedRecoverHpPower += wallCardData.IncreaseRecoverHpPower;
                 Wall.IncreasedDamageReducePercentage += wallCardData.IncreaseDamageReducePercentage;
                 Wall.AttackPower += wallCardData.IncreaseAttackPoint;
+                Wall.transform.localScale += new Vector3(wallCardData.SizeUpPercentage / 100, wallCardData.SizeUpPercentage / 100, 0);
 
                 if (wallCardData.UnlockAbility != Define.WallAbility.None && !WallAI.AbilityUnlocks.ContainsKey(wallCardData.UnlockAbility))
                     WallAI.AbilityUnlocks.Add(wallCardData.UnlockAbility, true);
@@ -455,7 +477,13 @@ public class GameManager : ManagerBase
 
         LoadNewSceneHandler?.Invoke(mapData);
     }
-
+    public Vector3 GetRightOutScreenPosition()
+    {
+        Vector3 position = CameraController.transform.position;
+        position.z = 0;
+        position.x += _cameraController.GetCameraWidth() / 2;
+        return position;
+    }
 }
 
 

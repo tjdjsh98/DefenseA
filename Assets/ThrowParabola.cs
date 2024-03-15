@@ -20,6 +20,7 @@ public class ThrowParabola : MonoBehaviour
     [SerializeField] GameObject _firePoint;
 
     Vector3 _fireDirection;
+    float _firePower;
     GameObject _target;
 
     private void Awake()
@@ -38,7 +39,7 @@ public class ThrowParabola : MonoBehaviour
             }
             else
             {
-                for (int i = 90; i >= 45; i--)
+                for (int i = 90; i >= 45; i -= 5)
                 {
                     float angle = i;
 
@@ -47,14 +48,19 @@ public class ThrowParabola : MonoBehaviour
 
                     angle *= Mathf.Deg2Rad;
 
-                    _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized *_power);
 
-                    if (_target != null)
+                    for (float tempPower = _power -5; tempPower <= _power + 5 ; tempPower++)
                     {
-                        _fireTime = 0;
-                        _character.IsAttack = true;
-                        _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
-                        return;
+                        _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
+
+                        if (_target != null)
+                        {
+                            _fireTime = 0;
+                            _character.IsAttack = true;
+                            _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
+                            _firePower = tempPower;
+                            return;
+                        }
                     }
                 }
             }
@@ -73,7 +79,7 @@ public class ThrowParabola : MonoBehaviour
                 {
                     Projectile projectile = go.GetComponent<Projectile>();
                     projectile.transform.position = _firePoint.transform.position;
-                    projectile.Init(10, _power, 1, Define.CharacterType.Player);
+                    projectile.Init(1, _firePower, 1, Define.CharacterType.Player);
                     projectile.Fire(_character, _fireDirection);
                 }
 

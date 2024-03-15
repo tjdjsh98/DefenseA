@@ -41,6 +41,8 @@ public class HelperEditor : EditorWindow
         {
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
+            Debug.Log(words.Length);
+            words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length-1 , 1);
 
             GirlCardData data = ScriptableObject.CreateInstance<GirlCardData>();
             data.name = words[0];
@@ -83,6 +85,8 @@ public class HelperEditor : EditorWindow
         {
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
+            words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length-1 , 1);
+
             CreatureCardData data = ScriptableObject.CreateInstance<CreatureCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
@@ -99,7 +103,6 @@ public class HelperEditor : EditorWindow
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
             data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-            words[10] =  words[10].Remove(words[10].Length - 1, 1);
             data.UnlockAbility = GetCreatureAbility(words[10]);
 
 
@@ -120,6 +123,7 @@ public class HelperEditor : EditorWindow
         {
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
+            words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length - 1, 1);
 
             WallCardData data = ScriptableObject.CreateInstance<WallCardData>();
             data.name = words[0];
@@ -137,9 +141,8 @@ public class HelperEditor : EditorWindow
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
             data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-
-            words[10] =  words[10].Remove(words[10].Length - 1, 1);
             data.UnlockAbility = GetWallAbility(words[10]);
+            data.SizeUpPercentage = ParseFloat(words[11]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();

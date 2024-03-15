@@ -183,6 +183,7 @@ public class CameraController : MonoBehaviour
 
         return screenHeightInUnits * Screen.width / Screen.height;
     }
+
 }
 
 [System.Serializable]

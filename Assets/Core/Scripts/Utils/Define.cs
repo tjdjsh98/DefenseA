@@ -116,6 +116,7 @@ public static class Define
         생존본능,
         분노,
 
+        성장,
         구체생성,
         방벽,
         자폭,

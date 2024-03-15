@@ -6,4 +6,5 @@ using UnityEngine;
 public class WallCardData : CardData
 {
     [field: SerializeField] public Define.WallAbility UnlockAbility { set; get; }
+    [field: SerializeField] public float SizeUpPercentage { set; get; }
 }

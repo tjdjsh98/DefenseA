@@ -11,7 +11,7 @@ public class Projectile : MonoBehaviour
 {
     Rigidbody2D _rigid;
     TrailRenderer _trailRenderer;
-
+    
     float _knockbackPower;
     float _speed;
     int _damage;
@@ -23,7 +23,6 @@ public class Projectile : MonoBehaviour
     private Character _attacker;
 
     bool _isAttack;
-
     Define.CharacterType _enableAttackCharacterType;
 
 
@@ -55,14 +54,10 @@ public class Projectile : MonoBehaviour
 
     private void Update()
     {
-        _time += Time.deltaTime;
-        if(_time > 3)
+        CheckCollision();
+        if((Camera.main.transform.position - transform.position).magnitude > 100)
         {
             Managers.GetManager<ResourceManager>().Destroy(gameObject);
-        }
-        else
-        {
-            CheckCollision();
         }
     }
 
@@ -117,6 +112,8 @@ public class Projectile : MonoBehaviour
             }
         }
     }
+
+  
 
     public virtual void Fire(Character attacker, Vector3 direction)
     {
