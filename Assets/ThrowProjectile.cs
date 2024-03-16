@@ -44,7 +44,7 @@ public class ThrowProjectile : MonoBehaviour
         {
             if (_fireCount < _fireMaxCount)
             {
-                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile").GetComponent<Projectile>();
+                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
 
                 if (projectile != null)
                 {

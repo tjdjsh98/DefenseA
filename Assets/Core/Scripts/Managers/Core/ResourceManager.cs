@@ -25,7 +25,7 @@ public class ResourceManager : ManagerBase
 
         if (origin == null)
         {
-            Debug.LogWarning($"{path}에 해당하는 리소스가 없습니다.");
+            Debug.LogWarning($"{path}에 해당하는 리소스가 없습니다.");   
             return null;
         }
         Poolable pool = null;

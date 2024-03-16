@@ -73,11 +73,10 @@ public class ThrowParabola : MonoBehaviour
             }
             else
             {
-                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs");
+                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
 
-                if (go)
+                if (projectile)
                 {
-                    Projectile projectile = go.GetComponent<Projectile>();
                     projectile.transform.position = _firePoint.transform.position;
                     projectile.Init(1, _firePower, 1, Define.CharacterType.Player);
                     projectile.Fire(_character, _fireDirection);

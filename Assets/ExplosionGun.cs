@@ -100,7 +100,6 @@ public class ExplosionGun : Weapon
         {
             if (_projectileList[i] == null) continue;
 
-            Debug.Log(_projectileList[i].gameObject);
             Managers.GetManager<ResourceManager>().Destroy(_projectileList[i].gameObject);
         }
         _projectileList.Clear();
