@@ -1,33 +1,28 @@
-using MoreMountains.Feedbacks;
-using System.Collections;
 using System.Collections.Generic;
-using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
-using UnityEngine.Rendering;
-using UnityEngine.VFX;
 
-public class Projectile : MonoBehaviour
+public class Projectile : MonoBehaviour,ITypeDefine
 {
-    Rigidbody2D _rigid;
-    TrailRenderer _trailRenderer;
-    
-    float _knockbackPower;
-    float _speed;
-    int _damage;
-    int _penerstratingPower;
-    int _penerstrateCount;
-    float _time;
-    float _stunTime;
-    Vector3 _direction;
-    private Character _attacker;
-
-    bool _isAttack;
-    Define.CharacterType _enableAttackCharacterType;
+    [field: SerializeField] Define.ProjectileName ProjectileName { set; get; }
+    protected Rigidbody2D _rigid;
+    protected TrailRenderer _trailRenderer;
 
 
-    Vector3 _prePostion;
-    List<GameObject> _attackCharacterList = new List<GameObject>();
+    protected float _knockbackPower;
+    protected float _speed;
+    protected int _damage;
+    protected int _penerstratingPower;
+    protected int _penerstrateCount;
+    protected float _stunTime;
+    protected Vector3 _direction;
+    protected Character _attacker;
+
+    protected bool _isAttack;
+    protected  Define.CharacterType _enableAttackCharacterType;
+
+
+    protected Vector3 _prePostion;
+    protected List<GameObject> _attackCharacterList = new List<GameObject>();
 
 
     private void Awake()
@@ -36,8 +31,9 @@ public class Projectile : MonoBehaviour
         _trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    public void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0.1f)
+    public virtual void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0.1f)
     {
+        _trailRenderer.enabled = true;
         _trailRenderer.Clear();
         _knockbackPower = knockbackPower;
         _speed = speed;
@@ -46,13 +42,11 @@ public class Projectile : MonoBehaviour
         _enableAttackCharacterType = enableAttackCharacterType;
         _penerstratingPower = penetratingPower;
         _isAttack = false;
-        _time = 0;
         _penerstrateCount = 0;
         _attackCharacterList.Clear();
-        gameObject.SetActive(true);
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         CheckCollision();
         if((Camera.main.transform.position - transform.position).magnitude > 100)
@@ -61,7 +55,7 @@ public class Projectile : MonoBehaviour
         }
     }
 
-    void CheckCollision()
+    protected virtual void CheckCollision()
     {
         if (_isAttack) return;
         if(transform.position == _prePostion) return;
@@ -89,7 +83,7 @@ public class Projectile : MonoBehaviour
 
                 if (character)
                 {
-                    if (character.Hp > 0 && character.CharacterType == _enableAttackCharacterType)
+                    if (!character.IsDead && character.CharacterType == _enableAttackCharacterType)
                     {
 
                         _direction = _direction.normalized;
@@ -124,5 +118,10 @@ public class Projectile : MonoBehaviour
         _rigid.velocity = (Vector2)direction.normalized * (_speed + (attacker.MySpeed.magnitude ));
         _direction = direction.normalized;
         _prePostion = transform.position;
+    }
+
+    public int GetEnumToInt()
+    {
+        return (int)ProjectileName;
     }
 }

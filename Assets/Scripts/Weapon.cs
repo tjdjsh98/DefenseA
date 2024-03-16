@@ -17,10 +17,12 @@ public class Weapon : MonoBehaviour, ITypeDefine
         get { if(_player == null) _player = GetComponentInParent<Player>(); return _player; }
     }
 
+    [SerializeField] protected bool _debug;
 
     [SerializeField]protected Define.WeaponName _weaponName;
     public Define.WeaponName WeaponName =>_weaponName;
 
+    [SerializeField] protected Define.ProjectileName _bulletName;
     [SerializeField][Range(0,1)] float _audioLength;
     protected Coroutine _audioCoroutine;
 
@@ -142,20 +144,21 @@ public class Weapon : MonoBehaviour, ITypeDefine
         fireFlare.transform.rotation = _firePosition.transform.rotation;
         // ---------------
 
-        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
-        go.transform.position = _firePosition.transform.position;
-        Projectile projectile = go.GetComponent<Projectile>();
-        int damage = Damage;
+        Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_bulletName);
+        if (projectile != null) {
+            projectile.transform.position = _firePosition.transform.position;
+            int damage = Damage;
 
-        // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-        if (Player.AbilityUnlocks.ContainsKey(Define.GirlAbility.LastShot) && _currentAmmo == 0)
-            damage = Damage * 3;
-        projectile.Init(KnockBackPower, BulletSpeed, damage,Define.CharacterType.Enemy,PenerstratingPower,StunTime);
-        projectile.Fire(fireCharacter, direction.normalized);
+            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
+            if (Player.AbilityUnlocks.ContainsKey(Define.GirlAbility.LastShot) && _currentAmmo == 0)
+                damage = Damage * 3;
+            projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(fireCharacter, direction.normalized);
 
-        Character.Damage(Character, 0, _knockBack, -direction,0);
+            Character.Damage(Character, 0, _knockBack, -direction, 0);
 
-        Player?.Rebound(_rebound);
+            Player?.Rebound(_rebound);
+        }
     }
     public void Update()
     {

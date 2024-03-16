@@ -73,7 +73,7 @@ public class ThrowParabola : MonoBehaviour
             }
             else
             {
-                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("ParabolaProjectile");
+                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs");
 
                 if (go)
                 {

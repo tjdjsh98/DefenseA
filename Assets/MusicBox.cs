@@ -39,7 +39,7 @@ public class MusicBox : MonoBehaviour
 
                 if (character && character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>("Prefabs/Projectile");
+                    Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Normal);
                     projectile.transform.position = _firePoint.transform.position;
                     projectile.Init(10, 50, 1, Define.CharacterType.Enemy);
                     projectile.Fire(_owner,character.transform.position - _firePoint.transform.position);   

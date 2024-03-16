@@ -435,7 +435,6 @@ public class GameManager : ManagerBase
     public void LoadScene(MapData mapData)
     {
         if (!IsLoadEnd) return;
-        Debug.Log("Load");
 
         count++;
         if (count > 20)

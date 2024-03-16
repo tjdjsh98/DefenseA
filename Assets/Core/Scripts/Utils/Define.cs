@@ -174,6 +174,7 @@ public static class Define
         Stungun,
         Railgun,
         Black,
+        ExplosionGun,
         END
     }
 
@@ -183,6 +184,16 @@ public static class Define
         Main,
         Sub,
         Melee,
+        END
+    }
+
+    public enum ProjectileName
+    {
+        None = -1,
+        Normal,
+        Parabola,
+        Attach,
+        Bullet,
         END
     }
 

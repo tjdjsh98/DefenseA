@@ -17,6 +17,7 @@ public class DataManager : ManagerBase
         LoadData<EnemyNameDefine>("Prefabs/Enemy");
         LoadData<Effect>("Prefabs/Effect");
         LoadData<Weapon>("Prefabs/Weapon");
+        LoadData<Projectile>("Prefabs/Projectile");
     }
 
     public override void ManagerUpdate()
