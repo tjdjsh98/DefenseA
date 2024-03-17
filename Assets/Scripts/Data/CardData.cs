@@ -10,8 +10,8 @@ public class CardData : ScriptableObject,ITypeDefine
     [field: SerializeField] public string CardDescription { set; get; }
     [field: SerializeField] public bool IsStartCard { set; get; }
 
-    // Ã³À½ ÇØ´ç Ä«µå¸¦ ¼±ÅÃÇÒ ¶§ Ä«µå ¸ñ·ÏÀ» ¾÷±×·¹ÀÌµåÇÒ ¸ñ·Ï¿¡ ³Ö¾îÁÜ.
-    [field: SerializeField] public List<CardName> PriorCards {set;get; }
+    // ì²˜ìŒ í•´ë‹¹ ì¹´ë“œë¥¼ ì„ íƒí•  ë•Œ ì¹´ë“œ ëª©ë¡ì„ ì—…ê·¸ë ˆì´ë“œí•  ëª©ë¡ì— ë„£ì–´ì¤Œ.
+    [field: SerializeField] public List<CardName> PriorCards { set;get; }
     [field: SerializeField] public int MaxUpgradeCount { get; set; }
 
     [field: SerializeField] public int IncreaseHp { get; set; }
@@ -28,27 +28,28 @@ public class CardData : ScriptableObject,ITypeDefine
 public enum CardName
 {
     None = -1,
-    ¶ó½ºÆ®¼¦,
-    ¿¬»ç±¤,
-    ºü¸¥ÀçÀåÀü,
-    Ãß°¡ÅºÃ¢,
-    ³Ë³ËÇÑÃÑ¾Ë,
-    °ËÀº±¸Ã¼_¼Ò³à,
-    ¸¶Áö¸·¹ß¾Ç,
-    °ËÀº±¸Ã¼,
-    Àü±â¹ßÀü,
-    ÀÏÁ¦»ç°İ,
-
-    ¼îÅ©¿şÀÌºê,
-    ¶¥±¸¸£±â,
-    »ıÁ¸º»´É,
-    ºĞ³ë,
-
-
-    ¼ºÀå,
-    ±¸Ã¼»ı¼º,
-    ¹æº®,
-    ÀÚÆø,
-    °ËÀº±¸Ã¼_º®,
+    
+    ë¼ìŠ¤íŠ¸ìƒ·,
+    ìë™ì¥ì „,
+    ë„‰ë„‰í•œì´ì•Œ,
+    ê²€ì€êµ¬ì²´,
+    ë§ˆì§€ë§‰ë°œì•…,
+    ì „ê¸°ë°œì „,
+    ì¼ì œì‚¬ê²©,
+    ë¹ ë¥¸ì¥ì „,
+    ì¶”ê°€ì¥ì „,
+    ì‡¼í¬ì›¨ì´ë¸Œ,
+    ë•…êµ¬ë¥´ê¸°,
+    ìƒì¡´ë³¸ëŠ¥,
+    ë¶„ë…¸,
+    ë°©ë²½,
+    êµ¬ì²´ìƒì„±,
+    ìí­,
+    ì„±ì¥,
+    ê³µê²©êµ¬ì²´,
+    í”¼ê²©êµ¬ì²´,
+    êµ¬ì²´ì¦ê°€,
+    í­íŒŒêµ¬ì²´,
+    ì—¬ë¶„êµ¬ì²´,
     END,
 }

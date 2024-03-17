@@ -110,7 +110,7 @@ public class HelperEditor : EditorWindow
 
             if (!string.IsNullOrEmpty(words[0]))
             {
-                cardName += words[0];
+                cardName += $"\n    {words[0]},";
             }
 
             if (!string.IsNullOrEmpty(words[9]))
@@ -139,7 +139,7 @@ public class HelperEditor : EditorWindow
 
             if (!string.IsNullOrEmpty(words[0]))
             {
-                cardName += words[0];
+                cardName += $"\n    {words[0]},";
             }
 
             if (!string.IsNullOrEmpty(words[10]))
@@ -167,7 +167,7 @@ public class HelperEditor : EditorWindow
 
             if (!string.IsNullOrEmpty(words[0]))
             {
-                cardName += words[0];
+                cardName += $"\n    {words[0]},";
             }
 
             if (!string.IsNullOrEmpty(words[10]))
@@ -195,7 +195,7 @@ public class HelperEditor : EditorWindow
 
             if (!string.IsNullOrEmpty(words[0]))
             {
-                cardName += words[0];
+                cardName += $"\n    {words[0]},";
             }
 
             if (!string.IsNullOrEmpty(words[6]))
