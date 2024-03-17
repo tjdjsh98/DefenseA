@@ -34,7 +34,7 @@ public class WallAI : MonoBehaviour
     float _reviveElapsedTime = 0;
 
     // 능력 해금
-    public Dictionary<Define.WallAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.WallAbility, bool>();
+    public Dictionary<WallAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<WallAbility, bool>();
 
 
     // 폭파능력
@@ -82,7 +82,7 @@ public class WallAI : MonoBehaviour
     private void OnCharacterDead()
     {
         _character.AnimatorSetBool("Dead", true);
-        if (AbilityUnlocks.TryGetValue(Define.WallAbility.SelfDestruct,out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(WallAbility.SelfDestruct,out bool value) && value)
         {
 
             Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Explosion);
@@ -127,7 +127,7 @@ public class WallAI : MonoBehaviour
         if(ReflectionDamage != 0)
             _character.Attack(attacker, ReflectionDamage, 0, Vector3.zero, 0);
 
-        if (AbilityUnlocks.TryGetValue(Define.WallAbility.GenerateSphere, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(WallAbility.GenerateSphere, out bool value) && value)
         {
             GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
             BlackSphere blackSphere = go.GetComponent<BlackSphere>();

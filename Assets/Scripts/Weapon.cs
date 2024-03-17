@@ -150,7 +150,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             int damage = Damage;
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.AbilityUnlocks.ContainsKey(Define.GirlAbility.LastShot) && _currentAmmo == 0)
+            if (Player.GetIsHaveAbility(GirlAbility.LastShot) && _currentAmmo == 0)
                 damage = Damage * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
@@ -192,7 +192,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         {
             if (_player)
             {
-                if (_player.AbilityUnlocks.ContainsKey(Define.GirlAbility.FastReload))
+                if (_player.GetIsHaveAbility(GirlAbility.FastReload))
                 {
                     _reloadGauge.Point(0.7f, 0.9f);
                 }
@@ -234,7 +234,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            if (_player.AbilityUnlocks.ContainsKey(Define.GirlAbility.ExtraAmmo) && !_fastReloadFailed)
+            if (_player.GetIsHaveAbility(GirlAbility.ExtraAmmo) && !_fastReloadFailed)
                 _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
             else
                 _currentAmmo = _maxAmmo;

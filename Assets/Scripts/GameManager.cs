@@ -1,15 +1,9 @@
-using MoreMountains.Tools;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http.Headers;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
 
 public class GameManager : ManagerBase
 {
@@ -96,12 +90,15 @@ public class GameManager : ManagerBase
     [Header("카드 선택지")]
     List<CardData> _remainCardSelectionList;
     List<CardData> _earnCardSelectionList;
-    Dictionary<Define.CardName, int> _cardSelectionCount = new Dictionary<Define.CardName, int>();
+    Dictionary<CardName, int> _cardSelectionCount = new Dictionary<CardName, int>();
     [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
 
     // 땅과 관련변수
     [Header("상점 관련 변수")]
     [field: SerializeField] public List<ShopItem> ShopItemList;
+
+    // 공용 능력
+    Dictionary<Define.CommonAbility, bool> _commonAbilityUnlocks = new Dictionary<Define.CommonAbility, bool>();
 
 
     CameraController _cameraController;
@@ -382,7 +379,7 @@ public class GameManager : ManagerBase
                 Girl.IncreasedDamageReducePercentage += girlCardData.IncreaseDamageReducePercentage;
                 Girl.AttackPower += girlCardData.IncreaseAttackPoint;
 
-                if (girlCardData.UnlockAbility != Define.GirlAbility.None && !Player.AbilityUnlocks.ContainsKey(girlCardData.UnlockAbility))
+                if (girlCardData.UnlockAbility != GirlAbility.None && !Player.AbilityUnlocks.ContainsKey(girlCardData.UnlockAbility))
                     Player.AbilityUnlocks.Add(girlCardData.UnlockAbility, true);
                 Player.DecreasedFireDelayPercent += girlCardData.DecreaseFireDelayPercentage;
                 Player.IncreasedReloadSpeedPercent += girlCardData.IncreaseReloadSpeedPercentage;
@@ -397,7 +394,7 @@ public class GameManager : ManagerBase
                 Creature.IncreasedDamageReducePercentage += creatureCardData.IncreaseDamageReducePercentage;
                 Creature.AttackPower += creatureCardData.IncreaseAttackPoint;
 
-                if (creatureCardData.UnlockAbility != Define.CreatureAbility.None && !CreatureAI.AbilityUnlocks.ContainsKey(creatureCardData.UnlockAbility))
+                if (creatureCardData.UnlockAbility != CreatureAbility.None && !CreatureAI.AbilityUnlocks.ContainsKey(creatureCardData.UnlockAbility))
                     CreatureAI.AbilityUnlocks.Add(creatureCardData.UnlockAbility, true);
             }
             if (wallCardData != null)
@@ -408,12 +405,12 @@ public class GameManager : ManagerBase
                 Wall.AttackPower += wallCardData.IncreaseAttackPoint;
                 Wall.transform.localScale += new Vector3(wallCardData.SizeUpPercentage / 100, wallCardData.SizeUpPercentage / 100, 0);
 
-                if (wallCardData.UnlockAbility != Define.WallAbility.None && !WallAI.AbilityUnlocks.ContainsKey(wallCardData.UnlockAbility))
+                if (wallCardData.UnlockAbility != WallAbility.None && !WallAI.AbilityUnlocks.ContainsKey(wallCardData.UnlockAbility))
                     WallAI.AbilityUnlocks.Add(wallCardData.UnlockAbility, true);
             }
         }
     }
-    public int GetCardSelectionCount(Define.CardName cardSelection)
+    public int GetCardSelectionCount(CardName cardSelection)
     {
         int count = 0;
         _cardSelectionCount.TryGetValue(cardSelection, out count);
@@ -483,12 +480,22 @@ public class GameManager : ManagerBase
         position.x += _cameraController.GetCameraWidth() / 2;
         return position;
     }
+
+    public bool GetIsHaveCommonAbility(Define.CommonAbility commonAbility)
+    {
+        if(_commonAbilityUnlocks.TryGetValue(commonAbility,out var abilityUnlock))
+        {
+            return abilityUnlock;
+        }
+
+        return false;
+    }
 }
 
 
 [System.Serializable]
 public class PriorCard
 {
-    public Define.CardName cardName;
-    public List<Define.CardName> priorCardList = new List<Define.CardName>();
+    public CardName cardName;
+    public List<CardName> priorCardList = new List<CardName>();
 }

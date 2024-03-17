@@ -1,16 +1,5 @@
-using MoreMountains.Feedbacks;
-using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics.CodeAnalysis;
-using System.Runtime.InteropServices;
-using TreeEditor;
-using Unity.Cinemachine;
-using Unity.VisualScripting;
-using UnityEditor;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -43,7 +32,7 @@ public class CreatureAI : MonoBehaviour
         get
         {
             int ap =  _character.AttackPower;
-            if (GetIsHaveAbility(Define.CreatureAbility.Rage))
+            if (GetIsHaveAbility(CreatureAbility.Rage))
                 ap = Mathf.RoundToInt( ap* 1.5f);
             return ap;
         }
@@ -53,7 +42,7 @@ public class CreatureAI : MonoBehaviour
         get
         {
             float attackSpeed = 1;
-            if (GetIsHaveAbility(Define.CreatureAbility.Rage))
+            if (GetIsHaveAbility(CreatureAbility.Rage))
                 attackSpeed *= 1.5f;
 
             return attackSpeed;
@@ -61,7 +50,7 @@ public class CreatureAI : MonoBehaviour
     }
 
     // 능력 해금
-    public Dictionary<Define.CreatureAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.CreatureAbility, bool>();
+    public Dictionary<CreatureAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<CreatureAbility, bool>();
 
     // 관통공격
     [Header("관통공격")]
@@ -498,7 +487,7 @@ public class CreatureAI : MonoBehaviour
 
     void SpearAttack()
     {
-        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.Spear, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(CreatureAbility.Spear, out bool value) && value)
         {
 
             GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[2]);
@@ -523,7 +512,7 @@ public class CreatureAI : MonoBehaviour
 
     void SurvivalInstinct()
     {
-        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.SurvialIntinct, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(CreatureAbility.SurvialIntinct, out bool value) && value)
         {
 
             _survivalIntinctElapsed += Time.deltaTime;
@@ -615,7 +604,7 @@ public class CreatureAI : MonoBehaviour
         }
         slot.skillTime = 0;
     }
-    public bool GetIsHaveAbility(Define.CreatureAbility ability)
+    public bool GetIsHaveAbility(CreatureAbility ability)
     {
         if (AbilityUnlocks.TryGetValue(ability, out bool value) && value)
             return true;
@@ -626,7 +615,7 @@ public class CreatureAI : MonoBehaviour
     void CalcHpRecoverPower()
     {
         float hpRecoverPower = 0;
-        if (AbilityUnlocks.TryGetValue(Define.CreatureAbility.SurvialIntinct, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(CreatureAbility.SurvialIntinct, out bool value) && value)
         {
             hpRecoverPower += (int)(_survivalIntinctCount / 3) * 0.1f;
         }

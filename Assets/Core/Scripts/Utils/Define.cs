@@ -97,69 +97,23 @@ public static class Define
         Status,
         Weapon
     }
-    public enum CardName
-    {
-        None = - 1,
-        라스트샷,
-        연사광,
-        빠른재장전,
-        추가탄창,
-        넉넉한총알,
-        검은구체_소녀,
-        마지막발악,
-        검은구체,
-        전기발전,
-        일제사격,
+  
 
-        쇼크웨이브,
-        땅구르기,
-        생존본능,
-        분노,
-
-        성장,
-        구체생성,
-        방벽,
-        자폭,
-        검은구체_벽,
-        END,
-    }
-    public static int CARD_COUNT = (int)CardName.END;
-
-    public enum GirlAbility
-    {
-        None = -1,
-        BlackSphere,
-        FastReload,
-        ExtraAmmo,
-        AutoReload,
-        LastShot,
-        PlentyOfBullets,
-        Electric,
-        LastStruggle,
-        VolleyFiring,
-        END
-    }
-    public static int GIRLABILITY_COUNT = (int)GirlAbility.END;
-    public enum WallAbility
+    public enum CommonAbility
     {
         None = -1,
         GenerateSphere,
-        Barrier,
-        SelfDestruct,
+        AttackSphere,
+        HitSphere,
+        IncreaseSphere,
+        VolleyFiring,
+        ExplosionSphere,
+        SpareSphere,
         END
     }
-    public static int WALLABILITY_COUNT = (int)WallAbility.END;
-     public enum CreatureAbility
-    {
-        None = -1,
-        Shockwave,
-        StempGround,
-        SurvialIntinct,
-        Spear,
-        Rage,
-        END,
-    }
-    public static int CREATUREABILITY_COUNT = (int)CreatureAbility.END;
+    public static int COMMONABILITY_COUNT = (int)CommonAbility.END;
+
+
 
     public enum WeaponName
     {

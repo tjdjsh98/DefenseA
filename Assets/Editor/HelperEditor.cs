@@ -11,6 +11,12 @@ public class HelperEditor : EditorWindow
     const string GIRL_CARD_DATA_PATH = "Data/소녀카드.csv";
     const string CREATURE_CARD_DATA_PATH = "Data/괴물카드.csv";
     const string WALL_CARD_DATA_PATH = "Data/벽카드.csv";
+    const string COMMON_CARD_DATA_PATH = "Data/공용카드.csv";
+
+    const string GirlAbilityFormat=
+        "{0}" +
+        ""
+
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
     static void Init()
@@ -26,6 +32,7 @@ public class HelperEditor : EditorWindow
             CreateGirlCardData();
             CreateCreatureCardData();
             CreateWallCardData();
+            CreateCommonCardData();
         }
     }
     void CreateGirlCardData()
@@ -41,7 +48,6 @@ public class HelperEditor : EditorWindow
         {
             string[] words = lines[i].Split(',');
             if (preHeadWords.Length != words.Length) continue;
-            Debug.Log(words.Length);
             words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length-1 , 1);
 
             GirlCardData data = ScriptableObject.CreateInstance<GirlCardData>();
@@ -51,7 +57,7 @@ public class HelperEditor : EditorWindow
             data.IsStartCard = words[3].Equals("1") ? true : false;
 
             string[] priorCards = words[4].Split("|",options:System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<Define.CardName>();
+            data.PriorCards = new List<CardName>();
             foreach (var priorCard in priorCards)
             {
                 data.PriorCards.Add(GetCardName(priorCard));
@@ -93,7 +99,7 @@ public class HelperEditor : EditorWindow
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
             string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<Define.CardName>();
+            data.PriorCards = new List<CardName>();
             foreach (var priorCard in priorCards)
             {
                 data.PriorCards.Add(GetCardName(priorCard));
@@ -131,7 +137,7 @@ public class HelperEditor : EditorWindow
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
             string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<Define.CardName>();
+            data.PriorCards = new List<CardName>();
             foreach (var priorCard in priorCards)
             {
                 data.PriorCards.Add(GetCardName(priorCard));
@@ -149,7 +155,40 @@ public class HelperEditor : EditorWindow
             AssetDatabase.Refresh();
         }
     }
- 
+    void CreateCommonCardData()
+    {
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_DATA_PATH);
+        if (textAsset == null) return;
+
+        string[] lines = textAsset.text.Split('\n');
+
+        string[] preHeadWords = lines[0].Split(',');
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+            words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length - 1, 1);
+
+            CommonCardData data = ScriptableObject.CreateInstance<CommonCardData>();
+            data.name = words[0];
+            data.CardName = GetCardName(words[0]);
+            data.CardDescription = words[2];
+            data.IsStartCard = words[3].Equals("1") ? true : false;
+            string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<CardName>();
+            foreach (var priorCard in priorCards)
+            {
+                data.PriorCards.Add(GetCardName(priorCard));
+            }
+            data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
+            data.UnlockAbility = GetCommonAbility(words[6]);
+
+            AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+    }
+
     public static T[] GetAssetsAtPath<T>(string path) where T : Object
     {
         List<T> returnList = new List<T>();
@@ -175,46 +214,57 @@ public class HelperEditor : EditorWindow
         throw new System.NotImplementedException();
     }
 
-    Define.CardName GetCardName(string cardName)
+    CardName GetCardName(string cardName)
     {
-        for (int i = 0; i < Define.CARD_COUNT; i++)
+        for (int i = 0; i < CardData.CARD_COUNT; i++)
         {
-            if (cardName.Equals(((Define.CardName)i).ToString()))
+            if (cardName.Equals(((CardName)i).ToString()))
             {
-                return (Define.CardName)i;
+                return (CardName)i;
             }
         }
-        return Define.CardName.None;
+        return  CardName.None;
     }
-    Define.GirlAbility GetGirlAbility(string name)
+    GirlAbility GetGirlAbility(string name)
     {
-        for (int i = 0; i < Define.GIRLABILITY_COUNT; i++)
+        for (int i = 0; i < GirlAbilityData.GIRLABILITY_COUNT; i++)
         {
-            if (name.Equals(((Define.GirlAbility)i).ToString()))
+            if (name.Equals(((GirlAbility)i).ToString()))
             {
-                return (Define.GirlAbility)i;
+                return (GirlAbility)i;
             }
         }
         return GirlAbility.None;
     }
-    Define.WallAbility GetWallAbility(string name)
+    WallAbility GetWallAbility(string name)
     {
-        for (int i = 0; i < Define.WALLABILITY_COUNT; i++)
+        for (int i = 0; i < WallAbilityData.WALLABILITY_COUNT; i++)
         {
-            if (name.Equals(((Define.WallAbility)i).ToString()))
+            if (name.Equals(((WallAbility)i).ToString()))
             {
-                return (Define.WallAbility)i;
+                return (WallAbility)i;
             }
         }
         return WallAbility.None;
     }
-    Define.CreatureAbility GetCreatureAbility(string name)
+    Define.CommonAbility GetCommonAbility(string name)
     {
-        for (int i = 0; i < Define.CREATUREABILITY_COUNT; i++)
+        for (int i = 0; i < Define.COMMONABILITY_COUNT; i++)
         {
-            if (name.Equals(((Define.CreatureAbility)i).ToString()))
+            if (name.Equals(((Define.CommonAbility)i).ToString()))
             {
-                return (Define.CreatureAbility)i;
+                return (Define.CommonAbility)i;
+            }
+        }
+        return CommonAbility.None;
+    }
+    CreatureAbility GetCreatureAbility(string name)
+    {
+        for (int i = 0; i < CreatureAbilityData.CREATUREABILITY_COUNT; i++)
+        {
+            if (name.Equals(((CreatureAbility)i).ToString()))
+            {
+                return (CreatureAbility)i;
             }
         }
         return CreatureAbility.None;

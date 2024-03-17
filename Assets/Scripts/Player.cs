@@ -1,7 +1,5 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -67,7 +65,7 @@ public class Player : MonoBehaviour
 
     public float IncreaseAttackPowerPercentage => _plentyOfBulletsIncreasedAttackPointPercentage;
     // 능력 언락부분
-    public Dictionary<Define.GirlAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<Define.GirlAbility, bool>();
+    public Dictionary<GirlAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<GirlAbility, bool>();
     
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
@@ -138,7 +136,7 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon == null) return;
 
 
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.FastReload,out bool value)&& value)
+        if (AbilityUnlocks.TryGetValue(GirlAbility.FastReload,out bool value)&& value)
         {
             _weaponSwaper.CurrentWeapon.FastReload();
         }
@@ -255,7 +253,7 @@ public class Player : MonoBehaviour
         float percentage = 0;
         percentage += _plentyOfBulletsIncreasedAttackPointPercentage;
 
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.LastStruggle, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(GirlAbility.LastStruggle, out bool value) && value)
         {
             if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
                 percentage += 100f;
@@ -273,7 +271,7 @@ public class Player : MonoBehaviour
 
         percentage += IncreasedAttackSpeedPercentage;
 
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.LastStruggle, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(GirlAbility.LastStruggle, out bool value) && value)
         {
             if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
                 percentage += 100f;
@@ -284,7 +282,7 @@ public class Player : MonoBehaviour
 
     private void Electric()
     {
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.Electric, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(GirlAbility.Electric, out bool value) && value)
         {
             if (_maxElectric > CurrentElectric)
                 CurrentElectric += Time.deltaTime * 0.1f;
@@ -311,7 +309,7 @@ public class Player : MonoBehaviour
     {
         if (_weaponSwaper.CurrentWeapon)
         {
-            if (GetIsHaveAbility(Define.GirlAbility.PlentyOfBullets))
+            if (GetIsHaveAbility(GirlAbility.PlentyOfBullets))
             {
                 int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
                 _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
@@ -321,22 +319,18 @@ public class Player : MonoBehaviour
 
     void OnAttack(Character target, int damage)
     {
-        if (GetIsHaveAbility(Define.GirlAbility.BlackSphere))
+        if (GetIsHaveAbility(GirlAbility.BlackSphere))
         {
             if (_maxBlackSphereCount > _blackSphereList.Count)
             {
                 // 20%의 확률로
                 if (Random.Range(0, 5) == 0)
                 {
-                    GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
-                    go.transform.position = target.transform.position;
-                    BlackSphere blackSphere = go.GetComponent<BlackSphere>();
-                    blackSphere.Init(_character, new Vector3(-3, 5));
-                    _blackSphereList.Add(blackSphere);
+                    AddBlackSphere(target.transform.position);
                 }
             }
         }
-        if (GetIsHaveAbility(Define.GirlAbility.VolleyFiring))
+        if (GetIsHaveAbility(GirlAbility.VolleyFiring))
         {
             if(_maxBlackSphereCount <= _blackSphereList.Count)
             {
@@ -349,12 +343,19 @@ public class Player : MonoBehaviour
                 _blackSphereList.Clear();
             }
         }
+    }
 
-
+    public void AddBlackSphere(Vector3 position)
+    {
+        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
+        go.transform.position = position;
+        BlackSphere blackSphere = go.GetComponent<BlackSphere>();
+        blackSphere.Init(_character, new Vector3(-3, 5));
+        _blackSphereList.Add(blackSphere);
     }
     private void AutoReload()
     {
-        if (AbilityUnlocks.TryGetValue(Define.GirlAbility.AutoReload, out bool value) && value)
+        if (AbilityUnlocks.TryGetValue(GirlAbility.AutoReload, out bool value) && value)
         {
 
             for (int i = 0; i < _weaponSwaper.GetWeaponCount(); i++)
@@ -663,7 +664,7 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool GetIsHaveAbility(Define.GirlAbility girlAbility)
+    public bool GetIsHaveAbility(GirlAbility girlAbility)
     {
         if (AbilityUnlocks.TryGetValue(girlAbility, out bool value) && value)
             return true;
