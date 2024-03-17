@@ -485,30 +485,6 @@ public class CreatureAI : MonoBehaviour
         _character.SetAnimationSpeed(1);
     }
 
-    void SpearAttack()
-    {
-        if (AbilityUnlocks.TryGetValue(CreatureAbility.Spear, out bool value) && value)
-        {
-
-            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[2]);
-
-            if (gos.Length > 0)
-            {
-                _spearAttackElapsed = 0;
-                foreach (var go in gos)
-                {
-                    Character c = go.GetComponent<Character>();
-                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-                    {
-                        GameObject spear = Managers.GetManager<ResourceManager>().Instantiate("Spear");
-                        spear.transform.position = c.transform.position;
-                        spear.GetComponent<AttackObject>().StartAttack(_character, 10);
-                        return;
-                    }
-                }
-            }
-        }
-    }
 
     void SurvivalInstinct()
     {

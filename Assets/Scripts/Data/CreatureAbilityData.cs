@@ -1,3 +1,6 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
 public class CreatureAbilityData
 {
@@ -6,10 +9,9 @@ public class CreatureAbilityData
 public enum CreatureAbility
 {
     None = -1,
-    Shockwave,
-    StempGround,
-    SurvialIntinct,
-    Spear,
-    Rage,
-    END,
-}
+    Shockwave,
+    StempGround,
+    SurvialIntinct,
+    Rage,
+    END
+};

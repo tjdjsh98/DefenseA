@@ -1,3 +1,4 @@
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.Serialization;
@@ -97,24 +98,6 @@ public static class Define
         Status,
         Weapon
     }
-  
-
-    public enum CommonAbility
-    {
-        None = -1,
-        GenerateSphere,
-        AttackSphere,
-        HitSphere,
-        IncreaseSphere,
-        VolleyFiring,
-        ExplosionSphere,
-        SpareSphere,
-        END
-    }
-    public static int COMMONABILITY_COUNT = (int)CommonAbility.END;
-
-
-
     public enum WeaponName
     {
         None = -1,

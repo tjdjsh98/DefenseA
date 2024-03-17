@@ -9,8 +9,8 @@ public class WallAbilityData
 public enum WallAbility
 {
     None = -1,
-    GenerateSphere,
     Barrier,
+    GenerateSphere,
     SelfDestruct,
     END
-}
+};

@@ -9,13 +9,64 @@ using static Define;
 public class HelperEditor : EditorWindow
 {
     const string GIRL_CARD_DATA_PATH = "Data/소녀카드.csv";
+    const string GIRL_ABILITY_DATA_PATH = "Scripts/Data/GirlAbilityData.cs";
     const string CREATURE_CARD_DATA_PATH = "Data/괴물카드.csv";
+    const string CREATURE_ABILITY_DATA_PATH = "Scripts/Data/CreatureAbilityData.cs";
     const string WALL_CARD_DATA_PATH = "Data/벽카드.csv";
+    const string WALL_ABILITY_DATA_PATH = "Scripts/Data/WallAbilityData.cs";
     const string COMMON_CARD_DATA_PATH = "Data/공용카드.csv";
+    const string COMMON_ABILITY_DATA_PATH = "Scripts/Data/CommonAbilityData.cs";
+    const string CARD_DATA_PATH = "Scripts/Data/CardData.cs";
 
-    const string GirlAbilityFormat=
-        "{0}" +
-        ""
+    // 0 : 이름, 1 : 대문자 이름 , 2 : 능력 이름들
+    const string AbilityFormat =
+        "using System.Collections;" +
+        "\nusing System.Collections.Generic;" +
+        "\nusing UnityEngine;" +
+        "\n\npublic class {0}AbilityData" +
+        "\n{{" +
+        "\n    public static int {1}ABILITY_COUNT = (int){0}Ability.END;" +
+        "\n}}" +
+        "\npublic enum {0}Ability" +
+        "\n{{" +
+        "\n    None = -1," +
+        "{2}"+
+        "\n    END" +
+        "\n}};";
+
+    const string CardFormat =
+        "using System.Collections;" +
+        "\nusing System.Collections.Generic;" +
+        "\nusing UnityEngine;" +
+        "\n" +
+        "\n[CreateAssetMenu(fileName = \"Create Card\",menuName = \"AddData/Create CardData\", order = 0)]" +
+        "\npublic class CardData : ScriptableObject,ITypeDefine" +
+        "\n{{" +
+        "\n    [field:SerializeField]public CardName CardName {{ set; get; }}" +
+        "\n    [field: SerializeField] public Define.CardType CardSelectionType {{ set; get; }}" +
+        "\n    [field: SerializeField] public string CardDescription {{ set; get; }}" +
+        "\n    [field: SerializeField] public bool IsStartCard {{ set; get; }}" +
+        "\n" +
+        "\n    // 처음 해당 카드를 선택할 때 카드 목록을 업그레이드할 목록에 넣어줌." +
+        "\n    [field: SerializeField] public List<CardName> PriorCards {{ set;get; }}" +
+        "\n    [field: SerializeField] public int MaxUpgradeCount {{ get; set; }}" +
+        "\n" +
+        "\n    [field: SerializeField] public int IncreaseHp {{ get; set; }}" +
+        "\n    [field: SerializeField] public float IncreaseRecoverHpPower {{ get; set; }}" +
+        "\n    [field: SerializeField] public float IncreaseDamageReducePercentage {{ get; set; }}" +
+        "\n    [field:SerializeField] public int IncreaseAttackPoint {{ get; set; }}" +
+        "\n\n    public int GetEnumToInt()" +
+        "\n    {{" +
+        "\n        return (int)CardName;" +
+        "\n    }}" +
+        "\n    public static int CARD_COUNT = (int)CardName.END;" +
+        "\n}}" +
+        "\npublic enum CardName" +
+        "\n{{" +
+        "\n    None = -1," +
+        "\n    {0}" +
+        "\n    END," +
+        "\n}}";
 
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
@@ -27,6 +78,10 @@ public class HelperEditor : EditorWindow
     }
     void OnGUI()
     {
+        if (GUILayout.Button(new GUIContent("데이터 정의 재생성")))
+        {
+            CreateDefineFile();
+        }
         if (GUILayout.Button(new GUIContent("카드데이터 생성")))
         {
             CreateGirlCardData();
@@ -35,6 +90,130 @@ public class HelperEditor : EditorWindow
             CreateCommonCardData();
         }
     }
+
+    void CreateDefineFile()
+    {
+        // 소녀 정의 로드
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + GIRL_CARD_DATA_PATH);
+        if (textAsset == null) return;
+
+        string cardName = "";
+        string ability = "";
+
+        string[] lines = textAsset.text.Split('\n');
+        string[] preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
+            if (!string.IsNullOrEmpty(words[0]))
+            {
+                cardName += words[0];
+            }
+
+            if (!string.IsNullOrEmpty(words[9]))
+            {
+                ability += $"\n    {words[9]},";
+            }
+        }
+        StreamWriter writer = new StreamWriter("Assets/"+GIRL_ABILITY_DATA_PATH);
+        writer.Write(string.Format(AbilityFormat,"Girl","GIRL", ability));
+        writer.Close();
+
+        // 괴물 정의 로드
+        textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + CREATURE_CARD_DATA_PATH);
+        if (textAsset == null) return;
+
+        ability = "";
+
+        lines = textAsset.text.Split('\n');
+        preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
+
+            if (!string.IsNullOrEmpty(words[0]))
+            {
+                cardName += words[0];
+            }
+
+            if (!string.IsNullOrEmpty(words[10]))
+            {
+                ability += $"\n    {words[10]},";
+            }
+        }
+        writer = new StreamWriter("Assets/" + CREATURE_ABILITY_DATA_PATH);
+        writer.Write(string.Format(AbilityFormat, "Creature", "CREATURE", ability));
+        writer.Close();
+
+        // 벽 정의 로드
+        textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
+        if (textAsset == null) return;
+
+        ability = "";
+
+        lines = textAsset.text.Split('\n');
+        preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
+            if (!string.IsNullOrEmpty(words[0]))
+            {
+                cardName += words[0];
+            }
+
+            if (!string.IsNullOrEmpty(words[10]))
+            {
+                ability += $"\n    {words[10]},";
+            }
+        }
+        writer = new StreamWriter("Assets/" + WALL_ABILITY_DATA_PATH);
+        writer.Write(string.Format(AbilityFormat, "Wall", "WALL", ability));
+        writer.Close();
+
+        // 공용 정의 로드
+        textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_DATA_PATH);
+        if (textAsset == null) return;
+
+        ability = "";
+
+        lines = textAsset.text.Split('\n');
+        preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
+            if (!string.IsNullOrEmpty(words[0]))
+            {
+                cardName += words[0];
+            }
+
+            if (!string.IsNullOrEmpty(words[6]))
+            {
+                ability += $"\n    {words[6]},";
+            }
+        }
+        writer = new StreamWriter("Assets/" + COMMON_ABILITY_DATA_PATH);
+        writer.Write(string.Format(AbilityFormat, "Common", "COMMON", ability));
+        writer.Close();
+
+        writer = new StreamWriter("Assets/" + CARD_DATA_PATH);
+        writer.Write(string.Format(CardFormat, cardName));
+        writer.Close();
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
+
     void CreateGirlCardData()
     {
         TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + GIRL_CARD_DATA_PATH);
@@ -42,12 +221,9 @@ public class HelperEditor : EditorWindow
 
         string[] lines = textAsset.text.Split('\n');
 
-        string[] preHeadWords = lines[0].Split(',');
-
         for (int i = 1; i < lines.Length; i++)
         {
             string[] words = lines[i].Split(',');
-            if (preHeadWords.Length != words.Length) continue;
             words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length-1 , 1);
 
             GirlCardData data = ScriptableObject.CreateInstance<GirlCardData>();
@@ -247,13 +423,13 @@ public class HelperEditor : EditorWindow
         }
         return WallAbility.None;
     }
-    Define.CommonAbility GetCommonAbility(string name)
+    CommonAbility GetCommonAbility(string name)
     {
-        for (int i = 0; i < Define.COMMONABILITY_COUNT; i++)
+        for (int i = 0; i < CommonAbilityData.COMMONABILITY_COUNT; i++)
         {
-            if (name.Equals(((Define.CommonAbility)i).ToString()))
+            if (name.Equals(((CommonAbility)i).ToString()))
             {
-                return (Define.CommonAbility)i;
+                return (CommonAbility)i;
             }
         }
         return CommonAbility.None;

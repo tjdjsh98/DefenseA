@@ -9,14 +9,14 @@ public class GirlAbilityData
 public enum GirlAbility
 {
     None = -1,
+    LastShot,
+    AutoReload,
+    PlentyOfBullets,
     BlackSphere,
+    LastStruggle,
+    Electric,
+    VolleyFiring,
     FastReload,
     ExtraAmmo,
-    AutoReload,
-    LastShot,
-    PlentyOfBullets,
-    Electric,
-    LastStruggle,
-    VolleyFiring,
     END
-}
+};

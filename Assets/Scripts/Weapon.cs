@@ -192,14 +192,15 @@ public class Weapon : MonoBehaviour, ITypeDefine
         {
             if (_player)
             {
-                if (_player.GetIsHaveAbility(GirlAbility.FastReload))
-                {
-                    _reloadGauge.Point(0.7f, 0.9f);
-                }
-                else
-                {
-                    _reloadGauge.DisablePoint();
-                }
+                // TODO
+                //if (_player.GetIsHaveAbility(GirlAbility.FastReload))
+                //{
+                //    _reloadGauge.Point(0.7f, 0.9f);
+                //}
+                //else
+                //{
+                //    _reloadGauge.DisablePoint();
+                //}
             }
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
@@ -234,10 +235,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            if (_player.GetIsHaveAbility(GirlAbility.ExtraAmmo) && !_fastReloadFailed)
-                _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
-            else
-                _currentAmmo = _maxAmmo;
+            // TODO
+            //if (_player.GetIsHaveAbility(GirlAbility.ExtraAmmo) && !_fastReloadFailed)
+            //    _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
+            //else
+            //    _currentAmmo = _maxAmmo;
             _reloadElapsed = 0;
             if (_reloadGauge)
                 _reloadGauge.gameObject.SetActive(false);

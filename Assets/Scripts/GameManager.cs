@@ -98,7 +98,7 @@ public class GameManager : ManagerBase
     [field: SerializeField] public List<ShopItem> ShopItemList;
 
     // 공용 능력
-    Dictionary<Define.CommonAbility, bool> _commonAbilityUnlocks = new Dictionary<Define.CommonAbility, bool>();
+    Dictionary<CommonAbility, bool> _commonAbilityUnlocks = new Dictionary<CommonAbility, bool>();
 
 
     CameraController _cameraController;
@@ -481,7 +481,7 @@ public class GameManager : ManagerBase
         return position;
     }
 
-    public bool GetIsHaveCommonAbility(Define.CommonAbility commonAbility)
+    public bool GetIsHaveCommonAbility(CommonAbility commonAbility)
     {
         if(_commonAbilityUnlocks.TryGetValue(commonAbility,out var abilityUnlock))
         {

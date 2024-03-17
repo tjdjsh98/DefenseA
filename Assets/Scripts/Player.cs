@@ -136,7 +136,7 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon == null) return;
 
 
-        if (AbilityUnlocks.TryGetValue(GirlAbility.FastReload,out bool value)&& value)
+        if (GetIsHaveAbility(GirlAbility.LastShot))
         {
             _weaponSwaper.CurrentWeapon.FastReload();
         }
