@@ -67,6 +67,7 @@ public static class Define
         Girl,
         Creture,
         Wall,
+        Common,
         END,
     }
     public enum EffectName

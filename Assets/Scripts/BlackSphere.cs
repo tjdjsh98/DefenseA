@@ -103,12 +103,12 @@ public class BlackSphere : MonoBehaviour
         }
     }
 
-    public void ChangeAttackMode(Character target,float delay = 0)
+    public void ChangeAttackMode(Vector3 targetPostion,float delay = 0)
     {
         _attackDelay = delay;
         _attackTime = 0;
         _isAttackMode = true;
-        _attackDirection = (target.transform.position - transform.position).normalized;
+        _attackDirection = (targetPostion - transform.position).normalized;
 
     }
 }

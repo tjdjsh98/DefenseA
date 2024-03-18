@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -30,6 +31,8 @@ public class CreatureAI : MonoBehaviour
     bool _isMove = false;
     bool _isSoulForm = false;
 
+    // 스킬
+    Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
     public int AttackDamage
     {
         get
@@ -121,6 +124,14 @@ public class CreatureAI : MonoBehaviour
         Managers.GetManager<GameManager>().CreatureAI = this;
         _character.CharacterDeadHandler += OnCharacterDead;
 
+        RegistSkill();
+    }
+
+    void RegistSkill()
+    {
+        _skillDictionary.Add(SkillName.Shockwave, PlayShockwave);
+        _skillDictionary.Add(SkillName.Smash, PlaySmash);
+        _skillDictionary.Add(SkillName.StempGround, PlayStempGround);
     }
 
     private void OnCharacterDead()
@@ -210,23 +221,6 @@ public class CreatureAI : MonoBehaviour
 
    
 
-    //void ThrowPlayer(CreatureSkillSlot creatureSkillSlot)
-    //{
-    //    if (creatureSkillSlot.creatureSkill == Define.CreatureSkill.Throw)
-    //    {
-    //        if (Input.GetMouseButtonDown(0))
-    //        {
-    //            Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
-    //            Vector3 directionVel = mousePosition - transform.position;
-
-    //            float power = directionVel.magnitude * _throwPower;
-    //            if (power > 200)
-    //                power = 200;
-    //            _player.Character.Damage(_character, 0, power, directionVel, 0);
-    //            creatureSkillSlot.skillTime = 0;
-    //        }
-    //    }
-    //}
     public void AimFrontArmToEnemy()
     {
         Animation anim = GetComponent<Animation>();
@@ -256,14 +250,7 @@ public class CreatureAI : MonoBehaviour
         _penetrateAttack.StartAttack(_character, _closeOne.GetCenter() - _penetrateAttack.transform.position, 20);
 
     }
-    //void PlayNormalAttack(CreatureSkillSlot slot)
-    //{
-    //    if (slot.isActive) return;
-
-    //    slot.isActive = true;
-
-    //    StartCoroutine(CorPlayNormalAttack(slot));
-    //}
+   
 
     public void NormalAttack()
     {
@@ -281,50 +268,7 @@ public class CreatureAI : MonoBehaviour
             }
         }
     }
-
-    //IEnumerator CorPlayNormalAttack(CreatureSkillSlot slot)
-    //{
-    //    Character enemy = GetCloseEnemy();
-    //    if (enemy != null)
-    //    {
-    //        Vector3 initPosition = transform.position;
-    //        _character.IsAttack = true;
-    //        Define.Range attackRange = _attackRangeList[1];
-    //        attackRange.size = new Vector3(attackRange.size.x / 4 * 3, attackRange.size.y / 4 * 3, 0);
-    //        while (true)
-    //        {
-    //            if (enemy == null) break;
-    //            _character.Move(enemy.transform.position - transform.position);
-
-    //            if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (go) =>
-    //            {
-    //                Character character = go.GetComponent<Character>();
-    //                if (character != null && character.CharacterType == Define.CharacterType.Enemy)
-    //                {
-    //                    return true;
-    //                }
-
-    //                return false;
-    //            }).Length > 0) break;
-    //            yield return null;
-    //        }
-    //        _character.Move(Vector2.zero);
-
-    //        _character.SetAnimationSpeed(AttackSpeed);
-    //        _character.AnimatorSetTrigger("NormalAttack");
-    //        _character.IsAttack = true;
-    //        _character.IsEnableMove = false;
-    //        _character.IsEnableTurn = false;
-    //        _enemyToAttack = null;
-
-    //        while (_character.IsAttack)
-    //        {
-    //            yield return null;
-    //        }
-    //    }
-    //    slot.isActive = false;
-    //    slot.skillTime = 0;
-    //}
+  
 
     Character GetCloseEnemy()
     {
@@ -373,17 +317,26 @@ public class CreatureAI : MonoBehaviour
     }
 
 
+    public void UseSkill(SkillSlot slot)
+    {
+        if(slot.skillData == null) return;
 
-    //void PlayShockwave(CreatureSkillSlot slot)
-    //{
-    //    if (ShockwaveCount >= 1)
-    //        StartCoroutine(CorShockwaveAttack());
-    //    if (ShockwaveCount >= 2)
-    //        StartCoroutine(CorShockwaveAttack(0.2f, 1));
-    //    _shockwaveElasped = 0;
+        if (_skillDictionary.TryGetValue(slot.skillData.skillName, out var func))
+        {
+            func?.Invoke(slot);
+        }
+    }
 
-    //    slot.skillTime = 0;
-    //}
+    void PlayShockwave(SkillSlot slot)
+    {
+        if (ShockwaveCount >= 1)
+            StartCoroutine(CorShockwaveAttack());
+        if (ShockwaveCount >= 2)
+            StartCoroutine(CorShockwaveAttack(0.2f, 1));
+        _shockwaveElasped = 0;
+
+        slot.skillTime = 0;
+    }
 
     IEnumerator CorShockwaveAttack(float later = 0, int num = 0)
     {
@@ -421,26 +374,100 @@ public class CreatureAI : MonoBehaviour
 
         Camera.main.GetComponent<CameraController>().StopShockwave(num);
     }
+   
 
-    //void PlayStempGround(CreatureSkillSlot slot)
-    //{
-    //    GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
-    //    Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
-    //    Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
-    //    effect.SetProperty("Range", _attackRangeList[4].size.x);
-    //    effect.Play(transform.position);
-    //    if (gos.Length > 0)
-    //    {
-    //        _spearAttackElapsed = 0;
-    //        foreach (var go in gos)
-    //        {
-    //            Character c = go.GetComponent<Character>();
-    //            if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-    //            {
-    //                _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, 1);
-    //            }
-    //        }
-    //    }
-    //    slot.skillTime = 0;
-    //}
+    void PlaySmash(SkillSlot skillSlot)
+    {
+        if (skillSlot.isActive) return;
+
+        skillSlot.isActive = true;
+
+        StartCoroutine(CorPlaySmash(skillSlot));
+    }
+    IEnumerator CorPlaySmash(SkillSlot slot)
+    {
+        Character enemy = GetCloseEnemy();
+        if (enemy != null)
+        {
+            Vector3 initPosition = transform.position;
+            _character.IsAttack = true;
+            Define.Range attackRange = _attackRangeList[1];
+            attackRange.size = new Vector3(attackRange.size.x / 4 * 3, attackRange.size.y / 4 * 3, 0);
+            while (true)
+            {
+                if (enemy == null) break;
+                _character.Move(enemy.transform.position - transform.position);
+
+                if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (go) =>
+                {
+                    Character character = go.GetComponent<Character>();
+                    if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }).Length > 0) break;
+                yield return null;
+            }
+            _character.Move(Vector2.zero);
+
+            _character.SetAnimationSpeed(AttackSpeed);
+            _character.AnimatorSetTrigger("NormalAttack");
+            _character.IsAttack = true;
+            _character.IsEnableMove = false;
+            _character.IsEnableTurn = false;
+            _enemyToAttack = null;
+
+            while (_character.IsAttack)
+            {
+                yield return null;
+            }
+        }
+        slot.isActive = false;
+        slot.skillTime = 0;
+    }
+   
+    void PlayStempGround(SkillSlot slot)
+    {
+        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
+        Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
+        Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
+        effect.SetProperty("Range", _attackRangeList[4].size.x);
+        effect.Play(transform.position);
+        if (gos.Length > 0)
+        {
+            _spearAttackElapsed = 0;
+            foreach (var go in gos)
+            {
+                Character c = go.GetComponent<Character>();
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                {
+                    _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, 1);
+                }
+            }
+        }
+        slot.skillTime = 0;
+    }
+
+    // 미사용 스킬
+    /*
+    void ThrowPlayer(CreatureSkillSlot creatureSkillSlot)
+    {
+        if (creatureSkillSlot.creatureSkill == Define.CreatureSkill.Throw)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
+                Vector3 directionVel = mousePosition - transform.position;
+
+                float power = directionVel.magnitude * _throwPower;
+                if (power > 200)
+                    power = 200;
+                _player.Character.Damage(_character, 0, power, directionVel, 0);
+                creatureSkillSlot.skillTime = 0;
+            }
+        }
+    }
+    */
 }

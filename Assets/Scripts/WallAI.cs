@@ -53,6 +53,8 @@ public class WallAI : MonoBehaviour
     float _onewayElapsedTime;
     bool _isBrickAttach;
 
+    Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
+
 
     private void Awake()
     {
@@ -65,7 +67,89 @@ public class WallAI : MonoBehaviour
         _character.CharacterDamaged += OnCharacterDamaged;
         _character.CharacterDeadHandler += OnCharacterDead;
     }
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireCube(transform.position + _attackRange.center, _attackRange.size);
+        Util.DrawRangeOnGizmos(gameObject, _detecctRange, Color.green);
+    }
+    private void Update()
+    {
+        if (_brickTest)
+        {
 
+            _brickTest = false;
+        }
+
+        if (_character.IsDead)
+        {
+            float remainTime = _reviveCoolTime - _reviveElapsedTime;
+            int remainCount = _wallBricks.Count - _brickIndex;
+            Vector3 brickVector = _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position;
+
+            if (!_isBrickAttach)
+                _onewayElapsedTime += Time.deltaTime;
+            else
+                _onewayElapsedTime -= Time.deltaTime;
+            if (_isBrickAttach)
+            {
+                _wallBricks[_brickIndex].transform.position = _lineRenderer.transform.position + _lineRenderer.GetPosition(1);
+            }
+
+            _lineRenderer.SetPosition(1, Vector3.Lerp(_lineRenderer.GetPosition(0), _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position, _onewayElapsedTime / _onewayTime));
+
+            if (_onewayElapsedTime >= _onewayTime && !_isBrickAttach)
+            {
+                _isBrickAttach = true;
+            }
+            if (_onewayElapsedTime <= 0 && _isBrickAttach)
+            {
+                _onewayElapsedTime = 0;
+                _isBrickAttach = false;
+                Managers.GetManager<ResourceManager>().Destroy(_wallBricks[_brickIndex]);
+                _brickIndex++;
+            }
+        }
+
+        Revive();
+
+        if (_character.IsDead) return;
+        //if (Input.GetKeyDown(KeyCode.C))
+        //{
+        //    Transform();
+        //}
+        if (_isSoulForm)
+        {
+            Player player = Managers.GetManager<GameManager>().Player;
+
+            _character.TurnBody(player.transform.position - transform.position);
+            Vector3 offset = new Vector3(-2, 6, 0);
+            offset.y += Mathf.Sin(Time.time * 0.5f + gameObject.GetInstanceID());
+            if (player.transform.localScale.x < 0)
+                offset.x = -offset.x;
+
+            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.01f);
+
+            return;
+        }
+        MoveForward();
+        Targeting();
+        WallAbility.AbilityUpdate();
+
+    }
+    void RegistSkill()
+    {
+    }
+
+    public void UseSkill(SkillSlot skillSlot)
+    {
+        if (skillSlot.skillData == null) return;
+
+        if (_skillDictionary.TryGetValue(skillSlot.skillData.skillName, out var func))
+        {
+            func?.Invoke(skillSlot);
+        }
+    }
     private void OnCharacterDead()
     {
         _character.AnimatorSetBool("Dead", true);
@@ -126,76 +210,7 @@ public class WallAI : MonoBehaviour
         //}
     }
 
-    private void OnDrawGizmos()
-    {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position + _attackRange.center, _attackRange.size);
-        Util.DrawRangeOnGizmos(gameObject, _detecctRange, Color.green);
-    }
-    private void Update()
-    {
-        if (_brickTest)
-        {
-          
-            _brickTest = false;
-        }
-
-        if (_character.IsDead)
-        {
-            float remainTime = _reviveCoolTime - _reviveElapsedTime;
-            int remainCount = _wallBricks.Count - _brickIndex;
-            Vector3 brickVector = _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position;
-
-            if (!_isBrickAttach)
-                _onewayElapsedTime += Time.deltaTime;
-            else
-                _onewayElapsedTime -= Time.deltaTime;
-            if (_isBrickAttach)
-            {
-                _wallBricks[_brickIndex].transform.position = _lineRenderer.transform.position + _lineRenderer.GetPosition(1);
-            }
-
-            _lineRenderer.SetPosition(1, Vector3.Lerp(_lineRenderer.GetPosition(0), _wallBricks[_brickIndex].transform.position - _lineRenderer.transform.position, _onewayElapsedTime / _onewayTime));
-
-            if(_onewayElapsedTime>= _onewayTime && !_isBrickAttach)
-            {
-                _isBrickAttach = true;
-            }
-            if (_onewayElapsedTime <= 0 && _isBrickAttach)
-            {
-                _onewayElapsedTime = 0;
-                _isBrickAttach = false;
-                Managers.GetManager<ResourceManager>().Destroy(_wallBricks[_brickIndex]);
-                _brickIndex++;
-            }
-        }
-
-        Revive();
-
-        if (_character.IsDead) return;
-        //if (Input.GetKeyDown(KeyCode.C))
-        //{
-        //    Transform();
-        //}
-        if (_isSoulForm)
-        {
-            Player player = Managers.GetManager<GameManager>().Player;
-
-            _character.TurnBody(player.transform.position - transform.position);
-            Vector3 offset = new Vector3(-2, 6, 0);
-            offset.y += Mathf.Sin(Time.time * 0.5f + gameObject.GetInstanceID());
-            if (player.transform.localScale.x < 0)
-                offset.x = -offset.x;
-
-            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.01f);
-
-            return;
-        }
-        MoveForward();
-        Targeting();
-        WallAbility.AbilityUpdate();
-        
-    }
+   
 
   
     void Transform()

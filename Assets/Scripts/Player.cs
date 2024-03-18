@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEditor;
@@ -66,6 +67,7 @@ public class Player : MonoBehaviour
     float _runToFireCoolTime = 0.2f;
     float _runToFireElaspedTime = 0f;
 
+    Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -93,12 +95,27 @@ public class Player : MonoBehaviour
         Managers.GetManager<InputManager>().Num3KeyDownHandler += () => _weaponSwaper.SelectWeapon(2);
         Managers.GetManager<InputManager>().JumpKeyDownHandler += _character.Jump;
 
+        RegistSkill();
+
     }
     private void OnDrawGizmos()
     {
         if (!_debug) return;
 
         Util.DrawRangeOnGizmos(gameObject, _meleeAttackRange, Color.red);
+    }
+    void RegistSkill()
+    {
+    }
+
+    public void UseSkill(SkillSlot skillSlot)
+    {
+        if (skillSlot.skillData == null) return;
+
+        if (_skillDictionary.TryGetValue(skillSlot.skillData.skillName, out var func))
+        {
+            func?.Invoke(skillSlot);
+        }
     }
     private void OnCharacterDead()
     {

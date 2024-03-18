@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -10,10 +11,11 @@ public class GirlAbility
     // 언락된 능력
     Dictionary<GirlAbilityName, bool> _abilityUnlocks = new Dictionary<GirlAbilityName, bool>();
 
+
     // 검은구체
     List<BlackSphere> _blackSphereList = new List<BlackSphere>();
     public List<BlackSphere> BlackSphereList => _blackSphereList;
-    int _maxBlackSphereCount = 10;
+    public int MaxBlackSphereCount { set; get; } = 10;
 
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
@@ -23,6 +25,8 @@ public class GirlAbility
         _player = player;
         _player.Character.AttackHandler += OnAttack;
     }
+
+   
 
     public void AbilityUpdate()
     {
@@ -49,13 +53,15 @@ public class GirlAbility
     {
         if (GetIsHaveAbility(GirlAbilityName.BlackBullet))
         {
-            if(Random.Range(0,100) < 5)
+            if(UnityEngine.Random.Range(0,5) < 100)
                 AddBlackSphere(target.transform.position);
         }
     }
 
     public void AddBlackSphere(Vector3 position)
     {
+        if (_blackSphereList.Count >= MaxBlackSphereCount) return;
+
         GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
         go.transform.position = position;
         BlackSphere blackSphere = go.GetComponent<BlackSphere>();

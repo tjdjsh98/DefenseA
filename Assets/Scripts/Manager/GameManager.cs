@@ -80,10 +80,6 @@ public class GameManager : ManagerBase
     List<GameObject> _enemySpawnList = new List<GameObject>();
     List<Wave> _timeWaveList;
     List<Wave> _distanceWaveList;
-
-    [SerializeField] int _currentWave = 0;
-    bool _isStartWave;
-    public bool IsStartWave => _isStartWave;
     float _totalTime;
     float _stageTime;
 

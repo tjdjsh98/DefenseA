@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -95,6 +96,7 @@ public class HelperEditor : EditorWindow
         "\n}}";
         
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
+    const string SKILL_FOLDER_DATA_PATH = "Resources/Datas/Skill/";
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
     static void Init()
     {
@@ -114,6 +116,7 @@ public class HelperEditor : EditorWindow
             CreateCreatureCardData();
             CreateWallCardData();
             CreateCommonCardData();
+            CreateSkillData();
         }
     }
 
@@ -429,6 +432,23 @@ public class HelperEditor : EditorWindow
         }
     }
 
+    void CreateSkillData()
+    {
+        for (int i = 0; i < (int)SkillName.END; i++) 
+        {
+            SkillName skillName = (SkillName)i;
+
+            SkillData data = ScriptableObject.CreateInstance<SkillData>();
+
+            data.name = skillName.ToString();
+            data.skillName = GetSkillName(data.name);
+            data.character = GetWhosSkill(data.skillName);
+            data.coolTime = 1;
+            AssetDatabase.CreateAsset(data, "Assets/" + SKILL_FOLDER_DATA_PATH + data.name + ".asset");
+            AssetDatabase.SaveAssets();
+            AssetDatabase.Refresh();
+        }
+    }
     public static T[] GetAssetsAtPath<T>(string path) where T : Object
     {
         List<T> returnList = new List<T>();
@@ -508,6 +528,39 @@ public class HelperEditor : EditorWindow
             }
         }
         return CreatureAbilityName.None;
+    }
+    SkillName GetSkillName(string name)
+    {
+        for (int i = 0; i < (int)SkillName.END; i++)
+        {
+            if (name.Equals(((SkillName)i).ToString()))
+            {
+                return (SkillName)i;
+            }
+        }
+        return SkillName.None;
+    }
+
+    Define.MainCharacter GetWhosSkill(SkillName skillName)
+    {
+        if(GetGirlAbility(skillName.ToString()) != GirlAbilityName.None)
+        {
+            return Define.MainCharacter.Girl;
+        }
+        if (GetCreatureAbility(skillName.ToString()) != CreatureAbilityName.None)
+        {
+            return Define.MainCharacter.Creture;
+        }
+        if (GetWallAbility(skillName.ToString()) != WallAbilityName.None)
+        {
+            return Define.MainCharacter.Wall;
+        }
+        if (GetCommonAbility(skillName.ToString()) != CommonAbilityName.None)
+        {
+            return Define.MainCharacter.Common;
+        }
+
+        return Define.MainCharacter.None;
     }
     int ParseInt(string value)
     {

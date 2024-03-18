@@ -192,16 +192,28 @@ public class UIInGame : UIBase
 
     void ShowSkill()
     {
-    //    CreatureAI creatureAI = Managers.GetManager<GameManager>().CreatureAI;
-    //    List<CreatureSkillSlot> creatureSkillSlotList = creatureAI.CreatureSkillSlotList;
+        List<SkillSlot> skillSlotList = Managers.GetManager<AbilityManager>().SkillSlotList;
 
-    //    for(int i = 0; i < _skillMaskList.Count; i++)
-    //    {
-    //        if (creatureSkillSlotList.Count <= i) return;
-    //        _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 -(creatureSkillSlotList[i].skillTime / creatureSkillSlotList[i].skillCoolTime)));
-    //        _skillNameList[i].text = creatureSkillSlotList[i].creatureSkill.ToString();
-    //    }
-        
+        int i = 0;
+        for (i = 0; i < skillSlotList.Count; i++)
+        {
+            if (_skillMaskList.Count <= i) continue;
+            if (skillSlotList[i] == null) continue;
+            if (skillSlotList[i].skillCoolTime == 0)
+                _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100);
+            else
+                _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 - (skillSlotList[i].skillTime / skillSlotList[i].skillCoolTime)));
+            if (skillSlotList[i].skillData== null)
+                _skillNameList[i].text = string.Empty;
+            else
+                _skillNameList[i].text = skillSlotList[i].skillData.skillName.ToString();
+        }
+        for (; i < _skillMaskList.Count; i++)
+        {
+            _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100);
+            _skillNameList[i].text = string.Empty;
+        }
+
     }
     void IndicateWall()
     {
