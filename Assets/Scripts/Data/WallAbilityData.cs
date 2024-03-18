@@ -4,13 +4,20 @@ using UnityEngine;
 
 public class WallAbilityData
 {
-    public static int WALLABILITY_COUNT = (int)WallAbility.END;
+    public static int WALLABILITY_COUNT = (int)WallAbilityName.END;
 }
-public enum WallAbility
+public enum WallAbilityName
 {
     None = -1,
     Barrier,
-    GenerateSphere,
     SelfDestruct,
+    Grow,
+    BlackAura,
+    Salvation,
+    OverflowingDark,
+    ResidualElectricity,
+    OverCharge,
+    Predation,
+    LightDigestion,
     END
 };

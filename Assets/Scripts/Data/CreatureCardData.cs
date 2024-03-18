@@ -6,5 +6,5 @@ using UnityEngine;
 
 public class CreatureCardData : CardData
 {
-    [field: SerializeField] public CreatureAbility UnlockAbility { get; set; }
+    [field: SerializeField] public CreatureAbilityName UnlockAbility { get; set; }
 }

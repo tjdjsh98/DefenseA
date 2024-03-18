@@ -17,6 +17,7 @@ public class HelperEditor : EditorWindow
     const string COMMON_CARD_DATA_PATH = "Data/공용카드.csv";
     const string COMMON_ABILITY_DATA_PATH = "Scripts/Data/CommonAbilityData.cs";
     const string CARD_DATA_PATH = "Scripts/Data/CardData.cs";
+    const string SKILL_DATA_PATH = "Scripts/Data/SkillData.cs";
 
     // 0 : 이름, 1 : 대문자 이름 , 2 : 능력 이름들
     const string AbilityFormat =
@@ -25,15 +26,16 @@ public class HelperEditor : EditorWindow
         "\nusing UnityEngine;" +
         "\n\npublic class {0}AbilityData" +
         "\n{{" +
-        "\n    public static int {1}ABILITY_COUNT = (int){0}Ability.END;" +
+        "\n    public static int {1}ABILITY_COUNT = (int){0}AbilityName.END;" +
         "\n}}" +
-        "\npublic enum {0}Ability" +
+        "\npublic enum {0}AbilityName" +
         "\n{{" +
         "\n    None = -1," +
         "{2}"+
         "\n    END" +
         "\n}};";
 
+    //0 : 카드 이름
     const string CardFormat =
         "using System.Collections;" +
         "\nusing System.Collections.Generic;" +
@@ -46,6 +48,7 @@ public class HelperEditor : EditorWindow
         "\n    [field: SerializeField] public Define.CardType CardSelectionType {{ set; get; }}" +
         "\n    [field: SerializeField] public string CardDescription {{ set; get; }}" +
         "\n    [field: SerializeField] public bool IsStartCard {{ set; get; }}" +
+        "\n    [field: SerializeField] public bool IsActiveAbility {{ set; get; }}"+
         "\n" +
         "\n    // 처음 해당 카드를 선택할 때 카드 목록을 업그레이드할 목록에 넣어줌." +
         "\n    [field: SerializeField] public List<CardName> PriorCards {{ set;get; }}" +
@@ -64,10 +67,33 @@ public class HelperEditor : EditorWindow
         "\npublic enum CardName" +
         "\n{{" +
         "\n    None = -1," +
-        "\n    {0}" +
+        "      {0}" +
         "\n    END," +
         "\n}}";
 
+    const string SkillDataFormat =
+        "using System.Collections;" +
+        "\nusing System.Collections.Generic;" +
+        "\nusing UnityEngine;" +
+        "\n\n[CreateAssetMenu(fileName = \"Create Skill\", menuName = \"AddData/Create SkillData\", order = 2)]" +
+        "\npublic class SkillData : ScriptableObject, ITypeDefine" +
+        "\n{{" +
+        "\n    public SkillName skillName;" +
+        "\n    public Define.MainCharacter character;" +
+        "\n    " +
+        "\n    public float coolTime;" +
+        "\n    public int GetEnumToInt()" +
+        "\n    {{" +
+        "\n        return (int)skillName;" +
+        "\n    }}" +
+        "\n}}" +
+        "\npublic enum SkillName" +
+        "\n{{" +
+        "\n    None = -1," +
+        "      {0}" +
+        "\n    END" +
+        "\n}}";
+        
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
     static void Init()
@@ -99,6 +125,7 @@ public class HelperEditor : EditorWindow
 
         string cardName = "";
         string ability = "";
+        string skillName = "";
 
         string[] lines = textAsset.text.Split('\n');
         string[] preHeadWords = lines[0].Split(',');
@@ -113,9 +140,9 @@ public class HelperEditor : EditorWindow
                 cardName += $"\n    {words[0]},";
             }
 
-            if (!string.IsNullOrEmpty(words[9]))
+            if (!string.IsNullOrEmpty(words[10]))
             {
-                ability += $"\n    {words[9]},";
+                ability += $"\n    {words[10]},";
             }
         }
         StreamWriter writer = new StreamWriter("Assets/"+GIRL_ABILITY_DATA_PATH);
@@ -140,6 +167,14 @@ public class HelperEditor : EditorWindow
             if (!string.IsNullOrEmpty(words[0]))
             {
                 cardName += $"\n    {words[0]},";
+            }
+
+            if (ParseBoolean(words[1]))
+            {
+                if (!string.IsNullOrEmpty(words[10]))
+                {
+                    skillName += $"\n    {words[10]},";
+                }
             }
 
             if (!string.IsNullOrEmpty(words[10]))
@@ -169,6 +204,13 @@ public class HelperEditor : EditorWindow
             {
                 cardName += $"\n    {words[0]},";
             }
+            if (ParseBoolean(words[1]))
+            {
+                if (!string.IsNullOrEmpty(words[10]))
+                {
+                    skillName += $"\n    {words[10]},";
+                }
+            }
 
             if (!string.IsNullOrEmpty(words[10]))
             {
@@ -197,10 +239,17 @@ public class HelperEditor : EditorWindow
             {
                 cardName += $"\n    {words[0]},";
             }
-
-            if (!string.IsNullOrEmpty(words[6]))
+            if (ParseBoolean(words[1]))
             {
-                ability += $"\n    {words[6]},";
+                if (!string.IsNullOrEmpty(words[10]))
+                {
+                    skillName += $"\n    {words[10]},";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(words[10]))
+            {
+                ability += $"\n    {words[10]},";
             }
         }
         writer = new StreamWriter("Assets/" + COMMON_ABILITY_DATA_PATH);
@@ -209,6 +258,10 @@ public class HelperEditor : EditorWindow
 
         writer = new StreamWriter("Assets/" + CARD_DATA_PATH);
         writer.Write(string.Format(CardFormat, cardName));
+        writer.Close();
+
+        writer = new StreamWriter("Assets/" + SKILL_DATA_PATH);
+        writer.Write(string.Format(SkillDataFormat, skillName));
         writer.Close();
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
@@ -220,15 +273,19 @@ public class HelperEditor : EditorWindow
         if (textAsset == null) return;
 
         string[] lines = textAsset.text.Split('\n');
+        string[] preHeadWords = lines[0].Split(',');
 
         for (int i = 1; i < lines.Length; i++)
         {
             string[] words = lines[i].Split(',');
+            if (preHeadWords.Length != words.Length) continue;
+
             words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length-1 , 1);
 
             GirlCardData data = ScriptableObject.CreateInstance<GirlCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
+            data.IsActiveAbility = ParseBoolean(words[1]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
 
@@ -242,12 +299,12 @@ public class HelperEditor : EditorWindow
             data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
             data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
             data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
+            data.IncreaseAttackPoint = ParseInt(words[9]);
 
-            data.UnlockAbility = GetGirlAbility(words[9]);
-            data.DecreaseFireDelayPercentage = words[10].Equals("") ? 0 : float.Parse(words[10]);
-            data.IncreaseReloadSpeedPercentage = words[11].Equals("") ? 0 : float.Parse(words[11]);
-            data.IncreasePenerstratingPower = words[12].Equals("") ? 0 : int.Parse(words[12]);
-            data.IncreaseAttackPoint = ParseInt(words[13]);
+            data.UnlockAbility = GetGirlAbility(words[10]);
+            data.DecreaseFireDelayPercentage = words[11].Equals("") ? 0 : float.Parse(words[11]);
+            data.IncreaseReloadSpeedPercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
+            data.IncreasePenerstratingPower = words[13].Equals("") ? 0 : int.Parse(words[13]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
@@ -272,6 +329,7 @@ public class HelperEditor : EditorWindow
             CreatureCardData data = ScriptableObject.CreateInstance<CreatureCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
+            data.IsActiveAbility = ParseBoolean(words[1]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
             string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
@@ -310,6 +368,7 @@ public class HelperEditor : EditorWindow
             WallCardData data = ScriptableObject.CreateInstance<WallCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
+            data.IsActiveAbility = ParseBoolean(words[1]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
             string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
@@ -348,6 +407,7 @@ public class HelperEditor : EditorWindow
             CommonCardData data = ScriptableObject.CreateInstance<CommonCardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
+            data.IsActiveAbility = ParseBoolean(words[1]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
             string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
@@ -357,7 +417,11 @@ public class HelperEditor : EditorWindow
                 data.PriorCards.Add(GetCardName(priorCard));
             }
             data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
-            data.UnlockAbility = GetCommonAbility(words[6]);
+            data.IncreaseHp = ParseInt(words[6]);
+            data.IncreaseRecoverHpPower = ParseFloat(words[7]);
+            data.IncreaseDamageReducePercentage = ParseFloat(words[8]);
+            data.IncreaseAttackPoint = ParseInt(words[9]);
+            data.UnlockAbility = GetCommonAbility(words[10]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
@@ -401,49 +465,49 @@ public class HelperEditor : EditorWindow
         }
         return  CardName.None;
     }
-    GirlAbility GetGirlAbility(string name)
+    GirlAbilityName GetGirlAbility(string name)
     {
         for (int i = 0; i < GirlAbilityData.GIRLABILITY_COUNT; i++)
         {
-            if (name.Equals(((GirlAbility)i).ToString()))
+            if (name.Equals(((GirlAbilityName)i).ToString()))
             {
-                return (GirlAbility)i;
+                return (GirlAbilityName)i;
             }
         }
-        return GirlAbility.None;
+        return GirlAbilityName.None;
     }
-    WallAbility GetWallAbility(string name)
+    WallAbilityName GetWallAbility(string name)
     {
         for (int i = 0; i < WallAbilityData.WALLABILITY_COUNT; i++)
         {
-            if (name.Equals(((WallAbility)i).ToString()))
+            if (name.Equals(((WallAbilityName)i).ToString()))
             {
-                return (WallAbility)i;
+                return (WallAbilityName)i;
             }
         }
-        return WallAbility.None;
+        return WallAbilityName.None;
     }
-    CommonAbility GetCommonAbility(string name)
+    CommonAbilityName GetCommonAbility(string name)
     {
         for (int i = 0; i < CommonAbilityData.COMMONABILITY_COUNT; i++)
         {
-            if (name.Equals(((CommonAbility)i).ToString()))
+            if (name.Equals(((CommonAbilityName)i).ToString()))
             {
-                return (CommonAbility)i;
+                return (CommonAbilityName)i;
             }
         }
-        return CommonAbility.None;
+        return CommonAbilityName.None;
     }
-    CreatureAbility GetCreatureAbility(string name)
+    CreatureAbilityName GetCreatureAbility(string name)
     {
         for (int i = 0; i < CreatureAbilityData.CREATUREABILITY_COUNT; i++)
         {
-            if (name.Equals(((CreatureAbility)i).ToString()))
+            if (name.Equals(((CreatureAbilityName)i).ToString()))
             {
-                return (CreatureAbility)i;
+                return (CreatureAbilityName)i;
             }
         }
-        return CreatureAbility.None;
+        return CreatureAbilityName.None;
     }
     int ParseInt(string value)
     {

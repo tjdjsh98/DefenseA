@@ -34,11 +34,11 @@ public class ElectricWeapon : Weapon
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
             int damage = Damage;
-            if (_player)
-                damage = (int)(damage * (100 + (_player.IncreaseAttackPowerPercentage <= -100 ? -100 : _player.IncreaseAttackPowerPercentage)) / 100f);
+            
+
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.AbilityUnlocks.ContainsKey(GirlAbility.LastShot) && _currentAmmo == 0)
+            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
                 damage = Damage * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
@@ -58,9 +58,9 @@ public class ElectricWeapon : Weapon
     {
         if (_currentAmmo < _maxAmmo)
         {
-            if (_player.CurrentElectric > 0.1)
+            if (Managers.GetManager<AbilityManager>().CurrentElectric > 0.1)
             {
-                Player.CurrentElectric -= Time.deltaTime;
+                Managers.GetManager<AbilityManager>().CurrentElectric -= Time.deltaTime;
                 _electric += Time.deltaTime;
                 if (_electric >= 1)
                 {

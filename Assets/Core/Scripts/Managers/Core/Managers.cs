@@ -96,6 +96,7 @@ public class Managers : MonoBehaviour
     static void AddContentManager(Define.ContentManagers managerName)
     {
         ManagerBase manager = null;
+     
         switch (managerName)
         {
             case Define.ContentManagers.None:
@@ -116,8 +117,12 @@ public class Managers : MonoBehaviour
                 manager = Util.FindOrCreate("TextManager").GetOrAddComponent<TextManager>();
                 manager.transform.parent = _instance.gameObject.transform;
                 break;
-            case Define.ContentManagers.END:
+            case Define.ContentManagers.Ability:
+                manager = Util.FindOrCreate("AbilityManager").GetOrAddComponent<AbilityManager>();
+                manager.transform.parent = _instance.gameObject.transform;
                 break;
+            case Define.ContentManagers.END:
+                break;  
         }
 
         if (manager)

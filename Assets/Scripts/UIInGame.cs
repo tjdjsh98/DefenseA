@@ -74,7 +74,7 @@ public class UIInGame : UIBase
         if(character)
         {
             _sb.Append($"체력: {character.MaxHp}\n");
-            _sb.Append($"전기: {_player.CurrentElectric}\n");
+            _sb.Append($"전기: {Managers.GetManager<AbilityManager>().CurrentElectric}\n");
         }
         if(weaponSwaper.CurrentWeapon)
         {
@@ -192,15 +192,15 @@ public class UIInGame : UIBase
 
     void ShowSkill()
     {
-        CreatureAI creatureAI = Managers.GetManager<GameManager>().CreatureAI;
-        List<CreatureSkillSlot> creatureSkillSlotList = creatureAI.CreatureSkillSlotList;
+    //    CreatureAI creatureAI = Managers.GetManager<GameManager>().CreatureAI;
+    //    List<CreatureSkillSlot> creatureSkillSlotList = creatureAI.CreatureSkillSlotList;
 
-        for(int i = 0; i < _skillMaskList.Count; i++)
-        {
-            if (creatureSkillSlotList.Count <= i) return;
-            _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 -(creatureSkillSlotList[i].skillTime / creatureSkillSlotList[i].skillCoolTime)));
-            _skillNameList[i].text = creatureSkillSlotList[i].creatureSkill.ToString();
-        }
+    //    for(int i = 0; i < _skillMaskList.Count; i++)
+    //    {
+    //        if (creatureSkillSlotList.Count <= i) return;
+    //        _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 -(creatureSkillSlotList[i].skillTime / creatureSkillSlotList[i].skillCoolTime)));
+    //        _skillNameList[i].text = creatureSkillSlotList[i].creatureSkill.ToString();
+    //    }
         
     }
     void IndicateWall()

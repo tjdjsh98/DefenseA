@@ -8,11 +8,12 @@ using UnityEngine.SceneManagement;
 public class Player : MonoBehaviour
 {
     Animator _animator;
-
     Character _character;
     public Character Character => _character;
     Rigidbody2D _rigidbody;
     Character _ridingCharacter;
+    GirlAbility _girlAbility = new GirlAbility();
+    public GirlAbility GirlAbility => _girlAbility;
 
     [SerializeField] bool _debug;
 
@@ -33,14 +34,9 @@ public class Player : MonoBehaviour
     WeaponSwaper _weaponSwaper;
     public WeaponSwaper WeaponSwaper => _weaponSwaper;
 
-    [SerializeField] float _rightPadding;
-    [SerializeField] float _upPadding;
-
     CameraController _cameraController;
 
     float _rebound;
-    float _reboundControlPower = 50f;
-    public float ReboundControlPower => IncreasedReboundControlPowerPercent > 0 ? _reboundControlPower * (1 + IncreasedReboundControlPowerPercent / 100) : _reboundControlPower / (1 - IncreasedReboundControlPowerPercent / 100);
 
     [SerializeField]float _reboundRecoverPower = 20f;
     public float ReboundRecoverPower => IncreasedReboundRecoverPercent > 0 ? _reboundRecoverPower * (1 + IncreasedReboundRecoverPercent / 100) : _reboundRecoverPower / (1 - IncreasedReboundRecoverPercent / 100);
@@ -51,31 +47,11 @@ public class Player : MonoBehaviour
 
     // 추가적인 능력
     public int IncreasedPenerstratingPower { set; get; } = 0;
-    public float DecreasedFireDelayPercent { set; get; }
     public float IncreasedAttackSpeedPercentage { set; get; }
-    public float IncreasedReloadSpeedPercent { set; get; }
-    public float IncreasedReboundControlPowerPercent { set; get; }
+    public float IncreasedReloadSpeedPercentage { set; get; }
     [field:SerializeField]public float IncreasedReboundRecoverPercent { set; get; }
 
-    float _plentyOfBulletsIncreasedAttackPointPercentage;
-    float _maxElectric = 10;
-    public float MaxElectric => _maxElectric;
-    public float CurrentElectric { set;get; }
-    
-
-    public float IncreaseAttackPowerPercentage => _plentyOfBulletsIncreasedAttackPointPercentage;
-    // 능력 언락부분
-    public Dictionary<GirlAbility, bool> AbilityUnlocks { set; get; } = new Dictionary<GirlAbility, bool>();
-    
-    // 자동장전
-    List<float> _autoReloadElaspedTimeList = new List<float>();
-
-    // 검은구체
-    List<BlackSphere> _blackSphereList = new List<BlackSphere>();
-    int _maxBlackSphereCount = 10;
-    public List<BlackSphere> BlackSphereList => _blackSphereList;
-
-
+   
     [SerializeField] bool _bounce;
     [SerializeField] float _power;
 
@@ -97,8 +73,7 @@ public class Player : MonoBehaviour
         _character = GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _cameraController = Camera.main.GetComponent<CameraController>();
-
-        _character.AttackHandler += OnAttack;
+        _girlAbility.Init(this);
 
         _initHeadAngle = _head.transform.rotation.eulerAngles.z;
         _initBodyAngle = _body.transform.rotation.eulerAngles.z;
@@ -136,7 +111,7 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon == null) return;
 
 
-        if (GetIsHaveAbility(GirlAbility.LastShot))
+        if (GirlAbility.GetIsHaveAbility(GirlAbilityName.FastReload))
         {
             _weaponSwaper.CurrentWeapon.FastReload();
         }
@@ -172,14 +147,13 @@ public class Player : MonoBehaviour
             _animator.SetTrigger("MeleeAttack");
         }
 
+        _girlAbility.AbilityUpdate();
+
         HandleSliding();
         TurnBody();
         RotateArm();
         RotateBody();
         Riding();
-        AutoReload();
-        PlentyOfBullets();
-        Electric();
         _eyeCloseElasepdTime += Time.deltaTime;
         if(_eyeCloseElasepdTime > _eyeCloseTime)
         {
@@ -188,14 +162,6 @@ public class Player : MonoBehaviour
             _eyeClose.PlayRound(3
                 );
         }
-
-
-        for(int i = _blackSphereList.Count-1; i >= 0 ; i--) 
-        {
-            if (_blackSphereList[i] == null)
-                _blackSphereList.RemoveAt(i);
-        }
-
         // 달리는 중에는 방향에 따라 이동, 걷는 중에는 총방향에 따라서
         if (!_isRun)
         {
@@ -245,51 +211,7 @@ public class Player : MonoBehaviour
         }
 
     }
-    public float GetIncreasedDamagePercentage()
-    {
-        Character wall = Managers.GetManager<GameManager>().Wall;
-        Character creature = Managers.GetManager<GameManager>().Creature;
-
-        float percentage = 0;
-        percentage += _plentyOfBulletsIncreasedAttackPointPercentage;
-
-        if (AbilityUnlocks.TryGetValue(GirlAbility.LastStruggle, out bool value) && value)
-        {
-            if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
-                percentage += 100f;
-        }
-             
-        return percentage;
-    }
-
-    public float GetIncreasedAttackSpeedPercentage()
-    {
-        Character wall = Managers.GetManager<GameManager>().Wall;
-        Character creature = Managers.GetManager<GameManager>().Creature;
-
-        float percentage = 0;
-
-        percentage += IncreasedAttackSpeedPercentage;
-
-        if (AbilityUnlocks.TryGetValue(GirlAbility.LastStruggle, out bool value) && value)
-        {
-            if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
-                percentage += 100f;
-        }
-
-        return percentage;
-    }
-
-    private void Electric()
-    {
-        if (AbilityUnlocks.TryGetValue(GirlAbility.Electric, out bool value) && value)
-        {
-            if (_maxElectric > CurrentElectric)
-                CurrentElectric += Time.deltaTime * 0.1f;
-            else
-                CurrentElectric = _maxElectric;
-        }
-    }
+    
 
     public void MeleeAttack()
     {
@@ -304,94 +226,6 @@ public class Player : MonoBehaviour
                 return true;
             });
     }
-
-    void PlentyOfBullets()
-    {
-        if (_weaponSwaper.CurrentWeapon)
-        {
-            if (GetIsHaveAbility(GirlAbility.PlentyOfBullets))
-            {
-                int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
-                _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
-            }
-        }
-    }
-
-    void OnAttack(Character target, int damage)
-    {
-        if (GetIsHaveAbility(GirlAbility.BlackSphere))
-        {
-            if (_maxBlackSphereCount > _blackSphereList.Count)
-            {
-                // 20%의 확률로
-                if (Random.Range(0, 5) == 0)
-                {
-                    AddBlackSphere(target.transform.position);
-                }
-            }
-        }
-        if (GetIsHaveAbility(GirlAbility.VolleyFiring))
-        {
-            if(_maxBlackSphereCount <= _blackSphereList.Count)
-            {
-                float delay = 0;
-                foreach(BlackSphere blackSphere in _blackSphereList)
-                {
-                    blackSphere.ChangeAttackMode(target,delay);
-                    delay += 0.1f;
-                }
-                _blackSphereList.Clear();
-            }
-        }
-    }
-
-    public void AddBlackSphere(Vector3 position)
-    {
-        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
-        go.transform.position = position;
-        BlackSphere blackSphere = go.GetComponent<BlackSphere>();
-        blackSphere.Init(_character, new Vector3(-3, 5));
-        _blackSphereList.Add(blackSphere);
-    }
-    private void AutoReload()
-    {
-        if (AbilityUnlocks.TryGetValue(GirlAbility.AutoReload, out bool value) && value)
-        {
-
-            for (int i = 0; i < _weaponSwaper.GetWeaponCount(); i++)
-            {
-                if (_autoReloadElaspedTimeList.Count <= i)
-                    _autoReloadElaspedTimeList.Add(0);
-                if (_weaponSwaper.WeaponIndex == i)
-                {
-                    _autoReloadElaspedTimeList[i] = 0;
-                    continue;
-                }
-
-                Weapon weapon = _weaponSwaper.GetWeapon(i);
-                if (weapon == null) continue;
-
-                if (weapon.CurrentAmmo < weapon.MaxAmmo)
-                {
-                    if (_autoReloadElaspedTimeList[i] > weapon.ReloadDelay)
-                    {
-                        weapon.CompleteReload();
-                        _autoReloadElaspedTimeList[i] = 0;
-                    }
-                    else
-                    {
-                        _autoReloadElaspedTimeList[i] += Time.deltaTime;
-                    }
-                }
-            }
-        }
-    }
-
-        public void SetReboundControlPower(float power)
-    {
-        _reboundControlPower = power;
-    }
-
   
     public void Rebound(float angle)
     {
@@ -664,13 +498,6 @@ public class Player : MonoBehaviour
         }
     }
 
-    public bool GetIsHaveAbility(GirlAbility girlAbility)
-    {
-        if (AbilityUnlocks.TryGetValue(girlAbility, out bool value) && value)
-            return true;
-
-        return false;
-    }
     public void ResetRebound()
     {
         _rebound = 0;
@@ -683,5 +510,19 @@ public class Player : MonoBehaviour
 
 
         return data;
+    }
+    public float GetIncreasedAttackSpeedPercentage()
+    {
+        float percentage = IncreasedAttackSpeedPercentage;
+        percentage += GirlAbility.GetIncreasedAttackSpeedPercentage();
+
+        return percentage;
+    }
+    public float GetIncreasedDamagePercentage()
+    {
+        float percentage = 0;
+        percentage += GirlAbility.GetIncreasedDamagePercentage();
+
+        return percentage;
     }
 }

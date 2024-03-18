@@ -67,9 +67,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _fireDelay;
     public float FireDelay => 
-        (_player?(_player.GetIncreasedDamagePercentage()>0?_fireDelay/(1 + _player.GetIncreasedAttackSpeedPercentage()/100f): _fireDelay * (1 - _player.GetIncreasedAttackSpeedPercentage() / 100f)) :_fireDelay);
+        (_player?(_player.GetIncreasedAttackSpeedPercentage()>0?_fireDelay/(1 + _player.GetIncreasedAttackSpeedPercentage()/100f): _fireDelay * (1 - _player.GetIncreasedAttackSpeedPercentage() / 100f)) :_fireDelay);
     [SerializeField] protected float _reloadDelay;
-    public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercent /100f)* _reloadDelay:0);
+    public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercentage /100f)* _reloadDelay:0);
 
     [SerializeField] protected GameObject _firePosition;
     public GameObject FirePosition => _firePosition;
@@ -150,12 +150,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
             int damage = Damage;
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.GetIsHaveAbility(GirlAbility.LastShot) && _currentAmmo == 0)
+            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
                 damage = Damage * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
 
-            Character.Damage(Character, 0, _knockBack, -direction, 0);
 
             Player?.Rebound(_rebound);
         }
@@ -192,15 +191,14 @@ public class Weapon : MonoBehaviour, ITypeDefine
         {
             if (_player)
             {
-                // TODO
-                //if (_player.GetIsHaveAbility(GirlAbility.FastReload))
-                //{
-                //    _reloadGauge.Point(0.7f, 0.9f);
-                //}
-                //else
-                //{
-                //    _reloadGauge.DisablePoint();
-                //}
+                if (_player.GirlAbility.GetIsHaveAbility(GirlAbilityName.FastReload))
+                {
+                    _reloadGauge.Point(0.7f, 0.9f);
+                }
+                else
+                {
+                    _reloadGauge.DisablePoint();
+                }
             }
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
@@ -235,11 +233,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            // TODO
-            //if (_player.GetIsHaveAbility(GirlAbility.ExtraAmmo) && !_fastReloadFailed)
-            //    _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
-            //else
-            //    _currentAmmo = _maxAmmo;
+            if (_player.GirlAbility.GetIsHaveAbility(GirlAbilityName.ExtraAmmo) && !_fastReloadFailed)
+                _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
+            else
+                _currentAmmo = _maxAmmo;
             _reloadElapsed = 0;
             if (_reloadGauge)
                 _reloadGauge.gameObject.SetActive(false);

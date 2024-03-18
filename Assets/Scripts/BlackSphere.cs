@@ -22,7 +22,7 @@ public class BlackSphere : MonoBehaviour
     {
         _owner = owner;
         _offset = offset;
-        _offset.x += Random.Range(-.5f, .5f);
+        _offset.x += Random.Range(-1f, 1f);
         _offset.y += Random.Range(-.5f, .5f);
     }
 
@@ -34,7 +34,7 @@ public class BlackSphere : MonoBehaviour
         if (!_isAttackMode)
         {
             Vector3 offset = _owner.transform.position;
-            offset.x += _offset.x * _owner.transform.lossyScale.x > 0 ? 1 : -1;
+            offset.x += _offset.x * (_owner.transform.lossyScale.x > 0 ? 1 : -1);
             offset.y += Mathf.Sin(Time.time + gameObject.GetInstanceID()) + _offset.y;
             transform.position = Vector3.Lerp(transform.position, offset, 0.01f);
         }

@@ -4,17 +4,19 @@ using UnityEngine;
 
 public class CommonAbilityData
 {
-    public static int COMMONABILITY_COUNT = (int)CommonAbility.END;
+    public static int COMMONABILITY_COUNT = (int)CommonAbilityName.END;
 }
-public enum CommonAbility
+public enum CommonAbilityName
 {
     None = -1,
-    GenerateSphere,
-    AttackSphere,
-    HitSphere,
-    IncreaseSphere,
-    VolleyFiring,
-    ExplosionSphere,
-    SpareSphere,
+    BlackSphere,
+    ControlSphere,
+    VolleyFire,
+    ExplosiveSphere,
+    Bait,
+    MicroPower,
+    ExtraBattery,
+    SelfGeneration,
+    Appetite,
     END
 };

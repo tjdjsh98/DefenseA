@@ -4,19 +4,20 @@ using UnityEngine;
 
 public class GirlAbilityData
 {
-    public static int GIRLABILITY_COUNT = (int)GirlAbility.END;
+    public static int GIRLABILITY_COUNT = (int)GirlAbilityName.END;
 }
-public enum GirlAbility
+public enum GirlAbilityName
 {
     None = -1,
     LastShot,
     AutoReload,
     PlentyOfBullets,
-    BlackSphere,
     LastStruggle,
     Electric,
-    VolleyFiring,
     FastReload,
     ExtraAmmo,
+    BlackBullet,
+    MealPreparation,
+    Hunger,
     END
 };

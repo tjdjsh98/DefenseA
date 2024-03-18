@@ -26,6 +26,7 @@ public static class Define
         Effect,
         Text,
         Save,
+        Ability,
         END,
     }
     public static int CONTENT_MANAGER_COUNT = (int)ContentManagers.END;
@@ -58,7 +59,16 @@ public static class Define
         END,
     }
 
+
     public static int ENEMY_COUNT = (int)EnemyName.END;
+    public enum MainCharacter
+    {
+        None = -1,
+        Girl,
+        Creture,
+        Wall,
+        END,
+    }
     public enum EffectName
     {
         None,
@@ -74,16 +84,7 @@ public static class Define
         Blooding,
         Slash,
     }
-    public enum CreatureSkill
-    {
-        None = -1,
-        NormalAttack,
-        Shockwave,
-        StempGround,
-        Throw,
-        END,
-    }
-    public static int CreatureSkillCount = (int)CreatureSkill.END;
+   
     public enum CreatureSkillRange
     {
         FindingRange = 0,
