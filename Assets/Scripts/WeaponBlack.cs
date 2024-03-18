@@ -35,7 +35,7 @@ public class WeaponBlack : Weapon
             }
             else
             {
-                if (_player.GirlAbility.BlackSphereList.Count <= 0)
+                if (Managers.GetManager<AbilityManager>().BlackSphereList.Count <= 0)
                 {
                     _isReload = false;
                     if (_reloadGauge)
@@ -43,13 +43,13 @@ public class WeaponBlack : Weapon
                 }
                 else
                 {
-                    _reloadingBlackSphere = _player.GirlAbility.BlackSphereList[0];
-                    _player.GirlAbility.BlackSphereList.RemoveAt(0);
+                    _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
+                    Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
                     _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadDelay);
                 }
             }
 
-            if (_player.GirlAbility.BlackSphereList.Count <= 0)
+            if (Managers.GetManager<AbilityManager>().BlackSphereList.Count <= 0)
             {
                 _isReload = false;
                 if (_reloadGauge)
@@ -67,10 +67,10 @@ public class WeaponBlack : Weapon
         if (_maxAmmo <= _currentAmmo) return;
         if (_isReload) return;
 
-        if (_player.GirlAbility.BlackSphereList.Count <= 0) return;
+        if (Managers.GetManager<AbilityManager>().BlackSphereList.Count <= 0) return;
 
-        _reloadingBlackSphere = _player.GirlAbility.BlackSphereList[0];
-        _player.GirlAbility.BlackSphereList.RemoveAt(0);
+        _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
+        Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
         _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadDelay);
 
         _isReload = true;
@@ -99,7 +99,7 @@ public class WeaponBlack : Weapon
         if (_reloadingBlackSphere)
         {
             _reloadingBlackSphere.CancelMoveToDestination();
-            _player.GirlAbility.BlackSphereList.Add(_reloadingBlackSphere);
+            Managers.GetManager<AbilityManager>().BlackSphereList.Add(_reloadingBlackSphere);
         }
     }
 }

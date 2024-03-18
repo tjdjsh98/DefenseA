@@ -22,6 +22,11 @@ public class AttachProjectile : Projectile
     {
         if (_isAttach)
         {
+            if(_attachedObject== null)
+            {
+                Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                return;
+            }
             transform.position = _attachedObject.transform.position + _attachPosition;
         }
     }

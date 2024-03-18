@@ -27,8 +27,6 @@ public class CreatureAI : MonoBehaviour
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
 
     float _girlToCreatureDistance = 5f;
-    Character _enemyToAttack;
-    bool _isMove = false;
     bool _isSoulForm = false;
 
     // ½ºÅ³
@@ -417,7 +415,6 @@ public class CreatureAI : MonoBehaviour
             _character.IsAttack = true;
             _character.IsEnableMove = false;
             _character.IsEnableTurn = false;
-            _enemyToAttack = null;
 
             while (_character.IsAttack)
             {

@@ -45,9 +45,18 @@ public class Managers : MonoBehaviour
         {
             AddCoreManager((Define.CoreManagers)i);
         }
+        foreach (var core in _coreManagers.Values)
+        {
+            core.Init();
+        }
+
         for (int i = 0; i < Define.CONTENT_MANAGER_COUNT; i++)
         {
             AddContentManager((Define.ContentManagers)i);
+        }
+        foreach (var content in _contentManagers.Values)
+        {
+            content.Init();
         }
 
     }
@@ -90,7 +99,6 @@ public class Managers : MonoBehaviour
         {
             manager.transform.parent = _instance.transform;
             _coreManagers.Add(managerName,manager);
-            manager.Init();
         }
     }
     static void AddContentManager(Define.ContentManagers managerName)
@@ -129,7 +137,6 @@ public class Managers : MonoBehaviour
         {
             manager.transform.parent = _instance.transform;
             _contentManagers.Add(managerName, manager);
-            manager.Init();
         }
     }
 }

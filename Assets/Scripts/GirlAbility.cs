@@ -12,11 +12,6 @@ public class GirlAbility
     Dictionary<GirlAbilityName, bool> _abilityUnlocks = new Dictionary<GirlAbilityName, bool>();
 
 
-    // 검은구체
-    List<BlackSphere> _blackSphereList = new List<BlackSphere>();
-    public List<BlackSphere> BlackSphereList => _blackSphereList;
-    public int MaxBlackSphereCount { set; get; } = 10;
-
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
@@ -26,17 +21,13 @@ public class GirlAbility
         _player.Character.AttackHandler += OnAttack;
     }
 
-   
+
 
     public void AbilityUpdate()
     {
         AutoReload();
-        for (int i = _blackSphereList.Count - 1; i >= 0; i--)
-        {
-            if (_blackSphereList[i] == null)
-                _blackSphereList.RemoveAt(i);
-        }
     }
+
     void PlentyOfBullets()
     {
         //if (_weaponSwaper.CurrentWeapon)
@@ -53,21 +44,12 @@ public class GirlAbility
     {
         if (GetIsHaveAbility(GirlAbilityName.BlackBullet))
         {
-            if(UnityEngine.Random.Range(0,5) < 100)
-                AddBlackSphere(target.transform.position);
+            if(UnityEngine.Random.Range(0,100) < 100)
+                Managers.GetManager<AbilityManager>().AddBlackSphere(target.transform.position);
         }
     }
 
-    public void AddBlackSphere(Vector3 position)
-    {
-        if (_blackSphereList.Count >= MaxBlackSphereCount) return;
-
-        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
-        go.transform.position = position;
-        BlackSphere blackSphere = go.GetComponent<BlackSphere>();
-        blackSphere.Init(_player.Character, new Vector3(-3, 5));
-        _blackSphereList.Add(blackSphere);
-    }
+  
 
     private void AutoReload()
     {

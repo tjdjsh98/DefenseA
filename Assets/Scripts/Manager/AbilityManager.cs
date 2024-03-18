@@ -25,7 +25,13 @@ public class AbilityManager : ManagerBase
     public List<SkillSlot> SkillSlotList => _skillSlotList;
     Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
 
-    // 검은 구체
+    // 검은구체 관련 변수
+    List<BlackSphere> _blackSphereList = new List<BlackSphere>();
+    public List<BlackSphere> BlackSphereList => _blackSphereList;
+    public int MaxBlackSphereCount { set; get; } = 10;
+    public Action<BlackSphere> BlackSphereAddedHandler;             // 갯수가 초과 되면 null로 실행됨
+
+    // 검은구체
     float _blackSphereCoolTime = 5;
     float _blackSphereTime;
 
@@ -49,7 +55,15 @@ public class AbilityManager : ManagerBase
     {
         HandleSkill();
         ProcessCommonAbility();
+
+        // 제거된 검은구체 제거
+        for (int i = _blackSphereList.Count - 1; i >= 0; i--)
+        {
+            if (_blackSphereList[i] == null)
+                _blackSphereList.RemoveAt(i);
+        }
     }
+
 
     void RegistSkill()
     {
@@ -66,17 +80,17 @@ public class AbilityManager : ManagerBase
         }
     }
 
+
     void PlayVolleyFire(SkillSlot skillSlot)
     {
-        if (Player.GirlAbility.BlackSphereList.Count <= 0) return;
+        if (_blackSphereList.Count <= 0) return;
 
         Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
 
-        BlackSphere blackSphere = Player.GirlAbility.BlackSphereList[0];
-        Player.GirlAbility.BlackSphereList.RemoveAt(0);
+        BlackSphere blackSphere = _blackSphereList[0];
+        _blackSphereList.RemoveAt(0);
 
-        blackSphere.ChangeAttackMode(mousePosition, 0);
-
+        blackSphere.ChangeAttackMode(mousePosition, GetIsHaveCommonAbility(CommonAbilityName.ExplosiveSphere), 0);
     }
     
     void ProcessCommonAbility()
@@ -89,12 +103,25 @@ public class AbilityManager : ManagerBase
             }
             else
             {
-                Player.GirlAbility.AddBlackSphere(Player.transform.position);
+                AddBlackSphere(Player.transform.position);
                 _blackSphereTime = 0;
             }
         }
     }
+    public void AddBlackSphere(Vector3 position)
+    {
+        BlackSphere blackSphere = null;
+        if (_blackSphereList.Count < MaxBlackSphereCount)
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
+            go.transform.position = position;
+            blackSphere = go.GetComponent<BlackSphere>();
+            blackSphere.Init(Player.Character, new Vector3(-3, 5));
+            _blackSphereList.Add(blackSphere);
+        }
 
+        BlackSphereAddedHandler?.Invoke(blackSphere);
+    }
     public void ApplyCardAbility(CardData cardData)
     {
         GirlCardData girlCardData = cardData as GirlCardData;
@@ -180,7 +207,7 @@ public class AbilityManager : ManagerBase
                     case CommonAbilityName.None:
                         break;
                     case CommonAbilityName.ControlSphere:
-                        Player.GirlAbility.MaxBlackSphereCount = 20;
+                        MaxBlackSphereCount = 20;
                         break;
                     case CommonAbilityName.VolleyFire:
                         break;

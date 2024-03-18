@@ -27,6 +27,13 @@ public class WallAbility
     {
         _wallAI= wallAI;
         _wallAI.Character.CharacterDamaged += OnCharacterDamaged;
+        Managers.GetManager<AbilityManager>().BlackSphereAddedHandler += OnBlackSphereAdded;
+    }
+
+    void OnBlackSphereAdded(BlackSphere blackSphere)
+    {
+        if(blackSphere == null)
+            OverflowingDark();
     }
 
     public void AbilityUpdate()
@@ -34,13 +41,20 @@ public class WallAbility
         Barrier();
     }
 
+    void OverflowingDark()
+    {
+        if(GetIsHaveAbility(WallAbilityName.OverflowingDark))
+        {
+            _wallAI.Character.Hp += 1;
+        }
+    }
     private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
     {
         if (GetIsHaveAbility(WallAbilityName.BlackAura))
         {
             if(Random.Range(0,100) < 3)
             {
-                Managers.GetManager<GameManager>().Player.GirlAbility.AddBlackSphere(_wallAI.transform.position);
+                Managers.GetManager<AbilityManager>().AddBlackSphere(_wallAI.transform.position);
             }
         }
     }

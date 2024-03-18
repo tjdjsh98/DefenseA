@@ -46,7 +46,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fde7f9a95631d1f4bb51872a0e8d8265, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 1
   _speed: 50
+  _explosionRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 3, y: 0, z: 0}
+    angle: 0
+    figureType: 1
 --- !u!2083052967 &8065531379330779739
 VisualEffect:
   m_ObjectHideFlags: 0

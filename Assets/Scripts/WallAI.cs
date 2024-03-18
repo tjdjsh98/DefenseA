@@ -1,12 +1,7 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.Timeline;
-using static UnityEngine.UI.CanvasScaler;
 
 public class WallAI : MonoBehaviour
 {
@@ -15,6 +10,7 @@ public class WallAI : MonoBehaviour
     BoxCollider2D _boxCollider;
     GameObject _model;
     GameObject _soulModel;
+
     [SerializeField] WallAbility _wallAbility = new WallAbility();
     public WallAbility WallAbility => _wallAbility;
 
@@ -26,15 +22,13 @@ public class WallAI : MonoBehaviour
 
 
     [Header("이동을 하기 위핸 조건 변수")]
-    [SerializeField] Define.Range _detecctRange;
+    [SerializeField] Define.Range _detectRange;
     [SerializeField] float _playerDistance;
     bool _isDetectEnemy;
     Coroutine _detectEnemyCoroutine;
 
-    [SerializeField]float _reviveCoolTime = 30;
-    public float OriginalReviveTime => _reviveCoolTime;
-    public float ReviveTime => DecreasedReviveTimePercetage > 0 ? 
-        _reviveCoolTime /(1 + DecreasedReviveTimePercetage/100) : _reviveCoolTime * (1 - DecreasedReviveTimePercetage / 100);
+    [SerializeField]float _originalReviveCoolTime = 30;
+    float _reviveCoolTime = 30;
     float _reviveElapsedTime = 0;
 
     // 추가적 능력치
@@ -71,7 +65,7 @@ public class WallAI : MonoBehaviour
     {
         Gizmos.color = Color.red;
         Gizmos.DrawWireCube(transform.position + _attackRange.center, _attackRange.size);
-        Util.DrawRangeOnGizmos(gameObject, _detecctRange, Color.green);
+        Util.DrawRangeOnGizmos(gameObject, _detectRange, Color.green);
     }
     private void Update()
     {
@@ -139,6 +133,7 @@ public class WallAI : MonoBehaviour
     }
     void RegistSkill()
     {
+
     }
 
     public void UseSkill(SkillSlot skillSlot)
@@ -182,6 +177,21 @@ public class WallAI : MonoBehaviour
         //    }
         //}
 
+        _reviveCoolTime = _originalReviveCoolTime;
+
+        // 구원 능력으로 부활대기 시간 감소
+        if (_wallAbility.GetIsHaveAbility(WallAbilityName.Salvation))
+        {
+            List<BlackSphere> blackSphereList = Managers.GetManager<AbilityManager>().BlackSphereList;
+            int count = blackSphereList.Count;
+            for(int i =0; i < blackSphereList.Count; i++)
+            {
+                Managers.GetManager<ResourceManager>().Destroy(blackSphereList[i].gameObject);
+            }
+            blackSphereList.Clear();
+
+            _reviveCoolTime -= blackSphereList.Count;
+        }
         _wallBricks.Clear();
         for (int i = 0; i < 6; i++)
         {
@@ -276,7 +286,7 @@ public class WallAI : MonoBehaviour
                 continue;
             }
             bool isDetect = false;
-            GameObject[] gos = Util.RangeCastAll2D(gameObject, _detecctRange, LayerMask.GetMask("Character"));
+            GameObject[] gos = Util.RangeCastAll2D(gameObject, _detectRange, LayerMask.GetMask("Character"));
 
             foreach (var go in gos)
             {

@@ -6,6 +6,8 @@ using UnityEngine;
 
 public class BlackSphere : MonoBehaviour
 {
+    [SerializeField] bool _debug;
+
     Character _owner;
     Vector3 _offset;
     bool _isMoveToDestination;
@@ -18,12 +20,23 @@ public class BlackSphere : MonoBehaviour
     float _attackDuration= 5;
     [SerializeField]float _speed= 50;
     float _attackDelay;
+
+    [SerializeField]Define.Range _explosionRange;
+
+    bool _isExplosive = false;
     public void Init(Character owner, Vector3 offset)
     {
         _owner = owner;
         _offset = offset;
         _offset.x += Random.Range(-1f, 1f);
         _offset.y += Random.Range(-.5f, .5f);
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!_debug) return;
+
+        Util.DrawRangeOnGizmos(gameObject, _explosionRange, Color.red);
     }
 
     public void Update()
@@ -57,6 +70,25 @@ public class BlackSphere : MonoBehaviour
                     _owner = null;
                     _isMoveToDestination = false;
                     _isAttackMode = false;
+                    if (_isExplosive)
+                    {
+                        Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
+                        effect.SetProperty("Radius", _explosionRange.size.x);
+                        effect.Play(transform.position);
+
+                        Util.RangeCastAll2D(gameObject, _explosionRange, Define.CharacterMask, (go) =>
+                        {
+                            Character c = go.GetComponent<Character>();
+                            if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                            {
+                                Debug.Log(c);
+                                c.Damage(null, 10, 10, c.transform.position - transform.position, 1f);
+                            }
+                            return false;
+                        });
+
+                    }
+
                     Managers.GetManager<ResourceManager>().Destroy(gameObject);
                 }
             }
@@ -103,11 +135,12 @@ public class BlackSphere : MonoBehaviour
         }
     }
 
-    public void ChangeAttackMode(Vector3 targetPostion,float delay = 0)
+    public void ChangeAttackMode(Vector3 targetPostion,bool explosive = false,float delay = 0)
     {
         _attackDelay = delay;
         _attackTime = 0;
         _isAttackMode = true;
+        _isExplosive = explosive;
         _attackDirection = (targetPostion - transform.position).normalized;
 
     }

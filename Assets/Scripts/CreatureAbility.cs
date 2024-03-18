@@ -39,7 +39,7 @@ public class CreatureAbility
         {
             if(Random.Range(0,5) == 0)
             {
-                Managers.GetManager<GameManager>().Player.GirlAbility.AddBlackSphere(target.transform.position);
+                Managers.GetManager<AbilityManager>().AddBlackSphere(target.transform.position);
             }
         }
     }
