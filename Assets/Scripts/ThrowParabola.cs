@@ -31,62 +31,69 @@ public class ThrowParabola : MonoBehaviour
 
     private void Update()
     {
-        if (_target == null)
+        if (_enemyAI.Target != null)
         {
-            if (_fireCoolTime > _fireTime)
+            _character.AnimatorSetBool("Attack", true);
+            if (_target == null)
             {
-                _fireTime += Time.deltaTime;
+                if (_fireCoolTime > _fireTime)
+                {
+                    _fireTime += Time.deltaTime;
+                }
+                else
+                {
+                    for (int i = 90; i >= 45; i -= 5)
+                    {
+                        float angle = i;
+
+                        if (transform.localScale.x < -0)
+                            angle = 180 - angle;
+
+                        angle *= Mathf.Deg2Rad;
+
+
+                        for (float tempPower = _power - 5; tempPower <= _power + 5; tempPower++)
+                        {
+                            _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
+
+                            if (_target != null)
+                            {
+                                _fireTime = 0;
+                                _character.IsAttack = true;
+                                _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
+                                _firePower = tempPower;
+                                return;
+                            }
+                        }
+                    }
+                }
             }
             else
             {
-                for (int i = 90; i >= 45; i -= 5)
+                if (_fireDelay > _fireTime)
                 {
-                    float angle = i;
+                    _fireTime += Time.deltaTime;
+                }
+                else
+                {
+                    Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
 
-                    if (transform.localScale.x < -0)
-                        angle = 180 - angle;
-
-                    angle *= Mathf.Deg2Rad;
-
-
-                    for (float tempPower = _power -5; tempPower <= _power + 5 ; tempPower++)
+                    if (projectile)
                     {
-                        _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
-
-                        if (_target != null)
-                        {
-                            _fireTime = 0;
-                            _character.IsAttack = true;
-                            _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
-                            _firePower = tempPower;
-                            return;
-                        }
+                        projectile.transform.position = _firePoint.transform.position;
+                        projectile.Init(1, _firePower, 1, Define.CharacterType.Player);
+                        projectile.Fire(_character, _fireDirection);
                     }
+
+                    _target = null;
+                    _fireTime = 0;
                 }
             }
         }
         else
         {
-            if (_fireDelay > _fireTime)
-            {
-                _fireTime += Time.deltaTime;
-            }
-            else
-            {
-                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
-
-                if (projectile)
-                {
-                    projectile.transform.position = _firePoint.transform.position;
-                    projectile.Init(1, _firePower, 1, Define.CharacterType.Player);
-                    projectile.Fire(_character, _fireDirection);
-                }
-
-                _target = null;
-                _fireTime = 0;
-            }
+            _character.AnimatorSetBool("Attack", false);
         }
-
     }
 
     GameObject PredictTrajectory(Vector3 startPos, Vector3 vel)

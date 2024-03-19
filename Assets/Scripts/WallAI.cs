@@ -58,7 +58,6 @@ public class WallAI : MonoBehaviour
         _soulModel = transform.Find("SoulModel").gameObject;
         _wallAbility.Init(this);
 
-        _character.CharacterDamaged += OnCharacterDamaged;
         _character.CharacterDeadHandler += OnCharacterDead;
     }
     private void OnDrawGizmos()
@@ -178,20 +177,8 @@ public class WallAI : MonoBehaviour
         //}
 
         _reviveCoolTime = _originalReviveCoolTime;
+        _reviveCoolTime -= _wallAbility.Salvation();
 
-        // 구원 능력으로 부활대기 시간 감소
-        if (_wallAbility.GetIsHaveAbility(WallAbilityName.Salvation))
-        {
-            List<BlackSphere> blackSphereList = Managers.GetManager<AbilityManager>().BlackSphereList;
-            int count = blackSphereList.Count;
-            for(int i =0; i < blackSphereList.Count; i++)
-            {
-                Managers.GetManager<ResourceManager>().Destroy(blackSphereList[i].gameObject);
-            }
-            blackSphereList.Clear();
-
-            _reviveCoolTime -= blackSphereList.Count;
-        }
         _wallBricks.Clear();
         for (int i = 0; i < 6; i++)
         {
@@ -202,25 +189,6 @@ public class WallAI : MonoBehaviour
         }
         _onewayTime = _reviveCoolTime / _wallBricks.Count/2;
     }
-
-    private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
-    {
-        if(ReflectionDamage != 0)
-            _character.Attack(attacker, ReflectionDamage, 0, Vector3.zero, 0);
-
-        //if (AbilityUnlocks.TryGetValue(WallAbilityName.BlackAura, out bool value) && value)
-        //{
-        //    GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
-        //    BlackSphere blackSphere = go.GetComponent<BlackSphere>();
-        //    if(blackSphere != null)
-        //    {
-        //        blackSphere.transform.position = transform.position;
-        //        blackSphere.Init(_character,new Vector3(-3,5));
-        //    }
-        //}
-    }
-
-   
 
   
     void Transform()

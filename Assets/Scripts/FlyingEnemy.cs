@@ -129,7 +129,7 @@ public class FlyingEnemy : EnemyAI
 
             }
             // 공격 시작
-            if (!_character.IsAttack &&_target && Mathf.Abs(transform.position.y - (_target.transform.position.y + _flyHeight)) <= 1f && _targetInRange)
+            if (!_character.IsAttack &&_target && Mathf.Abs(transform.position.y - (_target.transform.position.y + _flyHeight)) <= 1f && _isTargetInRange)
             {
                 _character.SetSpeed(_flyAttackSpeed);
                 _attackedList.Clear();

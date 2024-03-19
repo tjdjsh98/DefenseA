@@ -1284,6 +1284,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da3420fdcf18fd4eb14641fc380b330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _wallAbility:
+    <ExplosionRange>k__BackingField: 3
+    <ExplosionPower>k__BackingField: 50
+    <ExplosionDamage>k__BackingField: 20
   _weaponSwaper: {fileID: 1268709811801672397}
   _attackRange:
     center: {x: 0, y: 7.8, z: 0}
@@ -1291,20 +1295,17 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _sitPosition: {fileID: 3040861773646171398}
-  _detecctRange:
-    center: {x: 0, y: 3.32, z: 0}
-    size: {x: 20, y: 15, z: 0}
+  _detectRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
     angle: 0
     figureType: 0
   _playerDistance: 5
-  _reviveCoolTime: 30
-  <ExplosionRange>k__BackingField: 10
-  <ExplosionPower>k__BackingField: 50
-  <ExplosionDamage>k__BackingField: 50
+  _originalReviveCoolTime: 30
+  _brickTest: 0
   _wallBricks: []
   _wallBricksPosition: []
   _lineRenderer: {fileID: 2367567044856923855}
-  _brickTest: 0
 --- !u!114 &1268709811801672397
 MonoBehaviour:
   m_ObjectHideFlags: 0

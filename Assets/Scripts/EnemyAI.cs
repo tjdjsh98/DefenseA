@@ -16,11 +16,15 @@ public class EnemyAI : MonoBehaviour
     [SerializeField] protected Character _target;
     public Character Target=>_target;
 
+    // 움직임
+    public float MoveRate { get; set; } = 1;     //움직임 배율 => 달리기 , 걷기에 사용
+
     // 공격과 공격사이의 딜레이
     [SerializeField] protected bool _noAttack;
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
-    protected bool _targetInRange;
+    protected bool _isTargetInRange;
+    public bool IsTargetInRange=>_isTargetInRange;
 
     // 공격하는 중의 딜레이
     protected float _attackingDelay = 2;
@@ -78,7 +82,7 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void Move()
     {
-        if (_targetInRange) return;
+        if (_isTargetInRange) return;
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
 
@@ -87,10 +91,10 @@ public class EnemyAI : MonoBehaviour
         {
             Player player = Managers.GetManager<GameManager>().Player;
             if (player == null) return;
-            _character.Move((player.transform.position - transform.position).normalized);
+            _character.Move((player.transform.position - transform.position).normalized * MoveRate);
         }else
         {
-            _character.Move((_target.transform.position - transform.position).normalized);
+            _character.Move((_target.transform.position - transform.position).normalized* MoveRate);
         }
     }
 
@@ -128,7 +132,7 @@ public class EnemyAI : MonoBehaviour
     {
         if (_target == null)
         {
-            _targetInRange = false;
+            _isTargetInRange = false;
             return;
         }
 
@@ -140,13 +144,13 @@ public class EnemyAI : MonoBehaviour
             {
                 if (_target.gameObject == gameObject)
                 {
-                    _targetInRange = true;
+                    _isTargetInRange = true;
                     return;
                 }
             }
         }
 
-        _targetInRange = false;
+        _isTargetInRange = false;
     }
 
     protected virtual void PlayAttack()
@@ -162,7 +166,7 @@ public class EnemyAI : MonoBehaviour
             if (!_isRangedAttack)
             {
                 // 공격 모션이 따로 있을 때
-                if (!_attackTriggerName.Equals("") && _targetInRange)
+                if (!_attackTriggerName.Equals("") && _isTargetInRange)
                 {
                     _attackedList.Clear();
                     _character.IsEnableMove = false;
@@ -175,7 +179,7 @@ public class EnemyAI : MonoBehaviour
                 // 공격 모션이 따로 없을 때
                 else
                 {
-                    if (_attackingElasepd == 0 && _targetInRange)
+                    if (_attackingElasepd == 0 && _isTargetInRange)
                     {
                         _attackedList.Clear();
                         Color color = _attackRangeSprite.color;

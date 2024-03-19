@@ -50,7 +50,7 @@ public static class Define
         OctoHead,
         BatGroup,
         FatGuy,
-        Mine,
+        Boomer,
         Boar,
         UpEnemy,
         PartTestEnemy,

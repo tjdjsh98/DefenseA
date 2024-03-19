@@ -6,7 +6,10 @@ public class SelfDestruct : MonoBehaviour
 {
     Character _character;
     EnemyAI enemyAI;
-    protected SpriteRenderer _attackRangeSprite;
+    [SerializeField]GameObject _heart;
+    protected Material _heartMaterial;
+    float _lightingValue;
+    static int _lightingID = Shader.PropertyToID("_Lighting");
 
     bool _isStartSelfDestruct;
     float _selfDestructTime;
@@ -15,21 +18,15 @@ public class SelfDestruct : MonoBehaviour
     [SerializeField]float _selfDestructDuration = 3;
     [SerializeField]float _explosionPower = 50;
     [SerializeField]int _explosionDamage = 5;
+
+    float _lightingTime;
+
     private void Awake()
     {
         _character = GetComponent<Character>();
         enemyAI = GetComponent<EnemyAI>();
-
-        if (transform.Find("AttackRange"))
-        {
-            _attackRangeSprite = transform.Find("AttackRange").GetComponent<SpriteRenderer>();
-        }
-        else
-        {
-            _attackRangeSprite = Managers.GetManager<ResourceManager>().Instantiate("AttackRange").GetComponent<SpriteRenderer>();
-            _attackRangeSprite.transform.SetParent(transform);
-            _attackRangeSprite.gameObject.SetActive(false);
-        }
+        enemyAI.MoveRate = 0.4f;
+        _heartMaterial = _heart.GetComponent<SpriteRenderer>().material;
 
         _isStartSelfDestruct = false;
     }
@@ -41,14 +38,11 @@ public class SelfDestruct : MonoBehaviour
 
     private void Update()
     {
-        if (enemyAI.Target != null && !_isStartSelfDestruct)
+        if (enemyAI.Target != null &&!_isStartSelfDestruct)
         {
             _isStartSelfDestruct = true;
-            _character.SetSpeed(10);
-            _attackRangeSprite.color = new Color(1, 0, 0, 0);
-            _attackRangeSprite.transform.localScale = _explosionRange.size;
-            _attackRangeSprite.transform.localPosition = _explosionRange.center;
-            _attackRangeSprite.gameObject.SetActive(true);
+            enemyAI.MoveRate = 1f;
+            _lightingTime = 0;
         }
 
 
@@ -56,15 +50,16 @@ public class SelfDestruct : MonoBehaviour
         {
             if(_selfDestructDuration > _selfDestructTime)
             {
+                _lightingTime += Time.deltaTime * _selfDestructTime/ _selfDestructDuration * 10f;
+                if((_selfDestructDuration - _selfDestructTime) < 0.5f)
+                    _heartMaterial.SetFloat(_lightingID,600);
+                else
+                    _heartMaterial.SetFloat(_lightingID,( Mathf.Abs(Mathf.Cos(_lightingTime * Mathf.PI)+1) * 20));
                 _selfDestructTime += Time.deltaTime;
-                Color color = _attackRangeSprite.color;
-                if (_selfDestructDuration != 0)
-                    color.a = _selfDestructTime / _selfDestructDuration;
-                        _attackRangeSprite.color = color;
+                
             }
             else
             {
-                _attackRangeSprite.gameObject.SetActive(false);
                 _selfDestructTime = 0;
                 Explosion();
             }
