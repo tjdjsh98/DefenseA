@@ -18,5 +18,6 @@ public enum CreatureAbilityName
     Charge,
     ElectricDischarge,
     Smash,
+    DiningEtiquette,
     END
 };

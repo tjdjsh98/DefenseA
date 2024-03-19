@@ -101,7 +101,7 @@ public class Character : MonoBehaviour,IHp
         _boxCollider = GetComponent<BoxCollider2D>(); 
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
         _hp = _maxHp;
-        if(_animator)
+        if (_animator)
             _animator.logWarnings = false;
     }
 
@@ -114,7 +114,11 @@ public class Character : MonoBehaviour,IHp
 
     private void Update()
     {
-        if(IsDead) return;
+        if (Hp > 0)
+        {
+            IsDead = false;
+        }
+        if (IsDead) return;
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
 
         _recoverHpAmount += Time.deltaTime * IncreasedRecoverHpPower;
@@ -254,7 +258,7 @@ public class Character : MonoBehaviour,IHp
         if (IsInvincibility) return 0;
 
         Character attackerCharacter = attacker as Character;
-
+        direction = direction.normalized;
         damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
             Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
 
@@ -268,7 +272,7 @@ public class Character : MonoBehaviour,IHp
         {
             float knockBack = power;
             knockBack *= (1 - _standing/100f);
-            _rigidBody.AddForce(direction.normalized * knockBack, ForceMode2D.Impulse);
+            _rigidBody.AddForce(direction * knockBack, ForceMode2D.Impulse);
             IsStun = true;
             _stunEleasped = 0;
             _stunTime = stunTime;
@@ -278,6 +282,7 @@ public class Character : MonoBehaviour,IHp
 
         if (_hp <= 0)
         {
+            IsDead = true;
             CharacterDeadHandler?.Invoke();
             if (_isGainMentalWhenKillIt)
             {
@@ -290,7 +295,6 @@ public class Character : MonoBehaviour,IHp
             }
             else
             {
-                IsDead = true;
                 if(_boxCollider)
                     _boxCollider.enabled = false;
                 if(_capsuleCollider)

@@ -46,9 +46,7 @@ public class CreatureAI : MonoBehaviour
         get
         {
             float attackSpeed = 1;
-            if (_creatureAbility.GetIsHaveAbility(CreatureAbilityName.Rage))
-                attackSpeed *= 1.5f;
-
+            attackSpeed *= _creatureAbility.GetIncreasedAttackSpeed();
             return attackSpeed;
         }
     }

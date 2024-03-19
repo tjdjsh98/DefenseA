@@ -1284,14 +1284,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3da3420fdcf18fd4eb14641fc380b330, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _wallAbility:
-    <ExplosionRange>k__BackingField: 3
-    <ExplosionPower>k__BackingField: 50
-    <ExplosionDamage>k__BackingField: 20
+  _wallAbility: {fileID: 0}
   _weaponSwaper: {fileID: 1268709811801672397}
   _attackRange:
-    center: {x: 0, y: 7.8, z: 0}
-    size: {x: 53.9, y: 18.2, z: 0}
+    center: {x: 0, y: 2.5, z: 0}
+    size: {x: 10, y: 5, z: 0}
     angle: 0
     figureType: 0
   _sitPosition: {fileID: 3040861773646171398}

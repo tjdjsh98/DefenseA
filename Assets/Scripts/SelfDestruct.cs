@@ -52,7 +52,7 @@ public class SelfDestruct : MonoBehaviour
             {
                 _lightingTime += Time.deltaTime * _selfDestructTime/ _selfDestructDuration * 10f;
                 if((_selfDestructDuration - _selfDestructTime) < 0.5f)
-                    _heartMaterial.SetFloat(_lightingID,600);
+                    _heartMaterial.SetFloat(_lightingID,20);
                 else
                     _heartMaterial.SetFloat(_lightingID,( Mathf.Abs(Mathf.Cos(_lightingTime * Mathf.PI)+1) * 20));
                 _selfDestructTime += Time.deltaTime;

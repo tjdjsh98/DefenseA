@@ -58,9 +58,9 @@ public class ElectricWeapon : Weapon
     {
         if (_currentAmmo < _maxAmmo)
         {
-            if (Managers.GetManager<AbilityManager>().CurrentElectric > 0.1)
+            if (Managers.GetManager<AbilityManager>().CurrentElectricity > 0.1)
             {
-                Managers.GetManager<AbilityManager>().CurrentElectric -= Time.deltaTime;
+                Managers.GetManager<AbilityManager>().AddElectricity(-Time.deltaTime);
                 _electric += Time.deltaTime;
                 if (_electric >= 1)
                 {

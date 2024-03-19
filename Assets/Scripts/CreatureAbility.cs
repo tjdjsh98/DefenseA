@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [System.Serializable]
@@ -9,7 +8,6 @@ public class CreatureAbility
 
     // 능력 해금
     Dictionary<CreatureAbilityName, bool> _abilityUnlocks = new Dictionary<CreatureAbilityName, bool>();
-
 
     //생존본능
     [SerializeField] bool _debugSurvivalIntinctRange;
@@ -42,19 +40,40 @@ public class CreatureAbility
                 Managers.GetManager<AbilityManager>().AddBlackSphere(target.transform.position);
             }
         }
+        if (GetIsHaveAbility(CreatureAbilityName.DiningEtiquette))
+        {
+            if(target == null || target.IsDead)
+            {
+                Managers.GetManager<AbilityManager>().AddPredation(3);
+            }
+        }
+        if (GetIsHaveAbility(CreatureAbilityName.Charge))
+        {
+            if (target == null || target.IsDead)
+            {
+                Managers.GetManager<AbilityManager>().AddElectricity(1);
+            }
+        }
     }
-
     public void AddAbility(CreatureAbilityName creatureAbilityName)
     {
         if ((int)creatureAbilityName > (int)CreatureAbilityName.None && (int)creatureAbilityName < (int)CreatureAbilityName.END)
         {
+            bool turnTrue = false;
             if (_abilityUnlocks.ContainsKey(creatureAbilityName))
             {
+                turnTrue = true;
                 _abilityUnlocks[creatureAbilityName] = true;
             }
             else
             {
+                turnTrue = true;
                 _abilityUnlocks.Add(creatureAbilityName, true);
+            }
+
+            if (turnTrue)
+            {
+
             }
         }
     }
@@ -87,6 +106,17 @@ public class CreatureAbility
                 }
             }
         }
+    }
+    public float GetIncreasedAttackSpeed()
+    {
+        float percentage = 0;
+        AbilityManager abilityManager = Managers.GetManager<AbilityManager>();
 
+        if (GetIsHaveAbility(CreatureAbilityName.CurrentPassing))
+        {
+            percentage += (int)(abilityManager.CurrentElectricity/10) * 5f;
+        }
+
+        return percentage;
     }
 }

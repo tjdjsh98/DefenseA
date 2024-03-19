@@ -1,7 +1,9 @@
+
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class AbilityManager : ManagerBase
 {
@@ -36,7 +38,21 @@ public class AbilityManager : ManagerBase
     float _blackSphereTime;
 
     // 전기 관련 능력
-    public float CurrentElectric;
+    float _maxElectricity = 0;
+    public float MaxElectricity { get { return _maxElectricity; } }
+    float _currentElectricity;
+    public float CurrentElectricity => _currentElectricity;
+    float _chargeElectricty = 0;
+    public float ChargeElectricty{ get { return _chargeElectricty; } }
+    public bool IsUnlockOverCharge { set; get; } = false;
+
+    // 포식 관련 능력
+    int _maxPredation = 0;
+    public int MaxPredation => _maxPredation;
+    int _predation = 0;
+    public int Predation => _predation;
+
+
     public override void Init()
     {
         RegistSkill();
@@ -93,8 +109,44 @@ public class AbilityManager : ManagerBase
         blackSphere.ChangeAttackMode(mousePosition, GetIsHaveCommonAbility(CommonAbilityName.ExplosiveSphere), 0);
     }
     
+    public void AddPredation(int value)
+    {
+        if(_maxPredation < _predation + value)
+        {
+            _predation = _maxPredation;
+        }
+        else
+        {
+            _predation += value;
+        }
+    }
+    public void AddElectricity(float value)
+    {
+        float maxElectricity = MaxElectricity;
+        maxElectricity *= IsUnlockOverCharge ? 2 : 1;
+        if (_currentElectricity + value < maxElectricity)
+            _currentElectricity += value;
+        else
+            _currentElectricity = maxElectricity;
+    }
+
+    public void ResetElectricity()
+    {
+        _currentElectricity = 0;
+    }
     void ProcessCommonAbility()
     {
+        // 전기충전
+        if(MaxElectricity != 0)
+        {
+            float maxElectricity = MaxElectricity;
+            maxElectricity *= IsUnlockOverCharge ? 2 : 1;
+            if (_currentElectricity + ChargeElectricty * Time.deltaTime > maxElectricity)
+                _currentElectricity = maxElectricity;
+            else
+                _currentElectricity += ChargeElectricty * Time.deltaTime;
+        }
+
         if (GetIsHaveCommonAbility(CommonAbilityName.BlackSphere))
         {
             if (_blackSphereTime < _blackSphereCoolTime)
@@ -216,12 +268,17 @@ public class AbilityManager : ManagerBase
                     case CommonAbilityName.Bait:
                         break;
                     case CommonAbilityName.MicroPower:
+                        _maxElectricity = 100;
+                        _chargeElectricty = 1;
                         break;
                     case CommonAbilityName.ExtraBattery:
+                        _maxElectricity = 200;
                         break;
                     case CommonAbilityName.SelfGeneration:
+                        _chargeElectricty = 2;
                         break;
                     case CommonAbilityName.Appetite:
+                        _maxPredation = 40;
                         break;
                     case CommonAbilityName.END:
                         break;
@@ -344,7 +401,6 @@ public class AbilityManager : ManagerBase
         if (index < 0 || _skillSlotList.Count <= index) return;
 
         SkillData skillData = Managers.GetManager<DataManager>().GetData<SkillData>((int)ConvertAbilityToCardName(cardData.UnlockAbility));
-        Debug.Log(skillData);
         if (skillData == null) return;
 
         _skillSlotList[index].skillData = skillData;

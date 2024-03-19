@@ -1,6 +1,7 @@
 using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class ThrowParabola : MonoBehaviour
@@ -9,6 +10,7 @@ public class ThrowParabola : MonoBehaviour
     EnemyAI _enemyAI;
 
     [SerializeField]float _fireCoolTime;
+    [SerializeField]float _fireCheckTime;
     [SerializeField]float _fireDelay;
     [SerializeField] float _power;
     float _fireTime;
@@ -36,33 +38,38 @@ public class ThrowParabola : MonoBehaviour
             _character.AnimatorSetBool("Attack", true);
             if (_target == null)
             {
+                _fireCheckTime += Time.deltaTime;
                 if (_fireCoolTime > _fireTime)
                 {
                     _fireTime += Time.deltaTime;
                 }
                 else
                 {
-                    for (int i = 90; i >= 45; i -= 5)
+                    if (_fireCheckTime > 1)
                     {
-                        float angle = i;
-
-                        if (transform.localScale.x < -0)
-                            angle = 180 - angle;
-
-                        angle *= Mathf.Deg2Rad;
-
-
-                        for (float tempPower = _power - 5; tempPower <= _power + 5; tempPower++)
+                        _fireCoolTime = 0;
+                        for (int i = 90; i >= 45; i -= 5)
                         {
-                            _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
+                            float angle = i;
 
-                            if (_target != null)
+                            if (transform.localScale.x < -0)
+                                angle = 180 - angle;
+
+                            angle *= Mathf.Deg2Rad;
+
+
+                            for (float tempPower = _power - 5; tempPower <= _power + 5; tempPower++)
                             {
-                                _fireTime = 0;
-                                _character.IsAttack = true;
-                                _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
-                                _firePower = tempPower;
-                                return;
+                                _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
+
+                                if (_target != null)
+                                {
+                                    _fireTime = 0;
+                                    _character.IsAttack = true;
+                                    _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
+                                    _firePower = tempPower;
+                                    return;
+                                }
                             }
                         }
                     }

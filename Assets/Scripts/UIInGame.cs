@@ -74,7 +74,8 @@ public class UIInGame : UIBase
         if(character)
         {
             _sb.Append($"체력: {character.MaxHp}\n");
-            _sb.Append($"전기: {Managers.GetManager<AbilityManager>().CurrentElectric}\n");
+            _sb.Append($"전기: {Managers.GetManager<AbilityManager>().CurrentElectricity}/{Managers.GetManager<AbilityManager>().MaxElectricity}\n");
+            _sb.Append($"포식: {Managers.GetManager<AbilityManager>().Predation}/{Managers.GetManager<AbilityManager>().MaxPredation}\n");
         }
         if(weaponSwaper.CurrentWeapon)
         {

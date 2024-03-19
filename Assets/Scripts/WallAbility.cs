@@ -1,11 +1,12 @@
 using System.Collections.Generic;
+using System.Linq.Expressions;
 using UnityEngine;
 
 [System.Serializable]
 public class WallAbility 
 {
-    WallAI _wallAI;
-
+    [SerializeField]WallAI _wallAI;
+  
     // 능력 해금
     Dictionary<WallAbilityName, bool> _abilityUnlocks= new Dictionary<WallAbilityName, bool>();
 
@@ -22,7 +23,11 @@ public class WallAbility
     float _barrierRange = 30;
     Barrier _barrier;
 
-  
+    // 잔류전기
+    float _residualElectricityTime;
+    float _residualElectricityCoolTime = 10;
+    Define.Range _residualElectricityRange;
+
     public void Init(WallAI wallAI)
     {
         _wallAI= wallAI;
@@ -30,6 +35,17 @@ public class WallAbility
         _wallAI.Character.CharacterDeadHandler += OnCharacterDead;
 
         Managers.GetManager<AbilityManager>().BlackSphereAddedHandler += OnBlackSphereAdded;
+        _residualElectricityRange = new Define.Range()
+        {
+            center = new Vector3(0, 2.5f, 0),
+            size = new Vector3(10f, 5f, 0),
+            figureType = Define.FigureType.Box
+        };
+    }
+
+    public void OnDrawGizmosSelected()
+    {
+        Util.DrawRangeOnGizmos(_wallAI.gameObject, _residualElectricityRange, Color.yellow);
     }
 
     void OnBlackSphereAdded(BlackSphere blackSphere)
@@ -41,6 +57,37 @@ public class WallAbility
     public void AbilityUpdate()
     {
         Barrier();
+        OverCharge();
+        // ActivateBarrier();
+        ResidualElectricity();
+        if (Input.GetKeyDown(KeyCode.H))
+        {
+            Managers.GetManager<AbilityManager>().AddElectricity(199);
+        }
+    }
+
+    void ResidualElectricity()
+    {
+        if (GetIsHaveAbility(WallAbilityName.ResidualElectricity))
+        {
+            if (_residualElectricityTime < _residualElectricityCoolTime)
+            {
+                _residualElectricityTime += Time.deltaTime;
+            }
+            else
+            {
+                _residualElectricityTime = 0;
+                Util.RangeCastAll2D(_wallAI.gameObject, _residualElectricityRange, Define.CharacterMask, (go) =>
+                {
+                    Character character = go.GetComponent<Character>();
+                    if (character != null)
+                    {
+                        character.Damage(_wallAI.Character, 1, 0, Vector3.zero, 2);
+                    }
+                    return false;
+                });
+            }
+        }
     }
 
     private void OnCharacterDead()
@@ -76,16 +123,59 @@ public class WallAbility
     {
         if ((int)wallAbilityName > (int)WallAbilityName.None && (int)wallAbilityName < (int)WallAbilityName.END)
         {
-            if (_abilityUnlocks.ContainsKey(wallAbilityName))
+            bool turnTrue = false;
+            if (_abilityUnlocks.ContainsKey(wallAbilityName) && !_abilityUnlocks[wallAbilityName])
             {
                 _abilityUnlocks[wallAbilityName] = true;
+                turnTrue = true;
             }
             else
             {
                 _abilityUnlocks.Add(wallAbilityName, true);
+                turnTrue = true;
+            }
+
+            if (turnTrue)
+            {
+                switch(wallAbilityName)
+                {
+                    case WallAbilityName.OverCharge:
+                        Managers.GetManager<AbilityManager>().IsUnlockOverCharge = true;
+                        break;
+                    default:
+                        break;
+                }
             }
         }
     }
+    void OverCharge()
+    {
+        if (GetIsHaveAbility(WallAbilityName.OverCharge))
+        {
+            AbilityManager manager = Managers.GetManager<AbilityManager>();
+
+            if (manager.CurrentElectricity >= manager.MaxElectricity * 2)
+            {
+                Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
+                effect.SetProperty("Radius", 5f);
+                effect.Play(_wallAI.transform.position);
+
+                Define.Range range = new Define.Range() { size = Vector3.one * 5, figureType = Define.FigureType.Circle };
+                Util.RangeCastAll2D(_wallAI.gameObject, range, Define.CharacterMask, (go) =>
+                {
+                    Character character = go.GetComponent<Character>();
+                    if (character != null)
+                    {
+                        character.Damage(_wallAI.Character, 10, 10, character.transform.position - _wallAI.transform.position, 1);
+                    }
+                    return false;
+                });
+
+                manager.ResetElectricity();
+            }
+        }
+    }
+
     void ActivateBarrier()
     {
         _barrier = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Barrier").GetComponent<Barrier>();

@@ -10,8 +10,7 @@ public class GirlAbility
 
     // 언락된 능력
     Dictionary<GirlAbilityName, bool> _abilityUnlocks = new Dictionary<GirlAbilityName, bool>();
-
-
+    
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
@@ -20,9 +19,6 @@ public class GirlAbility
         _player = player;
         _player.Character.AttackHandler += OnAttack;
     }
-
-
-
     public void AbilityUpdate()
     {
         AutoReload();
@@ -44,9 +40,18 @@ public class GirlAbility
     {
         if (GetIsHaveAbility(GirlAbilityName.BlackBullet))
         {
-            if(UnityEngine.Random.Range(0,100) < 100)
+            if(UnityEngine.Random.Range(0,100) < 5)
                 Managers.GetManager<AbilityManager>().AddBlackSphere(target.transform.position);
         }
+
+        if (GetIsHaveAbility(GirlAbilityName.MealPreparation))
+        {
+            if(target == null || target.IsDead)
+            {
+                Managers.GetManager<AbilityManager>().AddPredation(1);
+            }
+        }
+
     }
 
   
@@ -96,13 +101,25 @@ public class GirlAbility
     {
         if ((int)girlAbilityName > (int)GirlAbilityName.None && (int)girlAbilityName < (int)GirlAbilityName.END)
         {
+            bool turnTrue = false;
+
             if (_abilityUnlocks.ContainsKey(girlAbilityName))
             {
+                turnTrue = true;    
                 _abilityUnlocks[girlAbilityName] = true;
             }
             else
             {
+                turnTrue = true;    
                 _abilityUnlocks.Add(girlAbilityName, true);
+            }
+
+            if(turnTrue)
+            {
+                switch (girlAbilityName)
+                {
+                   
+                }
             }
         }
     }

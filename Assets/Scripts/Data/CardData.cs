@@ -48,6 +48,7 @@ public enum CardName
     충전,
     전기방출,
     강타,
+    식사예절,
     방벽,
     자폭,
     성장,

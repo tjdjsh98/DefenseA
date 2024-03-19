@@ -49,7 +49,6 @@ public class WallAI : MonoBehaviour
 
     Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
 
-
     private void Awake()
     {
         _character = GetComponent<Character>();
@@ -62,9 +61,9 @@ public class WallAI : MonoBehaviour
     }
     private void OnDrawGizmos()
     {
-        Gizmos.color = Color.red;
-        Gizmos.DrawWireCube(transform.position + _attackRange.center, _attackRange.size);
+        Util.DrawRangeOnGizmos(gameObject, _attackRange, Color.red);
         Util.DrawRangeOnGizmos(gameObject, _detectRange, Color.green);
+
     }
     private void Update()
     {
@@ -134,6 +133,8 @@ public class WallAI : MonoBehaviour
     {
 
     }
+
+   
 
     public void UseSkill(SkillSlot skillSlot)
     {
