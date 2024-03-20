@@ -19,5 +19,6 @@ public enum WallAbilityName
     OverCharge,
     Predation,
     LightDigestion,
+    Digestion,
     END
 };

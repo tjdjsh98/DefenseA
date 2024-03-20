@@ -152,6 +152,7 @@ public class AbilityManager : ManagerBase
             if (_blackSphereTime < _blackSphereCoolTime)
             {
                 _blackSphereTime += Time.deltaTime;
+
             }
             else
             {
@@ -159,6 +160,7 @@ public class AbilityManager : ManagerBase
                 _blackSphereTime = 0;
             }
         }
+
     }
     public void AddBlackSphere(Vector3 position)
     {

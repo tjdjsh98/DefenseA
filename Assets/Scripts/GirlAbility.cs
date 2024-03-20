@@ -14,6 +14,10 @@ public class GirlAbility
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
+    // 굶주림
+    Character _hungerTarget;
+    int _hungerHitCount = 0;
+
     public void Init(Player player)
     {
         _player = player;
@@ -51,11 +55,38 @@ public class GirlAbility
                 Managers.GetManager<AbilityManager>().AddPredation(1);
             }
         }
+        if (GetIsHaveAbility(GirlAbilityName.Hunger))
+        {
+            if (_hungerTarget == null)
+            {
+                _hungerTarget = target;
+                _hungerHitCount = 1;
+            }
+            else
+            {
+                if (_hungerTarget != target)
+                {
+                    _hungerTarget = target;
+                    _hungerHitCount = 1;
+                }
+                else
+                {
+                    _hungerHitCount++;
+                }
+            }
 
+            if (_hungerHitCount >= 10)
+            {
+                _hungerTarget = null;
+                _hungerHitCount = 0;
+                Managers.GetManager<AbilityManager>().AddPredation(5);
+
+                target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, 0);
+            }
+
+
+        }
     }
-
-  
-
     private void AutoReload()
     {
         if (GetIsHaveAbility(GirlAbilityName.AutoReload))

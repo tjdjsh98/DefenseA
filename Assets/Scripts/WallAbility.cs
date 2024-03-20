@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 [System.Serializable]
@@ -27,6 +28,10 @@ public class WallAbility
     float _residualElectricityTime;
     float _residualElectricityCoolTime = 10;
     Define.Range _residualElectricityRange;
+
+    // º“»≠
+    float _digestionCoolTime = 60;
+    float _digestionTime = 60;
 
     public void Init(WallAI wallAI)
     {
@@ -60,6 +65,7 @@ public class WallAbility
         OverCharge();
         // ActivateBarrier();
         ResidualElectricity();
+        Digestion();
         if (Input.GetKeyDown(KeyCode.H))
         {
             Managers.GetManager<AbilityManager>().AddElectricity(199);
@@ -100,6 +106,28 @@ public class WallAbility
         {
             _wallAI.Character.Hp += 1;
         }
+    }
+    void Digestion()
+    {
+        if (GetIsHaveAbility(WallAbilityName.Digestion))
+        {
+            if(_digestionCoolTime > _digestionTime)
+            {
+                _digestionTime += Time.deltaTime;
+            }
+            else if(_wallAI.Character.Hp <= _wallAI.Character.MaxHp * 0.1f)
+            {
+                AbilityManager manager = Managers.GetManager<AbilityManager>();
+                if (manager.Predation > 0)
+                {
+                    _digestionTime = 0;
+                    int diff = _wallAI.Character.MaxHp - _wallAI.Character.Hp;
+                    _wallAI.Character.Hp += (diff < manager.Predation? diff: manager.Predation);
+                    manager.AddPredation(-(diff < manager.Predation ? diff : manager.Predation));
+                }
+            }
+        }
+
     }
     private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
     {

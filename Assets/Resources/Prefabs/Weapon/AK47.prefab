@@ -131,11 +131,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648ea2be8846d6f4eb938af402840014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
   _weaponName: 0
+  _bulletName: 0
   _audioLength: 0.31
   _isAuto: 1
-  _knockBackPower: 50
-  _stunTime: 0.1
+  _knockBackPower: 20
+  _stunTime: 0
   _bulletSpeed: 100
   _attackMultiplier: 0.7
   _damage: 3
