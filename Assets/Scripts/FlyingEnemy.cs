@@ -1,4 +1,7 @@
 using System;
+using System.Data;
+using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -10,7 +13,6 @@ public class FlyingEnemy : EnemyAI
     float _normalSpeed;
     [SerializeField] float _flyAttackSpeed = 10;
 
-    
     private Vector3 _flyAttackDirection;
 
 
@@ -19,6 +21,7 @@ public class FlyingEnemy : EnemyAI
         base.Awake();
         _normalSpeed = _character.Speed;
 
+        _character.IsEnableTurn = false;
         _flyHeight += Random.Range(-_flyRange, _flyRange);
     }
 
@@ -29,56 +32,55 @@ public class FlyingEnemy : EnemyAI
         if (_character.IsStun) return;
         if (!IsAutoMove) return;
 
-        Vector3 moveDirection = Vector3.zero;
+        Vector3 targetPosition = Vector3.zero;
 
         if (_target == null)
         {
             Player player = Managers.GetManager<GameManager>().Player;
             if (player == null) return;
 
-            float targetPositionX = player.transform.position.x;
-            targetPositionX += transform.position.x < player.transform.position.x ? -_targetDetectRange.size.x / 3 : _targetDetectRange.size.x / 3;
 
-            if (Mathf.Abs(targetPositionX - transform.position.x) < 2)
-                moveDirection.x = 0;
+            targetPosition.x = player.transform.position.x;
+            targetPosition.x += transform.position.x < player.transform.position.x ? -_targetDetectRange.size.x / 3 : _targetDetectRange.size.x / 3;
+
+            Vector3? groundPostion = Managers.GetManager<GameManager>().GetGroundTop(targetPosition);
+
+            if(groundPostion != null)
+                targetPosition.y = groundPostion.Value.y + _flyHeight;
             else
-                moveDirection.x = targetPositionX - transform.position.x;
-            if (transform.position.y - player.transform.position.y > _flyHeight)
-            {
-                moveDirection.y = -1;
-            }
-            else
-            {
-                if (Mathf.Abs(transform.position.y - (player.transform.position.y + _flyHeight)) < 0.2f)
-                    moveDirection.y = 0;
-                else
-                    moveDirection.y = 1;
-            }
+                targetPosition.y = player.transform.position.y + _flyHeight;
+
+            targetPosition.y += Mathf.Sin(Time.time + gameObject.GetInstanceID())*2 -1;
+
+
+            _character.IsEnableTurn = true;
+            _character.TurnBody(player.transform.position - transform.position);
+            _character.IsEnableTurn = false;
         }
         else
         {
-            float targetPositionX = _target.transform.position.x;
-            targetPositionX += transform.position.x < _target.transform.position.x ? -_targetDetectRange.size.x / 3 : _targetDetectRange.size.x / 3;
+            targetPosition.x = _target.transform.position.x;
+            targetPosition.x += transform.position.x < _target.transform.position.x ? -_targetDetectRange.size.x / 3 : _targetDetectRange.size.x / 3;
 
-            if (Mathf.Abs(targetPositionX - transform.position.x) < 2)
-                moveDirection.x = 0;
+            Vector3? groundPostion = Managers.GetManager<GameManager>().GetGroundTop(targetPosition);
+
+            if (groundPostion != null)
+                targetPosition.y = groundPostion.Value.y + _flyHeight;
             else
-                moveDirection.x = targetPositionX - transform.position.x;   
-            if (transform.position.y - _target.transform.position.y > _flyHeight)
-            {
-                moveDirection.y = -1;
-            }
-            else
-            {
-                if (Mathf.Abs(transform.position.y - (_target.transform.position.y + _flyHeight)) < 0.2f)
-                    moveDirection.y = 0;
-                else
-                    moveDirection.y = _target.transform.position.y + _flyHeight - transform.position.y;
-            }
+                targetPosition.y = _target.transform.position.y + _flyHeight;
+
+            targetPosition.y += Mathf.Sin(Time.time + gameObject.GetInstanceID()) * 2 - 1;
+
+
+            _character.IsEnableTurn = true;
+            _character.TurnBody(_target.transform.position - transform.position);
+            _character.IsEnableTurn = false;
         }
 
-        _character.Move(moveDirection);
+
+        _character.Move(targetPosition - transform.position);
     }
+
     protected override void DetectTarget()
     {
         if (_character.IsAttack) return;
@@ -133,7 +135,7 @@ public class FlyingEnemy : EnemyAI
             {
                 _character.SetSpeed(_flyAttackSpeed);
                 _attackedList.Clear();
-                _flyAttackDirection = (_target.GetTop() - _character.GetCenter()).normalized;
+                _flyAttackDirection = (_target.GetCenter() - _character.GetCenter()).normalized;
                 _character.IsEnableTurn = false;
                 _character.IsAttack = true;
                 _character.IsSuperArmer = true;
