@@ -45,15 +45,7 @@ public class EnemyAI : MonoBehaviour
         _rigidbody = _character.GetComponent<Rigidbody2D>();
         _character.PlayAttackHandler += OnPlayAttack;
         _character.FinishAttackHandler += FinishAttack;
-        _character.CharacterDeadHandler += () =>
-        {
-            Managers.GetManager<GameManager>().Exp += 1;
-            float random = _itemDropPercentage * 100;
-            if(Random.Range(0, 10000) < random)
-            {
-                Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
-            }
-        };
+        _character.CharacterDeadHandler += OnCharacterDead;
 
         if (transform.Find("AttackRange"))
         {
@@ -78,6 +70,16 @@ public class EnemyAI : MonoBehaviour
         CheckTargetInAttackRange();
         Move();
         PlayAttack();
+    }
+
+    void OnCharacterDead()
+    {
+        Managers.GetManager<GameManager>().Exp += 1;
+        float random = _itemDropPercentage * 100;
+        if (Random.Range(0, 100) < 5)
+        {
+            Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
+        }
     }
 
     protected virtual void Move()
@@ -230,7 +232,7 @@ public class EnemyAI : MonoBehaviour
             Character character = go.GetComponent<Character>();
             if(character == null || character.CharacterType == _character.CharacterType) continue;
 
-            _character.Attack(character, 1, 1, Vector3.zero);
+            _character.Attack(character, _character.AttackPower, 1, Vector3.zero);
         }
         _target = null;
     }

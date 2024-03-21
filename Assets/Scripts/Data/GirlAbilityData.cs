@@ -13,7 +13,6 @@ public enum GirlAbilityName
     AutoReload,
     PlentyOfBullets,
     LastStruggle,
-    Electric,
     FastReload,
     ExtraAmmo,
     BlackBullet,

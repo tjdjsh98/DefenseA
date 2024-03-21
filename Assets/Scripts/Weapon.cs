@@ -34,7 +34,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected float _knockBackPower = 1;
     public float KnockBackPower => _knockBackPower;
 
-    [SerializeField] protected float _stunTime = 0.1f;
+    [SerializeField] protected float _stunTime = 0f;
     public float StunTime => _stunTime;
     [SerializeField] protected float _bulletSpeed = 15;
     public float BulletSpeed => _bulletSpeed;

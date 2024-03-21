@@ -65,6 +65,9 @@ public class AbilityManager : ManagerBase
         {
             _skillSlotList.Add(new SkillSlot());
         }
+
+        Managers.GetManager<GameManager>().SelectCardData(
+            Managers.GetManager<DataManager>().GetData<CardData>((int)CardName.°­Å¸));
     }
 
     public override void ManagerUpdate()
@@ -95,7 +98,6 @@ public class AbilityManager : ManagerBase
             func?.Invoke(skillSlot);
         }
     }
-
 
     void PlayVolleyFire(SkillSlot skillSlot)
     {

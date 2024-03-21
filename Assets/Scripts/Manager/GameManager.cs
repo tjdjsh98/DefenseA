@@ -360,8 +360,6 @@ public class GameManager : ManagerBase
         else
         {
             Managers.GetManager<AbilityManager>().ApplyCardAbility(data);
-
-          
         }
     }
     public int GetCardSelectionCount(CardName cardSelection)

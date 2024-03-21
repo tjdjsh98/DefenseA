@@ -14,13 +14,23 @@ public class VendingMechine : MonoBehaviour
     List<ShopItem> _shopItemList = new List<ShopItem>();
     private void Awake()
     {
-        Managers.GetManager<InputManager>().InteractKeyDownHandler += OpenShop;
         _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(5);
 
     }
     private void Update()
     {
         CheckPlayer();
+    }
+
+    private void OnEnable()
+    {
+        Managers.GetManager<InputManager>().InteractKeyDownHandler += OpenShop;
+
+    }
+    private void OnDisable()
+    {
+        Managers.GetManager<InputManager>().InteractKeyDownHandler -= OpenShop;
+
     }
 
     public void CheckPlayer()

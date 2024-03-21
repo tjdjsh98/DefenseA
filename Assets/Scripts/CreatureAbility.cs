@@ -19,12 +19,9 @@ public class CreatureAbility
     {
         _creatureAI = creatureAI;
         _creatureAI.Character.AttackHandler += OnAttack;
+
     }
 
-    public void OnDrawGizmosSelected()
-    {
-        Util.DrawRangeOnGizmos(_creatureAI.gameObject, _survivalIntinctRange, Color.green);
-    }
 
     public void AbilityUpdate()
     {
@@ -62,8 +59,11 @@ public class CreatureAbility
             bool turnTrue = false;
             if (_abilityUnlocks.ContainsKey(creatureAbilityName))
             {
-                turnTrue = true;
-                _abilityUnlocks[creatureAbilityName] = true;
+                if (!_abilityUnlocks[creatureAbilityName])
+                {
+                    turnTrue = true;
+                    _abilityUnlocks[creatureAbilityName] = true;
+                }
             }
             else
             {

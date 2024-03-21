@@ -407,8 +407,6 @@ MonoBehaviour:
   _initHeadAngle: 0
   _initBodyAngle: 0
   _initFrontArmAngle: 0
-  _rightPadding: 0
-  _upPadding: 0
   _reboundRecoverPower: 100
   <IncreasedReboundRecoverPercent>k__BackingField: 0
   _bounce: 0
@@ -427,7 +425,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _reloadGauge: {fileID: 0}
-  _weaponNameList: 0a00000000000000
+  _weaponNameList: 03000000ffffffff
   _weaponSlotList:
   - {fileID: 3083050288797914090}
   - {fileID: 8951124260177341496}

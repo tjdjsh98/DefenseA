@@ -49,7 +49,7 @@ public class ThrowProjectile : MonoBehaviour
                 if (projectile != null)
                 {
                     projectile.transform.position = transform.position;
-                    projectile.Init(_fireSpeed, 20, _character.AttackPower, Define.CharacterType.Player);
+                    projectile.Init(5,_fireSpeed, _character.AttackPower, Define.CharacterType.Player);
                     projectile.Fire(_character, _enemyAI.Target.GetCenter() - transform.position);
                 }
                 _fireCount++;

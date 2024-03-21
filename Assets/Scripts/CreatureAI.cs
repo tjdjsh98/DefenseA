@@ -46,7 +46,7 @@ public class CreatureAI : MonoBehaviour
         get
         {
             float attackSpeed = 1;
-            attackSpeed *= _creatureAbility.GetIncreasedAttackSpeed();
+            attackSpeed *= Util.CalcPercentage(CreatureAbility.GetIncreasedAttackSpeed());
             return attackSpeed;
         }
     }
@@ -142,16 +142,7 @@ public class CreatureAI : MonoBehaviour
 
         if (_attackRangeList.Count <= _debugAttackRangeIndex) return;
 
-        _creatureAbility.OnDrawGizmosSelected();
-
-        Define.Range range = _attackRangeList[_debugAttackRangeIndex];
-        range.center.x = transform.lossyScale.x > 0 ? range.center.x : -range.center.x;
-
-        if (range.figureType == Define.FigureType.Box)
-            Gizmos.DrawWireCube(transform.position + range.center, range.size);
-        else if (range.figureType == Define.FigureType.Circle)
-            Gizmos.DrawWireSphere(transform.position + range.center, range.size.x);
-        Gizmos.DrawWireSphere(_tc, _tr);
+        Util.DrawRangeOnGizmos(gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
     }
 
     private void Update()
@@ -304,14 +295,6 @@ public class CreatureAI : MonoBehaviour
         }
     }
 
-    public void FinishNormalAttack()
-    {
-        _character.IsAttack = false;
-        _character.IsEnableMove = true;
-        _character.IsEnableTurn = true;
-        _character.SetAnimationSpeed(1);
-    }
-
 
     public void UseSkill(SkillSlot slot)
     {
@@ -370,8 +353,9 @@ public class CreatureAI : MonoBehaviour
 
         Camera.main.GetComponent<CameraController>().StopShockwave(num);
     }
-   
 
+
+    #region SKill: Smash
     void PlaySmash(SkillSlot skillSlot)
     {
         if (skillSlot.isActive) return;
@@ -422,7 +406,16 @@ public class CreatureAI : MonoBehaviour
         slot.isActive = false;
         slot.skillTime = 0;
     }
-   
+
+    public void FinishSmashAttack()
+    {
+        _character.IsAttack = false;
+        _character.IsEnableMove = true;
+        _character.IsEnableTurn = true;
+        _character.SetAnimationSpeed(1);
+    }
+
+    #endregion
     void PlayStempGround(SkillSlot slot)
     {
         GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);

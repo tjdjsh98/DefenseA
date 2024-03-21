@@ -253,7 +253,7 @@ public class Character : MonoBehaviour,IHp
 
 
     // 최종적으로 가한 데미지를 반환합니다.
-    public int Damage(IHp attacker, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    public int Damage(IHp attacker, int damage, float power, Vector3 direction, float stunTime = 0f)
     {
         if (IsInvincibility) return 0;
 
@@ -268,7 +268,7 @@ public class Character : MonoBehaviour,IHp
 
         _hp -= damage;
 
-        if (!IsSuperArmer)
+        if (!IsSuperArmer && stunTime > 0)
         {
             float knockBack = power;
             knockBack *= (1 - _standing/100f);

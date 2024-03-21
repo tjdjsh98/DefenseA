@@ -136,15 +136,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 9
-  _hp: 5
+  _maxHp: 10
+  _hp: 10
   _maxMental: 100
   <Mental>k__BackingField: 0
   _speed: 5
   _standing: 0
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
-  <AttackPower>k__BackingField: 0
+  <AttackPower>k__BackingField: 3
   _jumpPower: 10
   _isEnableRevive: 0
   _isEnableFly: 0

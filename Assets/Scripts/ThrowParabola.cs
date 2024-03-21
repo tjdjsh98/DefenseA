@@ -10,13 +10,13 @@ public class ThrowParabola : MonoBehaviour
     EnemyAI _enemyAI;
 
     [SerializeField]float _fireCoolTime;
-    [SerializeField]float _fireCheckTime;
+    float _fireCheckTime;
     [SerializeField]float _fireDelay;
     [SerializeField] float _power;
     float _fireTime;
 
-    float _gravityScale=1;
-    float _mass=1;
+    float _gravityScale=3;
+    float _mass=5;
 
     [SerializeField]LineRenderer _lineRenderer;
     [SerializeField] GameObject _firePoint;
@@ -88,10 +88,9 @@ public class ThrowParabola : MonoBehaviour
                     if (projectile)
                     {
                         projectile.transform.position = _firePoint.transform.position;
-                        projectile.Init(1, _firePower, 1, Define.CharacterType.Player);
-                        projectile.Fire(_character, _fireDirection);
+                        projectile.Init(1, _firePower, _character.AttackPower, Define.CharacterType.Player);
+                        projectile.Fire(_character,_firePower, _fireDirection);
                     }
-
                     _target = null;
                     _fireTime = 0;
                 }

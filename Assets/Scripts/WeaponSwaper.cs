@@ -33,7 +33,7 @@ public class WeaponSwaper : MonoBehaviour
         for (int i = 0; i < _weaponSlotList.Count; i++)
         {
             _weaponList.Add(null);
-            if(_weaponNameList.Count > i)
+            if(_weaponNameList.Count > i && _weaponNameList[i] != Define.WeaponName.None)
                 ChangeNewWeapon(i, _weaponNameList[i]);
         }
     }

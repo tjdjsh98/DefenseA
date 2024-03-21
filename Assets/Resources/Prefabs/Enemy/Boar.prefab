@@ -136,15 +136,15 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 10
-  _hp: 10
+  _maxHp: 50
+  _hp: 50
   _maxMental: 100
   <Mental>k__BackingField: 0
   _speed: 5
   _standing: 0
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
-  <AttackPower>k__BackingField: 0
+  <AttackPower>k__BackingField: 10
   _jumpPower: 10
   _isEnableRevive: 0
   _isEnableFly: 0
@@ -191,6 +191,7 @@ MonoBehaviour:
   _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 1
   _attackTriggerName: 
+  _itemDropPercentage: 0
 --- !u!114 &4654579628162769321
 MonoBehaviour:
   m_ObjectHideFlags: 0

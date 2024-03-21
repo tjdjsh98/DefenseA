@@ -31,7 +31,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
         _trailRenderer = GetComponent<TrailRenderer>();
     }
 
-    public virtual void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0.1f)
+    public virtual void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0f)
     {
         _trailRenderer.enabled = true;
         _trailRenderer.Clear();
@@ -109,6 +109,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
 
   
 
+    // 중력을 안 받는 투사체에 사용
     public virtual void Fire(Character attacker, Vector3 direction)
     {
         direction.z = 0;    
@@ -116,10 +117,22 @@ public class Projectile : MonoBehaviour,ITypeDefine
 
         Vector3 dir = direction.normalized + attacker.MySpeed.normalized;
         _rigid.velocity = (Vector2)direction.normalized * (_speed + (attacker.MySpeed.magnitude ));
+
         _direction = direction.normalized;
         _prePostion = transform.position;
     }
+    // 중력에 영향을 받는 투사체에 사용
+    public virtual void Fire(Character attacker,float power, Vector3 direction)
+    {
+        direction.z = 0;
+        _attacker = attacker;
 
+        Vector3 dir = direction.normalized + attacker.MySpeed.normalized;
+        _rigid.AddForce(direction * power, ForceMode2D.Impulse);
+
+        _direction = direction.normalized;
+        _prePostion = transform.position;
+    }
     public int GetEnumToInt()
     {
         return (int)ProjectileName;

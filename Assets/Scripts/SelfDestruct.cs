@@ -15,9 +15,8 @@ public class SelfDestruct : MonoBehaviour
     float _selfDestructTime;
 
     [SerializeField]Define.Range _explosionRange;
-    [SerializeField]float _selfDestructDuration = 3;
+    [SerializeField]float _selfDestructDuration = 5;
     [SerializeField]float _explosionPower = 50;
-    [SerializeField]int _explosionDamage = 5;
 
     float _lightingTime;
 
@@ -74,7 +73,7 @@ public class SelfDestruct : MonoBehaviour
 
                 if (character != null && character.CharacterType != _character.CharacterType)
                 {
-                    _character.Attack(character, _explosionDamage, _explosionPower, character.transform.position - _character.transform.position, 1);
+                    _character.Attack(character, _character.AttackPower, _explosionPower, character.transform.position - _character.transform.position, 1);
                 }
                 return false;
             });

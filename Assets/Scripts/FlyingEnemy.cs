@@ -14,7 +14,7 @@ public class FlyingEnemy : EnemyAI
     [SerializeField] float _flyAttackSpeed = 10;
 
     private Vector3 _flyAttackDirection;
-
+    Vector3 _targetPosition;
 
     protected override void Awake()
     {
@@ -119,7 +119,7 @@ public class FlyingEnemy : EnemyAI
         else
         {
             // 공격 종료
-            if(_target == null || (_character.IsAttack && transform.position.y >= _target.transform.position.y + _flyHeight))
+            if(_target == null || (_character.IsAttack && transform.position.y >= _targetPosition.y + _flyHeight))
             {
                 _character.SetSpeed(_normalSpeed);
                 _attackElapsed = 0;
@@ -136,24 +136,25 @@ public class FlyingEnemy : EnemyAI
                 _character.SetSpeed(_flyAttackSpeed);
                 _attackedList.Clear();
                 _flyAttackDirection = (_target.GetCenter() - _character.GetCenter()).normalized;
+                _targetPosition = _target.GetCenter();
                 _character.IsEnableTurn = false;
                 _character.IsAttack = true;
                 _character.IsSuperArmer = true;
 
             }
             // 공격 중
-            if (_character.IsAttack&&transform.position.y < (_target.transform.position.y + _flyHeight))
+            if (_character.IsAttack&&transform.position.y < (_targetPosition.y + _flyHeight))
             {
                 if (_flyAttackDirection.x > 0)
                 {
-                    if (_target.transform.position.x < transform.position.x)
+                    if (_targetPosition.x < transform.position.x)
                     {
                         _flyAttackDirection.y = Mathf.Abs(_flyAttackDirection.y);
                     }
                 }
                 else
                 {
-                    if (_target.transform.position.x > transform.position.x)
+                    if (_targetPosition.x > transform.position.x)
                     {
 
                         _flyAttackDirection.y = Mathf.Abs(_flyAttackDirection.y);
@@ -176,7 +177,7 @@ public class FlyingEnemy : EnemyAI
             if (character == null || character.CharacterType == _character.CharacterType) continue;
             if (_attackedList.Contains(character)) continue;
 
-            _character.Attack(character, 1, 1, Vector3.zero);
+            _character.Attack(character, _character.AttackPower, 1, Vector3.zero);
             _attackedList.Add(character);
         }
     }

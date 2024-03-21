@@ -191,4 +191,19 @@ public static class Util
             return (T)formatter.Deserialize(ms);
         }
     }
+
+    public static float CalcPercentage(float percentage)
+    {
+        float result = 0;
+        if(percentage < 0)
+        {
+            result = 1/(1- percentage/100f);
+        }
+        else
+        {
+            result = 1 *(1+percentage / 100f);
+        }
+
+        return result;
+    }
 }
