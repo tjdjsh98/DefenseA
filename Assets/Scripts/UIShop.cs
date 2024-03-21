@@ -12,8 +12,8 @@ public class UIShop : UIBase
     [SerializeField]TextMeshProUGUI _currentMoneyText;
 
     [SerializeField] List<Button> _slotList;
-    [SerializeField] List<Image> _slotImageList = new List<Image>();
-    [SerializeField] List<TextMeshProUGUI> _slotTextList = new List<TextMeshProUGUI>();
+    List<Image> _slotImageList = new List<Image>();
+    List<TextMeshProUGUI> _slotTextList = new List<TextMeshProUGUI>();
     [SerializeField] List<ShopItem> _selectionList = new List<ShopItem>();
 
     [SerializeField] List<Sprite> _spriteList;
@@ -30,20 +30,23 @@ public class UIShop : UIBase
 
             int tempIndex = index;
             slot.onClick.AddListener(() => {
+                if (_selectionList.Count <= tempIndex) return;
                 if (_selectionList[tempIndex].isSale) return;
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
-                if (_selectionList[tempIndex].price <= gameManager.Girl.Mental)
+                if (_selectionList[tempIndex].shopItemData.price <= gameManager.Girl.Mental)
                 {
-                    gameManager.Girl.Mental -= _selectionList[tempIndex].price;
+                    gameManager.Girl.Mental -= _selectionList[tempIndex].shopItemData.price;
                     ShopItem info = _selectionList[tempIndex];
                     info.isSale = true;
                     _selectionList[tempIndex] = info;
 
-                    if (info.character.Equals("Daughter"))
+                    if (info.sellType == SellType.Weapon)
                     {
-                        gameManager.Player.WeaponSwaper.ChangeNewWeapon((int)info.weaponPosition, info.weaponName);
+                        WeaponShopItemData weaponShopItemData = info.shopItemData as WeaponShopItemData;
+                        if(weaponShopItemData)
+                            gameManager.Player.WeaponSwaper.ChangeNewWeapon((int)weaponShopItemData.weaponPosition, weaponShopItemData.weaponName);
                     }
                    
                     Refresh();
@@ -65,6 +68,7 @@ public class UIShop : UIBase
     {
         _selectionList.Clear();
         Refresh();
+        Time.timeScale = 0;
         gameObject.SetActive(true);
     }
 
@@ -73,10 +77,12 @@ public class UIShop : UIBase
         _selectionList.Clear();
         _selectionList.AddRange(list);
         Refresh();
+        Time.timeScale = 0;
         gameObject.SetActive(true);
     }
     public override void Close()
     {
+        Time.timeScale = 1;
         gameObject.SetActive(false);
     }
 
@@ -86,22 +92,24 @@ public class UIShop : UIBase
         {
             if (!_selectionList[i].isSale)
             {
-                _slotTextList[i].text = $"{_selectionList[i].weaponPosition} : {_selectionList[i].weaponName.ToString()}\n";
-                _slotTextList[i].text += $"{_selectionList[i].price.ToString()}";
-
+                _slotTextList[i].text = $"{_selectionList[i].shopItemData.description}\n";
+               
+                _slotTextList[i].text += $"{_selectionList[i].shopItemData.price.ToString()}";
             }
             else
+            {
                 _slotTextList[i].text = "판매완료";
+            }
         }
     }
 }
 
+
 [System.Serializable]
 public class ShopItem
 {
-    public string character;
-    public Define.WeaponName weaponName;
-    public Define.WeaponPosition weaponPosition;
-    public int price;
+    public ShopItemData shopItemData;
     public bool isSale;
+    public SellType sellType=>shopItemData.sellType;
 }
+

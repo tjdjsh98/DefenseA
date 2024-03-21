@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Rendering;
 
 public class VendingMechine : MonoBehaviour
 {
@@ -14,7 +12,11 @@ public class VendingMechine : MonoBehaviour
     List<ShopItem> _shopItemList = new List<ShopItem>();
     private void Awake()
     {
-        _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(5);
+        if(Managers.GetManager<GameManager>().ShopItemList.Count < 5)
+            _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(Managers.GetManager<GameManager>().ShopItemList.Count);
+
+        else
+            _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(5);
 
     }
     private void Update()

@@ -179,30 +179,15 @@ MonoBehaviour:
   _enteracneTimeline: {fileID: 11400000, guid: 6787141088082784b9c881817533cd54, type: 2}
   _priorCardList: []
   ShopItemList:
-  - character: Daughter
-    weaponName: 0
-    weaponPosition: 0
-    price: 50
+  - shopItemData: {fileID: 0}
     isSale: 0
-  - character: Daughter
-    weaponName: 1
-    weaponPosition: 0
-    price: 25
+  - shopItemData: {fileID: 0}
     isSale: 0
-  - character: Daughter
-    weaponName: 2
-    weaponPosition: 0
-    price: 10
+  - shopItemData: {fileID: 0}
     isSale: 0
-  - character: Daughter
-    weaponName: 3
-    weaponPosition: 1
-    price: 30
+  - shopItemData: {fileID: 0}
     isSale: 0
-  - character: Daughter
-    weaponName: 4
-    weaponPosition: 1
-    price: 50
+  - shopItemData: {fileID: 0}
     isSale: 0
 --- !u!1 &157396709
 GameObject:
@@ -1145,6 +1130,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: VendingMechine
       objectReference: {fileID: 0}
+    - target: {fileID: 2919384725900275280, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 2919384725900275280, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 5300511753077323812, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
       propertyPath: m_LocalPosition.x
       value: 20.3
@@ -1184,6 +1177,54 @@ PrefabInstance:
     - target: {fileID: 5300511753077323812, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Size.x
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Size.y
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Sprite
+      value: 
+      objectReference: {fileID: 21300000, guid: c491ac1004953134bb0b7738d6d8d077, type: 3}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Color.b
+      value: 0.67301536
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Color.g
+      value: 0.67301536
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Color.r
+      value: 0.7169812
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_DrawMode
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 8750739721781999021, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 9dfc825aed78fcd4ba02077103263b40, type: 2}
+    - target: {fileID: 9111827055521768541, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9111827055521768541, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9111827055521768541, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: -0.13
+      objectReference: {fileID: 0}
+    - target: {fileID: 9111827055521768541, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 6.34
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -30,9 +30,8 @@ public class EnemyAI : MonoBehaviour
     protected float _attackingDelay = 2;
     protected float _attackingElasepd = 0;
 
-    [SerializeField] bool _isRangedAttack;
     [field:SerializeField] public bool IsAutoMove { set; get; } = true;
-    [SerializeField] string _attackTriggerName;
+    [SerializeField] bool _isHaveAnimation;
 
     protected SpriteRenderer _attackRangeSprite;
     protected List<Character> _attackedList = new List<Character>();
@@ -43,8 +42,6 @@ public class EnemyAI : MonoBehaviour
     {
         _character = GetComponent<Character>();
         _rigidbody = _character.GetComponent<Rigidbody2D>();
-        _character.PlayAttackHandler += OnPlayAttack;
-        _character.FinishAttackHandler += FinishAttack;
         _character.CharacterDeadHandler += OnCharacterDead;
 
         if (transform.Find("AttackRange"))
@@ -165,60 +162,50 @@ public class EnemyAI : MonoBehaviour
         }
         else
         {
-            if (!_isRangedAttack)
+            // 공격 모션이 따로 있을 때
+            if (!_isHaveAnimation && _isTargetInRange)
             {
-                // 공격 모션이 따로 있을 때
-                if (!_attackTriggerName.Equals("") && _isTargetInRange)
-                {
-                    _attackedList.Clear();
-                    _character.IsEnableMove = false;
-                    _character.IsEnableTurn = false;
-                    _character.IsAttack = true;
-                    _character.TurnBody(_target.transform.position - transform.position);
-                    _character.AnimatorSetTrigger(_attackTriggerName);
-                    _attackElapsed = 0;
-                }
-                // 공격 모션이 따로 없을 때
-                else
-                {
-                    if (_attackingElasepd == 0 && _isTargetInRange)
-                    {
-                        _attackedList.Clear();
-                        Color color = _attackRangeSprite.color;
-                        color.a = 0;
-                        _attackRangeSprite.color = color;
-                        _attackRangeSprite.transform.localScale = _attackRange.size;
-                        _attackRangeSprite.transform.localPosition = _attackRange.center;
-
-                        _attackRangeSprite.gameObject.SetActive(true);
-                        _character.IsAttack = true;
-                    }
-
-                    if (_attackingDelay > _attackingElasepd && _character.IsAttack)
-                    {
-                        _attackingElasepd += Time.deltaTime;
-                        Color color = _attackRangeSprite.color;
-                        if(_attackingDelay != 0)
-                            color.a = _attackingElasepd/_attackingDelay;
-                        _attackRangeSprite.color = color;
-
-                    }
-                    if (_attackingDelay <= _attackingElasepd && _character.IsAttack)
-                    {
-                        _attackingElasepd = 0;
-                        _attackRangeSprite.gameObject.SetActive(false);
-                        OnPlayAttack();
-                        _attackElapsed = 0;
-                        _character.IsAttack = false;
-                    }
-                }
+                _attackedList.Clear();
+                _character.IsEnableMove = false;
+                _character.IsEnableTurn = false;
+                _character.IsAttack = true;
+                _character.TurnBody(_target.transform.position - transform.position);
+                _character.AnimatorSetTrigger("Attack");
+                _attackElapsed = 0;
             }
+            // 공격 모션이 따로 없을 때
             else
             {
-                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>("Prefabs/Projectile");
-                projectile.Init(10, 10, 2, Define.CharacterType.Player);
-                projectile.transform.position = transform.position;
-                projectile.Fire(_character, _target.GetCenter() - transform.position);
+                if (_attackingElasepd == 0 && _isTargetInRange)
+                {
+                    _attackedList.Clear();
+                    Color color = _attackRangeSprite.color;
+                    color.a = 0;
+                    _attackRangeSprite.color = color;
+                    _attackRangeSprite.transform.localScale = _attackRange.size;
+                    _attackRangeSprite.transform.localPosition = _attackRange.center;
+
+                    _attackRangeSprite.gameObject.SetActive(true);
+                    _character.IsAttack = true;
+                }
+
+                if (_attackingDelay > _attackingElasepd && _character.IsAttack)
+                {
+                    _attackingElasepd += Time.deltaTime;
+                    Color color = _attackRangeSprite.color;
+                    if(_attackingDelay != 0)
+                        color.a = _attackingElasepd/_attackingDelay;
+                    _attackRangeSprite.color = color;
+
+                }
+                if (_attackingDelay <= _attackingElasepd && _character.IsAttack)
+                {
+                    _attackingElasepd = 0;
+                    _attackRangeSprite.gameObject.SetActive(false);
+                    OnPlayAttack();
+                    _attackElapsed = 0;
+                    _character.IsAttack = false;
+                }
             }
         }
     }
@@ -237,7 +224,7 @@ public class EnemyAI : MonoBehaviour
         _target = null;
     }
 
-     void FinishAttack()
+    public void FinishAttack()
     {
         _character.IsAttack = false;
         _character.IsEnableMove = true;

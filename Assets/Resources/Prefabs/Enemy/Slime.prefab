@@ -190,21 +190,20 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _enableAttackRange:
-    center: {x: 2.38, y: 0.86, z: 0}
-    size: {x: 4.42, y: 2, z: 0}
+    center: {x: 1.51, y: 1, z: 0}
+    size: {x: 2.72, y: 2, z: 0}
     angle: 0
     figureType: 0
   _attackRange:
-    center: {x: 2.79, y: 0.86, z: 0}
-    size: {x: 5.38, y: 1.86, z: 0}
+    center: {x: 1.54, y: 1.25, z: 0}
+    size: {x: 5, y: 2.5, z: 0}
     angle: 0
     figureType: 0
   _target: {fileID: 0}
   _noAttack: 0
   _attackDelay: 1
-  _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 1
-  _attackTriggerName: 
+  _isHaveAnimation: 0
   _itemDropPercentage: 0
 --- !u!95 &1915835440912298901
 Animator:

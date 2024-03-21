@@ -78,8 +78,6 @@ public class Character : MonoBehaviour,IHp
 
 
     // 핸들러
-    public Action PlayAttackHandler;
-    public Action FinishAttackHandler;
     public Action CharacterDeadHandler;
     public Action<Character,int> AttackHandler; // 공격한 적, 데미지
     public Action<Character, int, float, Vector3, float> CharacterDamaged { set; get; }
@@ -361,16 +359,6 @@ public class Character : MonoBehaviour,IHp
             _rigidBody.velocity = currentSpeed;
             _isMove = true;
         }
-    }
-
-    public void PlayAttack()
-    {
-        PlayAttackHandler?.Invoke();
-    }
-    public void FinishAttack()
-    {
-        IsAttack= false;
-        FinishAttackHandler?.Invoke();
     }
 
     public void Jump()

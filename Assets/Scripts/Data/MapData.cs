@@ -14,6 +14,8 @@ public class MapData : ScriptableObject
     public List<Wave> distanceWave;
     public float mapSize;
     public MapData nextMapData;
+
+    public List<ShopItemData> shopItemDataList;
 }
 
 [System.Serializable]

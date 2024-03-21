@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
@@ -142,6 +143,12 @@ public class GameManager : ManagerBase
 
         _cameraController = Camera.main.GetComponent<CameraController>();
         IsLoadEnd = true;
+
+        ShopItemList.Clear();
+        for(int i =0; i < _mapData.shopItemDataList.Count; i++)
+        {
+            ShopItemList.Add(new ShopItem() { isSale = false, shopItemData = _mapData.shopItemDataList[i] });
+        }
     }
 
     void LoadMainCharacters()
