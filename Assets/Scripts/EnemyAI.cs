@@ -75,7 +75,7 @@ public class EnemyAI : MonoBehaviour
     {
         Managers.GetManager<GameManager>().Exp += 1;
         float random = _itemDropPercentage * 100;
-        if (Random.Range(0, 100) < 5)
+        if (Random.Range(0, 100) < random)
         {
             Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
         }

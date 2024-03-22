@@ -18,7 +18,7 @@ MonoBehaviour:
   - startTime: 0
     endTime: 9999
     genTime: 4
-    elapsedTime: 2.3913817
+    elapsedTime: 0.8147449
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 02000000
@@ -26,13 +26,21 @@ MonoBehaviour:
   - startTime: 0
     endTime: 9999
     genTime: 3.5
-    elapsedTime: 1.8601474
+    elapsedTime: 0.23174998
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1
-  distanceWave: []
-  mapSize: 100
+  distanceWave:
+  - startTime: 0
+    endTime: 0
+    genTime: 0
+    elapsedTime: 0
+    distace: 100
+    genLocalPosition: {x: 20, y: 0, z: 0}
+    enemyList: 0e000000
+    hpMultiply: 1
+  mapSize: 1000
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList:
   - {fileID: 11400000, guid: 776c7037b1bf07840937cdeb852a277a, type: 2}

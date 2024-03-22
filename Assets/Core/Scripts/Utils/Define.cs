@@ -56,6 +56,7 @@ public static class Define
         PartTestEnemy,
         Spore,
         Thrower,
+        UniqueSlime,
         END,
     }
 
