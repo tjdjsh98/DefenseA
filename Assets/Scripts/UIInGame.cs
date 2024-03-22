@@ -1,12 +1,9 @@
 using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using System.Text;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class UIInGame : UIBase
@@ -314,11 +311,11 @@ public class UIInGame : UIBase
         }
     }
 
-    public override void Open()
+    public override void Open(bool except)
     {
         
     }
-    public override void Close()
+    public override void Close(bool except)
     {
         
     }

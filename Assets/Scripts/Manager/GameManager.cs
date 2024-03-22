@@ -90,9 +90,7 @@ public class GameManager : ManagerBase
     Dictionary<CardName, int> _cardSelectionCount = new Dictionary<CardName, int>();
     [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
 
-    // 땅과 관련변수
-    [Header("상점 관련 변수")]
-    [field: SerializeField] public List<ShopItem> ShopItemList;
+    [HideInInspector]public List<ShopItem> ShopItemList;
 
     CameraController _cameraController;
     CameraController CameraController

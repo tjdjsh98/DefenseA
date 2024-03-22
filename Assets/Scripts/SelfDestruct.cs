@@ -67,9 +67,9 @@ public class SelfDestruct : MonoBehaviour
     void Explosion()
     {
         Util.RangeCastAll2D(gameObject, _explosionRange,
-            Define.CharacterMask, (go) =>
+            Define.CharacterMask, (hit) =>
             {
-                Character character = go.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
 
                 if (character != null && character.CharacterType != _character.CharacterType)
                 {

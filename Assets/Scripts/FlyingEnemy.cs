@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Data;
 using TMPro;
 using Unity.VisualScripting;
@@ -86,21 +87,18 @@ public class FlyingEnemy : EnemyAI
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
 
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
 
-        if (gameObjects.Length > 0)
+        foreach (var hit in hits)
         {
-            foreach (var gameObject in gameObjects)
+            if (hit.collider.gameObject == this.gameObject) continue;
+            Character character = hit.collider.GetComponent<Character>();
+            if (character)
             {
-                if (gameObject == this.gameObject) continue;
-                Character character = gameObject.GetComponent<Character>();
-                if (character)
+                if (character.CharacterType == Define.CharacterType.Player)
                 {
-                    if (character.CharacterType == Define.CharacterType.Player)
-                    {
-                        _target = character;
-                        return;
-                    }
+                    _target = character;
+                    return;
                 }
             }
         }
@@ -169,16 +167,18 @@ public class FlyingEnemy : EnemyAI
     }
     protected override void OnPlayAttack()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 
-        foreach (var go in gos)
+        foreach (var hit in hits)
         {
-            Character character = go.GetComponent<Character>();
+            Character character = hit.collider.GetComponent<Character>();
             if (character == null || character.CharacterType == _character.CharacterType) continue;
             if (_attackedList.Contains(character)) continue;
 
             _character.Attack(character, _character.AttackPower, 1, Vector3.zero);
             _attackedList.Add(character);
+
+            Managers.GetManager<EffectManager>().InstantiateHitEffect(hit.point, hit.centroid -  hit.point);
         }
     }
 

@@ -1,9 +1,5 @@
-using JetBrains.Annotations;
-using System.Collections;
 using System.Collections.Generic;
-using System.IO.IsolatedStorage;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -45,10 +41,14 @@ public class UIShop : UIBase
                     if (info.sellType == SellType.Weapon)
                     {
                         WeaponShopItemData weaponShopItemData = info.shopItemData as WeaponShopItemData;
-                        if(weaponShopItemData)
+                        if (weaponShopItemData)
                             gameManager.Player.WeaponSwaper.ChangeNewWeapon((int)weaponShopItemData.weaponPosition, weaponShopItemData.weaponName);
                     }
-                   
+                    else if (info.sellType == SellType.Ability)
+                    {
+                        Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
+                    }
+
                     Refresh();
                 }
             });
@@ -64,9 +64,10 @@ public class UIShop : UIBase
 
     }
 
-    public override void Open()
+    public override void Open(bool except = false)
     {
-        _selectionList.Clear();
+        if (!except)
+            Managers.GetManager<UIManager>().Open(this);
         Refresh();
         Time.timeScale = 0;
         gameObject.SetActive(true);
@@ -74,22 +75,36 @@ public class UIShop : UIBase
 
     public void Open(List<ShopItem> list)
     {
+        Managers.GetManager<UIManager>().Open(this);
         _selectionList.Clear();
         _selectionList.AddRange(list);
         Refresh();
         Time.timeScale = 0;
         gameObject.SetActive(true);
     }
-    public override void Close()
+    public override void Close(bool except = false)
     {
         Time.timeScale = 1;
         gameObject.SetActive(false);
+
+        if (!except)
+            Managers.GetManager<UIManager>().Close(this);
     }
 
     void Refresh()
     {
         for (int i = 0; i < _selectionList.Count; i++)
         {
+            if (_selectionList[i].shopItemData.image)
+            {
+                _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_selectionList[i].shopItemData.image, 130);
+                _slotImageList[i].sprite = _selectionList[i].shopItemData.image;
+            }
+            else
+            {
+                _slotImageList[i].rectTransform.sizeDelta = Vector2.zero;
+                _slotImageList[i].sprite = null;
+            }
             if (!_selectionList[i].isSale)
             {
                 _slotTextList[i].text = $"{_selectionList[i].shopItemData.description}\n";
@@ -102,6 +117,7 @@ public class UIShop : UIBase
             }
         }
     }
+
 }
 
 

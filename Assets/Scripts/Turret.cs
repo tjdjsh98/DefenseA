@@ -25,24 +25,24 @@ public class Turret : MonoBehaviour
 
     void CheckTarget()
     {
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange);
 
         GameObject closeGameObject = null;
 
-        for (int i = 0; i < gameObjects.Length; i++)
+        for (int i = 0; i < hits.Count; i++)
         {
-            GameObject gameObject = gameObjects[i];
+            GameObject gameObject = hits[i].collider.gameObject;
             Character character = gameObject.GetComponent<Character>();
 
             if(character == null) continue;
             if (closeGameObject == null)
             {
-                closeGameObject = gameObjects[i];
+                closeGameObject = hits[i].collider.gameObject;
             }
-            if((gameObjects[i].transform.position - transform.position).magnitude
+            if((hits[i].transform.position - transform.position).magnitude
                 < (closeGameObject.transform.position - transform.position).magnitude)
             {
-                closeGameObject = gameObjects[i];
+                closeGameObject = hits[i].collider.gameObject;
             }
         }
 

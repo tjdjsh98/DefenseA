@@ -45,18 +45,15 @@ public class PenetrateAttack : MonoBehaviour
             Vector3 dest = _endPoint;
 
             _lineRenderer.SetPosition(1,  _endPoint);
-            GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange);
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange);
 
-            if (gos.Length > 0)
+            foreach (var hit in hits)
             {
-                foreach (var g in gos)
-                {
-                    Character c = g.GetComponent<Character>();
+                Character c = hit.collider.GetComponent<Character>();
 
-                    if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-                    {
-                        _character.Attack(c, 2, 10, _direction);
-                    }
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                {
+                    _character.Attack(c, 2, 10, _direction);
                 }
             }
         }

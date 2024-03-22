@@ -99,8 +99,10 @@ public class AbilityManager : ManagerBase
         }
     }
 
-    void PlayVolleyFire(SkillSlot skillSlot)
+    void PlayVolleyFire(SkillSlot slot)
     {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
         if (_blackSphereList.Count <= 0) return;
 
         Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;

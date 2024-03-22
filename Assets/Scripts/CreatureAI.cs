@@ -123,13 +123,7 @@ public class CreatureAI : MonoBehaviour
         RegistSkill();
     }
 
-    void RegistSkill()
-    {
-        _skillDictionary.Add(SkillName.Shockwave, PlayShockwave);
-        _skillDictionary.Add(SkillName.Smash, PlaySmash);
-        _skillDictionary.Add(SkillName.StempGround, PlayStempGround);
-    }
-
+   
     private void OnCharacterDead()
     {
         _model.gameObject.SetActive(false);
@@ -241,17 +235,14 @@ public class CreatureAI : MonoBehaviour
 
     public void NormalAttack()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
 
-        if (gos.Length > 0)
+        foreach (var hit in hits)
         {
-            foreach (var go in gos)
+            Character c = hit.collider.GetComponent<Character>();
+            if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
-                Character c = go.GetComponent<Character>();
-                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-                {
-                    _character.Attack(c, AttackDamage, 100, c.transform.position - transform.position);
-                }
+                _character.Attack(c, AttackDamage, 100, c.transform.position - transform.position);
             }
         }
     }
@@ -263,13 +254,13 @@ public class CreatureAI : MonoBehaviour
         Character player = Managers.GetManager<GameManager>().Girl;
 
         if (player != null)
-            Util.RangeCastAll2D(player.gameObject, _attackRangeList[0], Define.CharacterMask, (go) =>
+            Util.RangeCastAll2D(player.gameObject, _attackRangeList[0], Define.CharacterMask, (hit) =>
             {
-                if (go != null)
+                if (hit.collider != null)
                 {
-                    Character character = go.GetComponent<Character>();
+                    Character character = hit.collider.GetComponent<Character>();
                     if (character == null || character.CharacterType != Define.CharacterType.Enemy) return false;
-                    if (close == null || (close.transform.position - player.transform.position).magnitude > (go.transform.position - player.transform.position).magnitude)
+                    if (close == null || (close.transform.position - player.transform.position).magnitude > (character.transform.position - player.transform.position).magnitude)
                         close = character;
                 }
                 return true;
@@ -277,24 +268,14 @@ public class CreatureAI : MonoBehaviour
 
         return close;
     }
-    public void AirBorneAttack()
+
+    #region 스킬관련
+    void RegistSkill()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
-
-        if (gos.Length > 0)
-        {
-            foreach (var go in gos)
-            {
-                Character c = go.GetComponent<Character>();
-                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-                {
-
-                    _character.Attack(c, AttackDamage, 100, Vector3.up, 0.4f);
-                }
-            }
-        }
+        _skillDictionary.Add(SkillName.Shockwave, PlayShockwave);
+        _skillDictionary.Add(SkillName.Smash, PlaySmash);
+        _skillDictionary.Add(SkillName.StempGround, PlayStempGround);
     }
-
 
     public void UseSkill(SkillSlot slot)
     {
@@ -305,9 +286,12 @@ public class CreatureAI : MonoBehaviour
             func?.Invoke(slot);
         }
     }
-
+    
     void PlayShockwave(SkillSlot slot)
     {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
         if (ShockwaveCount >= 1)
             StartCoroutine(CorShockwaveAttack());
         if (ShockwaveCount >= 2)
@@ -355,14 +339,14 @@ public class CreatureAI : MonoBehaviour
     }
 
 
-    #region SKill: Smash
-    void PlaySmash(SkillSlot skillSlot)
+    void PlaySmash(SkillSlot slot)
     {
-        if (skillSlot.isActive) return;
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
 
-        skillSlot.isActive = true;
+        slot.isActive = true;
 
-        StartCoroutine(CorPlaySmash(skillSlot));
+        StartCoroutine(CorPlaySmash(slot));
     }
     IEnumerator CorPlaySmash(SkillSlot slot)
     {
@@ -378,16 +362,16 @@ public class CreatureAI : MonoBehaviour
                 if (enemy == null) break;
                 _character.Move(enemy.transform.position - transform.position);
 
-                if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (go) =>
+                if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (hit) =>
                 {
-                    Character character = go.GetComponent<Character>();
+                    Character character = hit.collider.GetComponent<Character>();
                     if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                     {
                         return true;
                     }
 
                     return false;
-                }).Length > 0) break;
+                }).Count > 0) break;
                 yield return null;
             }
             _character.Move(Vector2.zero);
@@ -415,20 +399,22 @@ public class CreatureAI : MonoBehaviour
         _character.SetAnimationSpeed(1);
     }
 
-    #endregion
     void PlayStempGround(SkillSlot slot)
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRangeList[4]);
         Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
         Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
         effect.SetProperty("Range", _attackRangeList[4].size.x);
         effect.Play(transform.position);
-        if (gos.Length > 0)
+        if (hits.Count > 0)
         {
             _spearAttackElapsed = 0;
-            foreach (var go in gos)
+            foreach (var hit in hits)
             {
-                Character c = go.GetComponent<Character>();
+                Character c = hit.collider.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
                     _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, 1);
@@ -458,4 +444,5 @@ public class CreatureAI : MonoBehaviour
         }
     }
     */
+    #endregion
 }

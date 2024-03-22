@@ -1,6 +1,7 @@
 using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 public class Character : MonoBehaviour,IHp
@@ -382,9 +383,9 @@ public class Character : MonoBehaviour,IHp
 
         if(!_isContactGround && _rigidBody.velocity.y > 0) return;
         
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _groundCheckRange, LayerMask.GetMask("Ground"));
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _groundCheckRange, LayerMask.GetMask("Ground"));
 
-        if (gos.Length > 0)
+        if (hits.Count> 0)
         {
             _isContactGround = true;
             _isJump = false;

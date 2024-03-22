@@ -6,6 +6,7 @@ using UnityEngine;
 public class ShopItemData : ScriptableObject
 {
     public SellType sellType;
+    public Sprite image;
     [TextArea]public string description;
     public int price;
 }

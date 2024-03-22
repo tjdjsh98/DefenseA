@@ -50,9 +50,9 @@ public class DashAttack : MonoBehaviour
             {
                 _character.Move(_dashDirection);
                 Util.RangeCastAll2D(gameObject, _enemyAI.AttackRange, Define.CharacterMask,
-                    (go) =>
+                    (hit) =>
                     {
-                        Character character = go.GetComponent<Character>();
+                        Character character = hit.collider.GetComponent<Character>();
                         if (character != null && _character.CharacterType != character.CharacterType)
                         {
                             _character.Attack(character, _character.AttackPower, 100, new Vector3(_dashDirection.x >0 ? 1: -1,1,0), 0.5f);

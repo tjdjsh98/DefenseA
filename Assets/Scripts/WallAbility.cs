@@ -83,9 +83,9 @@ public class WallAbility
             else
             {
                 _residualElectricityTime = 0;
-                Util.RangeCastAll2D(_wallAI.gameObject, _residualElectricityRange, Define.CharacterMask, (go) =>
+                Util.RangeCastAll2D(_wallAI.gameObject, _residualElectricityRange, Define.CharacterMask, (hit) =>
                 {
-                    Character character = go.GetComponent<Character>();
+                    Character character = hit.collider.GetComponent<Character>();
                     if (character != null)
                     {
                         character.Damage(_wallAI.Character, 1, 0, Vector3.zero, 2);
@@ -189,9 +189,9 @@ public class WallAbility
                 effect.Play(_wallAI.transform.position);
 
                 Define.Range range = new Define.Range() { size = Vector3.one * 5, figureType = Define.FigureType.Circle };
-                Util.RangeCastAll2D(_wallAI.gameObject, range, Define.CharacterMask, (go) =>
+                Util.RangeCastAll2D(_wallAI.gameObject, range, Define.CharacterMask, (hit) =>
                 {
-                    Character character = go.GetComponent<Character>();
+                    Character character = hit.collider.GetComponent<Character>();
                     if (character != null)
                     {
                         character.Damage(_wallAI.Character, 10, 10, character.transform.position - _wallAI.transform.position, 1);
@@ -239,16 +239,16 @@ public class WallAbility
 
             effect.Play(_wallAI.Character.GetCenter());
 
-            GameObject[] gameObjects = Util.RangeCastAll2D(_wallAI.gameObject, new Define.Range()
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(_wallAI.gameObject, new Define.Range()
             {
                 center = _wallAI.Character.GetCenter(),
                 size = new Vector3(ExplosionRange, ExplosionRange, ExplosionRange),
                 figureType = Define.FigureType.Circle
             });
 
-            foreach (var gameObject in gameObjects)
+            foreach (var hit in hits)
             {
-                Character character = gameObject.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
                 if (character && character.CharacterType == Define.CharacterType.Enemy)
                 {
                     _wallAI.Character.Attack(character, ExplosionDamage, ExplosionPower, character.transform.position

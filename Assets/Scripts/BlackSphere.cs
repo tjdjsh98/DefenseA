@@ -76,9 +76,9 @@ public class BlackSphere : MonoBehaviour
                         effect.SetProperty("Radius", _explosionRange.size.x);
                         effect.Play(transform.position);
 
-                        Util.RangeCastAll2D(gameObject, _explosionRange, Define.CharacterMask, (go) =>
+                        Util.RangeCastAll2D(gameObject, _explosionRange, Define.CharacterMask, (hit) =>
                         {
-                            Character c = go.GetComponent<Character>();
+                            Character c = hit.collider.GetComponent<Character>();
                             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                             {
                                 Debug.Log(c);

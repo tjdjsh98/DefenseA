@@ -70,11 +70,11 @@ public class AttackPattern : MonoBehaviour
             yield return null;
         }
 
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange, Define.CharacterMask);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, Define.CharacterMask);
 
-        foreach(var gameObject in gameObjects)
+        foreach(var hit in hits)
         {
-            Character character= gameObject.GetComponent<Character>();
+            Character character= hit.collider.GetComponent<Character>();
             if(character == null) continue;
             
             if(character.CharacterType == _attackingCharacterType)

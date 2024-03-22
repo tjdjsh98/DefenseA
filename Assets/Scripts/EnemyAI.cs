@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Unity.Loading;
 using UnityEditor.Rendering;
+using UnityEditor.Timeline;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -101,16 +103,18 @@ public class EnemyAI : MonoBehaviour
     {
         if (_character.IsAttack) return;
 
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
 
         float distance = 0;
         Character closeOne = null;
-        if (gameObjects.Length > 0)
+        if (hits.Count > 0)
         {
-            foreach (var gameObject in gameObjects)
+            foreach (var hit in hits)
             {
-                if (gameObject == this.gameObject) continue;
-                Character character = gameObject.GetComponent<Character>();
+                if (hit.collider == null) continue;
+
+                if (hit.collider.gameObject == this.gameObject) continue;
+                Character character = hit.collider.gameObject.GetComponent<Character>();
                 if (character)
                 {
                     if (character.CharacterType == Define.CharacterType.Player)
@@ -135,13 +139,13 @@ public class EnemyAI : MonoBehaviour
             return;
         }
 
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _enableAttackRange);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _enableAttackRange);
 
-        if(gameObjects.Length > 0 ) 
+        if(hits.Count > 0 ) 
         { 
-            foreach(var gameObject in gameObjects)
+            foreach(var hit in hits)
             {
-                if (_target.gameObject == gameObject)
+                if (_target.gameObject == hit.collider.gameObject)
                 {
                     _isTargetInRange = true;
                     return;
@@ -212,14 +216,17 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void OnPlayAttack()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 
-        foreach (var go in gos)
+        foreach (var hit in hits)
         {
-            Character character = go.GetComponent<Character>();
+            Character character = hit.collider.GetComponent<Character>();
             if(character == null || character.CharacterType == _character.CharacterType) continue;
 
             _character.Attack(character, _character.AttackPower, 1, Vector3.zero);
+
+            Managers.GetManager<EffectManager>().InstantiateHitEffect(hit.point, hit.centroid - hit.point);
+
         }
         _target = null;
     }

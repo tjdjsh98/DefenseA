@@ -93,12 +93,12 @@ public class CreatureAbility
             if (_survivalIntinctElapsed > 2)
             {
                 _survivalIntinctElapsed = 0;
-                GameObject[] gameObjects = Util.RangeCastAll2D(_creatureAI.gameObject, _survivalIntinctRange, LayerMask.GetMask("Character"));
+                List<RaycastHit2D> hits = Util.RangeCastAll2D(_creatureAI.gameObject, _survivalIntinctRange, LayerMask.GetMask("Character"));
 
                 _survivalIntinctCount = 0;
-                foreach (var gameObject in gameObjects)
+                foreach (var hit in hits)
                 {
-                    Character character = gameObject.GetComponent<Character>();
+                    Character character = hit.collider.GetComponent<Character>();
                     if (character)
                     {
                         _survivalIntinctCount++;

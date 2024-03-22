@@ -37,4 +37,14 @@ public class EffectManager : ManagerBase
 
         return result;
     }
+
+    public Effect InstantiateHitEffect(Vector3 position, Vector3 direction)
+    {
+        Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit3);
+        Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
+        hitEffect.SetProperty("Direction", direction);
+        hitEffect.Play(position);
+
+        return hitEffect;
+    }
 }

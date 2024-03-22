@@ -5,9 +5,8 @@ using UnityEngine;
 public abstract class UIBase : MonoBehaviour
 {
     protected bool _isInitDone;
-
     public abstract void Init();
 
-    public abstract void Open();
-    public abstract void Close();
+    public abstract void Open(bool except = false);
+    public abstract void Close(bool except = false);
 }

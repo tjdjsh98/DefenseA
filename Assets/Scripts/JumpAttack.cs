@@ -39,14 +39,14 @@ public class JumpAttack : MonoBehaviour
     {
         if(_isJumpAttack)
         {
-            GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 
-            foreach(var gameObject in gameObjects)
+            foreach(var hit in hits)
             {
-                if (_attackList.Contains(gameObject)) continue;
-                _attackList.Add(gameObject);
+                if (_attackList.Contains(hit.collider.gameObject)) continue;
+                _attackList.Add(hit.collider.gameObject);
 
-                Character character = gameObject.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
                 if (character && character.CharacterType == Define.CharacterType.Player)
                 {
                     _character.Attack(character,_character.AttackPower,10,_rigidbody.velocity);

@@ -11,6 +11,7 @@ public class UIManager : ManagerBase
 
     List<UIBase> _uiList = new List<UIBase>();
 
+    List<UIBase> _stackList = new List<UIBase>();
     public override void Init()
     {
         _uiFolder = GameObject.Find(_uiFolderName);
@@ -52,4 +53,22 @@ public class UIManager : ManagerBase
 
         return null;
     }
+
+    public void Open(UIBase ui)
+    {
+        if (_stackList.Count > 0)
+            _stackList[_stackList.Count - 1].Close(true);
+    
+        _stackList.Add(ui);
+    }
+
+    public void Close(UIBase ui)
+    {
+        _stackList.Remove(ui);
+        if (_stackList.Count > 0)
+        {
+            _stackList[_stackList.Count - 1].Open(true);
+        }
+    }
+
 }

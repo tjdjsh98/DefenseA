@@ -31,8 +31,8 @@ public class VendingMechine : MonoBehaviour
     }
     private void OnDisable()
     {
-        Managers.GetManager<InputManager>().InteractKeyDownHandler -= OpenShop;
-
+        if(Managers.GetManager<InputManager>())
+            Managers.GetManager<InputManager>().InteractKeyDownHandler -= OpenShop;
     }
 
     public void CheckPlayer()

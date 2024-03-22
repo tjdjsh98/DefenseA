@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
@@ -90,8 +91,10 @@ public class UICardSelection : UIBase
             _cardBloodIsHoverList[i] = false;
         }
     }
-    public override void Open()
+    public override void Open(bool except = false)
     {
+        if(!except)
+            Managers.GetManager<UIManager>().Open(this);
         Time.timeScale = 0;
         _cardSelectionList.Clear();
 
@@ -114,21 +117,19 @@ public class UICardSelection : UIBase
 
         gameObject.SetActive(true);
         StartCoroutine(CorOpenCards());
-
     }
 
-
-
-    public override void Close()
+    public override void Close(bool except = false)
     {
         Time.timeScale = 1;
         gameObject.SetActive(false);
         Managers.GetManager<InputManager>().UIMouseHoverHandler -= OnUIMouseHover;
 
         foreach (var card in _cardList)
-        {
             card.transform.Find("Model").localScale = new Vector3(-1, 1, 1);
-        }
+
+        if (!except)
+            Managers.GetManager<UIManager>().Close(this);
     }
 
     void Refresh()

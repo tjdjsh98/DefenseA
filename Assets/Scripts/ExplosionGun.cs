@@ -84,9 +84,9 @@ public class ExplosionGun : Weapon
             Effect explosion = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
             explosion.SetProperty("Radius", _explosionRange.size.x);
             explosion.Play(bullet.transform.position);
-            Util.RangeCastAll2D(bullet.gameObject, _explosionRange, Define.CharacterMask, (go) =>
+            Util.RangeCastAll2D(bullet.gameObject, _explosionRange, Define.CharacterMask, (hit) =>
             {
-                Character character = go.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
                 if(character && character.CharacterType == Define.CharacterType.Enemy)
                 {
                     character.Damage(_character, _explosionDamage, 20, character.transform.position - transform.position, 1);

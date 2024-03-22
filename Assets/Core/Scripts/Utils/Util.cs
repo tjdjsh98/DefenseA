@@ -68,7 +68,7 @@ public static class Util
 
         return hit.collider ? hit.collider.gameObject : null;
     }
-    public static GameObject[] RangeCastAll2D(GameObject go, Define.Range range, int layerMask = -1, Func<GameObject,bool> condition = null)
+    public static List<RaycastHit2D> RangeCastAll2D(GameObject go, Define.Range range, int layerMask = -1, Func<RaycastHit2D,bool> condition = null)
     {
         if (go.transform.localScale.x < 0)
             range.center.x = -range.center.x;
@@ -114,16 +114,16 @@ public static class Util
         }
         if (hits == null) return null;
 
-        List<GameObject> list = new List<GameObject>();
+        List<RaycastHit2D> list = new List<RaycastHit2D>();
         for (int i = 0; i < hits.Length; i++)
         {
-            if (condition == null || condition.Invoke(hits[i].collider.gameObject))
+            if (condition == null || condition.Invoke(hits[i]))
             {
-                list.Add(hits[i].collider.gameObject);
+                list.Add(hits[i]);
             }
         }
 
-        return list.ToArray();
+        return list;
 
     }
 
@@ -205,5 +205,23 @@ public static class Util
         }
 
         return result;
+    }
+
+    public static Vector2 GetFitSpriteSize(Sprite sprite, int maxSize)
+    {
+        Vector2 spriteSize = sprite.textureRect.size;
+
+        if (spriteSize.x > spriteSize.y)
+        {
+            spriteSize.y = maxSize * spriteSize.y/spriteSize.x;
+            spriteSize.x = maxSize;
+        }
+        else
+        {
+            spriteSize.x = maxSize * spriteSize.x / spriteSize.y;
+            spriteSize.y = maxSize;
+        }
+
+        return spriteSize;
     }
 }

@@ -115,6 +115,7 @@ MonoBehaviour:
   _maxMental: 0
   <Mental>k__BackingField: 0
   _speed: 0
+  _standing: 0
   _isGainMentalWhenKillIt: 0
   _gainMentalAmount: 0
   <AttackPower>k__BackingField: 0
@@ -126,8 +127,10 @@ MonoBehaviour:
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    angle: 0
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
+  <IsSuperArmer>k__BackingField: 0
   _hpBar: {fileID: 0}
 --- !u!114 &-7034054007250095563
 MonoBehaviour:

@@ -255,12 +255,12 @@ public class WallAI : MonoBehaviour
                 continue;
             }
             bool isDetect = false;
-            GameObject[] gos = Util.RangeCastAll2D(gameObject, _detectRange, LayerMask.GetMask("Character"));
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _detectRange, Define.CharacterMask);
 
-            foreach (var go in gos)
+            foreach (var hit in hits)
             {
-                if (go == null) continue;
-                Character c = go.GetComponent<Character>();
+                if (hit.collider == null) continue;
+                Character c = hit.collider.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
                     isDetect = true;
@@ -280,13 +280,13 @@ public class WallAI : MonoBehaviour
         {
             if(_weaponSwaper.GetWeapon(i) == null) continue;
 
-            GameObject[] gos = Util.RangeCastAll2D(hands[i], _attackRange);
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(hands[i], _attackRange);
 
             Character mostClose = null;
             float closeDistance = 100;
-            foreach (var go in gos)
+            foreach (var hit in hits)
             {
-                Character c = go.GetComponent<Character>();
+                Character c = hit.collider.GetComponent<Character>();
 
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {

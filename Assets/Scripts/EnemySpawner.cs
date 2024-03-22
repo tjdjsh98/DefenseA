@@ -32,13 +32,13 @@ public class EnemySpawner : MonoBehaviour
     {
         if (_isSpawn) return;
 
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _spawnRange, Define.CharacterMask, (go) =>
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _spawnRange, Define.CharacterMask, (hit) =>
         {
-            Character character = go.GetComponent<Character>();
+            Character character = hit.collider.GetComponent<Character>();
             return (character !=  null && character.CharacterType == Define.CharacterType.Player);
             });
 
-        if(gos.Length > 0)
+        if(hits.Count > 0)
         {
             foreach (var data in _spawnDataList)
                 StartCoroutine(CorSpawnEnemey(data));

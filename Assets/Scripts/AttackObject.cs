@@ -56,11 +56,11 @@ public class AttackObject : MonoBehaviour
 
     void Attack()
     {
-        GameObject[] gos = Util.RangeCastAll2D(gameObject, _attackRange);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange);
 
-        foreach (var go in gos)
+        foreach (var hit in hits)
         {
-            Character c = go.GetComponent<Character>();
+            Character c = hit.collider.GetComponent<Character>();
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
                 _owner.Attack(c, _damage, 5, Vector3.up);

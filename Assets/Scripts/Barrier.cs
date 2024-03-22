@@ -39,11 +39,11 @@ public class Barrier : MonoBehaviour
                 figureType= Define.FigureType.Circle
             };
 
-            GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, range, LayerMask.GetMask("Character"));
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, range, LayerMask.GetMask("Character"));
 
-            foreach (GameObject gameObject in gameObjects)
+            foreach (RaycastHit2D hit in hits)
             {
-                Character character = gameObject.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
                 if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                 {
                     Vector3 direction = character.transform.position - transform.position;

@@ -104,6 +104,7 @@ public class Player : MonoBehaviour
 
         Util.DrawRangeOnGizmos(gameObject, _meleeAttackRange, Color.red);
     }
+    #region 스킬 관련
     void RegistSkill()
     {
     }
@@ -117,6 +118,8 @@ public class Player : MonoBehaviour
             func?.Invoke(skillSlot);
         }
     }
+
+    #endregion
     private void OnCharacterDead()
     {
         SceneManager.LoadScene("MainMenu");
@@ -233,9 +236,9 @@ public class Player : MonoBehaviour
     public void MeleeAttack()
     {
         Util.RangeCastAll2D(gameObject, _meleeAttackRange, Define.CharacterMask,
-            (go) =>
+            (hit) =>
             {
-                Character characrer = go.GetComponent<Character>();
+                Character characrer = hit.collider.GetComponent<Character>();
                 if (characrer && characrer.CharacterType == Define.CharacterType.Enemy)
                 {
                     _character.Attack(characrer, _character.AttackPower, 100, characrer.transform.position - transform.position,0.2f);
@@ -466,15 +469,15 @@ public class Player : MonoBehaviour
             figureType = Define.FigureType.Box
         };
 
-        GameObject[] gameObjects = Util.RangeCastAll2D(gameObject, range, Define.CharacterMask, (go)=>
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, range, Define.CharacterMask, (hit)=>
         {
-            Character character = go.GetComponent<Character>();
+            Character character = hit.collider.GetComponent<Character>();
             if (character == null) return false;
 
             return character.CharacterType == Define.CharacterType.Enemy;
         });
 
-        if (gameObjects.Length <= 0) return false;
+        if (hits.Count<= 0) return false;
 
         return true;
     }
@@ -485,22 +488,19 @@ public class Player : MonoBehaviour
         {
             if (_isRiding == false)
             {
-                GameObject[] gos = Util.RangeCastAll2D(gameObject, new Define.Range { center = new Vector3(0, 0), size = Vector3.one });
+                List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, new Define.Range { center = new Vector3(0, 0), size = Vector3.one });
 
-                if (gos.Length > 0)
+                foreach (var hit in hits)
                 {
-                    foreach (var go in gos)
+                    if (hit.collider.gameObject.name.Equals("Dog"))
                     {
-                        if (go.gameObject.name.Equals("Dog"))
-                        {
-                            transform.SetParent(go.transform);
-                            transform.position = go.GetComponent<WallAI>().SitPosition.transform.position;
-                            _isRiding = true;
-                            _character.AnimatorSetBool("Sit", true);
-                            _ridingCharacter = go.GetComponent<Character>();
-                            _character.IsEnableMove = false;
-                            _rigidbody.isKinematic = true;
-                        }
+                        transform.SetParent(hit.transform);
+                        transform.position = hit.collider.GetComponent<WallAI>().SitPosition.transform.position;
+                        _isRiding = true;
+                        _character.AnimatorSetBool("Sit", true);
+                        _ridingCharacter = hit.collider.GetComponent<Character>();
+                        _character.IsEnableMove = false;
+                        _rigidbody.isKinematic = true;
                     }
                 }
             }
