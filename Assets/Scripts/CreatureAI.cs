@@ -242,7 +242,7 @@ public class CreatureAI : MonoBehaviour
             Character c = hit.collider.GetComponent<Character>();
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
-                _character.Attack(c, AttackDamage, 100, c.transform.position - transform.position);
+                _character.Attack(c, AttackDamage, 100, c.transform.position - transform.position, hit.point);
             }
         }
     }
@@ -328,7 +328,7 @@ public class CreatureAI : MonoBehaviour
                     Character character = hit.collider.gameObject.GetComponent<Character>();
                     if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                     {
-                        _character.Attack(character, ShockwaveDamage, 50, character.transform.position - center);
+                        _character.Attack(character, ShockwaveDamage, 50, character.transform.position - center, hit.point);
                     }
                 }
             }
@@ -417,7 +417,7 @@ public class CreatureAI : MonoBehaviour
                 Character c = hit.collider.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, 1);
+                    _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, hit.point, 1);
                 }
             }
         }

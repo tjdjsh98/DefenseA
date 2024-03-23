@@ -81,7 +81,7 @@ public class GirlAbility
                 _hungerHitCount = 0;
                 Managers.GetManager<AbilityManager>().AddPredation(5);
 
-                target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, 0);
+                target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position);
             }
 
 

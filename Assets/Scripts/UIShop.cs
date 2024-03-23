@@ -21,7 +21,7 @@ public class UIShop : UIBase
         int index = 0;
         foreach (var slot in _slotList)
         {
-            _slotImageList.Add(slot.transform.Find("Image").GetComponent<Image>());
+            _slotImageList.Add(slot.transform.Find("Frame").Find("Image").GetComponent<Image>());
             _slotTextList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
 
             int tempIndex = index;

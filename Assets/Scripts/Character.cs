@@ -67,7 +67,7 @@ public class Character : MonoBehaviour,IHp
     [field:SerializeField]public bool IsSuperArmer { get; set; }
 
     public bool IsFaceRight => transform.lossyScale.x > 0;
-    public bool IsInvincibility { set; get; }
+    [field: SerializeField] public bool IsInvincibility;
 
     public bool IsContactGround => _isContactGround;
     private bool _isJump;
@@ -81,7 +81,7 @@ public class Character : MonoBehaviour,IHp
     // 핸들러
     public Action CharacterDeadHandler;
     public Action<Character,int> AttackHandler; // 공격한 적, 데미지
-    public Action<Character, int, float, Vector3, float> CharacterDamaged { set; get; }
+    public Action<Character, int, float, Vector3,Vector3, float> CharacterDamaged { set; get; }
 
     [SerializeField] GaugeBar _hpBar;
 
@@ -252,7 +252,7 @@ public class Character : MonoBehaviour,IHp
 
 
     // 최종적으로 가한 데미지를 반환합니다.
-    public int Damage(IHp attacker, int damage, float power, Vector3 direction, float stunTime = 0f)
+    public int Damage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0f)
     {
         if (IsInvincibility) return 0;
 
@@ -262,7 +262,7 @@ public class Character : MonoBehaviour,IHp
             Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
 
         if(damage != 0)
-            Managers.GetManager<TextManager>().ShowText(transform.position + Vector3.up, damage.ToString(), 10, Color.red);
+            Managers.GetManager<TextManager>().ShowText(damagePoint, damage.ToString(), 10, Color.red);
 
 
         _hp -= damage;
@@ -277,7 +277,7 @@ public class Character : MonoBehaviour,IHp
             _stunTime = stunTime;
         }
 
-        CharacterDamaged?.Invoke(attackerCharacter, damage, power, direction, stunTime);
+        CharacterDamaged?.Invoke(attackerCharacter, damage, power, direction,damagePoint, stunTime);
 
         if (_hp <= 0)
         {
@@ -307,11 +307,11 @@ public class Character : MonoBehaviour,IHp
         return damage;
     }
 
-    public int Attack(IHp target, int damage, float power, Vector3 direction, float stunTime = 0.1f)
+    public int Attack(IHp target, int damage, float power, Vector3 direction,Vector3 attackPoint, float stunTime = 0.1f)
     {
         if (target == null) return 0;
 
-        int resultDamage = target.Damage(this,damage, power, direction, stunTime);
+        int resultDamage = target.Damage(this,damage, power, direction,attackPoint, stunTime);
         AttackHandler?.Invoke(target as Character,resultDamage);
 
         return resultDamage;

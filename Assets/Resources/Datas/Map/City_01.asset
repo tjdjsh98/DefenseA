@@ -18,7 +18,7 @@ MonoBehaviour:
   - startTime: 0
     endTime: 9999
     genTime: 4
-    elapsedTime: 0.8147449
+    elapsedTime: 3.5688972
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 02000000
@@ -26,7 +26,7 @@ MonoBehaviour:
   - startTime: 0
     endTime: 9999
     genTime: 3.5
-    elapsedTime: 0.23174998
+    elapsedTime: 3.286031
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
@@ -37,8 +37,8 @@ MonoBehaviour:
     genTime: 0
     elapsedTime: 0
     distace: 100
-    genLocalPosition: {x: 20, y: 0, z: 0}
-    enemyList: 0e000000
+    genLocalPosition: {x: 50, y: 0, z: 0}
+    enemyList: 05000000
     hpMultiply: 1
   mapSize: 1000
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}

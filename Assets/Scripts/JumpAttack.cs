@@ -49,7 +49,7 @@ public class JumpAttack : MonoBehaviour
                 Character character = hit.collider.GetComponent<Character>();
                 if (character && character.CharacterType == Define.CharacterType.Player)
                 {
-                    _character.Attack(character,_character.AttackPower,10,_rigidbody.velocity);
+                    _character.Attack(character,_character.AttackPower,10,_rigidbody.velocity, hit.point);
                 }
             }
             if (_character.IsContactGround)

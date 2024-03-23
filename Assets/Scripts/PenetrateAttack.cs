@@ -53,7 +53,7 @@ public class PenetrateAttack : MonoBehaviour
 
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _character.Attack(c, 2, 10, _direction);
+                    _character.Attack(c, 2, 10, _direction, hit.point);
                 }
             }
         }

@@ -63,7 +63,7 @@ public class AttackObject : MonoBehaviour
             Character c = hit.collider.GetComponent<Character>();
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
-                _owner.Attack(c, _damage, 5, Vector3.up);
+                _owner.Attack(c, _damage, 5, Vector3.up,hit.point);
 
             }
         }

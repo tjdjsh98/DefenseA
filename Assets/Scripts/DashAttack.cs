@@ -55,10 +55,10 @@ public class DashAttack : MonoBehaviour
                         Character character = hit.collider.GetComponent<Character>();
                         if (character != null && _character.CharacterType != character.CharacterType)
                         {
-                            _character.Attack(character, _character.AttackPower, 100, new Vector3(_dashDirection.x >0 ? 1: -1,1,0), 0.5f);
+                            _character.Attack(character, _character.AttackPower, 100, new Vector3(_dashDirection.x >0 ? 1: -1,1,0),hit.point, 0.5f);
                             _dashTime = _dashDelayTime + _dashDuration;
                             _character.Move(Vector3.zero);
-                            _character.Damage(_character, 0, 50, new Vector3(_dashDirection.x > 0 ? 1 : 1, -1, 0));
+                            _character.Damage(_character, 0, 50, new Vector3(_dashDirection.x > 0 ? 1 : 1, -1, 0), hit.point);
                         }
                         return false;
                     });

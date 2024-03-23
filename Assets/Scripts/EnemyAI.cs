@@ -74,8 +74,7 @@ public class EnemyAI : MonoBehaviour
     void OnCharacterDead()
     {
         Managers.GetManager<GameManager>().Exp += 1;
-        float random = _itemDropPercentage * 100;
-        if (Random.Range(0, 100) < random)
+        if (Random.Range(0, 100f) < _itemDropPercentage) 
         {
             Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
         }
@@ -223,7 +222,7 @@ public class EnemyAI : MonoBehaviour
             Character character = hit.collider.GetComponent<Character>();
             if(character == null || character.CharacterType == _character.CharacterType) continue;
 
-            _character.Attack(character, _character.AttackPower, 1, Vector3.zero);
+            _character.Attack(character, _character.AttackPower, 1, Vector3.zero, hit.point);
 
             Managers.GetManager<EffectManager>().InstantiateHitEffect(hit.point, hit.centroid - hit.point);
 

@@ -241,7 +241,7 @@ public class Player : MonoBehaviour
                 Character characrer = hit.collider.GetComponent<Character>();
                 if (characrer && characrer.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _character.Attack(characrer, _character.AttackPower, 100, characrer.transform.position - transform.position,0.2f);
+                    _character.Attack(characrer, _character.AttackPower, 100, characrer.transform.position - transform.position, hit.point, 0.2f);
                 }
                 return true;
             });

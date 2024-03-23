@@ -14,8 +14,6 @@ public class WallAI : MonoBehaviour
     [SerializeField] WallAbility _wallAbility = new WallAbility();
     public WallAbility WallAbility => _wallAbility;
 
-    [SerializeField] WeaponSwaper _weaponSwaper;
-
     [SerializeField] Define.Range _attackRange;
     [SerializeField] GameObject _sitPosition;
     public GameObject SitPosition => _sitPosition;
@@ -125,7 +123,6 @@ public class WallAI : MonoBehaviour
             return;
         }
         MoveForward();
-        Targeting();
         WallAbility.AbilityUpdate();
 
     }
@@ -272,40 +269,4 @@ public class WallAI : MonoBehaviour
         }
     }
 
-    public void Targeting()
-    {
-        List<GameObject> hands = _weaponSwaper.WeaponSlotList;
-
-        for(int i =0; i < hands.Count; i++) 
-        {
-            if(_weaponSwaper.GetWeapon(i) == null) continue;
-
-            List<RaycastHit2D> hits = Util.RangeCastAll2D(hands[i], _attackRange);
-
-            Character mostClose = null;
-            float closeDistance = 100;
-            foreach (var hit in hits)
-            {
-                Character c = hit.collider.GetComponent<Character>();
-
-                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
-                {
-                    if((c.transform.position - hands[i].transform.position).magnitude < closeDistance)
-                    {
-                        closeDistance = (c.transform.position - hands[i].transform.position).magnitude;
-                        mostClose= c;
-                    }
-                }
-            }
-
-            if(mostClose != null)
-            {
-                Vector3 distance = mostClose.transform.position - hands[i].transform.position;
-
-                float angle = Mathf.Atan2(distance.y, distance.x) * Mathf.Rad2Deg;
-                hands[i].transform.rotation = Quaternion.Euler(0, 0, angle);
-                _weaponSwaper.GetWeapon(i).Fire(_character);
-            }
-        }
-    }
 }

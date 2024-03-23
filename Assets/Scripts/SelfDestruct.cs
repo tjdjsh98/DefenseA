@@ -73,11 +73,11 @@ public class SelfDestruct : MonoBehaviour
 
                 if (character != null && character.CharacterType != _character.CharacterType)
                 {
-                    _character.Attack(character, _character.AttackPower, _explosionPower, character.transform.position - _character.transform.position, 1);
+                    _character.Attack(character, _character.AttackPower, _explosionPower, character.transform.position - _character.transform.position, hit.point, 1);
                 }
                 return false;
             });
 
-        _character.Damage(_character, _character.MaxHp, 0, Vector3.zero, 0);
+        _character.Damage(_character, _character.MaxHp, 0, Vector3.zero, transform.position, 0);
     }
 }

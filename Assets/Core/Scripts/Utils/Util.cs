@@ -21,7 +21,7 @@ public static class Util
         return go;
     }
 
-    public static GameObject RangeCast2D(GameObject go, Define.Range range, int layerMask = -1)
+    public static RaycastHit2D RangeCast2D(GameObject go, Define.Range range, int layerMask = -1)
     {
         if (go.transform.localScale.x < 0)
             range.center.x = -range.center.x;
@@ -66,7 +66,7 @@ public static class Util
             }
         }
 
-        return hit.collider ? hit.collider.gameObject : null;
+        return hit;
     }
     public static List<RaycastHit2D> RangeCastAll2D(GameObject go, Define.Range range, int layerMask = -1, Func<RaycastHit2D,bool> condition = null)
     {

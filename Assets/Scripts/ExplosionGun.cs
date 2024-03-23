@@ -89,7 +89,7 @@ public class ExplosionGun : Weapon
                 Character character = hit.collider.GetComponent<Character>();
                 if(character && character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    character.Damage(_character, _explosionDamage, 20, character.transform.position - transform.position, 1);
+                    character.Damage(_character, _explosionDamage, 20, character.transform.position - transform.position, hit.point, 1);
                 }
                 return false;
             }

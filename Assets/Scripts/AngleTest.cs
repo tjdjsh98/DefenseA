@@ -16,11 +16,6 @@ public class AngleTest : MonoBehaviour
 
     private void Update()
     {
-        GameObject go = Util.RangeCast2D(gameObject, _range, Define.CharacterMask);
-
-        if(go != null)
-        {
-            Debug.Log(go);
-        }
+        
     }
 }

@@ -31,11 +31,11 @@ public class MusicBox : MonoBehaviour
         if (_fireCoolTime <= _fireTime)
         {
             _fireTime = 0;
-            GameObject go = Util.RangeCast2D(_firePoint, _attackRange, Define.CharacterMask);
+            RaycastHit2D hit = Util.RangeCast2D(_firePoint, _attackRange, Define.CharacterMask);
 
-            if(go != null)
+            if(hit.collider != null)
             {
-                Character character = go.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
 
                 if (character && character.CharacterType == Define.CharacterType.Enemy)
                 {

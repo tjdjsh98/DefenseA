@@ -615,6 +615,7 @@ MonoBehaviour:
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
   <IsSuperArmer>k__BackingField: 0
+  IsInvincibility: 1
   _hpBar: {fileID: 0}
 --- !u!114 &2713146866233580908
 MonoBehaviour:
@@ -628,6 +629,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c095ae0f0c8d58499c7db2b14d39285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _creatureAbility:
+    _debugSurvivalIntinctRange: 0
+    _survivalIntinctRange:
+      center: {x: 0, y: 0, z: 0}
+      size: {x: 0, y: 0, z: 0}
+      angle: 0
+      figureType: 0
+    _survivalIntinctCount: 0
+    _survivalIntinctElapsed: 0
   _debugAttackRangeIndex: 1
   _attackRangeList:
   - center: {x: 0, y: 2.5, z: 0}
@@ -652,23 +662,10 @@ MonoBehaviour:
     figureType: 0
   _penetrateAttack: {fileID: 0}
   _fArmIK: {fileID: 0}
-  _debugSurvivalIntinctRange: 0
-  _survivalIntinctRange:
-    center: {x: 0, y: 0, z: 0}
-    size: {x: 0, y: 0, z: 0}
-    angle: 0
-    figureType: 0
-  _survivalIntinctCount: 0
-  _survivalIntinctElapsed: 0
   _spearAttackCoolTime: 3
   _shockwaveRange: 20
   _throwPower: 10
   _creatureSkillCount: 0
-  _creatureSkillList:
-  - creatureSkill: 0
-    skillCoolTime: 5
-    skillTime: 0
-    isActive: 0
 --- !u!210 &223340962376762324
 SortingGroup:
   m_ObjectHideFlags: 0

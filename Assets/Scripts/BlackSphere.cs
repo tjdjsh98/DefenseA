@@ -57,15 +57,15 @@ public class BlackSphere : MonoBehaviour
             if (_attackDelay > _attackTime) return;
 
             transform.position += _attackDirection * Time.deltaTime*_speed;
-            GameObject go = Util.RangeCast2D(gameObject,_attackRange,Define.CharacterMask);
+            RaycastHit2D hit = Util.RangeCast2D(gameObject,_attackRange,Define.CharacterMask);
 
-            if(go!= null) 
+            if(hit.collider != null) 
             {
-                Character character = go.GetComponent<Character>();
+                Character character = hit.collider.GetComponent<Character>();
 
                 if(character&& character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    character.Damage(_owner, 5, 10, _attackDirection);
+                    character.Damage(_owner, 5, 10, _attackDirection, hit.point);
 
                     _owner = null;
                     _isMoveToDestination = false;
@@ -82,7 +82,7 @@ public class BlackSphere : MonoBehaviour
                             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                             {
                                 Debug.Log(c);
-                                c.Damage(null, 10, 10, c.transform.position - transform.position, 1f);
+                                c.Damage(null, 10, 10, c.transform.position - transform.position,hit.point, 1f);
                             }
                             return false;
                         });

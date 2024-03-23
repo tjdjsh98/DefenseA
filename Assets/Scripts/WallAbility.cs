@@ -88,7 +88,7 @@ public class WallAbility
                     Character character = hit.collider.GetComponent<Character>();
                     if (character != null)
                     {
-                        character.Damage(_wallAI.Character, 1, 0, Vector3.zero, 2);
+                        character.Damage(_wallAI.Character, 1, 0, Vector3.zero, hit.point, 2);
                     }
                     return false;
                 });
@@ -129,7 +129,7 @@ public class WallAbility
         }
 
     }
-    private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction, float stunTIme)
+    private void OnCharacterDamaged(Character attacker, int damage, float power, Vector3 direction,Vector3 hitPoint, float stunTIme)
     {
         if (GetIsHaveAbility(WallAbilityName.BlackAura))
         {
@@ -194,7 +194,7 @@ public class WallAbility
                     Character character = hit.collider.GetComponent<Character>();
                     if (character != null)
                     {
-                        character.Damage(_wallAI.Character, 10, 10, character.transform.position - _wallAI.transform.position, 1);
+                        character.Damage(_wallAI.Character, 10, 10, character.transform.position - _wallAI.transform.position, hit.point, 1);
                     }
                     return false;
                 });
@@ -252,7 +252,7 @@ public class WallAbility
                 if (character && character.CharacterType == Define.CharacterType.Enemy)
                 {
                     _wallAI.Character.Attack(character, ExplosionDamage, ExplosionPower, character.transform.position
-                        - _wallAI.Character.GetCenter(), 1);
+                        - _wallAI.Character.GetCenter(), hit.point, 1);
                 }
             }
         }

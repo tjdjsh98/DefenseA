@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -127,8 +128,8 @@ public class GameManager : ManagerBase
         
         if (_mapData)
         {
-            _timeWaveList = _mapData.timeWave;
-            _distanceWaveList = _mapData.distanceWave;
+            _timeWaveList = _mapData.timeWave.ToList();
+            _distanceWaveList = _mapData.distanceWave.ToList();
         }
 
         if (!_isSkip)
@@ -413,8 +414,8 @@ public class GameManager : ManagerBase
         _mapData = mapData;
         if (_mapData)
         {
-            _timeWaveList = _mapData.timeWave;
-            _distanceWaveList = _mapData.distanceWave;
+            _timeWaveList = _mapData.timeWave.ToList();
+            _distanceWaveList = _mapData.distanceWave.ToList();
         }
 
         if (!_isSkip)

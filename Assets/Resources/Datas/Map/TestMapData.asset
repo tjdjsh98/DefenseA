@@ -14,15 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: City_01
   mentalDownTime: 180
-  timeWave:
-  - startTime: 0
-    endTime: 0
-    genTime: 3
-    elapsedTime: 2.3162389
-    distace: 0
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 000000000100000002000000000000000300000004000000080000000700000005000000
-    hpMultiply: 1
+  timeWave: []
   distanceWave: []
   mapSize: 100
   nextMapData: {fileID: 0}
+  shopItemDataList: []

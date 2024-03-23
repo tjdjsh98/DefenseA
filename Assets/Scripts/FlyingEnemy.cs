@@ -175,7 +175,7 @@ public class FlyingEnemy : EnemyAI
             if (character == null || character.CharacterType == _character.CharacterType) continue;
             if (_attackedList.Contains(character)) continue;
 
-            _character.Attack(character, _character.AttackPower, 1, Vector3.zero);
+            _character.Attack(character, _character.AttackPower, 1, Vector3.zero, hit.point);
             _attackedList.Add(character);
 
             Managers.GetManager<EffectManager>().InstantiateHitEffect(hit.point, hit.centroid -  hit.point);
