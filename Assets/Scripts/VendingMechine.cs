@@ -14,7 +14,7 @@ public class VendingMechine : MonoBehaviour
     {
         if(Managers.GetManager<GameManager>().ShopItemList.Count < 5)
             _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(Managers.GetManager<GameManager>().ShopItemList.Count);
-
+    
         else
             _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(5);
 

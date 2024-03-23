@@ -8,7 +8,7 @@ public class UIManager : ManagerBase
     const string _canvasName = "Canvas";
     GameObject _uiFolder;
     Canvas _canvas;
-
+    public Canvas Canvas => _canvas;
     List<UIBase> _uiList = new List<UIBase>();
 
     List<UIBase> _stackList = new List<UIBase>();
