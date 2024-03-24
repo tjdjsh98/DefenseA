@@ -13,5 +13,6 @@ public class ShopItemData : ScriptableObject
 public enum SellType
 {
     Weapon,
-    Ability
+    UpgradeWeapon,
+    Ability,
 }

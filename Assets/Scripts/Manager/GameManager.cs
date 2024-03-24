@@ -87,8 +87,9 @@ public class GameManager : ManagerBase
     // 적 소환 관련 변수
     [Header("적관련변수")]
     List<GameObject> _enemySpawnList = new List<GameObject>();
-    List<Wave> _timeWaveList;
-    List<Wave> _distanceWaveList;
+    List<Wave> _timeWaveList = new List<Wave>();
+    List<Wave> _distanceWaveList = new List<Wave>();
+    List<Wave> _mentalWaveList = new List<Wave>();
     float _totalTime;
     float _stageTime;
 
@@ -133,12 +134,44 @@ public class GameManager : ManagerBase
             }
         });
 
+        _cameraController = Camera.main.GetComponent<CameraController>();
+        LoadMapData();
+    }
+
+    void LoadMapData()
+    {
+        _timeWaveList.Clear();
+        _distanceWaveList.Clear();
+        _mentalWaveList.Clear();
+
         if (_mapData)
         {
-            _timeWaveList = _mapData.timeWave.ToList();
-            _distanceWaveList = _mapData.distanceWave.ToList();
+            foreach (var waveData in _mapData.timeWave)
+            {
+                TimeWaveData timeWaveData = waveData as TimeWaveData;
+                if (timeWaveData != null)
+                {
+                    _timeWaveList.Add(new Wave() { waveData = timeWaveData, elapsedTime = timeWaveData.genTime });
+                }
+            }
+            foreach (var waveData in _mapData.distanceWave)
+            {
+                DistanceWaveData distanceWaveData = waveData as DistanceWaveData;
+                if (distanceWaveData != null)
+                {
+                    _distanceWaveList.Add(new Wave() { waveData = distanceWaveData, elapsedTime = distanceWaveData.genTime });
+                }
+            }
+            foreach (var waveData in _mapData.mentalWave)
+            {
+                MentalWaveData mentalWaveData = waveData as MentalWaveData;
+                if (mentalWaveData != null)
+                {
+                    _mentalWaveList.Add(new Wave() { waveData = mentalWaveData, elapsedTime = mentalWaveData.genTime });
+                }
+            }
             float distance = 0;
-            if(_mapData.randomEvent.Count > 0)
+            if (_mapData.randomEvent.Count > 0)
             {
                 while (distance < _mapData.mapSize)
                 {
@@ -160,11 +193,8 @@ public class GameManager : ManagerBase
             Invoke("OffTimeline", (float)_playableDirector.duration - 0.1f);
             _isPlayTimeline = true;
         }
-
-        _cameraController = Camera.main.GetComponent<CameraController>();
+        _stageTime = 0;
         IsLoadEnd = true;
-
-      
     }
 
     void LoadMainCharacters()
@@ -217,6 +247,11 @@ public class GameManager : ManagerBase
         Mental -= Time.deltaTime;
         _totalTime += Time.deltaTime;
         _stageTime += Time.deltaTime;
+        if (Mental <= 0)
+        {
+            _panicLevel++;
+            Mental = 100;
+        }
         if (_summonDummy)
         {
             EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Slime);
@@ -231,6 +266,7 @@ public class GameManager : ManagerBase
 
         TimeWave();
         DistanceWave();
+        MentalWave();
 
         if (Player)
             _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
@@ -247,16 +283,17 @@ public class GameManager : ManagerBase
         if (IsPlayTimeline) return;
         foreach (var timeWave in _timeWaveList)
         {
-            if (_stageTime > timeWave.endTime || _stageTime < timeWave.startTime)
+            TimeWaveData timeWaveData = timeWave.waveData as TimeWaveData;
+            if (_stageTime > timeWaveData.endTime || _stageTime < timeWaveData.startTime)
                 continue;
 
-            if (timeWave.elapsedTime > timeWave.genTime)
+            if (timeWave.elapsedTime > timeWave.waveData.genTime)
             {
                 timeWave.elapsedTime = 0;
 
-                if (timeWave.enemyList == null) return;
+                if (timeWaveData.enemyList == null) return;
 
-                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWave.enemyList.GetRandom());
+                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWaveData.enemyList.GetRandom());
                 EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                 if (enemy)
                 {
@@ -264,9 +301,9 @@ public class GameManager : ManagerBase
 
                     // 체력 설정
                     if (enemy.IsGroup)
-                        enemy.GetComponent<EnemyGroup>().SetHp(timeWave.hpMultiply);
+                        enemy.GetComponent<EnemyGroup>().SetHp(timeWaveData.hpMultiply);
                     else
-                        enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * timeWave.hpMultiply));
+                        enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * timeWaveData.hpMultiply));
 
 
                     // 위치 설정
@@ -300,35 +337,82 @@ public class GameManager : ManagerBase
     {
         foreach (var wave in _distanceWaveList)
         {
-            if (wave.distace <= _farDistance)
+            DistanceWaveData distanceWaveData = wave.waveData as DistanceWaveData;
+            if (distanceWaveData.distace <= _farDistance)
             {
-                foreach (var enemyName in wave.enemyList)
+                foreach (var enemyName in distanceWaveData.enemyList)
                 {
                     EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)enemyName);
                     EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                     if (!enemy.IsGroup)
                     {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + wave.genLocalPosition).Value;
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
                         if (topPosition.HasValue)
                         {
                             Character character = enemy.GetComponent<Character>();
                             enemy.transform.position = topPosition.Value;
-                            character.SetHp(Mathf.RoundToInt(character.Hp * wave.hpMultiply));
+                            character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.hpMultiply));
                         }
                     }
                     else
                     {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + wave.genLocalPosition).Value;
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
                         if (topPosition.HasValue)
                         {
                             EnemyGroup group = enemy.GetComponent<EnemyGroup>();
                             group.transform.position = topPosition.Value;
-                            group.SetHp(wave.hpMultiply);
+                            group.SetHp(distanceWaveData.hpMultiply);
                         }
                     }
                 }
                 _distanceWaveList.Remove(wave);
                 return;
+            }
+        }
+    }
+
+    void MentalWave()
+    {
+        foreach (var wave in _mentalWaveList)
+        {
+            MentalWaveData mentalWaveData = wave.waveData as MentalWaveData;
+            if (mentalWaveData.genMentalLevelOrMore > PanicLevel)
+                continue;
+
+            if (wave.elapsedTime < wave.waveData.genTime)
+            {
+                wave.elapsedTime += Time.deltaTime;
+            }
+            else
+            {
+                wave.elapsedTime = 0;
+
+                foreach (var enemyName in mentalWaveData.enemyList)
+                {
+                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)enemyName);
+                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+                    if (!enemy.IsGroup)
+                    {
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+                        if (topPosition.HasValue)
+                        {
+                            Character character = enemy.GetComponent<Character>();
+                            enemy.transform.position = topPosition.Value;
+                            character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.hpMultiply));
+                        }
+                    }
+                    else
+                    {
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+                        if (topPosition.HasValue)
+                        {
+                            EnemyGroup group = enemy.GetComponent<EnemyGroup>();
+                            group.transform.position = topPosition.Value;
+                            group.SetHp(mentalWaveData.hpMultiply);
+                        }
+                    }
+                }
+
             }
         }
     }
@@ -430,23 +514,7 @@ public class GameManager : ManagerBase
         SceneManager.LoadScene(mapData.name);
 
         _mapData = mapData;
-        if (_mapData)
-        {
-            _timeWaveList = _mapData.timeWave.ToList();
-            _distanceWaveList = _mapData.distanceWave.ToList();
-        }
-
-        if (!_isSkip)
-        {
-            _playableDirector.playableAsset = _enteracneTimeline;
-            _playableDirector.Play();
-            Invoke("OffTimeline", (float)_playableDirector.duration - 0.1f);
-            _isPlayTimeline = true;
-        }
-        _stageTime = 0;
-
-        IsLoadEnd = true;
-
+        LoadMapData();
         LoadNewSceneHandler?.Invoke(mapData);
     }
     public Vector3 GetRightOutScreenPosition()

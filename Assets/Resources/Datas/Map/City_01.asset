@@ -15,55 +15,64 @@ MonoBehaviour:
   sceneName: City_01
   mentalDownTime: 50
   timeWave:
-  - startTime: 0
+  - genTime: 3
+    startTime: 0
     endTime: 30
-    genTime: 3
-    elapsedTime: 2.9100003
-    distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1
-  - startTime: 30
+  - genTime: 3
+    startTime: 30
     endTime: 60
-    genTime: 3
-    elapsedTime: 0.2084989
-    distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 02000000
     hpMultiply: 1
-  - startTime: 30
+  - genTime: 3
+    startTime: 30
     endTime: 75
-    genTime: 3
-    elapsedTime: 0.1473673
-    distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1.2
-  - startTime: 45
+  - genTime: 20
+    startTime: 45
     endTime: 135
-    genTime: 20
-    elapsedTime: 0
-    distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 0d000000
     hpMultiply: 1
-  - startTime: 90
+  - genTime: 5
+    startTime: 90
     endTime: 135
-    genTime: 5
-    elapsedTime: 0.3238668
-    distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 0d000000
+    hpMultiply: 1
+  - genTime: 5
+    startTime: 90
+    endTime: 195
+    genLocalPosition: {x: 50, y: 0, z: 0}
+    enemyList: 08000000
     hpMultiply: 1
   distanceWave:
-  - startTime: 0
-    endTime: 0
-    genTime: 0
-    elapsedTime: 0
+  - genTime: 0
     distace: 100
     genLocalPosition: {x: 50, y: 0, z: 0}
     enemyList: 05000000
     hpMultiply: 1
+  mentalWave:
+  - genTime: 30
+    genMentalLevelOrMore: 1
+    genLocalPosition: {x: 50, y: 0, z: 0}
+    enemyList: 0e000000
+    hpMultiply: 1
+  - genTime: 20
+    genMentalLevelOrMore: 2
+    genLocalPosition: {x: 50, y: 0, z: 0}
+    enemyList: 0c000000
+    hpMultiply: 3
+  - genTime: 20
+    genMentalLevelOrMore: 2
+    genLocalPosition: {x: 50, y: 0, z: 0}
+    enemyList: 0c000000
+    hpMultiply: 3
   mapSize: 1000
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList:

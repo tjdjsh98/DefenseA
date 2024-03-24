@@ -10,8 +10,9 @@ public class MapData : ScriptableObject
 {
     public string sceneName;
     public float mentalDownTime;
-    public List<Wave> timeWave;
-    public List<Wave> distanceWave;
+    public List<TimeWaveData> timeWave;
+    public List<DistanceWaveData> distanceWave;
+    public List<MentalWaveData> mentalWave;
     public float mapSize;
     public MapData nextMapData;
 
@@ -20,15 +21,46 @@ public class MapData : ScriptableObject
     public float randomEventInterval = 200;
 }
 
-[System.Serializable]
 public class Wave
+{
+    public WaveData waveData;
+
+    public float elapsedTime;
+}
+
+[System.Serializable]
+public class WaveData
+{
+    public float genTime;
+}
+
+[System.Serializable]
+public class TimeWaveData : WaveData
 {
     public int startTime;
     public int endTime;
-    public float genTime;
-    public float elapsedTime;
 
+    public Vector3 genLocalPosition;
+
+    public List<Define.EnemyName> enemyList;
+    public float hpMultiply;
+}
+[System.Serializable]
+public class DistanceWaveData : WaveData
+{
     public float distace;
+
+    public Vector3 genLocalPosition;
+
+    public List<Define.EnemyName> enemyList;
+    public float hpMultiply;
+}
+
+[System.Serializable]
+public class MentalWaveData : WaveData
+{
+    public int genMentalLevelOrMore;
+
     public Vector3 genLocalPosition;
 
     public List<Define.EnemyName> enemyList;

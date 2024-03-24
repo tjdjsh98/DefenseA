@@ -31,7 +31,6 @@ public class UIInGame : UIBase
     [SerializeField] MMProgressBar _creatureHpBar;
     [SerializeField] MMProgressBar _wallHpBar;
 
-    [SerializeField] Image _creatureSkillCurtain;
     [SerializeField] GameObject _wallIndicator;
     [SerializeField] GameObject _wallIndicatorArrow;
 
@@ -42,6 +41,8 @@ public class UIInGame : UIBase
     [SerializeField] List<TextMeshProUGUI> _skillNameList;
 
     [SerializeField] Image _fadeOut;
+
+    int _prePanicLevel;
     public override void Init()
     {
         _isInitDone = true;
@@ -56,6 +57,12 @@ public class UIInGame : UIBase
     private void Update()
     {
         if (!_isInitDone) return;
+
+        if (Managers.GetManager<GameManager>().PanicLevel != _prePanicLevel)
+        {
+            StartCoroutine(CorShowPanicLevel());
+            _prePanicLevel = Managers.GetManager<GameManager>().PanicLevel;
+        }
 
         _sb.Clear();
 
@@ -312,6 +319,38 @@ public class UIInGame : UIBase
     {
         
     }
+    IEnumerator CorShowPanicLevel()
+    {
+        float alpha = 0;
+        Color color = new Color(1, 1, 1, alpha);
+        _levelName.color = color;
+        if (_levelName)
+        {
+            _levelName.text = $"패닉 { Managers.GetManager<GameManager>().PanicLevel}단계";
+            while (alpha < 1)
+            {
+                color = new Color(1, 1, 1, alpha);
+                alpha += Time.deltaTime / 3;
+
+                _levelName.color = color;
+                yield return null;
+            }
+            alpha = 1;
+
+            yield return new WaitForSeconds(1);
+
+
+            while (alpha > 0)
+            {
+                color = new Color(1, 1, 1, alpha);
+                alpha -= Time.deltaTime / 3;
+
+                _levelName.color = color;
+                yield return null;
+            }
+        }
+    }
+
 
     IEnumerator CorShowLevelName()
     {
