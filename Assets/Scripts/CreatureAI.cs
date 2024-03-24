@@ -60,14 +60,15 @@ public class CreatureAI : MonoBehaviour
 
     // 일반공격 변수
     Vector3 _normalAttackPosition;
-    float _normalAttackElapsed = 0;
-    float _normalAttackCoolTime = 2f;
+    float _normalAttackTime = 0;
+    float _normalAttackCoolTime = 3f;
     float NormalAttackCoolTime => DecreasedNormalAttackCoolTimePercentage > 0 ? _normalAttackCoolTime / (1 + (DecreasedNormalAttackCoolTimePercentage / 100)) : _normalAttackCoolTime * (1 - (DecreasedNormalAttackCoolTimePercentage / 100));
     public int NormalAttackDamage => IncreasedNormalAttackPercentage > 0 ? AttackDamage * (1 + IncreasedNormalAttackPercentage / 100) : AttackDamage / (1 - IncreasedNormalAttackPercentage / 100);
     public int IncreasedNormalAttackPercentage { set; get; }
     public float IncreasedNormalAttackSpeedPercentage { set; get; }
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
 
+    Character _closeEnemy;
 
     // 스피어 공격 변수
     float _spearAttackElapsed = 0;
@@ -155,11 +156,75 @@ public class CreatureAI : MonoBehaviour
 
             return;
         }
-        FollowPlayer();
-        _creatureAbility.AbilityUpdate();
 
+        DefaultAI();
+
+
+        _creatureAbility.AbilityUpdate();
     }
 
+    void DefaultAI()
+    {
+        if (_closeEnemy) return;
+
+        if (_normalAttackCoolTime > _normalAttackTime)
+        {
+            _normalAttackTime += Time.deltaTime;
+            FollowPlayer();
+        }
+        else
+        {
+            if(_closeEnemy == null)
+                _closeEnemy = GetCloseEnemy();
+
+            if (_closeEnemy == null)
+                FollowPlayer();
+
+            StartCoroutine(CorPlayNormalAttack());
+        }
+    }
+    IEnumerator CorPlayNormalAttack()
+    {
+        if (_closeEnemy != null)
+        {
+            Vector3 initPosition = transform.position;
+            _character.IsAttack = true;
+            Define.Range attackRange = _attackRangeList[1];
+            attackRange.size = new Vector3(attackRange.size.x / 4, attackRange.size.y, 0);
+            while (true)
+            {
+                if (_closeEnemy == null) break;
+                _character.Move(_closeEnemy.transform.position - transform.position);
+
+                if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (hit) =>
+                {
+                    Character character = hit.collider.GetComponent<Character>();
+                    if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }).Count > 0) break;
+                yield return null;
+            }
+            _character.Move(Vector2.zero);
+
+            _character.SetAnimationSpeed(AttackSpeed);
+            _character.AnimatorSetTrigger("NormalAttack");
+            _character.IsAttack = true;
+            _character.IsEnableMove = false;
+            _character.IsEnableTurn = false;
+
+            while (_character.IsAttack)
+            {
+                yield return null;
+            }
+        }
+
+        _normalAttackTime = 0;
+        _closeEnemy = null;
+    }
     void FollowPlayer()
     {
         if (_character.IsAttack) return;
@@ -175,7 +240,7 @@ public class CreatureAI : MonoBehaviour
             _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -_girlToCreatureDistance : _girlToCreatureDistance)) / (_girlToCreatureDistance));
         }
     }
-
+    
     public void Transform()
     {
         if (!_isSoulForm)
@@ -199,9 +264,6 @@ public class CreatureAI : MonoBehaviour
             _character.ChangeEnableFly(false);
         }
     }
-
-   
-
     public void AimFrontArmToEnemy()
     {
         Animation anim = GetComponent<Animation>();
@@ -225,14 +287,11 @@ public class CreatureAI : MonoBehaviour
         clip.SetCurve("", typeof(Material), "_Color.r", curve);
         _fArmIK.transform.position = _closeOne.transform.position;
     }
-
     public void StartPenerstrateAttack()
     {
         _penetrateAttack.StartAttack(_character, _closeOne.GetCenter() - _penetrateAttack.transform.position, 20);
 
     }
-   
-
     public void NormalAttack()
     {
         List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
@@ -356,7 +415,7 @@ public class CreatureAI : MonoBehaviour
             Vector3 initPosition = transform.position;
             _character.IsAttack = true;
             Define.Range attackRange = _attackRangeList[1];
-            attackRange.size = new Vector3(attackRange.size.x / 4 * 3, attackRange.size.y / 4 * 3, 0);
+            attackRange.size = new Vector3(attackRange.size.x / 4 , attackRange.size.y / 4, 0);
             while (true)
             {
                 if (enemy == null) break;

@@ -26,12 +26,10 @@ public class UIInGame : UIBase
 
     Player _player;
 
-    [SerializeField] MMProgressBar _daughterHpBar;
-    [SerializeField] MMProgressBar _fatherHpBar;
-    [SerializeField] MMProgressBar _dogHpBar;
-    [SerializeField] MMProgressBar _daughterMentalBar;
-    [SerializeField] MMProgressBar _creatureMentalBar;
-    [SerializeField] MMProgressBar _dogMentalBar;
+    [SerializeField] MMProgressBar _girlHpBar;
+    [SerializeField] MMProgressBar _girlMentalBar;
+    [SerializeField] MMProgressBar _creatureHpBar;
+    [SerializeField] MMProgressBar _wallHpBar;
 
     [SerializeField] Image _creatureSkillCurtain;
     [SerializeField] GameObject _wallIndicator;
@@ -124,40 +122,35 @@ public class UIInGame : UIBase
 
     void HandleBar()
     {
-        Character daughter = Managers.GetManager<GameManager>().Girl;
-        Character dog = Managers.GetManager<GameManager>().Wall;
-        Character father = Managers.GetManager<GameManager>().Creature;
+        Character girl = Managers.GetManager<GameManager>().Girl;
+        Character wall = Managers.GetManager<GameManager>().Wall;
+        Character creature = Managers.GetManager<GameManager>().Creature;
 
-        if (daughter)
+        if (girl)
         {
-            _daughterHpBar.UpdateBar01((float)daughter.Hp / daughter.MaxHp);
-            _daughterMentalBar.UpdateBar01((float)daughter.Mental / daughter.MaxMental);
+            _girlHpBar.UpdateBar01((float)girl.Hp / girl.MaxHp);
+            _girlMentalBar.UpdateBar01((float)Managers.GetManager<GameManager>().Mental / Managers.GetManager<GameManager>().MaxMental);
         }
         else
         {
-            _daughterHpBar.UpdateBar01(0);
-            _daughterMentalBar.UpdateBar01(0);
+            _girlHpBar.UpdateBar01(0);
         }
-        if (dog)
+        if (wall)
         {
-            _dogHpBar.UpdateBar01((float)dog.Hp / dog.MaxHp);
-            _dogMentalBar.UpdateBar01((float)dog.Mental / dog.MaxMental);
+            _wallHpBar.UpdateBar01((float)wall.Hp / wall.MaxHp);
         }
         else
         {
-            _dogHpBar.UpdateBar01(0);
-            _dogMentalBar.UpdateBar01(0);
+            _wallHpBar.UpdateBar01(0);
         }
 
-        if (father)
+        if (creature)
         {
-            _fatherHpBar.UpdateBar01((float)father.Hp / father.MaxHp);
-            _creatureMentalBar.UpdateBar01((float)father.Mental / father.MaxMental);
+            _creatureHpBar.UpdateBar01((float)creature.Hp / creature.MaxHp);
         }
         else
         {
-            _fatherHpBar.UpdateBar01(0);
-            _creatureMentalBar.UpdateBar01(0);
+            _creatureHpBar.UpdateBar01(0);
         }
 
     }

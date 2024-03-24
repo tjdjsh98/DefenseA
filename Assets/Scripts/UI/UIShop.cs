@@ -31,9 +31,9 @@ public class UIShop : UIBase
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
-                if (_selectionList[tempIndex].shopItemData.price <= gameManager.Girl.Mental)
+                if (_selectionList[tempIndex].shopItemData.price <= gameManager.Mental)
                 {
-                    gameManager.Girl.Mental -= _selectionList[tempIndex].shopItemData.price;
+                    gameManager.Mental -= _selectionList[tempIndex].shopItemData.price;
                     ShopItem info = _selectionList[tempIndex];
                     info.isSale = true;
                     _selectionList[tempIndex] = info;

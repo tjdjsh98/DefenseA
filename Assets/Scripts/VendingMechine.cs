@@ -12,12 +12,24 @@ public class VendingMechine : MonoBehaviour
     List<ShopItem> _shopItemList = new List<ShopItem>();
     private void Awake()
     {
-        if(Managers.GetManager<GameManager>().ShopItemList.Count < 5)
-            _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(Managers.GetManager<GameManager>().ShopItemList.Count);
-    
-        else
-            _shopItemList = Managers.GetManager<GameManager>().ShopItemList.GetRandom(5);
+        if (Managers.GetManager<GameManager>().ShopItemDataList != null)
+        {
+            List<ShopItemData> datas;
+            if (Managers.GetManager<GameManager>().ShopItemDataList.Count < 5)
+            {
+                datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(Managers.GetManager<GameManager>().ShopItemDataList.Count);
+                
+            }
+            else
+            {
 
+                datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(5);
+            }
+            foreach (var data in datas)
+            {
+                _shopItemList.Add(new ShopItem() { isSale = false, shopItemData = data });
+            }
+        }
     }
     private void Update()
     {

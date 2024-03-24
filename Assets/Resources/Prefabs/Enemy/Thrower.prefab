@@ -880,6 +880,7 @@ MonoBehaviour:
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
   <IsSuperArmer>k__BackingField: 0
+  IsInvincibility: 0
   _hpBar: {fileID: 0}
 --- !u!114 &5044014124061236520
 MonoBehaviour:
@@ -925,9 +926,8 @@ MonoBehaviour:
   _target: {fileID: 0}
   _noAttack: 1
   _attackDelay: 1
-  _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 1
-  _attackTriggerName: 
+  _isHaveAnimation: 0
   _itemDropPercentage: 0
 --- !u!114 &8114616162561489678
 MonoBehaviour:

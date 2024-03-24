@@ -428,12 +428,10 @@ MonoBehaviour:
   _levelText: {fileID: 3282138096127804295}
   _mapPlayer: {fileID: 4126396869593052383}
   _mapImage: {fileID: 3149864613047842387}
-  _daughterHpBar: {fileID: 7601223903470480715}
-  _fatherHpBar: {fileID: 7300103439083321908}
-  _dogHpBar: {fileID: 7570370029618993363}
-  _daughterMentalBar: {fileID: 8930892863994291511}
-  _creatureMentalBar: {fileID: 7090585957584777104}
-  _dogMentalBar: {fileID: 2795997557309818835}
+  _girlHpBar: {fileID: 7601223903470480715}
+  _girlMentalBar: {fileID: 8930892863994291511}
+  _creatureHpBar: {fileID: 7300103439083321908}
+  _wallHpBar: {fileID: 7570370029618993363}
   _creatureSkillCurtain: {fileID: 6181749038343232911}
   _wallIndicator: {fileID: 8348409408525704942}
   _wallIndicatorArrow: {fileID: 8387508515326351746}
@@ -6508,9 +6506,9 @@ MonoBehaviour:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
-  BumpScaleOnChange: 1
-  BumpOnIncrease: 1
-  BumpOnDecrease: 1
+  BumpScaleOnChange: 0
+  BumpOnIncrease: 0
+  BumpOnDecrease: 0
   BumpDuration: 0.2
   ChangeColorWhenBumping: 1
   StoreBarColorOnPlay: 1
@@ -6638,10 +6636,10 @@ MonoBehaviour:
   TestBumpButton: 0
   Plus10PercentButton: 0
   Minus10PercentButton: 0
-  BarProgress: 0.9
-  BarTarget: 0.9
-  DelayedBarIncreasingProgress: 0.9
-  DelayedBarDecreasingProgress: 0.9
+  BarProgress: 1
+  BarTarget: 1
+  DelayedBarIncreasingProgress: 1
+  DelayedBarDecreasingProgress: 1
 --- !u!1 &4760755702447940337
 GameObject:
   m_ObjectHideFlags: 0

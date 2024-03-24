@@ -2,6 +2,7 @@ using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro.EditorUtilities;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class JumpAttack : MonoBehaviour
@@ -18,30 +19,30 @@ public class JumpAttack : MonoBehaviour
 
     float _jumpPower;
 
-    float _checkTime = 0;
-
     bool _isJumpAttack = false;
     List<GameObject> _attackList = new List<GameObject>();
     Define.Range _attackRange;
 
     bool _isReadyJump = false;
     float _jumpReadyTime = 0;
+
     void Awake()
     {
         _character = GetComponent<Character>();
         _rigidbody = GetComponent<Rigidbody2D>();
         _lineRenderer = GetComponentInChildren<LineRenderer>();
         _attackRange = _character.GetSize();
+
+        StartCoroutine(CorSearchTarget());
     }
 
-
-    void Update()
+    private void Update()
     {
-        if(_isJumpAttack)
+        if (_isJumpAttack)
         {
             List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
 
-            foreach(var hit in hits)
+            foreach (var hit in hits)
             {
                 if (_attackList.Contains(hit.collider.gameObject)) continue;
                 _attackList.Add(hit.collider.gameObject);
@@ -49,7 +50,7 @@ public class JumpAttack : MonoBehaviour
                 Character character = hit.collider.GetComponent<Character>();
                 if (character && character.CharacterType == Define.CharacterType.Player)
                 {
-                    _character.Attack(character,_character.AttackPower,10,_rigidbody.velocity, hit.point);
+                    _character.Attack(character, _character.AttackPower, 10, _rigidbody.velocity, hit.point);
                 }
             }
             if (_character.IsContactGround)
@@ -57,67 +58,63 @@ public class JumpAttack : MonoBehaviour
                 EndJumpAttack();
             }
         }
-        _checkTime += Time.deltaTime;
-
-        if (!_isReadyJump && !_isJumpAttack && _checkTime > 1)
+    }
+    IEnumerator CorSearchTarget()
+    {
+        while(true) 
         {
-            _checkTime = 0;
-
-            if (_character.IsAttack) return;
-
-            if (_player == null)
-                _player = Managers.GetManager<GameManager>().Player;
-
-            if (_player == null) return;
-
-            if ((_player.transform.position - transform.position).magnitude < 10) return;
-
-
-
-            for (int i = 90; i >= 45; i -= 5)
+            if (!_isReadyJump && !_isJumpAttack && !_character.IsAttack)
             {
-                float angle = i;
-
-                if (transform.localScale.x < -0)
-                    angle = 180 - angle;
-
-                angle *= Mathf.Deg2Rad;
-
-
-                for (float tempPower = _originJumpPower - 5; tempPower <= _originJumpPower + 5; tempPower+=2)
+                for (int i = 90; i >= 45; i -= 5)
                 {
-                    _targetingPlayer = PredictTrajectory(transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
+                    if (_isReadyJump) break;
 
-                    if (_targetingPlayer != null)
+                    float angle = i;
+
+                    if (transform.localScale.x < -0)
+                        angle = 180 - angle;
+
+                    angle *= Mathf.Deg2Rad;
+
+
+                    for (float tempPower = _originJumpPower - 5; tempPower <= _originJumpPower + 5; tempPower += 2)
                     {
-                        _jumpPower = tempPower;
-                        _character.IsAttack = true;
-                        _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
-                        _jumpReadyTime = 0;
-                        _isReadyJump = true;
-                        _character.IsEnableMove = false;
-                        _character.AnimatorSetTrigger("Ready");
-                        return;
+                        _targetingPlayer = PredictTrajectory(transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
+
+                        if (_targetingPlayer != null)
+                        {
+                            _jumpPower = tempPower;
+                            _character.IsAttack = true;
+                            _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
+                            _jumpReadyTime = 0;
+                            _isReadyJump = true;
+                            _character.IsEnableMove = false;
+                            _character.AnimatorSetTrigger("Ready");
+                            break;
+                        }
+                        yield return null;
                     }
                 }
             }
-        }
 
-        if(_isReadyJump&& !_isJumpAttack)
-        {
-            if (_jumpReadyTime < 1)
+            if (_isReadyJump && !_isJumpAttack)
             {
-                _jumpReadyTime += Time.deltaTime;
+                if (_jumpReadyTime < 1)
+                {
+                    _jumpReadyTime += Time.deltaTime;
+                }
+                else
+                {
+                    _character.AnimatorSetTrigger("Jump");
+                    _isReadyJump = false;
+                    _isJumpAttack = true;
+                    _character.IsAttack = true;
+                    _character.Jump(_fireDirection, _jumpPower);
+                    _attackList.Clear();
+                }
             }
-            else
-            {
-                _character.AnimatorSetTrigger("Jump");
-                _isReadyJump = false;
-                _isJumpAttack = true;
-                _character.IsAttack = true;
-                _character.Jump(_fireDirection, _jumpPower);
-                _attackList.Clear();
-            }
+
+            yield return null;
         }
     }
 

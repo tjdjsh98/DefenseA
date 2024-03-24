@@ -20,10 +20,6 @@ public class Character : MonoBehaviour,IHp
     [SerializeField] int _hp;
     public int Hp { set => _hp = value; get => _hp; }
     
-    [SerializeField] int _maxMental = 100;
-    public int MaxMental => _maxMental;
-    [field:SerializeField]public int Mental { set; get; }
-
     // 증가되는 능력치
     public float IncreasedRecoverHpPower { set; get; }
     public float IncreasedDamageReducePercentage { set; get; }
@@ -35,8 +31,6 @@ public class Character : MonoBehaviour,IHp
     [SerializeField] float _standing;
     public float Standing => _standing;
 
-    [SerializeField] bool _isGainMentalWhenKillIt;
-    [SerializeField] int _gainMentalAmount;
     #endregion
     [field:SerializeField]public int AttackPower { set; get; }
 
@@ -283,10 +277,6 @@ public class Character : MonoBehaviour,IHp
         {
             IsDead = true;
             CharacterDeadHandler?.Invoke();
-            if (_isGainMentalWhenKillIt)
-            {
-                attackerCharacter.Mental += _gainMentalAmount;
-            }
 
             if (!_isEnableRevive)
             {

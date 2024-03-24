@@ -6,6 +6,8 @@ using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
+using Random = UnityEngine.Random;
 
 public class GameManager : ManagerBase
 {
@@ -38,6 +40,11 @@ public class GameManager : ManagerBase
 
     public bool IsLoadEnd { set; get; }
     public Action<MapData> LoadNewSceneHandler { set; get; }
+
+    int _panicLevel = 0;
+    public int PanicLevel =>_panicLevel;
+    public float MaxMental { get; } = 100;
+    public float Mental { set; get; } = 100;
 
     // 플레이 경험 관련
     [Header("경험치")]
@@ -91,7 +98,7 @@ public class GameManager : ManagerBase
     Dictionary<CardName, int> _cardSelectionCount = new Dictionary<CardName, int>();
     [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
 
-    [HideInInspector]public List<ShopItem> ShopItemList;
+    [HideInInspector]public List<ShopItemData> ShopItemDataList => _mapData == null?null : _mapData.shopItemDataList;
 
     CameraController _cameraController;
     CameraController CameraController
@@ -125,11 +132,25 @@ public class GameManager : ManagerBase
                 return false;
             }
         });
-        
+
         if (_mapData)
         {
             _timeWaveList = _mapData.timeWave.ToList();
             _distanceWaveList = _mapData.distanceWave.ToList();
+            float distance = 0;
+            if(_mapData.randomEvent.Count > 0)
+            {
+                while (distance < _mapData.mapSize)
+                {
+                    distance += _mapData.randomEventInterval + Random.Range(-20, 20);
+                    Vector3? position = GetGroundTop(new Vector3(distance, 0));
+                    if (position.HasValue)
+                    {
+                        GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent.GetRandom());
+                        go.transform.position = position.Value;
+                    }
+                }
+            }
         }
 
         if (!_isSkip)
@@ -143,11 +164,7 @@ public class GameManager : ManagerBase
         _cameraController = Camera.main.GetComponent<CameraController>();
         IsLoadEnd = true;
 
-        ShopItemList.Clear();
-        for(int i =0; i < _mapData.shopItemDataList.Count; i++)
-        {
-            ShopItemList.Add(new ShopItem() { isSale = false, shopItemData = _mapData.shopItemDataList[i] });
-        }
+      
     }
 
     void LoadMainCharacters()
@@ -197,6 +214,7 @@ public class GameManager : ManagerBase
     }
     public override void ManagerUpdate()
     {
+        Mental -= Time.deltaTime;
         _totalTime += Time.deltaTime;
         _stageTime += Time.deltaTime;
         if (_summonDummy)

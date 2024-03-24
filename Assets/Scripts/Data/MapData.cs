@@ -16,6 +16,8 @@ public class MapData : ScriptableObject
     public MapData nextMapData;
 
     public List<ShopItemData> shopItemDataList;
+    public List<GameObject> randomEvent;
+    public float randomEventInterval = 200;
 }
 
 [System.Serializable]

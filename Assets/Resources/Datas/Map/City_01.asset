@@ -16,20 +16,44 @@ MonoBehaviour:
   mentalDownTime: 50
   timeWave:
   - startTime: 0
-    endTime: 9999
-    genTime: 4
-    elapsedTime: 3.5688972
+    endTime: 30
+    genTime: 3
+    elapsedTime: 2.9100003
+    distace: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 00000000
+    hpMultiply: 1
+  - startTime: 30
+    endTime: 60
+    genTime: 3
+    elapsedTime: 0.2084989
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 02000000
     hpMultiply: 1
-  - startTime: 0
-    endTime: 9999
-    genTime: 3.5
-    elapsedTime: 3.286031
+  - startTime: 30
+    endTime: 75
+    genTime: 3
+    elapsedTime: 0.1473673
     distace: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
+    hpMultiply: 1.2
+  - startTime: 45
+    endTime: 135
+    genTime: 20
+    elapsedTime: 0
+    distace: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 0d000000
+    hpMultiply: 1
+  - startTime: 90
+    endTime: 135
+    genTime: 5
+    elapsedTime: 0.3238668
+    distace: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 0d000000
     hpMultiply: 1
   distanceWave:
   - startTime: 0
@@ -47,3 +71,6 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e2beb09c80862374e894b679f9510eb9, type: 2}
   - {fileID: 11400000, guid: 6315c8c6c79fbc54db43c76e9e0c2f19, type: 2}
   - {fileID: 11400000, guid: 5fab07e9a7daa49409dcd8226a66ddfa, type: 2}
+  randomEvent:
+  - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+  randomEventInterval: 100

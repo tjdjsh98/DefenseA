@@ -69,7 +69,6 @@ public class UIDialog : UIBase
 
     void SelectDialog(string id, Vector2 postion)
     {
-        Debug.Log(id + postion);
         if (id.Equals("1"))
             _selection1SelectedHandler?.Invoke();
         if (id.Equals("2"))

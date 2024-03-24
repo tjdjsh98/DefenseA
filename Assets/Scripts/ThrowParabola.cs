@@ -1,6 +1,7 @@
 using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
+using System.Threading;
 using UnityEditor.Rendering;
 using UnityEngine;
 
@@ -29,27 +30,31 @@ public class ThrowParabola : MonoBehaviour
     {
         _character = GetComponent<Character>();
         _enemyAI = GetComponent<EnemyAI>();
+
+        StartCoroutine(CorSearchTarget());
     }
 
-    private void Update()
+    IEnumerator CorSearchTarget()
     {
-        if (_enemyAI.Target != null)
+        while (true)
         {
-            _character.AnimatorSetBool("Attack", true);
-            if (_target == null)
+            if (_enemyAI.Target != null)
             {
-                _fireCheckTime += Time.deltaTime;
-                if (_fireCoolTime > _fireTime)
+                _character.TurnBody(_enemyAI.Target.transform.position - transform.position);
+                _character.AnimatorSetBool("Attack", true);
+                if (_target == null)
                 {
-                    _fireTime += Time.deltaTime;
-                }
-                else
-                {
-                    if (_fireCheckTime > 1)
+                    if (_fireCoolTime > _fireTime)
+                    {
+                        _fireTime += Time.deltaTime;
+                    }
+                    else
                     {
                         _fireCoolTime = 0;
                         for (int i = 90; i >= 45; i -= 5)
                         {
+                            if (_target != null) break;
+
                             float angle = i;
 
                             if (transform.localScale.x < -0)
@@ -68,43 +73,45 @@ public class ThrowParabola : MonoBehaviour
                                     _character.IsAttack = true;
                                     _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
                                     _firePower = tempPower;
-                                    return;
+                                    break;
                                 }
+                                yield return null;
                             }
                         }
+                    }
+                }
+                else
+                {
+                    if (_fireDelay > _fireTime)
+                    {
+                        _fireTime += Time.deltaTime;
+                    }
+                    else
+                    {
+                        Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
+
+                        if (projectile)
+                        {
+                            projectile.transform.position = _firePoint.transform.position;
+                            projectile.Init(1, _firePower, _character.AttackPower, Define.CharacterType.Player);
+                            projectile.Fire(_character, _firePower, _fireDirection);
+                        }
+                        _target = null;
+                        _fireTime = 0;
                     }
                 }
             }
             else
             {
-                if (_fireDelay > _fireTime)
-                {
-                    _fireTime += Time.deltaTime;
-                }
-                else
-                {
-                    Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
-
-                    if (projectile)
-                    {
-                        projectile.transform.position = _firePoint.transform.position;
-                        projectile.Init(1, _firePower, _character.AttackPower, Define.CharacterType.Player);
-                        projectile.Fire(_character,_firePower, _fireDirection);
-                    }
-                    _target = null;
-                    _fireTime = 0;
-                }
+                _character.AnimatorSetBool("Attack", false);
             }
-        }
-        else
-        {
-            _character.AnimatorSetBool("Attack", false);
+
+            yield return null;
         }
     }
-
     GameObject PredictTrajectory(Vector3 startPos, Vector3 vel)
     {
-        int step = 180;
+        int step = 60;
         float deltaTime = Time.fixedDeltaTime;
         Vector3 gravity = Physics.gravity * _gravityScale;
 
@@ -115,6 +122,8 @@ public class ThrowParabola : MonoBehaviour
         _lineRenderer.SetPosition(0, position);
         for (int i = 0; i < step; i++)
         {
+            position += velocity * deltaTime + 0.5f * gravity * deltaTime * deltaTime;
+            velocity += gravity * deltaTime;
             position += velocity * deltaTime + 0.5f * gravity * deltaTime * deltaTime;
             velocity += gravity * deltaTime;
             _lineRenderer.SetPosition(i + 1, position);
