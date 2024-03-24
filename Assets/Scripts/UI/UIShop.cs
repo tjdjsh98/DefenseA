@@ -9,7 +9,8 @@ public class UIShop : UIBase
 
     [SerializeField] List<Button> _slotList;
     List<Image> _slotImageList = new List<Image>();
-    List<TextMeshProUGUI> _slotTextList = new List<TextMeshProUGUI>();
+    List<TextMeshProUGUI> _slotNameList = new List<TextMeshProUGUI>();
+    List<TextMeshProUGUI> _slotDescroptionList = new List<TextMeshProUGUI>();
     [SerializeField] List<ShopItem> _selectionList = new List<ShopItem>();
 
     [SerializeField] List<Sprite> _spriteList;
@@ -22,7 +23,8 @@ public class UIShop : UIBase
         foreach (var slot in _slotList)
         {
             _slotImageList.Add(slot.transform.Find("Frame").Find("Image").GetComponent<Image>());
-            _slotTextList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
+            _slotNameList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
+            _slotDescroptionList.Add(slot.transform.Find("Description").GetComponent<TextMeshProUGUI>());
 
             int tempIndex = index;
             slot.onClick.AddListener(() => {
@@ -107,13 +109,13 @@ public class UIShop : UIBase
             }
             if (!_selectionList[i].isSale)
             {
-                _slotTextList[i].text = $"{_selectionList[i].shopItemData.description}\n";
+                _slotNameList[i].text = $"{_selectionList[i].shopItemData.price.ToString()}";
+                _slotDescroptionList[i].text = $"{_selectionList[i].shopItemData.description}\n";
                
-                _slotTextList[i].text += $"{_selectionList[i].shopItemData.price.ToString()}";
             }
             else
             {
-                _slotTextList[i].text = "판매완료";
+                _slotNameList[i].text = "판매완료";
             }
         }
     }
