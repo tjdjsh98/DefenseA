@@ -22,10 +22,6 @@ public class ExplosionGun : Weapon
     {
         if (_currentAmmo <= 0)
         {
-            if (_projectileList.Count > 0)
-                ExcuteExplosion();
-            else
-                Reload();
             return;
         }
 
@@ -76,6 +72,32 @@ public class ExplosionGun : Weapon
         }
     }
 
+    public override void Reload()
+    {
+        if (_maxAmmo <= _currentAmmo) return;
+        if (_isReload) return;
+
+        ExcuteExplosion();
+
+        _fastReloadFailed = false;
+        _isReload = true;
+        if (_reloadGauge)
+        {
+            if (_player)
+            {
+                if (_player.GirlAbility.GetIsHaveAbility(GirlAbilityName.FastReload))
+                {
+                    _reloadGauge.Point(0.7f, 0.9f);
+                }
+                else
+                {
+                    _reloadGauge.DisablePoint();
+                }
+            }
+            _reloadGauge.SetRatio(0, 1);
+            _reloadGauge.gameObject.SetActive(true);
+        }
+    }
     void ExcuteExplosion()
     {
         foreach (var bullet in _projectileList)

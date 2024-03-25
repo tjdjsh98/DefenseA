@@ -261,6 +261,15 @@ public class GameManager : ManagerBase
             enemyCharacter.SetHp(_dummyHp);
             _summonDummy = false;
         }
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            UIStatus uIStatus = Managers.GetManager<UIManager>().GetUI<UIStatus>();
+            if (uIStatus.gameObject.activeSelf)
+                uIStatus.Close();
+            else
+                uIStatus.Open();
+        }
+
 
         if (_stop) return;
 

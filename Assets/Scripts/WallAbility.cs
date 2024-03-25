@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using System.Linq.Expressions;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -273,5 +274,11 @@ public class WallAbility
         }
 
         return reducedReviveTime;
+    }
+    public List<WallAbilityName> GetHaveAbilityNameList()
+    {
+        List<WallAbilityName> list = _abilityUnlocks.Keys.ToList();
+
+        return list;
     }
 }

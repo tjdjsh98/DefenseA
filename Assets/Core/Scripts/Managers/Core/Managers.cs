@@ -11,11 +11,11 @@ public class Managers : MonoBehaviour
     // Content
     static Dictionary<Define.ContentManagers, ManagerBase> _contentManagers = new Dictionary<Define.ContentManagers, ManagerBase>();
 
-    static bool _isQuit;
+    public static bool IsQuit { private set; get; } 
 
     public static T GetManager<T>() where T : ManagerBase
     {
-        if(_isQuit) return null;
+        if(IsQuit) return null;
 
         if (_instance == null)
             Init();
@@ -40,7 +40,7 @@ public class Managers : MonoBehaviour
 
     static void Init()
     {
-        if (_isQuit) return;
+        if (IsQuit) return;
 
         _instance = Util.FindOrCreate("[Manager]------------").GetOrAddComponent<Managers>();
         DontDestroyOnLoad(_instance);
@@ -148,6 +148,6 @@ public class Managers : MonoBehaviour
 
     private void OnApplicationQuit()
     {
-        _isQuit = true;
+        IsQuit = true;
     }
 }

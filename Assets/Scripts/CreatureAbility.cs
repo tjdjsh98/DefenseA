@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 [System.Serializable]
@@ -118,5 +119,11 @@ public class CreatureAbility
         }
 
         return percentage;
+    }
+    public List<CreatureAbilityName> GetHaveAbilityNameList()
+    {
+        List<CreatureAbilityName> list = _abilityUnlocks.Keys.ToList();
+
+        return list;
     }
 }

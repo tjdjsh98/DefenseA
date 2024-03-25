@@ -1,3 +1,4 @@
+using System.Collections;
 using System.Collections.Generic;
 using Unity.Loading;
 using UnityEditor.Rendering;
@@ -40,6 +41,9 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField] float _itemDropPercentage;
 
+
+    Coroutine _detectTargetCoroutine;
+
     protected virtual void Awake()
     {
         _character = GetComponent<Character>();
@@ -63,9 +67,25 @@ public class EnemyAI : MonoBehaviour
         Util.DrawRangeOnGizmos(gameObject, _enableAttackRange, Color.green);
         Util.DrawRangeOnGizmos(gameObject, _targetDetectRange, Color.blue);
     }
+
+    private void OnEnable()
+    {
+        if (_detectTargetCoroutine != null)
+            StopCoroutine(_detectTargetCoroutine);
+        _detectTargetCoroutine = StartCoroutine(CorDetectTarget());
+    }
+
+    private void OnDisable()
+    {
+        if (!Managers.IsQuit)
+        {
+            if(_detectTargetCoroutine!=null)
+                StopCoroutine(_detectTargetCoroutine);
+        }
+
+    }
     void Update()
     {
-        DetectTarget();
         CheckTargetInAttackRange();
         Move();
         PlayAttack();
@@ -98,38 +118,46 @@ public class EnemyAI : MonoBehaviour
         }
     }
 
-    protected virtual void DetectTarget()
+
+    protected virtual IEnumerator CorDetectTarget()
     {
-        if (_character.IsAttack) return;
-
-        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
-
-        float distance = 0;
-        Character closeOne = null;
-        if (hits.Count > 0)
+        while (true)
         {
-            foreach (var hit in hits)
+            if (!_character.IsAttack && !_character.IsStun)
             {
-                if (hit.collider == null) continue;
+                List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _targetDetectRange, Define.CharacterMask);
 
-                if (hit.collider.gameObject == this.gameObject) continue;
-                Character character = hit.collider.gameObject.GetComponent<Character>();
-                if (character)
+                float distance = 0;
+                Character closeOne = null;
+                if (hits.Count > 0)
                 {
-                    if (character.CharacterType == Define.CharacterType.Player)
+                    foreach (var hit in hits)
                     {
-                        if (closeOne == null || distance > (transform.position - character.transform.position).magnitude)
+                        if (hit.collider == null) continue;
+
+                        if (hit.collider.gameObject == this.gameObject) continue;
+                        Character character = hit.collider.gameObject.GetComponent<Character>();
+                        if (character)
                         {
-                            closeOne = character;
-                            distance= (transform.position - closeOne.transform.position).magnitude;
+                            if (character.CharacterType == Define.CharacterType.Player)
+                            {
+                                if (closeOne == null || distance > (transform.position - character.transform.position).magnitude)
+                                {
+                                    closeOne = character;
+                                    distance = (transform.position - closeOne.transform.position).magnitude;
+                                }
+                            }
                         }
                     }
                 }
+                _target = closeOne;
             }
-        }
-        _target = closeOne;
 
+            yield return new WaitForSeconds(0.2f);
+        }
     }
+
+
     protected virtual void CheckTargetInAttackRange()
     {
         if (_target == null)

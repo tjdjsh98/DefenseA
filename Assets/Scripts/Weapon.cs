@@ -20,6 +20,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected bool _debug;
 
     [SerializeField]protected Define.WeaponName _weaponName;
+    [field:TextArea][field:SerializeField] public string WeaponDescription {private set; get; }
     public Define.WeaponName WeaponName =>_weaponName;
 
     [SerializeField] protected Define.ProjectileName _bulletName;

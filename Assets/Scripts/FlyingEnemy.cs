@@ -78,29 +78,6 @@ public class FlyingEnemy : EnemyAI
         _character.Move(targetPosition - transform.position);
     }
 
-    protected override void DetectTarget()
-    {
-        if (_character.IsAttack) return;
-        if (_character.IsStun) return;
-
-        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _targetDetectRange,Define.CharacterMask);
-
-        foreach (var hit in hits)
-        {
-            if (hit.collider.gameObject == this.gameObject) continue;
-            Character character = hit.collider.GetComponent<Character>();
-            if (character)
-            {
-                if (character.CharacterType == Define.CharacterType.Player)
-                {
-                    _target = character;
-                    return;
-                }
-            }
-        }
-
-        _target = null;
-    }
 
     protected override void PlayAttack()
     {

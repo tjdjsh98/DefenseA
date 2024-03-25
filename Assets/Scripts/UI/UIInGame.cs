@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
@@ -9,7 +10,6 @@ using UnityEngine.UI;
 public class UIInGame : UIBase
 {
     StringBuilder _sb = new StringBuilder();
-    [SerializeField]TextMeshProUGUI _characterStateText;
 
     [SerializeField] TextMeshProUGUI _levelName;
     [SerializeField] Image[] _weaponImage;
@@ -27,9 +27,13 @@ public class UIInGame : UIBase
     Player _player;
 
     [SerializeField] MMProgressBar _girlHpBar;
+    TextMeshProUGUI _girlHpTextMesh;
     [SerializeField] MMProgressBar _girlMentalBar;
+    TextMeshProUGUI _mentalTextMesh;
     [SerializeField] MMProgressBar _creatureHpBar;
+    TextMeshProUGUI _creatureHpTextMesh;
     [SerializeField] MMProgressBar _wallHpBar;
+    TextMeshProUGUI _wallHpTextMesh;
 
     [SerializeField] GameObject _wallIndicator;
     [SerializeField] GameObject _wallIndicatorArrow;
@@ -43,6 +47,8 @@ public class UIInGame : UIBase
     [SerializeField] Image _fadeOut;
 
     int _prePanicLevel;
+
+    int _preMental;
     public override void Init()
     {
         _isInitDone = true;
@@ -52,6 +58,12 @@ public class UIInGame : UIBase
         {
             StartCoroutine(CorShowLevelName());
         };
+
+        _girlHpTextMesh = _girlHpBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        _mentalTextMesh = _girlMentalBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        _creatureHpTextMesh = _creatureHpBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+        _wallHpTextMesh = _wallHpBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
+
     }
 
     private void Update()
@@ -71,28 +83,8 @@ public class UIInGame : UIBase
 
         if (_player == null) return;
 
-        Character character = _player.Character;
         WeaponSwaper weaponSwaper = _player.WeaponSwaper;
-        if(character)
-        {
-            _sb.Append($"체력: {character.MaxHp}\n");
-            _sb.Append($"전기: {Managers.GetManager<AbilityManager>().CurrentElectricity}/{Managers.GetManager<AbilityManager>().MaxElectricity}\n");
-            _sb.Append($"포식: {Managers.GetManager<AbilityManager>().Predation}/{Managers.GetManager<AbilityManager>().MaxPredation}\n");
-        }
-        if(weaponSwaper.CurrentWeapon)
-        {
-            _sb.Append($"공격력 : {weaponSwaper.CurrentWeapon.Damage}\n");
-            _sb.Append($"넉백 : {weaponSwaper.CurrentWeapon.KnockBackPower}\n");
-            _sb.Append($"총알속도 : {weaponSwaper.CurrentWeapon.BulletSpeed}\n");
-            _sb.Append($"관통력 : {weaponSwaper.CurrentWeapon.PenerstratingPower}\n");
-            _sb.Append($"발사 딜레이 : {weaponSwaper.CurrentWeapon.FireDelay}\n");
-            _sb.Append($"리로드속도 : {weaponSwaper.CurrentWeapon.ReloadDelay}\n");
-            _sb.Append($"총알 :{weaponSwaper.CurrentWeapon.CurrentAmmo}/{weaponSwaper.CurrentWeapon.MaxAmmo}\n");
-        }
-        if(_characterStateText)
-        {
-            _characterStateText.text = _sb.ToString();
-        }
+     
 
         if (_currentWeaponIndex != weaponSwaper.WeaponIndex)
         {
@@ -136,28 +128,40 @@ public class UIInGame : UIBase
         if (girl)
         {
             _girlHpBar.UpdateBar01((float)girl.Hp / girl.MaxHp);
-            _girlMentalBar.UpdateBar01((float)Managers.GetManager<GameManager>().Mental / Managers.GetManager<GameManager>().MaxMental);
+            _girlHpTextMesh.text = girl.Hp.ToString();
+
+            if ((int)Managers.GetManager<GameManager>().Mental != _preMental)
+            {
+                _girlMentalBar.UpdateBar01((float)Managers.GetManager<GameManager>().Mental / Managers.GetManager<GameManager>().MaxMental);
+                _preMental = (int)Managers.GetManager<GameManager>().Mental;
+                _mentalTextMesh.text = _preMental.ToString();
+            }
         }
         else
         {
             _girlHpBar.UpdateBar01(0);
+            _girlHpTextMesh.text = "0";
         }
         if (wall)
         {
             _wallHpBar.UpdateBar01((float)wall.Hp / wall.MaxHp);
+            _wallHpTextMesh.text = wall.Hp.ToString();
         }
         else
         {
             _wallHpBar.UpdateBar01(0);
+            _wallHpTextMesh.text = "0";
         }
 
         if (creature)
         {
             _creatureHpBar.UpdateBar01((float)creature.Hp / creature.MaxHp);
+            _creatureHpTextMesh.text = creature.Hp.ToString();
         }
         else
         {
             _creatureHpBar.UpdateBar01(0);
+            _creatureHpTextMesh.text = "0";
         }
 
     }

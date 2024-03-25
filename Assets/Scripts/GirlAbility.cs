@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -185,5 +186,12 @@ public class GirlAbility
         //}
 
         return percentage;
+    }
+
+    public List<GirlAbilityName> GetHaveAbilityNameList()
+    {
+        List<GirlAbilityName> list = _abilityUnlocks.Keys.ToList();
+
+        return list;
     }
 }
