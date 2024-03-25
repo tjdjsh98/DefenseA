@@ -25,7 +25,7 @@ public class ExplosionGun : Weapon
             return;
         }
 
-        if (_fireElapsed < FireDelay) return;
+        if (_fireElapsed < FireSpeed) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)

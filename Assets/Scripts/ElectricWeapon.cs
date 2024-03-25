@@ -8,9 +8,9 @@ public class ElectricWeapon : Weapon
     float _electric;
     public override void Fire(Character fireCharacter)
     {
-        if (_fireElapsed < FireDelay) return;
+        if (_fireElapsed < 1 / FireSpeed) return;
 
-        if(_currentAmmo == _maxAmmo)
+        if (_currentAmmo == _maxAmmo)
         {
             _reloadGauge.gameObject.SetActive(false);
 

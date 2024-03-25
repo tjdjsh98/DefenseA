@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 606896034429733455}
   m_Layer: 6
-  m_Name: FirePos
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -131,7 +131,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 997dd3a3fe44b1f409ab2b0b8d5cb9bb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
   _weaponName: 9
+  <WeaponDescription>k__BackingField: "\uAC80\uC740 \uAD6C\uCCB4\uB97C \uBAA8\uB450
+    \uBAA8\uC74D\uB2C8\uB2E4.\n\uB2E8 \uD55C\uBC1C\uC5D0 \uCD1D\uC54C\uC5D0 \uBAA8\uB4E0
+    \uB370\uBBF8\uC9C0\uB97C \uB2F4\uC2B5\uB2C8\uB2E4.\n"
+  _bulletName: 0
   _audioLength: 0
   _isAuto: 0
   _knockBackPower: 200
@@ -140,16 +145,16 @@ MonoBehaviour:
   _attackMultiplier: 1
   _damage: 2
   _penerstratingPower: 3
-  _maxAmmo: 7
+  _maxAmmo: 100
   _currentAmmo: 0
   _isAllReloadAmmo: 0
-  _fireDelay: 0.5
-  _reloadDelay: 1
+  _fireSpeed: 1
+  _reloadDelay: 0.1
   _firePosition: {fileID: 321610210134309561}
   _rebound: 20
+  _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 8
-  HandlePosition: {fileID: 8076400213039682787}
 --- !u!82 &7164879296317496389
 AudioSource:
   m_ObjectHideFlags: 0

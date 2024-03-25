@@ -7,6 +7,61 @@ public class WeaponBlack : Weapon
 {
     BlackSphere _reloadingBlackSphere;
 
+    public override void Fire(Character fireCharacter)
+    {
+        if (_currentAmmo <= 0)
+        {
+            Reload();
+            return;
+        }
+
+        if (_fireElapsed < 1 / FireSpeed) return;
+
+        // 재장전 중이라면 재장전을 멈춥니다.
+        if (_isReload)
+        {
+            CancelReload();
+        }
+
+
+        _fireElapsed = 0;
+
+        if (_audioCoroutine != null)
+            StopCoroutine(_audioCoroutine);
+        _audioCoroutine = StartCoroutine(CorPlayAudio());
+
+        _player?.ResetRebound();
+        float angle = FirePosition.transform.rotation.eulerAngles.z;
+        angle = angle * Mathf.Deg2Rad;
+        Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
+        direction = direction.normalized;
+
+        // 이펙트
+        Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
+        Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
+        fireFlare.Play(_firePosition.transform.position);
+        fireFlare.transform.localScale = _firePosition.transform.lossyScale;
+        fireFlare.transform.rotation = _firePosition.transform.rotation;
+        // ---------------
+
+        Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_bulletName);
+        if (projectile != null)
+        {
+            projectile.transform.position = _firePosition.transform.position;
+            int damage = Damage * _currentAmmo;
+
+            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
+            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot))
+                damage = Damage * 3;
+            
+            projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(fireCharacter, direction.normalized);
+
+
+            Player?.Rebound(_rebound);
+        }
+        _currentAmmo = 0;
+    }
     public override void CompleteReload()
     {
         if (_isAllReloadAmmo)

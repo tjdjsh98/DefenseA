@@ -19,7 +19,7 @@ public class Shotgun : Weapon
             return;
         }
 
-        if (_fireElapsed < _fireDelay) return;
+        if (_fireElapsed < 1 / FireSpeed) return;
 
         _currentAmmo--;
         _fireElapsed = 0;
@@ -36,10 +36,9 @@ public class Shotgun : Weapon
             bulletAngle += Random.Range(-0.2f * (1-_collectionRate), 0.2f* (1-_collectionRate));
 
             Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
-            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
-            go.transform.position = _firePosition.transform.position;
-            Projectile projectile = go.GetComponent<Projectile>();
-            projectile.Init(_knockBackPower, _bulletSpeed, _damage, Define.CharacterType.Enemy);
+            Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bullet);
+            projectile.transform.position = _firePosition.transform.position;
+            projectile.Init(_knockBackPower, Random.Range(_bulletSpeed -20, BulletSpeed +20), _damage, Define.CharacterType.Enemy);
 
             projectile.Fire(fireCharacter, direction.normalized);
        

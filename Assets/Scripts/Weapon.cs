@@ -66,9 +66,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected bool _isAllReloadAmmo;
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
-    [SerializeField] protected float _fireDelay;
-    public float FireDelay => 
-        (_player?(_player.GetIncreasedAttackSpeedPercentage()>0?_fireDelay/(1 + _player.GetIncreasedAttackSpeedPercentage()/100f): _fireDelay * (1 - _player.GetIncreasedAttackSpeedPercentage() / 100f)) :_fireDelay);
+    [SerializeField] protected float _fireSpeed;
+    public float FireSpeed => 
+        (_player?(_player.GetIncreasedAttackSpeedPercentage()>0?_fireSpeed*(1 + _player.GetIncreasedAttackSpeedPercentage()/100f): _fireSpeed / (1 - _player.GetIncreasedAttackSpeedPercentage() / 100f)) :_fireSpeed);
     [SerializeField] protected float _reloadDelay;
     public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercentage /100f)* _reloadDelay:0);
 
@@ -93,7 +93,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     protected bool _fastReloadFailed;
 
-    public GameObject HandlePosition;
+    public GameObject HandlePosition { private set; get; }
 
     public void Init(Character character)
     {
@@ -101,6 +101,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         _currentAmmo = _maxAmmo;
         _character = character;
         _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
+        _firePosition = transform.Find("FirePoint").gameObject;
         HandlePosition = transform.Find("HandlePosition").gameObject;
         
         if(_reloadGauge)
@@ -115,15 +116,13 @@ public class Weapon : MonoBehaviour, ITypeDefine
             return;
         }
 
-        if (_fireElapsed < FireDelay) return;
+        if (_fireElapsed < 1/FireSpeed) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)
         {
             CancelReload();
         }
-
-
         _currentAmmo--;
         _fireElapsed = 0;
 
@@ -163,7 +162,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public void Update()
     {
         // 발사 딜레이
-        if (_fireElapsed < FireDelay)
+        if (_fireElapsed < 1/FireSpeed)
             _fireElapsed += Time.deltaTime;
         Reloading();
     }

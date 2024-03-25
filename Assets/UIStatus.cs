@@ -198,8 +198,8 @@ public class UIStatus : UIBase
                 _penerstratingPowerFill.fillAmount = weapon.PenerstratingPower / 10f;
                 _penerstratingPowerValueText.text = weapon.PenerstratingPower.ToString();
 
-                _attackSpeedFill.fillAmount = 0.08f / weapon.FireDelay;
-                _attackSpeedValueText.text = $"{weapon.FireDelay}s";
+                _attackSpeedFill.fillAmount = 0.08f / weapon.FireSpeed;
+                _attackSpeedValueText.text = $"{weapon.FireSpeed}s";
 
                 _reloadSpeedFill.fillAmount = 0.1f / weapon.ReloadDelay;
                 _reloadSpeedValueText.text = $"{weapon.ReloadDelay}s";
@@ -228,8 +228,8 @@ public class UIStatus : UIBase
                 _penerstratingPowerFill.fillAmount = weapon.PenerstratingPower / 10f;
                 _penerstratingPowerValueText.text = weapon.PenerstratingPower.ToString();
 
-                _attackSpeedFill.fillAmount = 1 / weapon.FireDelay / 10f;
-                _attackSpeedValueText.text = $"{weapon.FireDelay}s";
+                _attackSpeedFill.fillAmount = 1 / weapon.FireSpeed / 10f;
+                _attackSpeedValueText.text = $"{weapon.FireSpeed}s";
 
                 _reloadSpeedFill.fillAmount = 0.1f / weapon.ReloadDelay;
                 _reloadSpeedValueText.text = $"{weapon.ReloadDelay}s";
@@ -256,8 +256,8 @@ public class UIStatus : UIBase
                 _penerstratingPowerFill.fillAmount = weapon.PenerstratingPower / 10f;
                 _penerstratingPowerValueText.text = weapon.PenerstratingPower.ToString();
 
-                _attackSpeedFill.fillAmount = 1 / weapon.FireDelay / 10f;
-                _attackSpeedValueText.text = $"{weapon.FireDelay}s";
+                _attackSpeedFill.fillAmount = 1 / weapon.FireSpeed / 10f;
+                _attackSpeedValueText.text = $"{weapon.FireSpeed}s";
 
                 _reloadSpeedFill.fillAmount = 0.1f / weapon.ReloadDelay;
                 _reloadSpeedValueText.text = $"{weapon.ReloadDelay}s";

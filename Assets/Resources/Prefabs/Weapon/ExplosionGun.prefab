@@ -161,14 +161,13 @@ MonoBehaviour:
   _maxAmmo: 10
   _currentAmmo: 10
   _isAllReloadAmmo: 1
-  _fireDelay: 0.15
+  _fireSpeed: 3
   _reloadDelay: 2
   _firePosition: {fileID: 7455358267748486297}
   _rebound: 0
   _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 0
-  HandlePosition: {fileID: 7340516666115851874}
   _explosionRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 2.5, y: 0, z: 0}
@@ -300,7 +299,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7774756313417885523}
   m_Layer: 6
-  m_Name: FirePos
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

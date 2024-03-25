@@ -115,6 +115,7 @@ public static class Define
         Railgun,
         Black,
         ExplosionGun,
+        ImprovisedRifle,
         END
     }
 

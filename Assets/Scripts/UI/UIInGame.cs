@@ -12,10 +12,13 @@ public class UIInGame : UIBase
     StringBuilder _sb = new StringBuilder();
 
     [SerializeField] TextMeshProUGUI _levelName;
-    [SerializeField] Image[] _weaponImage;
+    [SerializeField] GameObject[] _weapons;
+    Image[] _weaponFills;
+    [SerializeField]TextMeshProUGUI _ammoTextMesh;
 
     int _currentWeaponIndex = -1;
     Vector3 _mainWeaponPos;
+    int _currentAmmoCount;
 
     [SerializeField] Image _expMaxImage;
     [SerializeField] Image _expCurrentImage;
@@ -52,7 +55,15 @@ public class UIInGame : UIBase
     public override void Init()
     {
         _isInitDone = true;
-        _mainWeaponPos = _weaponImage[0].transform.localPosition;
+
+        _weaponFills = new Image[_weapons.Length];
+
+        for(int i =0; i < _weapons.Length; i++) 
+        {
+            _weaponFills[i] = _weapons[i].transform.Find("Fill").GetComponent<Image>();
+        }
+
+
         StartCoroutine(CorShowLevelName());
         Managers.GetManager<GameManager>().LoadNewSceneHandler += (mapData) =>
         {
@@ -83,27 +94,9 @@ public class UIInGame : UIBase
 
         if (_player == null) return;
 
-        WeaponSwaper weaponSwaper = _player.WeaponSwaper;
-     
+        RefreshWeapon();
 
-        if (_currentWeaponIndex != weaponSwaper.WeaponIndex)
-        {
-            for(int i =0; i < _weaponImage.Length; i++)
-            {
-                if (i == weaponSwaper.WeaponIndex)
-                {
-                    _weaponImage[i].transform.localPosition = _mainWeaponPos;
-                    _weaponImage[i].gameObject.SetActive(true);
-                }
-                else
-                {
-                    _weaponImage[i].gameObject.SetActive(false);
-                }
-            }
-            _currentWeaponIndex = weaponSwaper.WeaponIndex;
-        }
-
-        if(_expMaxImage && _expCurrentImage)
+        if (_expMaxImage && _expCurrentImage)
         {
             int maxExp = Managers.GetManager<GameManager>().MaxExp; 
             int exp = Managers.GetManager<GameManager>().Exp; 
@@ -117,6 +110,57 @@ public class UIInGame : UIBase
         ShowSkill();
         //ShowAbility();
         IndicateWall();
+    }
+
+    void RefreshWeapon()
+    {
+        WeaponSwaper weaponSwaper = _player.WeaponSwaper;
+
+        if (weaponSwaper.CurrentWeapon == null)
+        {
+            for (int i = 0; i < _weapons.Length; i++)
+            {
+                _weapons[i].SetActive(false);
+            }
+            _ammoTextMesh.gameObject.SetActive(false);
+            _currentWeaponIndex = -1;
+        }
+        else if (_currentWeaponIndex != weaponSwaper.WeaponIndex)
+        {
+            for (int i = 0; i < _weapons.Length; i++)
+            {
+                if (i == weaponSwaper.WeaponIndex)
+                {
+                    _weapons[i].gameObject.SetActive(true);
+                }
+                else
+                {
+                    _weapons[i].gameObject.SetActive(false);
+                }
+            }
+            _currentWeaponIndex = weaponSwaper.WeaponIndex;
+
+            _ammoTextMesh.gameObject.SetActive(true);
+
+            if (weaponSwaper.CurrentWeapon != null)
+            {
+                _weaponFills[_currentWeaponIndex].fillAmount = (float)weaponSwaper.CurrentWeapon.CurrentAmmo / weaponSwaper.CurrentWeapon.MaxAmmo;
+                _ammoTextMesh.text = $"{weaponSwaper.CurrentWeapon.CurrentAmmo}/{weaponSwaper.CurrentWeapon.MaxAmmo}";
+                _currentAmmoCount = weaponSwaper.CurrentWeapon.CurrentAmmo;
+            }
+            else
+            {
+                _weaponFills[_currentWeaponIndex].fillAmount = 0;
+                _ammoTextMesh.text = $"0/0";
+            }
+        }
+
+        if (weaponSwaper.CurrentWeapon != null && _currentAmmoCount != weaponSwaper.CurrentWeapon.CurrentAmmo)
+        {
+            _weaponFills[_currentWeaponIndex].fillAmount = (float)weaponSwaper.CurrentWeapon.CurrentAmmo / weaponSwaper.CurrentWeapon.MaxAmmo;
+            _ammoTextMesh.text = $"{weaponSwaper.CurrentWeapon.CurrentAmmo}/{weaponSwaper.CurrentWeapon.MaxAmmo}";
+            _currentAmmoCount = weaponSwaper.CurrentWeapon.CurrentAmmo;
+        }
     }
 
     void HandleBar()
@@ -387,39 +431,7 @@ public class UIInGame : UIBase
             }
         }
     }
-    IEnumerator CorChangeWeapon(int index)
-    {
-        for(int i =1; i <= 60; i++)
-        {
-            if(index == 0)
-            {
-                float moveVel = 100 / 30f;
-                if (i < 30)
-                {
-                    _weaponImage[index].transform.position = new Vector3(_mainWeaponPos.x - moveVel * Time.deltaTime, _weaponImage[index].transform.position.y);
-                }
-                else
-                {
-                    _weaponImage[index].transform.position = new Vector3(_mainWeaponPos.x + moveVel * Time.deltaTime, _weaponImage[index].transform.position.y);
-                }
-                if(i == 30)
-                {
-                    _weaponImage[index].transform.SetSiblingIndex(2);
-                    _weaponImage[_currentWeaponIndex].transform.SetSiblingIndex(1);
-                    _weaponImage[3 - index - _currentWeaponIndex].transform.SetSiblingIndex(0);
-                }
-                _weaponImage[_currentWeaponIndex].transform.position = new Vector3(_mainWeaponPos.x - (20/60f * Time.deltaTime), _weaponImage[_currentWeaponIndex].transform.position.y);
-                _weaponImage[3 - index - _currentWeaponIndex].transform.position = new Vector3(_mainWeaponPos.x - (40/60f * Time.deltaTime), _weaponImage[3 - index - _currentWeaponIndex].transform.position.y);
-            }
-
-            yield return null;
-        }
-
-        _weaponImage[index].transform.position = _mainWeaponPos;
-        _weaponImage[_currentWeaponIndex].transform.position = _mainWeaponPos - Vector3.right * 20f;
-        _weaponImage[3 - index - _currentWeaponIndex].transform.position = _mainWeaponPos - Vector3.right * 40f;
-        _currentWeaponIndex = index;
-    }
+   
 
     public void LoadSceneFadeOut()
     {

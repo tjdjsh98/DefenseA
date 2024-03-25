@@ -100,11 +100,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 648ea2be8846d6f4eb938af402840014, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _debug: 0
   _weaponName: 4
+  <WeaponDescription>k__BackingField: 
+  _bulletName: 0
   _audioLength: 1
   _isAuto: 1
   _knockBackPower: 50
-  _stunTime: 0.1
+  _stunTime: 0
   _bulletSpeed: 100
   _attackMultiplier: 0.8
   _damage: 3
@@ -112,13 +115,13 @@ MonoBehaviour:
   _maxAmmo: 7
   _currentAmmo: 7
   _isAllReloadAmmo: 1
-  _fireDelay: 0.6
+  _fireSpeed: 1
   _reloadDelay: 1.3
   _firePosition: {fileID: 7782747334190270009}
   _rebound: 50
+  _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 0
-  HandlePosition: {fileID: 0}
 --- !u!82 &-3730675643157933976
 AudioSource:
   m_ObjectHideFlags: 0
@@ -256,7 +259,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1000072899564702760}
   m_Layer: 6
-  m_Name: FirePos
+  m_Name: FirePoint
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

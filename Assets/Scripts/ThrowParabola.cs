@@ -2,6 +2,7 @@ using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
+using TMPro.EditorUtilities;
 using UnityEditor.Rendering;
 using UnityEngine;
 
@@ -10,9 +11,12 @@ public class ThrowParabola : MonoBehaviour
     Character _character;
     EnemyAI _enemyAI;
 
+    int _step = 0;
+
     [SerializeField]float _fireCoolTime;
     float _fireCheckTime;
     [SerializeField]float _fireDelay;
+    [SerializeField]float _afterFireDelay = 1;
     [SerializeField] float _power;
     float _fireTime;
 
@@ -38,10 +42,9 @@ public class ThrowParabola : MonoBehaviour
     {
         while (true)
         {
-            if (_enemyAI.Target != null)
+            if (_enemyAI.Target != null && _step == 0)
             {
                 _character.TurnBody(_enemyAI.Target.transform.position - transform.position);
-                _character.AnimatorSetBool("Attack", true);
                 if (_target == null)
                 {
                     if (_fireCoolTime > _fireTime)
@@ -69,10 +72,12 @@ public class ThrowParabola : MonoBehaviour
 
                                 if (_target != null)
                                 {
+                    _character.AnimatorSetBool("Attack", true);
                                     _fireTime = 0;
                                     _character.IsAttack = true;
                                     _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
                                     _firePower = tempPower;
+                                    _step = 1;
                                     break;
                                 }
                                 yield return null;
@@ -80,30 +85,44 @@ public class ThrowParabola : MonoBehaviour
                         }
                     }
                 }
+               
+            }
+            if (_step == 1)
+            {
+                if (_fireDelay > _fireTime)
+                {
+                    _fireTime += Time.deltaTime;
+                }
                 else
                 {
-                    if (_fireDelay > _fireTime)
-                    {
-                        _fireTime += Time.deltaTime;
-                    }
-                    else
-                    {
-                        Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
+                    Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
 
-                        if (projectile)
-                        {
-                            projectile.transform.position = _firePoint.transform.position;
-                            projectile.Init(1, _firePower, _character.AttackPower, Define.CharacterType.Player);
-                            projectile.Fire(_character, _firePower, _fireDirection);
-                        }
-                        _target = null;
-                        _fireTime = 0;
+                    if (projectile)
+                    {
+                        projectile.transform.position = _firePoint.transform.position;
+                        projectile.Init(1, _firePower, _character.AttackPower, Define.CharacterType.Player);
+                        projectile.Fire(_character, _firePower, _fireDirection);
                     }
+                    _step = 2;
+                    _target = null;
+                    _fireTime = 0;
+                    _character.AnimatorSetBool("Attack", false);
+                    Debug.Log("false");
                 }
             }
-            else
+
+            if (_step == 2)
             {
-                _character.AnimatorSetBool("Attack", false);
+                if (_afterFireDelay > _fireTime)
+                {
+                    _fireTime += Time.deltaTime;
+                }
+                else
+                {
+                    _fireTime = 0;
+                    _character.IsAttack = false;
+                    _step = 0;
+                }
             }
 
             yield return null;
