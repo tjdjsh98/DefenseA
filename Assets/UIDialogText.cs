@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
@@ -12,12 +10,9 @@ public class UIDialogText : MonoBehaviour, IPointerDownHandler, IPointerUpHandle
 
     public Action<string, Vector2> DownCallback = null;
 
-    private void Awake()
-    {
-        _dialogTextMesh = GetComponent<TextMeshProUGUI>();    
-    }
     public void Init(UIDialog dialog )
     {
+        _dialogTextMesh = GetComponent<TextMeshProUGUI>();    
         _uiDialog= dialog;
     }
     public void SetText(string text)

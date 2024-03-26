@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -33,9 +34,9 @@ public class UIShop : UIBase
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
-                if (_selectionList[tempIndex].shopItemData.price <= gameManager.Mental)
+                if (_selectionList[tempIndex].shopItemData.price <= gameManager.Money)
                 {
-                    gameManager.Mental -= _selectionList[tempIndex].shopItemData.price;
+                    gameManager.Money -= _selectionList[tempIndex].shopItemData.price;
                     ShopItem info = _selectionList[tempIndex];
                     info.isSale = true;
                     _selectionList[tempIndex] = info;
@@ -109,7 +110,10 @@ public class UIShop : UIBase
             }
             if (!_selectionList[i].isSale)
             {
-                _slotNameList[i].text = $"{_selectionList[i].shopItemData.price.ToString()}";
+                if (_selectionList[i].shopItemData.price > Managers.GetManager<GameManager>().Money)
+                    _slotNameList[i].text = $"<color=\"red\">{_selectionList[i].shopItemData.price.ToString()}";
+                else
+                    _slotNameList[i].text = $"{_selectionList[i].shopItemData.price.ToString()}";
                 _slotDescroptionList[i].text = $"{_selectionList[i].shopItemData.description}\n";
                
             }

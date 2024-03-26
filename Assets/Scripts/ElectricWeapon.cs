@@ -8,7 +8,7 @@ public class ElectricWeapon : Weapon
     float _electric;
     public override void Fire(Character fireCharacter)
     {
-        if (_fireElapsed < 1 / FireSpeed) return;
+        if (_fireElapsed < 1 / AttackSpeed) return;
 
         if (_currentAmmo == _maxAmmo)
         {
@@ -33,13 +33,13 @@ public class ElectricWeapon : Weapon
             GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
-            int damage = Damage;
+            int damage = AttackPower;
             
 
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
             if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
-                damage = Damage * 3;
+                damage = AttackPower * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
 

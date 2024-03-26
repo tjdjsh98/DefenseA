@@ -33,6 +33,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public bool IsAuto => _isAuto;
 
     [SerializeField] protected float _knockBackPower = 1;
+    public float OriginalKnockBackPower => _knockBackPower;
     public float KnockBackPower => _knockBackPower;
 
     [SerializeField] protected float _stunTime = 0f;
@@ -42,22 +43,22 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected float _attackMultiplier = 1;
     public float AttackMutiplier => _attackMultiplier;
-    [SerializeField] protected int _damage = 1;
-    public int Damage
+    [SerializeField] protected int _attackPower = 1;
+    public float OriginalAttackPower => _attackPower;
+
+    public int AttackPower
     {
         get
         {
             int result = 0;
-            int multiDamage = _damage+ (_player ? Mathf.RoundToInt(_character.AttackPower * _attackMultiplier) : 0);
-            result += multiDamage;
-            int increasedDamage = (int)(_player ? multiDamage * _player.GetIncreasedDamagePercentage()/100f : 0);
-            result += increasedDamage;
+            result += Mathf.RoundToInt(_attackPower * (1+IncreasedAttackPowerPercentage / 100));
             return result;
         }
     }
     
     [SerializeField] int _penerstratingPower;
-    public int PenerstratingPower => (_penerstratingPower+ (_player? _player.IncreasedPenerstratingPower:0));
+    public int OriginalPenerstratingPower => _penerstratingPower;
+    public int PenerstratingPower => (_penerstratingPower + IncreasedPenerstratingPower);
 
     [SerializeField] protected int _maxAmmo;
     public int MaxAmmo => _maxAmmo;
@@ -66,18 +67,27 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     [SerializeField] protected bool _isAllReloadAmmo;
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
-    [SerializeField] protected float _fireSpeed;
-    public float FireSpeed => 
-        (_player?(_player.GetIncreasedAttackSpeedPercentage()>0?_fireSpeed*(1 + _player.GetIncreasedAttackSpeedPercentage()/100f): _fireSpeed / (1 - _player.GetIncreasedAttackSpeedPercentage() / 100f)) :_fireSpeed);
-    [SerializeField] protected float _reloadDelay;
-    public float ReloadDelay => _reloadDelay - (_player? (_player.IncreasedReloadSpeedPercentage /100f)* _reloadDelay:0);
+    [SerializeField] protected float _attackSpeed;
+    public float OriginalAttackSpeed => _attackSpeed;
+    public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100));
+    [SerializeField] protected float _reloadSpeed;
+    public float OriginalReloadSpeed => _reloadSpeed;
+    public float ReloadSpeed => (_reloadSpeed *(1+ IncreasedReloadSpeedPercentage/ 100));
+
+
+    // 추가 능력치
+    public float IncreasedAttackPowerPercentage { set; get; }
+    public float IncreasedKnockbackPowerPercentage { set; get; }
+    public int IncreasedPenerstratingPower { set; get; }
+    public float IncreasedAttackSpeedPercentage { set; get; }
+    public float IncreasedReloadSpeedPercentage { set; get; }
+
 
     [SerializeField] protected GameObject _firePosition;
     public GameObject FirePosition => _firePosition;
 
     [SerializeField]protected float _rebound;
     public float Rebound => _rebound;
-    [SerializeField] protected float _knockBack;
 
     protected float _fireElapsed;
 
@@ -116,7 +126,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             return;
         }
 
-        if (_fireElapsed < 1/FireSpeed) return;
+        if (_fireElapsed < (1/AttackSpeed )) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)
@@ -147,11 +157,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
         Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_bulletName);
         if (projectile != null) {
             projectile.transform.position = _firePosition.transform.position;
-            int damage = Damage;
+            int damage = AttackPower;
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
             if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
-                damage = Damage * 3;
+                damage = AttackPower * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
 
@@ -162,20 +172,20 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public void Update()
     {
         // 발사 딜레이
-        if (_fireElapsed < 1/FireSpeed)
+        if (_fireElapsed < 1/AttackSpeed)
             _fireElapsed += Time.deltaTime;
         Reloading();
     }
 
     public virtual void Reloading()
     {
-        if (_isReload && _reloadElapsed < ReloadDelay)
+        if (_isReload && _reloadElapsed < 1/ReloadSpeed)
         {
             _reloadElapsed += Time.deltaTime;
             if (_reloadGauge)
-                _reloadGauge.SetRatio(_reloadElapsed, ReloadDelay);
+                _reloadGauge.SetRatio(_reloadElapsed, 1/ReloadSpeed);
         }
-        else if (_isReload && _reloadElapsed >= ReloadDelay)
+        else if (_isReload && _reloadElapsed >= 1/ReloadSpeed)
         {
             CompleteReload();
         }
@@ -218,7 +228,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     {
         if (_fastReloadFailed) return;
 
-        float ratio = ReloadElapsed / ReloadDelay;
+        float ratio = ReloadElapsed / (1/ReloadSpeed);
         if (ratio > 0.7f && ratio < 0.9f)
         {
             CompleteReload();
@@ -270,7 +280,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public void SetDamage(int damage)
     {
-        _damage = damage;
+        _attackPower = damage;
     }
 
     public void IncreaseMaxAmmo(int count)
@@ -280,7 +290,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public void DecreaseReloadDelay(float delay)
     {
-        _reloadDelay -= delay;
+        _reloadSpeed -= delay;
     }
 
     public int GetEnumToInt()

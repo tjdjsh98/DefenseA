@@ -25,7 +25,7 @@ public class ExplosionGun : Weapon
             return;
         }
 
-        if (_fireElapsed < FireSpeed) return;
+        if (_fireElapsed < AttackSpeed) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)
@@ -60,11 +60,11 @@ public class ExplosionGun : Weapon
         {
             projectile.transform.position = _firePosition.transform.position;
             _projectileList.Add(projectile);
-            int damage = Damage;
+            int damage = AttackPower;
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
             if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
-                damage = Damage * 3;
+                damage = AttackPower * 3;
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
 

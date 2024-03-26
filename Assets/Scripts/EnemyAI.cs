@@ -93,7 +93,7 @@ public class EnemyAI : MonoBehaviour
 
     void OnCharacterDead()
     {
-        Managers.GetManager<GameManager>().Exp += 1;
+        Managers.GetManager<GameManager>().Money += 1;
         if (Random.Range(0, 100f) < _itemDropPercentage) 
         {
             Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;

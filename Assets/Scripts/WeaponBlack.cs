@@ -15,7 +15,7 @@ public class WeaponBlack : Weapon
             return;
         }
 
-        if (_fireElapsed < 1 / FireSpeed) return;
+        if (_fireElapsed < 1 / AttackSpeed) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)
@@ -48,11 +48,11 @@ public class WeaponBlack : Weapon
         if (projectile != null)
         {
             projectile.transform.position = _firePosition.transform.position;
-            int damage = Damage * _currentAmmo;
+            int damage = AttackPower * _currentAmmo;
 
             // 플레이어가 라스트샷 능력이 있다면 데미지 3배
             if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot))
-                damage = Damage * 3;
+                damage = AttackPower * 3;
             
             projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(fireCharacter, direction.normalized);
@@ -100,7 +100,7 @@ public class WeaponBlack : Weapon
                 {
                     _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
                     Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
-                    _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadDelay);
+                    _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadSpeed);
                 }
             }
 
@@ -126,7 +126,7 @@ public class WeaponBlack : Weapon
 
         _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
         Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
-        _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadDelay);
+        _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadSpeed);
 
         _isReload = true;
         if (_reloadGauge)

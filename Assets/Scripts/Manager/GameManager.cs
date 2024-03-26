@@ -41,6 +41,8 @@ public class GameManager : ManagerBase
     public bool IsLoadEnd { set; get; }
     public Action<MapData> LoadNewSceneHandler { set; get; }
 
+    public int Money { set; get; }
+
     int _panicLevel = 0;
     public int PanicLevel =>_panicLevel;
     public float MaxMental { get; } = 100;

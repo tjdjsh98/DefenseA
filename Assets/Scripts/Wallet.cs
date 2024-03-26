@@ -20,11 +20,8 @@ public class Wallet : MonoBehaviour
     {
         if((Player.transform.position - transform.position).magnitude < 1)
         {
-            if(Input.GetKeyDown(KeyCode.E))
-            {
-                Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
-                Managers.GetManager<ResourceManager>().Destroy(gameObject);
-            }
+            Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
+            Managers.GetManager<ResourceManager>().Destroy(gameObject);
         }
     }
 }

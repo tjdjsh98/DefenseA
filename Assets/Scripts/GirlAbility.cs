@@ -108,7 +108,7 @@ public class GirlAbility
 
                 if (weapon.CurrentAmmo < weapon.MaxAmmo)
                 {
-                    if (_autoReloadElaspedTimeList[i] > weapon.ReloadDelay)
+                    if (_autoReloadElaspedTimeList[i] > weapon.ReloadSpeed)
                     {
                         weapon.CompleteReload();
                         _autoReloadElaspedTimeList[i] = 0;

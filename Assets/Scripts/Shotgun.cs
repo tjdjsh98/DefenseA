@@ -19,7 +19,7 @@ public class Shotgun : Weapon
             return;
         }
 
-        if (_fireElapsed < 1 / FireSpeed) return;
+        if (_fireElapsed < 1 / AttackSpeed) return;
 
         _currentAmmo--;
         _fireElapsed = 0;
@@ -38,7 +38,7 @@ public class Shotgun : Weapon
             Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
             Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bullet);
             projectile.transform.position = _firePosition.transform.position;
-            projectile.Init(_knockBackPower, Random.Range(_bulletSpeed -20, BulletSpeed +20), _damage, Define.CharacterType.Enemy);
+            projectile.Init(_knockBackPower, Random.Range(_bulletSpeed -20, BulletSpeed +20), _attackPower, Define.CharacterType.Enemy);
 
             projectile.Fire(fireCharacter, direction.normalized);
        

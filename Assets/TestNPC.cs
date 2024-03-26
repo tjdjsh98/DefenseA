@@ -56,7 +56,7 @@ public class TestNPC : MonoBehaviour
         Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginDialog("테스트 다이어로그입니다.");
         Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginSelection1("테스트 선택지 1.", () =>
         {
-            Debug.Log("1");
+            Managers.GetManager<UIManager>().GetUI<UIUpgrade>().Open();
         });
         Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginSelection2("테스트 선택지 2.", () =>
         {

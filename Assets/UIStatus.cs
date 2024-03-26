@@ -34,21 +34,8 @@ public class UIStatus : UIBase
 
     #region 무기 장비 변수
     GameObject _weaponFolder;
-    Image _weaponImage;
-    TextMeshProUGUI _weaponName;
-
-    Image _attackPowerFill;
-    TextMeshProUGUI _attackPowerValueText;
-    Image _knockBackPowerFill;
-    TextMeshProUGUI _knockBackPowersValueText;
-    Image _penerstratingPowerFill;
-    TextMeshProUGUI _penerstratingPowerValueText;
-    Image _attackSpeedFill;
-    TextMeshProUGUI _attackSpeedValueText;
-    Image _reloadSpeedFill;
-    TextMeshProUGUI _reloadSpeedValueText;
-
-    TextMeshProUGUI _weaponDescription;
+    WeaponUI _weaponUI = new WeaponUI();
+    
     #endregion
 
     public override void Init()
@@ -63,21 +50,7 @@ public class UIStatus : UIBase
     void InitWeaponEquipment()
     {
         _weaponFolder = transform.Find("Equipment").Find("WeaponEquipment").gameObject;
-        _weaponImage = _weaponFolder.transform.Find("WeaponBackground").Find("WeaponImage").GetComponent<Image>();
-        _weaponName = _weaponFolder.transform.Find("WeaponBackground").Find("WeaponName").GetComponent<TextMeshProUGUI>();
-
-        _attackPowerFill = _weaponFolder.transform.Find("AttackPower").Find("Fill").GetComponent<Image>();
-        _attackPowerValueText = _weaponFolder.transform.Find("AttackPower").Find("ValueText").GetComponent<TextMeshProUGUI>();
-        _knockBackPowerFill = _weaponFolder.transform.Find("KnockBackPower").Find("Fill").GetComponent<Image>();
-        _knockBackPowersValueText = _weaponFolder.transform.Find("KnockBackPower").Find("ValueText").GetComponent<TextMeshProUGUI>();
-        _penerstratingPowerFill = _weaponFolder.transform.Find("PenetratingPower").Find("Fill").GetComponent<Image>();
-        _penerstratingPowerValueText = _weaponFolder.transform.Find("PenetratingPower").Find("ValueText").GetComponent<TextMeshProUGUI>();
-        _attackSpeedFill = _weaponFolder.transform.Find("AttackSpeed").Find("Fill").GetComponent<Image>();
-        _attackSpeedValueText = _weaponFolder.transform.Find("AttackSpeed").Find("ValueText").GetComponent<TextMeshProUGUI>();
-        _reloadSpeedFill = _weaponFolder.transform.Find("ReloadSpeed").Find("Fill").GetComponent<Image>();
-        _reloadSpeedValueText = _weaponFolder.transform.Find("ReloadSpeed").Find("ValueText").GetComponent<TextMeshProUGUI>();
-
-        _weaponDescription = _weaponFolder.transform.Find("DescriptionBackground").Find("WeaponDescription").GetComponent<TextMeshProUGUI>();
+        _weaponUI.InitWeaponUI(_weaponFolder);
     }
 
     public override void Open(bool except = false)
@@ -187,24 +160,8 @@ public class UIStatus : UIBase
             _weaponFolder.gameObject.SetActive(false);
             if (weapon != null)
             {
-                _weaponName.text = weapon.WeaponName.ToString();
-
-                _attackPowerFill.fillAmount = weapon.Damage / 10f;
-                _attackPowerValueText.text = weapon.Damage.ToString();
-
-                _knockBackPowerFill.fillAmount = weapon.KnockBackPower / 100f;
-                _knockBackPowersValueText.text = weapon.KnockBackPower.ToString();
-
-                _penerstratingPowerFill.fillAmount = weapon.PenerstratingPower / 10f;
-                _penerstratingPowerValueText.text = weapon.PenerstratingPower.ToString();
-
-                _attackSpeedFill.fillAmount = 0.08f / weapon.FireSpeed;
-                _attackSpeedValueText.text = $"{weapon.FireSpeed}s";
-
-                _reloadSpeedFill.fillAmount = 0.1f / weapon.ReloadDelay;
-                _reloadSpeedValueText.text = $"{weapon.ReloadDelay}s";
-
-                _weaponDescription.text = weapon.WeaponDescription;
+                _weaponUI.Refresh(weapon);
+                StartCoroutine(_weaponUI.CorFillGauge(weapon));
 
                 _weaponFolder.gameObject.SetActive(true);
             }
@@ -217,23 +174,9 @@ public class UIStatus : UIBase
             _weaponFolder.gameObject.SetActive(false);
             if (weapon != null)
             {
-                _weaponName.text = weapon.WeaponName.ToString();
+                _weaponUI.Refresh(weapon);
+                StartCoroutine(_weaponUI.CorFillGauge(weapon));
 
-                _attackPowerFill.fillAmount = weapon.Damage / 10f;
-                _attackPowerValueText.text = weapon.Damage.ToString();
-
-                _knockBackPowerFill.fillAmount = weapon.KnockBackPower / 100f;
-                _knockBackPowersValueText.text = weapon.KnockBackPower.ToString();
-
-                _penerstratingPowerFill.fillAmount = weapon.PenerstratingPower / 10f;
-                _penerstratingPowerValueText.text = weapon.PenerstratingPower.ToString();
-
-                _attackSpeedFill.fillAmount = 1 / weapon.FireSpeed / 10f;
-                _attackSpeedValueText.text = $"{weapon.FireSpeed}s";
-
-                _reloadSpeedFill.fillAmount = 0.1f / weapon.ReloadDelay;
-                _reloadSpeedValueText.text = $"{weapon.ReloadDelay}s";
-                _weaponDescription.text = weapon.WeaponDescription;
                 _weaponFolder.gameObject.SetActive(true);
             }
         }
@@ -245,23 +188,9 @@ public class UIStatus : UIBase
             _weaponFolder.gameObject.SetActive(false);
             if (weapon != null)
             {
-                _weaponName.text = weapon.WeaponName.ToString();
+                _weaponUI.Refresh(weapon);
+                StartCoroutine(_weaponUI.CorFillGauge(weapon));
 
-                _attackPowerFill.fillAmount = weapon.Damage / 10f;
-                _attackPowerValueText.text = weapon.Damage.ToString();
-
-                _knockBackPowerFill.fillAmount = weapon.KnockBackPower / 100f;
-                _knockBackPowersValueText.text = weapon.KnockBackPower.ToString();
-
-                _penerstratingPowerFill.fillAmount = weapon.PenerstratingPower / 10f;
-                _penerstratingPowerValueText.text = weapon.PenerstratingPower.ToString();
-
-                _attackSpeedFill.fillAmount = 1 / weapon.FireSpeed / 10f;
-                _attackSpeedValueText.text = $"{weapon.FireSpeed}s";
-
-                _reloadSpeedFill.fillAmount = 0.1f / weapon.ReloadDelay;
-                _reloadSpeedValueText.text = $"{weapon.ReloadDelay}s";
-                _weaponDescription.text = weapon.WeaponDescription;
                 _weaponFolder.gameObject.SetActive(true);
             }
         }

@@ -24,6 +24,8 @@ public class UIInGame : UIBase
     [SerializeField] Image _expCurrentImage;
     [SerializeField] TextMeshProUGUI _levelText;
 
+    [SerializeField] TextMeshProUGUI _moneyText;
+
     [SerializeField] Image _mapPlayer;
     [SerializeField] Image _mapImage;
 
@@ -93,6 +95,8 @@ public class UIInGame : UIBase
             _player = Managers.GetManager<GameManager>().Player;
 
         if (_player == null) return;
+
+        _moneyText.text = Managers.GetManager<GameManager>().Money.ToString();
 
         RefreshWeapon();
 
