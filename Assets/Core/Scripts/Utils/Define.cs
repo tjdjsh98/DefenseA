@@ -116,6 +116,7 @@ public static class Define
         Black,
         ExplosionGun,
         ImprovisedRifle,
+        ImprovisedPistol,
         END
     }
 

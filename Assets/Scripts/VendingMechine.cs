@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class VendingMechine : MonoBehaviour
+public class VendingMechine : MonoBehaviour,IInteractable
 {
     Player _player;
     Player Player { get {if(_player==null) _player = Managers.GetManager<GameManager>().Player;  return _player; } }
@@ -30,45 +30,17 @@ public class VendingMechine : MonoBehaviour
                 _shopItemList.Add(new ShopItem() { isSale = false, shopItemData = data });
             }
         }
+        HideBubble();
     }
-    private void Update()
-    {
-        CheckPlayer();
-    }
-
-    private void OnEnable()
-    {
-        Managers.GetManager<InputManager>().InteractKeyDownHandler += OpenShop;
-
-    }
-    private void OnDisable()
-    {
-        if(Managers.GetManager<InputManager>())
-            Managers.GetManager<InputManager>().InteractKeyDownHandler -= OpenShop;
-    }
-
-    public void CheckPlayer()
-    {
-        if(Player == null) return;
-
-        if ((Player.transform.position - transform.position).magnitude < 5)
-        {
-            ShowBubble();
-        }
-        else
-        {
-            HideBubble();
-        }
-
-    }
-     void ShowBubble()
+   
+    public void ShowBubble()
     {
         if(_bubble== null) return;
 
         _bubble.SetActive(true);
     }
 
-    void HideBubble()
+    public void HideBubble()
     {
         if (_bubble == null) return;
 
@@ -82,5 +54,10 @@ public class VendingMechine : MonoBehaviour
             Managers.GetManager<UIManager>().GetUI<UIShop>().Open(_shopItemList);
         }
 
+    }
+
+    public void Interact()
+    {
+        OpenShop();
     }
 }

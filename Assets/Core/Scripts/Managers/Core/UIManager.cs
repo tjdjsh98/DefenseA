@@ -12,6 +12,8 @@ public class UIManager : ManagerBase
     List<UIBase> _uiList = new List<UIBase>();
 
     List<UIBase> _stackList = new List<UIBase>();
+
+    public bool IsOpen=>_stackList.Count > 0;
     public override void Init()
     {
         _uiFolder = GameObject.Find(_uiFolderName);

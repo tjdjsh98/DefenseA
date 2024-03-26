@@ -1,9 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using TMPro;
 using UnityEngine;
-using UnityEngine.EventSystems;
+using UnityEngine.Events;
 
 public class UIDialog : UIBase
 {
@@ -15,8 +13,11 @@ public class UIDialog : UIBase
 
     [SerializeField] UIDialogText _dialogText;
 
-    Action _selection1SelectedHandler;
-    Action _selection2SelectedHandler;
+    Dictionary<int, UnityEvent> _selectionActionHanlders = new Dictionary<int, UnityEvent>();
+
+    Dialog[] _dialogs;
+
+    int _dialogIndex = 0;
 
     public override void Init()
     {
@@ -31,28 +32,18 @@ public class UIDialog : UIBase
         gameObject.SetActive(false);
     }
 
-    public void AssginDialog(string text)
+    public void AssginDialog(Dialog[] dialogs)
     {
-        _dialogText.SetText(text);
+        _dialogs = dialogs;
+        _dialogIndex = 0;
     }
-    public void AssginSelection1(string text, Action action)
-    {
-        _dialogText.AddSelectText(1,text);
-        _selection1SelectedHandler = action;
-    } 
-    public void AssginSelection2(string text, Action action)
-    {
-        _dialogText.AddSelectText(2,text);
-        _selection2SelectedHandler = action;
-    }
-
-
     public override void Open(bool except = false)
     {
         if (!except)
             Managers.GetManager<UIManager>().Open(this);
 
         Time.timeScale = 0;
+        RefreshDialog();
 
         gameObject.SetActive(true);
 
@@ -69,9 +60,52 @@ public class UIDialog : UIBase
 
     void SelectDialog(string id, Vector2 postion)
     {
-        if (id.Equals("1"))
-            _selection1SelectedHandler?.Invoke();
-        if (id.Equals("2"))
-            _selection2SelectedHandler?.Invoke();
+        int index = int.Parse(id);
+
+        if (_selectionActionHanlders.ContainsKey(index))
+        {
+            _selectionActionHanlders[index].Invoke();
+        }
+    }
+
+    public void MoveDialog(int index)
+    {
+        _dialogIndex= index;
+        RefreshDialog();
+    }
+    public void NextDialog()
+    {
+        if (gameObject.activeSelf)
+        {
+            if (_dialogs[_dialogIndex].isEndDialog)
+            {
+                Close();
+                return;
+            }
+            _dialogIndex++;
+            RefreshDialog();
+        }
+    }
+
+    void RefreshDialog()
+    {
+        if (_dialogs.Length <= _dialogIndex)
+        {
+            Close();
+        }
+        else
+        {
+            Dialog dialog = _dialogs[_dialogIndex];
+
+            _dialogText.SetText(dialog.dialog);
+            _selectionActionHanlders.Clear();
+            int selectionIndex = 1;
+            foreach (var selection in dialog.selectionDialogs)
+            {
+                _dialogText.AddSelectText(selectionIndex, selection.dialog);
+                _selectionActionHanlders.Add(selectionIndex, selection.unityEvent);
+                selectionIndex++;
+            }
+        }
     }
 }

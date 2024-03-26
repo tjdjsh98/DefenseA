@@ -68,6 +68,8 @@ public class Player : MonoBehaviour
     float _runToFireElaspedTime = 0f;
 
     Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
+
+    IInteractable _interactableOjbect;
     private void Awake()
     {
         _animator = GetComponent<Animator>();
@@ -174,6 +176,7 @@ public class Player : MonoBehaviour
         RotateArm();
         RotateBody();
         Riding();
+        CheckInteractable();
         _eyeCloseElasepdTime += Time.deltaTime;
         if(_eyeCloseElasepdTime > _eyeCloseTime)
         {
@@ -192,6 +195,44 @@ public class Player : MonoBehaviour
         _isRun = false;
         _isFire = false;
 
+    }
+
+    void CheckInteractable()
+    {
+        if (Managers.GetManager<UIManager>().IsOpen) return;
+        IInteractable closeOne = null;
+        float distance = 1000;
+        Util.RangeCastAll2D(gameObject, _character.GetSize(), -1, (hit) =>
+        {
+            if (hit.collider == null) return false;
+
+            IInteractable interactable = hit.collider.GetComponent<IInteractable>();
+
+            if(interactable != null)
+            {
+                if(closeOne == null || (hit.collider.transform.position - transform.position).magnitude < distance)
+                {
+                    distance = (hit.collider.transform.position - transform.position).magnitude;
+                    closeOne= interactable;
+                }
+            }
+            return false;
+        });
+
+        if(closeOne != _interactableOjbect)
+        {
+            if(_interactableOjbect != null)
+                _interactableOjbect.HideBubble();
+            _interactableOjbect = closeOne;
+            if(_interactableOjbect != null)
+                _interactableOjbect.ShowBubble();
+        }
+
+        if(Input.GetKeyDown(KeyCode.E))
+        {
+            if (_interactableOjbect != null)
+                _interactableOjbect.Interact();
+        }
     }
 
     void HandleSliding()

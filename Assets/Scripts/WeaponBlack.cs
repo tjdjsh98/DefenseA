@@ -100,7 +100,7 @@ public class WeaponBlack : Weapon
                 {
                     _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
                     Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
-                    _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadSpeed);
+                    _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadTime);
                 }
             }
 
@@ -126,7 +126,7 @@ public class WeaponBlack : Weapon
 
         _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
         Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
-        _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadSpeed);
+        _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadTime);
 
         _isReload = true;
         if (_reloadGauge)

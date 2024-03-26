@@ -1,50 +1,29 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
-public class TestNPC : MonoBehaviour
+public class TestNPC : MonoBehaviour,IInteractable
 {
     Player _player;
     Player Player { get { if (_player == null) _player = Managers.GetManager<GameManager>().Player; return _player; } }
 
     [SerializeField] GameObject _bubble;
-    private void Update()
-    {
-        CheckPlayer();
-    }
 
-    private void OnEnable()
+    [SerializeField] Dialog[] _dialogs;
+    private void Awake()
     {
-        Managers.GetManager<InputManager>().InteractKeyDownHandler += OpenDialog;
-
+        HideBubble();
     }
-    private void OnDisable()
-    {
-        if (Managers.GetManager<InputManager>())
-            Managers.GetManager<InputManager>().InteractKeyDownHandler -= OpenDialog;
-    }
-    public void CheckPlayer()
-    {
-        if (Player == null) return;
-
-        if ((Player.transform.position - transform.position).magnitude < 5)
-        {
-            ShowBubble();
-        }
-        else
-        {
-            HideBubble();
-        }
-
-    }
-    void ShowBubble()
+ 
+    public void ShowBubble()
     {
         if (_bubble == null) return;
 
         _bubble.SetActive(true);
     }
 
-    void HideBubble()
+    public void HideBubble()
     {
         if (_bubble == null) return;
 
@@ -53,16 +32,55 @@ public class TestNPC : MonoBehaviour
 
     void OpenDialog()
     {
-        Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginDialog("테스트 다이어로그입니다.");
-        Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginSelection1("테스트 선택지 1.", () =>
-        {
-            Managers.GetManager<UIManager>().GetUI<UIUpgrade>().Open();
-        });
-        Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginSelection2("테스트 선택지 2.", () =>
-        {
-            Managers.GetManager<UIManager>().GetUI<UIDialog>().Close();
-        });
-
+        Managers.GetManager<UIManager>().GetUI<UIDialog>().AssginDialog(_dialogs);
         Managers.GetManager<UIManager>().GetUI<UIDialog>().Open();
     }
+
+    public void MoveDialog(int index)
+    {
+        Managers.GetManager<UIManager>().GetUI<UIDialog>().MoveDialog(index);
+    }
+    public void CloseDialog()
+    {
+        Managers.GetManager<UIManager>().GetUI<UIDialog>().Close();
+    }
+    public void OpenUpgradeUI()
+    {
+        Managers.GetManager<UIManager>().GetUI<UIUpgrade>().Open();
+    }
+    public void OpenShopUI()
+    {
+        Managers.GetManager<UIManager>().GetUI<UIShop>().Open();
+    }
+
+    public void AddMaxHp(int value)
+    {
+        Managers.GetManager<GameManager>().Girl.AddMaxHp(value);
+    }
+
+    public void RecoverHp(int hp)
+    {
+        Managers.GetManager<GameManager>().Girl.Hp += hp;
+    }
+
+    public void Interact()
+    {
+        Debug.Log(gameObject);
+        OpenDialog();
+    }
+}
+
+[System.Serializable]
+public struct Dialog
+{
+    [TextArea]public string dialog;
+    public SelectionDialog[] selectionDialogs;
+    public bool isEndDialog;
+}
+
+[System.Serializable]
+public struct SelectionDialog
+{
+    public string dialog;
+    public UnityEvent unityEvent;
 }

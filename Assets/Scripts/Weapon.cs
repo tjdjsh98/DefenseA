@@ -70,9 +70,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected float _attackSpeed;
     public float OriginalAttackSpeed => _attackSpeed;
     public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100));
-    [SerializeField] protected float _reloadSpeed;
-    public float OriginalReloadSpeed => _reloadSpeed;
-    public float ReloadSpeed => (_reloadSpeed *(1+ IncreasedReloadSpeedPercentage/ 100));
+    [SerializeField] protected float _reloadTime;
+    public float OriginalReloadTime => _reloadTime;
+    public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100));
 
 
     // 추가 능력치
@@ -80,7 +80,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public float IncreasedKnockbackPowerPercentage { set; get; }
     public int IncreasedPenerstratingPower { set; get; }
     public float IncreasedAttackSpeedPercentage { set; get; }
-    public float IncreasedReloadSpeedPercentage { set; get; }
+    public float DecreasedReloadTimePercentage { set; get; }
 
 
     [SerializeField] protected GameObject _firePosition;
@@ -179,13 +179,13 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public virtual void Reloading()
     {
-        if (_isReload && _reloadElapsed < 1/ReloadSpeed)
+        if (_isReload && _reloadElapsed < ReloadTime)
         {
             _reloadElapsed += Time.deltaTime;
             if (_reloadGauge)
-                _reloadGauge.SetRatio(_reloadElapsed, 1/ReloadSpeed);
+                _reloadGauge.SetRatio(_reloadElapsed, ReloadTime);
         }
-        else if (_isReload && _reloadElapsed >= 1/ReloadSpeed)
+        else if (_isReload && _reloadElapsed >= ReloadTime)
         {
             CompleteReload();
         }
@@ -228,7 +228,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     {
         if (_fastReloadFailed) return;
 
-        float ratio = ReloadElapsed / (1/ReloadSpeed);
+        float ratio = ReloadElapsed / (1/ReloadTime);
         if (ratio > 0.7f && ratio < 0.9f)
         {
             CompleteReload();
@@ -290,7 +290,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public void DecreaseReloadDelay(float delay)
     {
-        _reloadSpeed -= delay;
+        _reloadTime -= delay;
     }
 
     public int GetEnumToInt()

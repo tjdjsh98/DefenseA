@@ -1,10 +1,8 @@
 using System.Collections;
-using System.Collections.Generic;
 using TMPro;
+using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.Networking;
 using UnityEngine.UI;
-using static UnityEngine.RuleTile.TilingRuleOutput;
 
 public class UIUpgrade : UIBase
 {
@@ -57,7 +55,7 @@ public class UIUpgrade : UIBase
             weapon.IncreasedAttackSpeedPercentage += _toWeaponUI.increasingAttackSpeedPercentage;
             weapon.IncreasedKnockbackPowerPercentage += _toWeaponUI.increasingKnockBackPowerPercentage;
             weapon.IncreasedPenerstratingPower += _toWeaponUI.increasingPenerstratingPower;
-            weapon.IncreasedReloadSpeedPercentage += _toWeaponUI.increasingReloadSpeedPercentage;
+            weapon.DecreasedReloadTimePercentage += _toWeaponUI.decreasingReloadSpeedPercentage;
         }
 
         Close();
@@ -97,7 +95,7 @@ public class UIUpgrade : UIBase
             if (Random.Range(0, 2) == 0)
                 _toWeaponUI.increasingAttackSpeedPercentage= Random.Range(0, 20);
             if (Random.Range(0, 2) == 0)
-                _toWeaponUI.increasingReloadSpeedPercentage = Random.Range(0, 20);
+                _toWeaponUI.decreasingReloadSpeedPercentage = Random.Range(0, 20);
 
             _toWeaponUI.Refresh(weapon);
             StartCoroutine(_toWeaponUI.CorFillGauge(weapon));
@@ -118,7 +116,7 @@ public class WeaponUI
     public float increasingKnockBackPowerPercentage;
     public int increasingPenerstratingPower;
     public float increasingAttackSpeedPercentage;
-    public float increasingReloadSpeedPercentage;
+    public float decreasingReloadSpeedPercentage;
 
     public Image _attackPowerFill;
     public TextMeshProUGUI _attackPowerValueText;
@@ -129,7 +127,7 @@ public class WeaponUI
     public Image _attackSpeedFill;
     public TextMeshProUGUI _attackSpeedValueText;
     public Image _reloadSpeedFill;
-    public TextMeshProUGUI _reloadSpeedValueText;
+    public TextMeshProUGUI _reloadTimeValueText;
 
     public TextMeshProUGUI _weaponDescription;
 
@@ -148,7 +146,7 @@ public class WeaponUI
         _attackSpeedFill = _weaponFolder.transform.Find("AttackSpeed").Find("Fill").GetComponent<Image>();
         _attackSpeedValueText = _weaponFolder.transform.Find("AttackSpeed").Find("ValueText").GetComponent<TextMeshProUGUI>();
         _reloadSpeedFill = _weaponFolder.transform.Find("ReloadSpeed").Find("Fill").GetComponent<Image>();
-        _reloadSpeedValueText = _weaponFolder.transform.Find("ReloadSpeed").Find("ValueText").GetComponent<TextMeshProUGUI>();
+        _reloadTimeValueText = _weaponFolder.transform.Find("ReloadSpeed").Find("ValueText").GetComponent<TextMeshProUGUI>();
 
         _weaponDescription = _weaponFolder.transform.Find("DescriptionBackground").Find("WeaponDescription").GetComponent<TextMeshProUGUI>();
     }
@@ -187,22 +185,18 @@ public class WeaponUI
         else
             _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage) / 100f}";
 
-        if (increasingReloadSpeedPercentage != 0)
-            _reloadSpeedValueText.text = $"{weapon.OriginalReloadSpeed} + {weapon.OriginalReloadSpeed * (weapon.IncreasedAttackSpeedPercentage + increasingReloadSpeedPercentage )/ 100f}";
+        if (decreasingReloadSpeedPercentage != 0)
+            _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage+ decreasingReloadSpeedPercentage )/ 100f}";
         else
-            _reloadSpeedValueText.text = $"{weapon.OriginalReloadSpeed} + {weapon.OriginalReloadSpeed * (weapon.IncreasedAttackSpeedPercentage )/ 100f}";
+            _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
 
         for (int i = 0; i < duration; i++)
         {
-            _attackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.AttackPower + increasingAttackPowerPercentage * weapon.OriginalAttackPower ) / 10f, 1f/(duration - i));
-
-            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.KnockBackPower+ increasingKnockBackPowerPercentage * weapon.OriginalKnockBackPower) / 100f, 1f / (duration - i));
-
+            _attackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.AttackPower + increasingAttackPowerPercentage/100f * weapon.OriginalAttackPower ) / 10f, 1f/(duration - i));
+            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.KnockBackPower+ increasingKnockBackPowerPercentage/100f * weapon.OriginalKnockBackPower) / 100f, 1f / (duration - i));
             _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, (weapon.PenerstratingPower+ increasingPenerstratingPower) /10f, 1f / (duration - i));
-
-            _attackSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.AttackSpeed + weapon.OriginalAttackSpeed * increasingAttackSpeedPercentage) /10f, 1f / (duration - i));
-
-            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.ReloadSpeed + weapon.OriginalReloadSpeed * increasingReloadSpeedPercentage) /10f, 1f / (duration - i));
+            _attackSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.AttackSpeed + weapon.OriginalAttackSpeed * increasingAttackSpeedPercentage/100f) /10f, 1f / (duration - i));
+            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f/(weapon.ReloadTime + weapon.OriginalReloadTime * decreasingReloadSpeedPercentage/100f) , 1f / (duration - i));
 
             yield return null;
         }
