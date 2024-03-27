@@ -15,42 +15,90 @@ MonoBehaviour:
   sceneName: City_01
   mentalDownTime: 50
   timeWave:
-  - genTime: 3
+  - genTime: 4
     startTime: 0
-    endTime: 30
+    endTime: 60
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1
-  - genTime: 3
+  - genTime: 4
     startTime: 0
     endTime: 60
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 02000000
     hpMultiply: 1
-  - genTime: 3
-    startTime: 30
-    endTime: 75
+  - genTime: 3.5
+    startTime: 75
+    endTime: 135
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 00000000
     hpMultiply: 1.2
+  - genTime: 3.5
+    startTime: 75
+    endTime: 135
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 02000000
+    hpMultiply: 1.2
+  - genTime: 3
+    startTime: 150
+    endTime: 210
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 00000000
+    hpMultiply: 1.5
+  - genTime: 3
+    startTime: 150
+    endTime: 210
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 02000000
+    hpMultiply: 1.5
+  - genTime: 3
+    startTime: 240
+    endTime: 99999
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 00000000
+    hpMultiply: 2
+  - genTime: 3
+    startTime: 240
+    endTime: 99999
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 02000000
+    hpMultiply: 2
+  - genTime: 20
+    startTime: 75
+    endTime: 105
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 0d000000
+    hpMultiply: 1
   - genTime: 20
     startTime: 75
     endTime: 135
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 0d000000
+    enemyList: 0c000000
     hpMultiply: 1
-  - genTime: 5
-    startTime: 90
-    endTime: 135
+  - genTime: 10
+    startTime: 105
+    endTime: 150
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 0d000000
-    hpMultiply: 1
-  - genTime: 5
-    startTime: 90
-    endTime: 195
-    genLocalPosition: {x: 50, y: 0, z: 0}
+    enemyList: 01000000
+    hpMultiply: 1.5
+  - genTime: 10
+    startTime: 210
+    endTime: 99999
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 01000000
+    hpMultiply: 2
+  - genTime: 20
+    startTime: 75
+    endTime: 180
+    genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 08000000
     hpMultiply: 1
+  - genTime: 15
+    startTime: 300
+    endTime: 99999
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyList: 08000000
+    hpMultiply: 2
   distanceWave: []
   mentalWave:
   - genTime: 30

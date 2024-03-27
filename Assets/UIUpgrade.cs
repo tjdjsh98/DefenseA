@@ -15,7 +15,6 @@ public class UIUpgrade : UIBase
     WeaponUI _toWeaponUI = new WeaponUI();
 
     int _randomWeaponIndex;
-
     public override void Init()
     {
         _fromWeaponUI.InitWeaponUI(_fromWeaponFolder);
@@ -86,8 +85,8 @@ public class UIUpgrade : UIBase
             _fromWeaponUI.Refresh(weapon);
             StartCoroutine(_fromWeaponUI.CorFillGauge(weapon));
 
-            if(Random.Range(0,2) == 0)
-                _toWeaponUI.increasingAttackPowerPercentage = Random.Range(20, 50);
+            if (Random.Range(0, 2) == 0)
+                _toWeaponUI.increasingAttackPowerPercentage = 50;
             if (Random.Range(0, 2) == 0)
                 _toWeaponUI.increasingKnockBackPowerPercentage= Random.Range(20, 30);
             if (Random.Range(0, 5) == 0)
