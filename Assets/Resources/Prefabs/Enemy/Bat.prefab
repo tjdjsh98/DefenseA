@@ -135,14 +135,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 8
+  _maxHp: 4
   _hp: 0
-  _maxMental: 100
-  <Mental>k__BackingField: 0
   _speed: 5
   _standing: 0
-  _isGainMentalWhenKillIt: 0
-  _gainMentalAmount: 0
   <AttackPower>k__BackingField: 2
   _jumpPower: 10
   _isEnableRevive: 0
@@ -156,6 +152,7 @@ MonoBehaviour:
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
   <IsSuperArmer>k__BackingField: 0
+  IsInvincibility: 0
   _hpBar: {fileID: 0}
 --- !u!114 &2113099806782836820
 MonoBehaviour:

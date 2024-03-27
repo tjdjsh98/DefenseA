@@ -107,7 +107,6 @@ public class ThrowParabola : MonoBehaviour
                     _target = null;
                     _fireTime = 0;
                     _character.AnimatorSetBool("Attack", false);
-                    Debug.Log("false");
                 }
             }
 

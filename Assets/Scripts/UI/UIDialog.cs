@@ -8,8 +8,8 @@ public class UIDialog : UIBase
     Action action = null;
 
     Canvas _canvas;
-    public Canvas Canvas=> _canvas;
-    public Camera Camera=> _canvas?_canvas.worldCamera?_canvas.worldCamera:null:null;
+    public Canvas Canvas => _canvas;
+    public Camera Camera => _canvas ? _canvas.worldCamera ? _canvas.worldCamera : null : null;
 
     [SerializeField] UIDialogText _dialogText;
 
@@ -39,6 +39,7 @@ public class UIDialog : UIBase
     }
     public override void Open(bool except = false)
     {
+        if (_dialogs == null || _dialogs.Length <= 0) return;
         if (!except)
             Managers.GetManager<UIManager>().Open(this);
 
@@ -54,6 +55,7 @@ public class UIDialog : UIBase
 
         Time.timeScale = 1;
 
+        _dialogs = null;
         if (!except)
             Managers.GetManager<UIManager>().Close(this);
     }

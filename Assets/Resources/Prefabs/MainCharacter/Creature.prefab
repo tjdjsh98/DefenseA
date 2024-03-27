@@ -480,7 +480,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -44.329998, y: -10.258, z: 0.11461336}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: -1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 7661982469236258440}
@@ -596,12 +596,8 @@ MonoBehaviour:
   _characterType: 2
   _maxHp: 15
   _hp: 15
-  _maxMental: 100
-  <Mental>k__BackingField: 0
   _speed: 10
   _standing: 0
-  _isGainMentalWhenKillIt: 0
-  _gainMentalAmount: 0
   <AttackPower>k__BackingField: 10
   _jumpPower: 60
   _isEnableRevive: 1
@@ -638,10 +634,10 @@ MonoBehaviour:
       figureType: 0
     _survivalIntinctCount: 0
     _survivalIntinctElapsed: 0
-  _debugAttackRangeIndex: 1
+  _debugAttackRangeIndex: 0
   _attackRangeList:
   - center: {x: 0, y: 2.5, z: 0}
-    size: {x: 40, y: 5, z: 0}
+    size: {x: 70, y: 5, z: 0}
     angle: 0
     figureType: 0
   - center: {x: 3.5, y: 2.5, z: 0}

@@ -133,25 +133,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _debug: 0
   _weaponName: 0
-  <WeaponDescription>k__BackingField: 
+  <WeaponDescription>k__BackingField: "\uBC84\uB9AC\uC9C4 \uB3CC\uACA9\uC18C\uCD1D\uC785\uB2C8\uB2E4."
   _bulletName: 0
   _audioLength: 0.31
   _isAuto: 1
-  _knockBackPower: 20
+  _knockBackPower: 35
   _stunTime: 0
   _bulletSpeed: 100
   _attackMultiplier: 0.7
-  _attackPower: 1
+  _attackPower: 3
   _penerstratingPower: 0
   _maxAmmo: 20
   _currentAmmo: 20
   _isAllReloadAmmo: 1
-  _attackSpeed: 5
-  _reloadSpeed: 2
+  _attackSpeed: 4
+  _reloadTime: 1
   _firePosition: {fileID: 7782747334190270009}
   _rebound: 5
   _reloadGauge: {fileID: 0}
-  _hitEffect: 0
+  _hitEffect: 10
 --- !u!82 &-8678973786356318684
 AudioSource:
   m_ObjectHideFlags: 0

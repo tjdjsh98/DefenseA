@@ -133,9 +133,7 @@ public class CreatureAI : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
-        Gizmos.color = Color.red;
-
-        if (_attackRangeList.Count <= _debugAttackRangeIndex) return;
+        if (_debugAttackRangeIndex < 0 || _attackRangeList.Count <= _debugAttackRangeIndex) return;
 
         Util.DrawRangeOnGizmos(gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
     }
@@ -188,7 +186,6 @@ public class CreatureAI : MonoBehaviour
         if (_closeEnemy != null)
         {
             Vector3 initPosition = transform.position;
-            _character.IsAttack = true;
             Define.Range attackRange = _attackRangeList[1];
             attackRange.size = new Vector3(attackRange.size.x / 4, attackRange.size.y, 0);
             while (true)
@@ -208,17 +205,21 @@ public class CreatureAI : MonoBehaviour
                 }).Count > 0) break;
                 yield return null;
             }
-            _character.Move(Vector2.zero);
-
-            _character.SetAnimationSpeed(AttackSpeed);
-            _character.AnimatorSetTrigger("NormalAttack");
-            _character.IsAttack = true;
-            _character.IsEnableMove = false;
-            _character.IsEnableTurn = false;
-
-            while (_character.IsAttack)
+            if (_closeEnemy != null)
             {
-                yield return null;
+                _character.Move(Vector2.zero);
+                _character.TurnBody(_closeEnemy.transform.position - transform.position);
+
+                _character.SetAnimationSpeed(AttackSpeed);
+                _character.AnimatorSetTrigger("NormalAttack");
+                _character.IsAttack = true;
+                _character.IsEnableMove = false;
+                _character.IsEnableTurn = false;
+
+                while (_character.IsAttack)
+                {
+                    yield return null;
+                }
             }
         }
 
@@ -318,7 +319,7 @@ public class CreatureAI : MonoBehaviour
                 if (hit.collider != null)
                 {
                     Character character = hit.collider.GetComponent<Character>();
-                    if (character == null || character.CharacterType != Define.CharacterType.Enemy) return false;
+                    if (character == null || character.CharacterType != Define.CharacterType.Enemy || character.IsEnableFly) return false;
                     if (close == null || (close.transform.position - player.transform.position).magnitude > (character.transform.position - player.transform.position).magnitude)
                         close = character;
                 }

@@ -15,7 +15,7 @@ public class VendingMechine : MonoBehaviour,IInteractable
         if (Managers.GetManager<GameManager>().ShopItemDataList != null)
         {
             List<ShopItemData> datas;
-            if (Managers.GetManager<GameManager>().ShopItemDataList.Count < 5)
+            if (Managers.GetManager<GameManager>().ShopItemDataList.Count < 4)
             {
                 datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(Managers.GetManager<GameManager>().ShopItemDataList.Count);
                 
@@ -23,7 +23,7 @@ public class VendingMechine : MonoBehaviour,IInteractable
             else
             {
 
-                datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(5);
+                datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(4);
             }
             foreach (var data in datas)
             {

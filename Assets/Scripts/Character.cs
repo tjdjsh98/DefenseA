@@ -275,6 +275,7 @@ public class Character : MonoBehaviour,IHp
 
         if (_hp <= 0)
         {
+            _rigidBody.velocity = Vector3.zero;
             IsDead = true;
             CharacterDeadHandler?.Invoke();
 

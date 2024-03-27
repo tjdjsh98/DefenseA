@@ -22,7 +22,7 @@ MonoBehaviour:
     enemyList: 00000000
     hpMultiply: 1
   - genTime: 3
-    startTime: 30
+    startTime: 0
     endTime: 60
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 02000000
@@ -34,7 +34,7 @@ MonoBehaviour:
     enemyList: 00000000
     hpMultiply: 1.2
   - genTime: 20
-    startTime: 45
+    startTime: 75
     endTime: 135
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyList: 0d000000
@@ -51,12 +51,7 @@ MonoBehaviour:
     genLocalPosition: {x: 50, y: 0, z: 0}
     enemyList: 08000000
     hpMultiply: 1
-  distanceWave:
-  - genTime: 0
-    distace: 100
-    genLocalPosition: {x: 50, y: 0, z: 0}
-    enemyList: 05000000
-    hpMultiply: 1
+  distanceWave: []
   mentalWave:
   - genTime: 30
     genMentalLevelOrMore: 1
@@ -80,6 +75,9 @@ MonoBehaviour:
   - {fileID: 11400000, guid: e2beb09c80862374e894b679f9510eb9, type: 2}
   - {fileID: 11400000, guid: 6315c8c6c79fbc54db43c76e9e0c2f19, type: 2}
   - {fileID: 11400000, guid: 5fab07e9a7daa49409dcd8226a66ddfa, type: 2}
+  - {fileID: 11400000, guid: cdb05f6270e4bf241b8fd6c412d1dcc5, type: 2}
+  - {fileID: 11400000, guid: e54822e4b08db6346a6b1e2602e5a48d, type: 2}
+  - {fileID: 11400000, guid: 87e67bb123d62be4183bf82853618cc7, type: 2}
   randomEvent:
   - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
   randomEventInterval: 100

@@ -12,9 +12,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 50557c46786496145beb3691dac76724, type: 3}
   m_Name: Black
   m_EditorClassIdentifier: 
-  sellType: 0
-  image: {fileID: 21300000, guid: 7f689e7f8c5af2648bd154f1a73876c7, type: 3}
-  description: "\uBCF4\uC870\uBB34\uAE30\uC5D0 \uBE14\uB799\uC744 \uB123\uC2B5\uB2C8\uB2E4."
+  <SellType>k__BackingField: 0
+  <Image>k__BackingField: {fileID: 0}
+  <Description>k__BackingField: "\uBE14\uB799\uC744 \uBCF4\uC870 \uBB34\uAE30\uC5D0
+    \uC7A5\uCC29\uD569\uB2C8\uB2E4."
   price: 11
   weaponName: 9
   weaponPosition: 1

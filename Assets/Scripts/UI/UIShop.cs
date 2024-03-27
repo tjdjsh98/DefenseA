@@ -51,7 +51,18 @@ public class UIShop : UIBase
                     {
                         Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
                     }
-
+                    else if (info.sellType == SellType.UpgradeWeapon)
+                    {
+                        Managers.GetManager<UIManager>().GetUI<UIUpgrade>().Open();
+                    }
+                    else if(info.sellType == SellType.StatusUp)
+                    {
+                        StatusUpShopItemData statusUpShopItemData = info.shopItemData as StatusUpShopItemData;
+                        if (statusUpShopItemData)
+                        {
+                            statusUpShopItemData.Apply();
+                        }
+                    }
                     Refresh();
                 }
             });
@@ -98,10 +109,10 @@ public class UIShop : UIBase
     {
         for (int i = 0; i < _selectionList.Count; i++)
         {
-            if (_selectionList[i].shopItemData.image)
+            if (_selectionList[i].shopItemData.Image)
             {
-                _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_selectionList[i].shopItemData.image, 130);
-                _slotImageList[i].sprite = _selectionList[i].shopItemData.image;
+                _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_selectionList[i].shopItemData.Image, 130);
+                _slotImageList[i].sprite = _selectionList[i].shopItemData.Image;
             }
             else
             {
@@ -114,7 +125,7 @@ public class UIShop : UIBase
                     _slotNameList[i].text = $"<color=\"red\">{_selectionList[i].shopItemData.price.ToString()}";
                 else
                     _slotNameList[i].text = $"{_selectionList[i].shopItemData.price.ToString()}";
-                _slotDescroptionList[i].text = $"{_selectionList[i].shopItemData.description}\n";
+                _slotDescroptionList[i].text = $"{_selectionList[i].shopItemData.Description}\n";
                
             }
             else
@@ -132,6 +143,6 @@ public class ShopItem
 {
     public ShopItemData shopItemData;
     public bool isSale;
-    public SellType sellType=>shopItemData.sellType;
+    public SellType sellType=>shopItemData.SellType;
 }
 

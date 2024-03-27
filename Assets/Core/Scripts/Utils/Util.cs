@@ -137,11 +137,6 @@ public static class Util
     public static void DrawRangeOnGizmos(GameObject go, Define.Range range, Color color)
     {
         Gizmos.color = color;
-        if (go.transform.localScale.x < 0)
-        {
-            range.center.x = -range.center.x;
-        }
-
 
         Matrix4x4 matrix = Matrix4x4.TRS(go.transform.position, Quaternion.Euler(0, 0, range.angle), Vector3.one);
         Gizmos.matrix = matrix;
