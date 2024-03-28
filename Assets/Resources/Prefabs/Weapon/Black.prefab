@@ -139,20 +139,19 @@ MonoBehaviour:
   _bulletName: 0
   _audioLength: 0
   _isAuto: 0
-  _knockBackPower: 200
-  _stunTime: 0.1
+  _knockBackPower: 100
+  _stunTime: 0.5
   _bulletSpeed: 100
   _attackMultiplier: 1
-  _damage: 2
-  _penerstratingPower: 3
+  _attackPower: 1
+  _penerstratingPower: 10
   _maxAmmo: 100
   _currentAmmo: 0
   _isAllReloadAmmo: 0
-  _fireSpeed: 1
-  _reloadDelay: 0.1
+  _attackSpeed: 1
+  _reloadTime: 0.1
   _firePosition: {fileID: 321610210134309561}
   _rebound: 20
-  _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 8
 --- !u!82 &7164879296317496389

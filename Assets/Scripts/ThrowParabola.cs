@@ -1,3 +1,4 @@
+using MoreMountains.FeedbacksForThirdParty;
 using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,22 +9,24 @@ using UnityEngine;
 
 public class ThrowParabola : MonoBehaviour
 {
+    [SerializeField] bool _debug;
+
     Character _character;
     EnemyAI _enemyAI;
 
     int _step = 0;
 
-    [SerializeField]float _fireCoolTime;
+    [SerializeField] float _fireCoolTime;
     float _fireCheckTime;
-    [SerializeField]float _fireDelay;
-    [SerializeField]float _afterFireDelay = 1;
+    [SerializeField] float _fireDelay;
+    [SerializeField] float _afterFireDelay = 1;
     [SerializeField] float _power;
     float _fireTime;
 
-    float _gravityScale=3;
-    float _mass=5;
+    float _gravityScale = 3;
+    float _mass = 5;
 
-    [SerializeField]LineRenderer _lineRenderer;
+    [SerializeField] LineRenderer _lineRenderer;
     [SerializeField] GameObject _firePoint;
 
     Vector3 _fireDirection;
@@ -34,6 +37,11 @@ public class ThrowParabola : MonoBehaviour
     {
         _character = GetComponent<Character>();
         _enemyAI = GetComponent<EnemyAI>();
+
+        if (!_debug)
+            _lineRenderer.gameObject.SetActive(false);
+        else
+            _lineRenderer.gameObject.SetActive(true);
 
         StartCoroutine(CorSearchTarget());
     }
@@ -72,7 +80,7 @@ public class ThrowParabola : MonoBehaviour
 
                                 if (_target != null)
                                 {
-                    _character.AnimatorSetBool("Attack", true);
+                                    _character.AnimatorSetBool("Attack", true);
                                     _fireTime = 0;
                                     _character.IsAttack = true;
                                     _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
@@ -85,7 +93,7 @@ public class ThrowParabola : MonoBehaviour
                         }
                     }
                 }
-               
+
             }
             if (_step == 1)
             {
@@ -136,15 +144,19 @@ public class ThrowParabola : MonoBehaviour
         Vector3 position = startPos;
         Vector3 velocity = vel / _mass;
 
-        _lineRenderer.positionCount = step + 1;
-        _lineRenderer.SetPosition(0, position);
+        if (_debug)
+        {
+            _lineRenderer.positionCount = step + 1;
+            _lineRenderer.SetPosition(0, position);
+        }
         for (int i = 0; i < step; i++)
         {
             position += velocity * deltaTime + 0.5f * gravity * deltaTime * deltaTime;
             velocity += gravity * deltaTime;
             position += velocity * deltaTime + 0.5f * gravity * deltaTime * deltaTime;
             velocity += gravity * deltaTime;
-            _lineRenderer.SetPosition(i + 1, position);
+            if(_debug)
+                _lineRenderer.SetPosition(i + 1, position);
 
 
             RaycastHit2D[] hits = Physics2D.CircleCastAll(position, 0.01f, Vector2.zero, 0, LayerMask.GetMask("Character"));

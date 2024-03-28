@@ -7,6 +7,8 @@ using UnityEngine;
 
 public class JumpAttack : MonoBehaviour
 {
+    [SerializeField] bool _debug;
+
     Character _character;
     Rigidbody2D _rigidbody;
     LineRenderer _lineRenderer;
@@ -32,6 +34,11 @@ public class JumpAttack : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _lineRenderer = GetComponentInChildren<LineRenderer>();
         _attackRange = _character.GetSize();
+
+        if (!_debug)
+            _lineRenderer.gameObject.SetActive(false);
+        else
+            _lineRenderer.gameObject.SetActive(true);
 
         StartCoroutine(CorSearchTarget());
     }
@@ -133,13 +140,20 @@ public class JumpAttack : MonoBehaviour
         Vector3 position = startPos;
         Vector3 velocity =vel/ _rigidbody.mass;
 
-        _lineRenderer.positionCount = step + 1;
-        _lineRenderer.SetPosition(0, position);
+        if (_debug)
+        {
+            _lineRenderer.positionCount = step + 1;
+            _lineRenderer.SetPosition(0, position);
+        }
         for (int i = 0; i < step; i++)
         {
             position += velocity * deltaTime + 0.5f * gravity * deltaTime * deltaTime;
             velocity += gravity * deltaTime;
-            _lineRenderer.SetPosition(i + 1, position);
+
+            if (_debug)
+            {
+                _lineRenderer.SetPosition(i + 1, position);
+            }
 
 
             RaycastHit2D[] hits = Physics2D.CircleCastAll(position, 0.01f, Vector2.zero, 0, LayerMask.GetMask("Character"));

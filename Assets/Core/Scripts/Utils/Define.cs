@@ -117,6 +117,7 @@ public static class Define
         ExplosionGun,
         ImprovisedRifle,
         ImprovisedPistol,
+        PumpShotgun,
         END
     }
 

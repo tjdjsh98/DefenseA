@@ -20,11 +20,18 @@ public class Shotgun : Weapon
         }
 
         if (_fireElapsed < 1 / AttackSpeed) return;
-
+        if (_isReload)
+        {
+            CancelReload();
+        }
         _currentAmmo--;
         _fireElapsed = 0;
 
+        if (_audioCoroutine != null)
+            StopCoroutine(_audioCoroutine);
+        _audioCoroutine = StartCoroutine(CorPlayAudio());
 
+        _player?.ResetRebound();
 
         float angle = transform.rotation.eulerAngles.z;
 

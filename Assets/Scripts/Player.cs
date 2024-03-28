@@ -486,6 +486,7 @@ public class Player : MonoBehaviour
         _isFire= true;
         if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
+    
         if (_weaponSwaper.CurrentWeapon != null  && !_weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
        
@@ -497,6 +498,8 @@ public class Player : MonoBehaviour
         _isFire= true;
         if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
+
+     
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(_character);
     }

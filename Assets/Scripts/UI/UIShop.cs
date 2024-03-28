@@ -12,10 +12,13 @@ public class UIShop : UIBase
     List<Image> _slotImageList = new List<Image>();
     List<TextMeshProUGUI> _slotNameList = new List<TextMeshProUGUI>();
     List<TextMeshProUGUI> _slotDescroptionList = new List<TextMeshProUGUI>();
-    [SerializeField] List<ShopItem> _selectionList = new List<ShopItem>();
 
     [SerializeField] List<Sprite> _spriteList;
-    
+
+    [SerializeField] TextMeshProUGUI _restockText;
+
+    IShop _openShop;
+
     public override void Init()
     {
         gameObject.SetActive(false);
@@ -29,17 +32,17 @@ public class UIShop : UIBase
 
             int tempIndex = index;
             slot.onClick.AddListener(() => {
-                if (_selectionList.Count <= tempIndex) return;
-                if (_selectionList[tempIndex].isSale) return;
+                if (_openShop.ShopItemList.Count <= tempIndex) return;
+                if (_openShop.ShopItemList[tempIndex].isSale) return;
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
-                if (_selectionList[tempIndex].shopItemData.price <= gameManager.Money)
+                if (_openShop.ShopItemList[tempIndex].shopItemData.price <= gameManager.Money)
                 {
-                    gameManager.Money -= _selectionList[tempIndex].shopItemData.price;
-                    ShopItem info = _selectionList[tempIndex];
+                    gameManager.Money -= _openShop.ShopItemList[tempIndex].shopItemData.price;
+                    ShopItem info = _openShop.ShopItemList[tempIndex];
                     info.isSale = true;
-                    _selectionList[tempIndex] = info;
+                    _openShop.ShopItemList[tempIndex] = info;
 
                     if (info.sellType == SellType.Weapon)
                     {
@@ -87,11 +90,12 @@ public class UIShop : UIBase
         gameObject.SetActive(true);
     }
 
-    public void Open(List<ShopItem> list)
+    public void Open(IShop shop)
     {
+        if(shop == null) return;
+        _openShop = shop;
+
         Managers.GetManager<UIManager>().Open(this);
-        _selectionList.Clear();
-        _selectionList.AddRange(list);
         Refresh();
         Time.timeScale = 0;
         gameObject.SetActive(true);
@@ -100,32 +104,36 @@ public class UIShop : UIBase
     {
         Time.timeScale = 1;
         gameObject.SetActive(false);
-
         if (!except)
+        {
             Managers.GetManager<UIManager>().Close(this);
+            _openShop = null;
+        }
     }
 
     void Refresh()
     {
-        for (int i = 0; i < _selectionList.Count; i++)
+        _restockText.text = $"재입고\n{_openShop.RestockCost}";
+
+        for (int i = 0; i < _openShop.ShopItemList.Count; i++)
         {
-            if (_selectionList[i].shopItemData.Image)
+            if (_openShop.ShopItemList[i].shopItemData.Image)
             {
-                _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_selectionList[i].shopItemData.Image, 130);
-                _slotImageList[i].sprite = _selectionList[i].shopItemData.Image;
+                _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_openShop.ShopItemList[i].shopItemData.Image, 130);
+                _slotImageList[i].sprite = _openShop.ShopItemList[i].shopItemData.Image;
             }
             else
             {
                 _slotImageList[i].rectTransform.sizeDelta = Vector2.zero;
                 _slotImageList[i].sprite = null;
             }
-            if (!_selectionList[i].isSale)
+            if (!_openShop.ShopItemList[i].isSale)
             {
-                if (_selectionList[i].shopItemData.price > Managers.GetManager<GameManager>().Money)
-                    _slotNameList[i].text = $"<color=\"red\">{_selectionList[i].shopItemData.price.ToString()}";
+                if (_openShop.ShopItemList[i].shopItemData.price > Managers.GetManager<GameManager>().Money)
+                    _slotNameList[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.price.ToString()}";
                 else
-                    _slotNameList[i].text = $"{_selectionList[i].shopItemData.price.ToString()}";
-                _slotDescroptionList[i].text = $"{_selectionList[i].shopItemData.Description}\n";
+                    _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.price.ToString()}";
+                _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";
                
             }
             else
@@ -133,6 +141,13 @@ public class UIShop : UIBase
                 _slotNameList[i].text = "판매완료";
             }
         }
+    }
+
+    public void ReStockItems()
+    {
+        _openShop.RestockShopItems();
+        _openShop.RestockCost = _openShop.RestockCost * 2;
+        Refresh();
     }
 
 }
