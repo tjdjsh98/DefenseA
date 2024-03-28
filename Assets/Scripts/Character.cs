@@ -66,8 +66,8 @@ public class Character : MonoBehaviour,IHp
     public bool IsContactGround => _isContactGround;
     private bool _isJump;
 
-    float _groundAccelePower = 60;
-    float _airAccelePower = 60;
+    float _groundAccelePower = 20;
+    float _airAccelePower = 20;
     float _groundBreakPower = 60;
     float _airBreakPower = 20;
 
@@ -261,11 +261,13 @@ public class Character : MonoBehaviour,IHp
 
         _hp -= damage;
 
+        float knockBack = power;
+        knockBack *= (1 - _standing / 100f);
+        _rigidBody.AddForce(direction * knockBack, ForceMode2D.Impulse);
+
         if (!IsSuperArmer && stunTime > 0)
         {
-            float knockBack = power;
-            knockBack *= (1 - _standing/100f);
-            _rigidBody.AddForce(direction * knockBack, ForceMode2D.Impulse);
+         
             IsStun = true;
             _stunEleasped = 0;
             _stunTime = stunTime;

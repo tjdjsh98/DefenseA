@@ -17,7 +17,7 @@ public enum CreatureAbilityName
     CurrentPassing,
     Charge,
     ElectricDischarge,
-    Smash,
     DiningEtiquette,
+    Roar,
     END
 };

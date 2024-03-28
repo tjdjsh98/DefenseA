@@ -161,13 +161,13 @@ public class Player : MonoBehaviour
             _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
             _bounce = false;
         }
-        // 임시 공격
+        //// 임시 공격
 
-        if (Input.GetMouseButtonDown(1) && !_isSliding)
-        {
-            _character.IsAttack = true;
-            _animator.SetTrigger("MeleeAttack");
-        }
+        //if (Input.GetMouseButtonDown(1) && !_isSliding)
+        //{
+        //    _character.IsAttack = true;
+        //    _animator.SetTrigger("MeleeAttack");
+        //}
 
         _girlAbility.AbilityUpdate();
 

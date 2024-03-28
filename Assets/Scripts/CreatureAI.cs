@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
-
+using UnityEngine.Windows.WebCam;
 
 public class CreatureAI : MonoBehaviour
 {
@@ -22,6 +22,7 @@ public class CreatureAI : MonoBehaviour
      * 2 = 관통공격
      * 3 = 바닥에서 치솟는 스피어 공격
      * 4 = 땅구르기 공격
+     * 5 = 움부짓기
      */
     [SerializeField] int _debugAttackRangeIndex;
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
@@ -332,8 +333,8 @@ public class CreatureAI : MonoBehaviour
     #region 스킬관련
     void RegistSkill()
     {
+        _skillDictionary.Add(SkillName.Roar, PlayRoar);
         _skillDictionary.Add(SkillName.Shockwave, PlayShockwave);
-        _skillDictionary.Add(SkillName.Smash, PlaySmash);
         _skillDictionary.Add(SkillName.StempGround, PlayStempGround);
     }
 
@@ -451,7 +452,7 @@ public class CreatureAI : MonoBehaviour
         slot.skillTime = 0;
     }
 
-    public void FinishSmashAttack()
+    public void FinishAttack()
     {
         _character.IsAttack = false;
         _character.IsEnableMove = true;
@@ -482,6 +483,55 @@ public class CreatureAI : MonoBehaviour
             }
         }
         slot.skillTime = 0;
+    }
+
+    void PlayRoar(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
+        slot.isActive = true;
+
+        StartCoroutine(CorPlayRoar(slot));
+    }
+    IEnumerator CorPlayRoar(SkillSlot slot)
+    {
+
+        _character.AnimatorSetTrigger("Roar");
+
+        _character.IsAttack = true;
+        _character.IsEnableMove = false;
+        _character.IsEnableTurn = false;
+
+        while (_character.IsAttack)
+        {
+            yield return null;
+        }
+        
+        slot.isActive = false;
+        slot.skillTime = 0;
+    }
+
+    public void Roar()
+    {
+        Util.RangeCastAll2D(gameObject, _attackRangeList[5], Define.CharacterMask, (hit) =>
+        {
+            if (hit.collider == null) return false;
+
+            IHp hpComponent = hit.collider.GetComponent<IHp>();
+
+            if (hpComponent != null)
+            {
+                Character character = hpComponent as Character;
+                CharacterPart characterPart = hpComponent as CharacterPart;
+
+                if ((character && character.CharacterType == Define.CharacterType.Enemy) ||
+                (characterPart&& characterPart.Character.CharacterType == Define.CharacterType.Enemy))
+                    _character.Attack(hpComponent, _character.AttackPower, 100, Vector3.right * transform.localScale.x, hit.point, 2);
+
+            }
+            return true;
+        });
     }
 
     // 미사용 스킬

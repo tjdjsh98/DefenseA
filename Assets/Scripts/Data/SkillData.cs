@@ -20,7 +20,7 @@ public enum SkillName
     Shockwave,
     StempGround,
     ElectricDischarge,
-    Smash,
+    Roar,
     Barrier,
     VolleyFire,
     Bait,

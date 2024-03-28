@@ -634,7 +634,7 @@ MonoBehaviour:
       figureType: 0
     _survivalIntinctCount: 0
     _survivalIntinctElapsed: 0
-  _debugAttackRangeIndex: 0
+  _debugAttackRangeIndex: 5
   _attackRangeList:
   - center: {x: 0, y: 2.5, z: 0}
     size: {x: 70, y: 5, z: 0}
@@ -656,6 +656,10 @@ MonoBehaviour:
     size: {x: 30, y: 20, z: 0}
     angle: 0
     figureType: 0
+  - center: {x: 7.5, y: 4, z: 0}
+    size: {x: 15, y: 8, z: 0}
+    angle: 0
+    figureType: 0
   _penetrateAttack: {fileID: 0}
   _fArmIK: {fileID: 0}
   _spearAttackCoolTime: 3
@@ -671,7 +675,7 @@ SortingGroup:
   m_GameObject: {fileID: 956957877125519258}
   m_Enabled: 1
   m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 2
   m_SortAtRoot: 0
 --- !u!1 &1268819393381664709
@@ -3266,7 +3270,7 @@ VFXRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -256922147
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 3
 --- !u!1 &9120701621347022478
 GameObject:
