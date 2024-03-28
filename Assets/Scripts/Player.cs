@@ -241,14 +241,14 @@ public class Player : MonoBehaviour
         {
             if (Input.GetKeyDown(KeyCode.LeftControl))
             {
-                
                 bool isRight = _rigidbody.velocity.x > 0;
                 _character.TurnBody(isRight ? Vector3.right : Vector3.left);
-                _rigidbody.AddForce(Vector2.right * 150 * (isRight ? 1 : -1), ForceMode2D.Impulse);
                 _isSliding = true;
                 _character.IsInvincibility = true;
                 _character.IsEnableTurn = false;
                 _character.IsEnableMove = false;
+                Debug.Log("Slide");
+                _character.AddForce(Vector2.right * 150 * (isRight ? 1 : -1));
                 _character.AnimatorSetBool("Sliding", _isSliding);
                 _slidingTime = 0;
             }

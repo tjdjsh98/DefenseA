@@ -8,22 +8,17 @@ public class StatusUpShopItemData : ShopItemData
 {
     [field:SerializeField]public int IncreasingGirlMaxHp { set; get; }
     [field:SerializeField]public int IncreasingCreatureMaxHp { set; get; }
-    [field:SerializeField]public int IncreasingWallMaxHp { set; get; }
     [field: SerializeField] public int IncreasingCreatureAttackPower { set; get; }
-    [field: SerializeField] public int IncreasingWallAttackPower { set; get; }
     [field: SerializeField] public int RecoverGirlHpAmount { set; get; }
     [field: SerializeField] public int RecoverCreatureHpAmount { set; get; }
-    [field: SerializeField] public int RecoverWallHpAmount { set; get; }
 
     [field: SerializeField] public float IncreasingGirlSpeed { set; get; }
     [field: SerializeField] public float IncreasingCreatureSpeed { set; get; }
-    [field: SerializeField] public float IncreasingWallSpeed { set; get; }
 
     public void Apply()
     {
         Character girl = Managers.GetManager<GameManager>().Girl;
         Character creature = Managers.GetManager<GameManager>().Creature;
-        Character wall = Managers.GetManager<GameManager>().Wall;
 
         if (girl)
         {
@@ -39,14 +34,5 @@ public class StatusUpShopItemData : ShopItemData
             creature.Hp  += RecoverCreatureHpAmount;
             creature.SetSpeed(creature.Speed + IncreasingCreatureSpeed);
         }
-
-        if (wall)
-        {
-            wall.AddMaxHp(IncreasingWallMaxHp);
-            wall.AttackPower += IncreasingWallAttackPower;
-            wall.Hp += RecoverWallHpAmount;
-            wall.SetSpeed(wall.Speed + IncreasingWallSpeed);
-        }
-
     }
 }

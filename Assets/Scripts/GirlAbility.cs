@@ -158,7 +158,6 @@ public class GirlAbility
 
     public float GetIncreasedDamagePercentage()
     {
-        Character wall = Managers.GetManager<GameManager>().Wall;
         Character creature = Managers.GetManager<GameManager>().Creature;
 
         float percentage = 0;
@@ -174,7 +173,6 @@ public class GirlAbility
 
     public float GetIncreasedAttackSpeedPercentage()
     {
-        Character wall = Managers.GetManager<GameManager>().Wall;
         Character creature = Managers.GetManager<GameManager>().Creature;
 
         float percentage = 0;

@@ -14,8 +14,6 @@ public class AbilityManager : ManagerBase
     Character Creature => Managers.GetManager<GameManager>().Creature;
     CreatureAI CreatureAI => Managers.GetManager<GameManager>().CreatureAI;
 
-    Character Wall => Managers.GetManager<GameManager>().Wall;
-    WallAI WallAI => Managers.GetManager<GameManager>().WallAI;
     #endregion
 
     // 공용 능력
@@ -211,25 +209,13 @@ public class AbilityManager : ManagerBase
 
             AddSkill(creatureCardData);
         }
-        if (wallCardData != null)
-        {
-            Wall.AddMaxHp(wallCardData.IncreaseHp);
-            Wall.IncreasedRecoverHpPower += wallCardData.IncreaseRecoverHpPower;
-            Wall.IncreasedDamageReducePercentage += wallCardData.IncreaseDamageReducePercentage;
-            Wall.AttackPower += wallCardData.IncreaseAttackPoint;
-            Wall.transform.localScale += new Vector3(wallCardData.SizeUpPercentage / 100, wallCardData.SizeUpPercentage / 100, 0);
-            
-            WallAI.WallAbility.AddGirlAbility(wallCardData.UnlockAbility);
-            AddSkill(wallCardData);
-        }
+      
 
         if (commonCardData != null)
         {
-            Wall.AddMaxHp(commonCardData.IncreaseHp);
             Creature.AddMaxHp(commonCardData.IncreaseHp);
             Girl.AddMaxHp(commonCardData.IncreaseHp);
 
-            Wall.AttackPower += commonCardData.IncreaseAttackPoint;
             Creature.AttackPower += commonCardData.IncreaseAttackPoint;
             Girl.AttackPower += commonCardData.IncreaseAttackPoint;
 
@@ -456,10 +442,7 @@ public class AbilityManager : ManagerBase
         {
             CreatureAI.UseSkill(_skillSlotList[index]);
         }
-        if (_skillSlotList[index].skillData.character == Define.MainCharacter.Wall)
-        {
-            WallAI.UseSkill(_skillSlotList[index]);
-        }
+       
         if (_skillSlotList[index].skillData.character == Define.MainCharacter.Common)
         {
             UseSkill(_skillSlotList[index]);

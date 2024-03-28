@@ -21,7 +21,6 @@ public enum SkillName
     StempGround,
     ElectricDischarge,
     Roar,
-    Barrier,
     VolleyFire,
     Bait,
     END

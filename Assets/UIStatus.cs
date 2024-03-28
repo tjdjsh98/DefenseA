@@ -12,8 +12,6 @@ public class UIStatus : UIBase
     Player _player;
     Character _creature;
     CreatureAI _creatureAI;
-    Character _wall;
-    WallAI _wallAI;
 
     StringBuilder _stringBuilder;
 
@@ -66,8 +64,6 @@ public class UIStatus : UIBase
         _player = manager.Player;
         _creature = manager.Creature;
         _creatureAI = manager.CreatureAI;
-        _wall = manager.Wall;
-        _wallAI = manager.WallAI;
 
         OpenGirlPage();
 
@@ -127,26 +123,6 @@ public class UIStatus : UIBase
         _stringBuilder.Clear();
         _stringBuilder.AppendLine($"보유 능력");
         foreach (var abilityName in creatureAbility.GetHaveAbilityNameList())
-        {
-            _stringBuilder.AppendLine($"{abilityName}");
-        }
-        _abilityTextMesh.text = _stringBuilder.ToString();
-    }
-
-    public void OpenWallPage()
-    {
-
-        _titleTextMesh.text = "벽";
-        _stringBuilder.Clear();
-        _stringBuilder.AppendLine($"체력 : {_wall.Hp}/{_wall.MaxHp}");
-        _stringBuilder.AppendLine($"공격력 : {_wall.AttackPower}");
-        _stringBuilder.AppendLine($"체력재생력 : {_wall.IncreasedRecoverHpPower}");
-        _descriptionTextMesh.text = _stringBuilder.ToString();
-
-        WallAbility wallAbility = _wallAI.WallAbility;
-        _stringBuilder.Clear();
-        _stringBuilder.AppendLine($"보유 능력");
-        foreach (var abilityName in wallAbility.GetHaveAbilityNameList())
         {
             _stringBuilder.AppendLine($"{abilityName}");
         }

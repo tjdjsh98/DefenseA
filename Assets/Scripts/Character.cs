@@ -38,7 +38,6 @@ public class Character : MonoBehaviour,IHp
     [SerializeField] bool _isEnableRevive;
     [SerializeField] bool _isEnableFly = false;
     public bool IsEnableFly => _isEnableFly;
-
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     // 스턴 후 전 움직임 가능상태로 변경
     [field:SerializeField]public bool IsEnableTurn { set; get; } = true;
@@ -54,7 +53,6 @@ public class Character : MonoBehaviour,IHp
     public bool IsStun {private set; get; }
     public bool IsAttack {set; get; }
     public bool IsRoll { set; get; }
-    bool _isMove = false;
     public bool IsDead { set; get; }
     bool _isKnockBack;
     bool _isContactGround = false;
@@ -66,11 +64,12 @@ public class Character : MonoBehaviour,IHp
     public bool IsContactGround => _isContactGround;
     private bool _isJump;
 
-    float _groundAccelePower = 20;
-    float _airAccelePower = 20;
-    float _groundBreakPower = 60;
-    float _airBreakPower = 20;
+    float _groundAccelePower = 30;
+    float _airAccelePower = 60;
+    float _groundBreakPower = 30;
+    float _airBreakPower = 10;
 
+    Vector3 _moveDirection;
 
     // 핸들러
     public Action CharacterDeadHandler;
@@ -146,7 +145,7 @@ public class Character : MonoBehaviour,IHp
             }
         }
         CheckGround();
-        HandleBreak();
+        HandleMove();
     }
     private void FixedUpdate()
     {
@@ -160,45 +159,119 @@ public class Character : MonoBehaviour,IHp
         _speed =speed;
     }
 
-    void HandleBreak()
+    public void Move(Vector2 direction)
     {
-        // 브레이크
-        if (!_isMove )
-        {
-            float xSpeed = _rigidBody.velocity.x;
-            if (xSpeed != 0)
-            {
-                if (_isContactGround)
-                {
-                    if (xSpeed > 0 && xSpeed - Time.deltaTime * _groundBreakPower < 0)
-                        xSpeed = 0;
-                    else if (xSpeed <0 &&  xSpeed + Time.deltaTime * _groundBreakPower > 0)
-                        xSpeed = 0;
-                    else 
-                        xSpeed += Time.deltaTime * _groundBreakPower * (xSpeed > 0 ? -1 : 1);
-                }
-            }
-            float ySpeed = _rigidBody.velocity.y;
-            if (IsEnableFly)
-            {
-                if (xSpeed > 0 && xSpeed - Time.deltaTime * _airBreakPower < 0)
-                    xSpeed = 0;
-                else if (xSpeed < 0 && xSpeed + Time.deltaTime * _airBreakPower > 0)
-                    xSpeed = 0;
-                else
-                    xSpeed += Time.deltaTime * _airBreakPower * (xSpeed > 0 ? -1 : 1);
 
-                if (ySpeed > 0 && ySpeed - Time.deltaTime * _airBreakPower < 0)
-                    ySpeed = 0;
-                else if (ySpeed < 0 && xSpeed + Time.deltaTime * _airBreakPower > 0)
-                    ySpeed = 0;
-                else
-                    ySpeed += Time.deltaTime * _airBreakPower * (ySpeed > 0 ? -1 : 1);
-            }
-            _rigidBody.velocity = new Vector3(xSpeed, ySpeed);
+        if (IsStun) return;
+
+        // 진행 방향에 맞게 몸을 회전
+        if (IsTurnBodyAlongVelocity)
+        {
+            TurnBody(direction);
         }
 
-        _isMove = false;
+        // 움직임 제어
+        if (IsEnableMove)
+        {
+            _moveDirection = direction;
+        }
+    }
+
+    void HandleMove()
+    {
+        // 진행 방향에 맞게 몸을 회전
+        if (IsTurnBodyAlongVelocity)
+        {
+            TurnBody(_moveDirection);
+        }
+
+        // 가속
+        if (_moveDirection != Vector3.zero)
+        {
+            _moveDirection.x = Mathf.Clamp(_moveDirection.x, -1, 1);
+            _moveDirection.y = Mathf.Clamp(_moveDirection.y, -1, 1);
+            float maxXSpeed = _speed * _moveDirection.x;
+            float maxYSpeed = _speed * _moveDirection.y;
+
+            Vector2 currentSpeed = _rigidBody.velocity;
+        
+            if (IsEnableFly || _isContactGround)
+            {
+                if((_moveDirection.x > 0 && currentSpeed.x + ((_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) > maxXSpeed) ||
+                    (_moveDirection.x < 0 && currentSpeed.x + ((_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) < maxXSpeed))
+                {
+                    currentSpeed.x = maxXSpeed;
+                }
+                else
+                    currentSpeed.x += (_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime;
+            }
+            if (IsEnableFly)
+            {
+                if (Mathf.Abs(currentSpeed.y + (_moveDirection.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime) > Mathf.Abs(maxYSpeed))
+                {
+                    currentSpeed.y =  maxYSpeed;
+                }
+                else
+                {
+                    currentSpeed.y += (_moveDirection.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
+                }
+            }
+            _rigidBody.velocity = currentSpeed;
+        }
+        else
+        {
+            Vector2 currentSpeed = _rigidBody.velocity;
+            if (IsEnableFly)
+            {
+                if (currentSpeed.x > 0 && currentSpeed.x - Time.deltaTime * _airBreakPower < 0)
+                    currentSpeed.x = 0;
+                else if (currentSpeed.x < 0 && currentSpeed.x + Time.deltaTime * _airBreakPower > 0)
+                    currentSpeed.x = 0;
+                else
+                    currentSpeed.x += Time.deltaTime * _airBreakPower * (currentSpeed.x > 0 ? -1 : 1);
+
+                if (currentSpeed.y > 0 && currentSpeed.y - Time.deltaTime * _airBreakPower < 0)
+                    currentSpeed.y = 0;
+                else if (currentSpeed.y < 0 && currentSpeed.x + Time.deltaTime * _airBreakPower > 0)
+                    currentSpeed.y = 0;
+                else
+                    currentSpeed.y += Time.deltaTime * _airBreakPower * (currentSpeed.y > 0 ? -1 : 1);
+            }
+            else
+            {
+                if (currentSpeed.x != 0)
+                {
+                    if (_isContactGround)
+                    {
+                        if (currentSpeed.x > 0 && (currentSpeed.x - Time.deltaTime * _groundBreakPower) < 0)
+                            currentSpeed.x = 0;
+                        else if (currentSpeed.x < 0 && (currentSpeed.x + Time.deltaTime * _groundBreakPower) > 0)
+                            currentSpeed.x = 0;
+                        else
+                            currentSpeed.x += Time.deltaTime * _groundBreakPower * (currentSpeed.x > 0 ? -1 : 1);
+
+                     
+                    }
+                    else
+                    {
+                        if (currentSpeed.y > 0 && currentSpeed.y - Time.deltaTime * _airBreakPower < 0)
+                            currentSpeed.y = 0;
+                        else if (currentSpeed.y < 0 && currentSpeed.y + Time.deltaTime * _airBreakPower > 0)
+                            currentSpeed.y = 0;
+                        else
+                            currentSpeed.y += Time.deltaTime * _airBreakPower * (currentSpeed.y > 0 ? -1 : 1);
+                    }
+                }
+            }
+            _rigidBody.velocity = currentSpeed;
+        }
+
+        _moveDirection = Vector3.zero;
+    }
+    public void AddForce(Vector2 forceDirection)
+    {
+        _moveDirection = Vector2.zero;
+        _rigidBody.AddForce(forceDirection, ForceMode2D.Impulse);
     }
 
     void ControlAnimation()
@@ -263,8 +336,8 @@ public class Character : MonoBehaviour,IHp
 
         float knockBack = power;
         knockBack *= (1 - _standing / 100f);
+        Vector3 knockBackPower = direction * knockBack;
         _rigidBody.AddForce(direction * knockBack, ForceMode2D.Impulse);
-
         if (!IsSuperArmer && stunTime > 0)
         {
          
@@ -311,49 +384,7 @@ public class Character : MonoBehaviour,IHp
     }
 
 
-    public void Move(Vector2 direction)
-    {
-    
-        if (IsStun) return;
-
-        // 진행 방향에 맞게 몸을 회전
-        if (IsTurnBodyAlongVelocity)
-        {
-            TurnBody(direction);
-        }
-
-        // 움직임 제어
-        if (IsEnableMove)
-        {
-            direction.x = Mathf.Clamp(direction.x, -1, 1);
-            direction.y = Mathf.Clamp(direction.y, -1, 1);
-            float maxXSpeed = Mathf.Abs( _speed * direction.x);
-            float maxYSpeed = Mathf.Abs( _speed * direction.y);
-
-            Vector2 currentSpeed = _rigidBody.velocity;
-
-            if (IsEnableFly || _isContactGround)
-            {
-                if (Mathf.Abs(currentSpeed.x + (direction.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) > maxXSpeed)
-                    currentSpeed.x = currentSpeed.x > 0 ? maxXSpeed : -maxXSpeed;
-                else
-                    currentSpeed.x += (direction.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime;
-            }
-            if (IsEnableFly)
-            {
-                if (Mathf.Abs(currentSpeed.y + (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime) > maxYSpeed)
-                {
-                    currentSpeed.y = currentSpeed.y > 0 ? maxYSpeed : -maxYSpeed;
-                }
-                else
-                {
-                    currentSpeed.y += (direction.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
-                }
-            }
-            _rigidBody.velocity = currentSpeed;
-            _isMove = true;
-        }
-    }
+  
 
     public void Jump()
     {

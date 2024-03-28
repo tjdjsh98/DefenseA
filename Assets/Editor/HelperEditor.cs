@@ -13,8 +13,8 @@ public class HelperEditor : EditorWindow
     const string GIRL_ABILITY_DATA_PATH = "Scripts/Data/GirlAbilityData.cs";
     const string CREATURE_CARD_DATA_PATH = "Data/괴물카드.csv";
     const string CREATURE_ABILITY_DATA_PATH = "Scripts/Data/CreatureAbilityData.cs";
-    const string WALL_CARD_DATA_PATH = "Data/벽카드.csv";
-    const string WALL_ABILITY_DATA_PATH = "Scripts/Data/WallAbilityData.cs";
+    //const string WALL_CARD_DATA_PATH = "Data/벽카드.csv";
+    //const string WALL_ABILITY_DATA_PATH = "Scripts/Data/WallAbilityData.cs";
     const string COMMON_CARD_DATA_PATH = "Data/공용카드.csv";
     const string COMMON_ABILITY_DATA_PATH = "Scripts/Data/CommonAbilityData.cs";
     const string CARD_DATA_PATH = "Scripts/Data/CardData.cs";
@@ -114,7 +114,7 @@ public class HelperEditor : EditorWindow
         {
             CreateGirlCardData();
             CreateCreatureCardData();
-            CreateWallCardData();
+            //CreateWallCardData();
             CreateCommonCardData();
             CreateSkillData();
         }
@@ -189,40 +189,40 @@ public class HelperEditor : EditorWindow
         writer.Write(string.Format(AbilityFormat, "Creature", "CREATURE", ability));
         writer.Close();
 
-        // 벽 정의 로드
-        textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
-        if (textAsset == null) return;
+        //// 벽 정의 로드
+        //textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
+        //if (textAsset == null) return;
 
-        ability = "";
+        //ability = "";
 
-        lines = textAsset.text.Split('\n');
-        preHeadWords = lines[0].Split(',');
+        //lines = textAsset.text.Split('\n');
+        //preHeadWords = lines[0].Split(',');
 
-        for (int i = 1; i < lines.Length; i++)
-        {
-            string[] words = lines[i].Split(',');
-            if (preHeadWords.Length != words.Length) continue;
+        //for (int i = 1; i < lines.Length; i++)
+        //{
+        //    string[] words = lines[i].Split(',');
+        //    if (preHeadWords.Length != words.Length) continue;
 
-            if (!string.IsNullOrEmpty(words[0]))
-            {
-                cardName += $"\n    {words[0]},";
-            }
-            if (ParseBoolean(words[1]))
-            {
-                if (!string.IsNullOrEmpty(words[10]))
-                {
-                    skillName += $"\n    {words[10]},";
-                }
-            }
+        //    if (!string.IsNullOrEmpty(words[0]))
+        //    {
+        //        cardName += $"\n    {words[0]},";
+        //    }
+        //    if (ParseBoolean(words[1]))
+        //    {
+        //        if (!string.IsNullOrEmpty(words[10]))
+        //        {
+        //            skillName += $"\n    {words[10]},";
+        //        }
+        //    }
 
-            if (!string.IsNullOrEmpty(words[10]))
-            {
-                ability += $"\n    {words[10]},";
-            }
-        }
-        writer = new StreamWriter("Assets/" + WALL_ABILITY_DATA_PATH);
-        writer.Write(string.Format(AbilityFormat, "Wall", "WALL", ability));
-        writer.Close();
+        //    if (!string.IsNullOrEmpty(words[10]))
+        //    {
+        //        ability += $"\n    {words[10]},";
+        //    }
+        //}
+        //writer = new StreamWriter("Assets/" + WALL_ABILITY_DATA_PATH);
+        //writer.Write(string.Format(AbilityFormat, "Wall", "WALL", ability));
+        //writer.Close();
 
         // 공용 정의 로드
         textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_DATA_PATH);
@@ -354,45 +354,45 @@ public class HelperEditor : EditorWindow
             AssetDatabase.Refresh();
         }
     }
-    void CreateWallCardData()
-    {
-        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
-        if (textAsset == null) return;
+    //void CreateWallCardData()
+    //{
+    //    TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
+    //    if (textAsset == null) return;
 
-        string[] lines = textAsset.text.Split('\n');
+    //    string[] lines = textAsset.text.Split('\n');
 
-        string[] preHeadWords = lines[0].Split(',');
-        for (int i = 1; i < lines.Length; i++)
-        {
-            string[] words = lines[i].Split(',');
-            if (preHeadWords.Length != words.Length) continue;
-            words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length - 1, 1);
+    //    string[] preHeadWords = lines[0].Split(',');
+    //    for (int i = 1; i < lines.Length; i++)
+    //    {
+    //        string[] words = lines[i].Split(',');
+    //        if (preHeadWords.Length != words.Length) continue;
+    //        words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length - 1, 1);
 
-            WallCardData data = ScriptableObject.CreateInstance<WallCardData>();
-            data.name = words[0];
-            data.CardName = GetCardName(words[0]);
-            data.IsActiveAbility = ParseBoolean(words[1]);
-            data.CardDescription = words[2];
-            data.IsStartCard = words[3].Equals("1") ? true : false;
-            string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<CardName>();
-            foreach (var priorCard in priorCards)
-            {
-                data.PriorCards.Add(GetCardName(priorCard));
-            }
-            data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
-            data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
-            data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
-            data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-            data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-            data.UnlockAbility = GetWallAbility(words[10]);
-            data.SizeUpPercentage = ParseFloat(words[11]);
+    //        WallCardData data = ScriptableObject.CreateInstance<WallCardData>();
+    //        data.name = words[0];
+    //        data.CardName = GetCardName(words[0]);
+    //        data.IsActiveAbility = ParseBoolean(words[1]);
+    //        data.CardDescription = words[2];
+    //        data.IsStartCard = words[3].Equals("1") ? true : false;
+    //        string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+    //        data.PriorCards = new List<CardName>();
+    //        foreach (var priorCard in priorCards)
+    //        {
+    //            data.PriorCards.Add(GetCardName(priorCard));
+    //        }
+    //        data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
+    //        data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
+    //        data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
+    //        data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
+    //        data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
+    //        data.UnlockAbility = GetWallAbility(words[10]);
+    //        data.SizeUpPercentage = ParseFloat(words[11]);
 
-            AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
-            AssetDatabase.SaveAssets();
-            AssetDatabase.Refresh();
-        }
-    }
+    //        AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
+    //        AssetDatabase.SaveAssets();
+    //        AssetDatabase.Refresh();
+    //    }
+    //}
     void CreateCommonCardData()
     {
         TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_DATA_PATH);

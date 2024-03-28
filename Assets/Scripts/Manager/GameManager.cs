@@ -1,12 +1,9 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
-using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
-using UnityEngine.UIElements;
 using Random = UnityEngine.Random;
 
 public class GameManager : ManagerBase
@@ -18,10 +15,6 @@ public class GameManager : ManagerBase
 
     Character _girl;
     public Character Girl { get { if (Player && _girl == null) _girl = Player.GetComponent<Character>(); return _girl; } }
-
-    public WallAI WallAI { set; get; }
-    Character _wall;
-    public Character Wall { get { if (WallAI && _wall == null) _wall = WallAI?.GetComponent<Character>(); return _wall; } }
 
     Character _creature;
     public Character Creature { get { if (CreatureAI && _creature == null) _creature = CreatureAI?.GetComponent<Character>(); return _creature; } }
@@ -211,16 +204,7 @@ public class GameManager : ManagerBase
         }
         DontDestroyOnLoad(_girl);
         Player = _girl.GetComponent<Player>();
-        if (GameObject.Find("Wall") != null)
-        {
-            _wall = GameObject.Find("Wall").gameObject.GetComponent<Character>();
-        }
-        else
-        {
-            _wall = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/MainCharacter/Wall").GetComponent<Character>();
-        }
-        DontDestroyOnLoad(_wall);
-        WallAI = _wall.GetComponent<WallAI>();
+      
         if (GameObject.Find("Creature") != null)
         {
             _creature = GameObject.Find("Creature").gameObject.GetComponent<Character>();
@@ -234,7 +218,6 @@ public class GameManager : ManagerBase
 
 
         _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
-        _wall.transform.position = GetGroundTop(new Vector3(-43, 0, 0)).Value;
         _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
     }
     void OffTimeline()
@@ -242,7 +225,6 @@ public class GameManager : ManagerBase
         _isPlayTimeline = false;
         _creature?.SetVelocityForcibly(Vector3.zero);
         _girl?.SetVelocityForcibly(Vector3.zero);
-        _wall?.SetVelocityForcibly(Vector3.zero);
     }
     public override void ManagerUpdate()
     {
@@ -282,12 +264,7 @@ public class GameManager : ManagerBase
         if (Player)
             _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
 
-        // 벽이 맵의 끝에 도착하면 다음 스테이지로
-        if (Wall && Wall.transform.position.x > MapSize)
-        {
-            if (_mapData.nextMapData != null)
-                LoadScene(_mapData.nextMapData);
-        }
+       
     }
     void TimeWave()
     {
@@ -520,7 +497,6 @@ public class GameManager : ManagerBase
         Managers.GetManager<UIManager>().GetUI<UIInGame>().LoadSceneFadeOut();
         yield return new WaitForSeconds(2);
         _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
-        _wall.transform.position = GetGroundTop(new Vector3(-43, 0, 0)).Value;
         _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
         SceneManager.LoadScene(mapData.name);
 

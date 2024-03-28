@@ -34,7 +34,7 @@ public class NextSceneLoader : MonoBehaviour
                 {
                     if (!_end)
                     {
-                        if (go == Managers.GetManager<GameManager>().Wall.gameObject)
+                        if (go == Managers.GetManager<GameManager>().Girl.gameObject)
                         {
                             Managers.GetManager<GameManager>().LoadScene(_nextMapData);
                             _end = true;

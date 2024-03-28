@@ -303,7 +303,7 @@ public class CreatureAI : MonoBehaviour
             Character c = hit.collider.GetComponent<Character>();
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
-                _character.Attack(c, AttackDamage, 100, c.transform.position - transform.position, hit.point);
+                _character.Attack(c, AttackDamage, 50, c.transform.position - transform.position, hit.point);
             }
         }
     }

@@ -37,8 +37,7 @@ public class UIInGame : UIBase
     TextMeshProUGUI _mentalTextMesh;
     [SerializeField] MMProgressBar _creatureHpBar;
     TextMeshProUGUI _creatureHpTextMesh;
-    [SerializeField] MMProgressBar _wallHpBar;
-    TextMeshProUGUI _wallHpTextMesh;
+    
 
     [SerializeField] GameObject _wallIndicator;
     [SerializeField] GameObject _wallIndicatorArrow;
@@ -75,7 +74,6 @@ public class UIInGame : UIBase
         _girlHpTextMesh = _girlHpBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
         _mentalTextMesh = _girlMentalBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
         _creatureHpTextMesh = _creatureHpBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
-        _wallHpTextMesh = _wallHpBar.transform.Find("Text").GetComponent<TextMeshProUGUI>();
 
     }
 
@@ -113,7 +111,7 @@ public class UIInGame : UIBase
         ShowMap();
         ShowSkill();
         //ShowAbility();
-        IndicateWall();
+        // IndicateWall();
     }
 
     void RefreshWeapon()
@@ -170,7 +168,6 @@ public class UIInGame : UIBase
     void HandleBar()
     {
         Character girl = Managers.GetManager<GameManager>().Girl;
-        Character wall = Managers.GetManager<GameManager>().Wall;
         Character creature = Managers.GetManager<GameManager>().Creature;
 
         if (girl)
@@ -189,16 +186,6 @@ public class UIInGame : UIBase
         {
             _girlHpBar.UpdateBar01(0);
             _girlHpTextMesh.text = "0";
-        }
-        if (wall)
-        {
-            _wallHpBar.UpdateBar01((float)wall.Hp / wall.MaxHp);
-            _wallHpTextMesh.text = wall.Hp.ToString();
-        }
-        else
-        {
-            _wallHpBar.UpdateBar01(0);
-            _wallHpTextMesh.text = "0";
         }
 
         if (creature)
@@ -265,103 +252,103 @@ public class UIInGame : UIBase
         }
 
     }
-    void IndicateWall()
-    {
-        int screenWidth = Screen.width;
-        int screenHeight = Screen.height;
-        Vector3 playerPosition = Camera.main.WorldToScreenPoint(Managers.GetManager<GameManager>().Player.transform.position);
-        Vector3 wallPosition = Camera.main.WorldToScreenPoint(Managers.GetManager<GameManager>().Wall.transform.position);
-        playerPosition.z = 0;
-        wallPosition.z = 0;
+    //void IndicateWall()
+    //{
+    //    int screenWidth = Screen.width;
+    //    int screenHeight = Screen.height;
+    //    Vector3 playerPosition = Camera.main.WorldToScreenPoint(Managers.GetManager<GameManager>().Player.transform.position);
+    //    Vector3 wallPosition = Camera.main.WorldToScreenPoint(Managers.GetManager<GameManager>().Wall.transform.position);
+    //    playerPosition.z = 0;
+    //    wallPosition.z = 0;
 
-        Vector3 direction = wallPosition - playerPosition;
-        Vector3 wallToCanvasDistance = wallPosition - transform.position;
+    //    Vector3 direction = wallPosition - playerPosition;
+    //    Vector3 wallToCanvasDistance = wallPosition - transform.position;
 
-        wallToCanvasDistance.x -= screenWidth / 2;
-        wallToCanvasDistance.y -= screenHeight / 2;
+    //    wallToCanvasDistance.x -= screenWidth / 2;
+    //    wallToCanvasDistance.y -= screenHeight / 2;
 
-        if (Mathf.Abs(wallToCanvasDistance.x) < screenWidth / 2 + 100 && Mathf.Abs(wallToCanvasDistance.y)+100 < screenHeight / 2 + 100)
-        {
-            _wallIndicator.SetActive(false);
-            return;
-        }
-        _wallIndicator.SetActive(true);
+    //    if (Mathf.Abs(wallToCanvasDistance.x) < screenWidth / 2 + 100 && Mathf.Abs(wallToCanvasDistance.y)+100 < screenHeight / 2 + 100)
+    //    {
+    //        _wallIndicator.SetActive(false);
+    //        return;
+    //    }
+    //    _wallIndicator.SetActive(true);
 
-        float angle  = Mathf.Atan2(direction.y, direction.x);
+    //    float angle  = Mathf.Atan2(direction.y, direction.x);
 
-        Vector3 distanceCanvasToPlayerPosition = playerPosition - transform.position;
+    //    Vector3 distanceCanvasToPlayerPosition = playerPosition - transform.position;
         
-        distanceCanvasToPlayerPosition.x -= screenWidth / 2;
-        distanceCanvasToPlayerPosition.y -= screenHeight/ 2;
+    //    distanceCanvasToPlayerPosition.x -= screenWidth / 2;
+    //    distanceCanvasToPlayerPosition.y -= screenHeight/ 2;
 
-        float paddingX = 80 * Mathf.Cos(angle);
-        float paddingY = 80 * Mathf.Sin(angle);
+    //    float paddingX = 80 * Mathf.Cos(angle);
+    //    float paddingY = 80 * Mathf.Sin(angle);
 
-        if (_wallIndicatorArrow)
-            _wallIndicatorArrow.transform.rotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg+90);
+    //    if (_wallIndicatorArrow)
+    //        _wallIndicatorArrow.transform.rotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg+90);
 
-        float x = 0;
-        float y = 0;
+    //    float x = 0;
+    //    float y = 0;
 
-        float distanceX = wallPosition.x < 0 ? Mathf.Abs(wallPosition.x) : wallPosition.x - screenWidth;
-        float distanceY = wallPosition.y < 0 ? Mathf.Abs(wallPosition.y) : wallPosition.y - screenWidth;
+    //    float distanceX = wallPosition.x < 0 ? Mathf.Abs(wallPosition.x) : wallPosition.x - screenWidth;
+    //    float distanceY = wallPosition.y < 0 ? Mathf.Abs(wallPosition.y) : wallPosition.y - screenWidth;
 
-        if (wallPosition.x < screenWidth && wallPosition.x > 0)
-        {
-            if (wallPosition.y > screenHeight || wallPosition.y < 0)
-            {
-                y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
-                x = (((direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y) - paddingY)/ Mathf.Tan(angle)
-                    + distanceCanvasToPlayerPosition.x);
-                if (x - paddingX < transform.position.x - screenWidth/2)
-                    x -= paddingX;
-                if (x - paddingX > transform.position.x + screenWidth / 2)
-                    x -= paddingX;
-            }
-        }
-        else if (wallPosition.y <= screenHeight && wallPosition.y > 0)
-        {
-            if (wallPosition.x > screenWidth || wallPosition.x < 0)
-            {
+    //    if (wallPosition.x < screenWidth && wallPosition.x > 0)
+    //    {
+    //        if (wallPosition.y > screenHeight || wallPosition.y < 0)
+    //        {
+    //            y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
+    //            x = (((direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y) - paddingY)/ Mathf.Tan(angle)
+    //                + distanceCanvasToPlayerPosition.x);
+    //            if (x - paddingX < transform.position.x - screenWidth/2)
+    //                x -= paddingX;
+    //            if (x - paddingX > transform.position.x + screenWidth / 2)
+    //                x -= paddingX;
+    //        }
+    //    }
+    //    else if (wallPosition.y <= screenHeight && wallPosition.y > 0)
+    //    {
+    //        if (wallPosition.x > screenWidth || wallPosition.x < 0)
+    //        {
 
-                x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
-                y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
-                    + distanceCanvasToPlayerPosition.y) - paddingY;
-            }
-        }
-        else
-        {
-            if(distanceX > distanceY)
-            {
-                x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
-                y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
-                    + distanceCanvasToPlayerPosition.y) - paddingY;
-            }
-            else
-            {
-                y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
-                x = ((direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y) / Mathf.Tan(angle)
-                    + distanceCanvasToPlayerPosition.x) - paddingX;
+    //            x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
+    //            y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
+    //                + distanceCanvasToPlayerPosition.y) - paddingY;
+    //        }
+    //    }
+    //    else
+    //    {
+    //        if(distanceX > distanceY)
+    //        {
+    //            x = (direction.x > 0 ? screenWidth / 2 : -screenWidth / 2) - paddingX;
+    //            y = (Mathf.Tan(angle) * (direction.x > 0 ? screenWidth / 2 - distanceCanvasToPlayerPosition.x : -screenWidth / 2 - distanceCanvasToPlayerPosition.x)
+    //                + distanceCanvasToPlayerPosition.y) - paddingY;
+    //        }
+    //        else
+    //        {
+    //            y = (direction.y > 0 ? screenHeight / 2 : -screenHeight / 2) - paddingY;
+    //            x = ((direction.y > 0 ? screenHeight / 2 - distanceCanvasToPlayerPosition.y : -screenHeight / 2 - distanceCanvasToPlayerPosition.y) / Mathf.Tan(angle)
+    //                + distanceCanvasToPlayerPosition.x) - paddingX;
 
-                if (x - paddingX < transform.position.x - screenWidth / 2)
-                    x -= paddingX;
-                if (x - paddingX > transform.position.x + screenWidth / 2)
-                    x -= paddingX;
-            }
-        }
-        if(y < -screenHeight/2 - paddingY)
-            y= -screenHeight/2 - paddingY;
-        else if( y > screenHeight /2 - paddingY)
-            y= screenHeight/2 - paddingY;
+    //            if (x - paddingX < transform.position.x - screenWidth / 2)
+    //                x -= paddingX;
+    //            if (x - paddingX > transform.position.x + screenWidth / 2)
+    //                x -= paddingX;
+    //        }
+    //    }
+    //    if(y < -screenHeight/2 - paddingY)
+    //        y= -screenHeight/2 - paddingY;
+    //    else if( y > screenHeight /2 - paddingY)
+    //        y= screenHeight/2 - paddingY;
 
 
-        Vector3 indicatorPosition = new Vector3(x, y, 0);
+    //    Vector3 indicatorPosition = new Vector3(x, y, 0);
 
-        if (_wallIndicator)
-        {
-            _wallIndicator.transform.localPosition = indicatorPosition;
-        }
-    }
+    //    if (_wallIndicator)
+    //    {
+    //        _wallIndicator.transform.localPosition = indicatorPosition;
+    //    }
+    //}
 
     public override void Open(bool except)
     {
