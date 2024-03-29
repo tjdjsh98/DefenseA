@@ -3,7 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Wallet : MonoBehaviour, IInteractable
+public class Wallet : MonoBehaviour
 {
     Player _player;
     Player Player
@@ -16,25 +16,30 @@ public class Wallet : MonoBehaviour, IInteractable
             return _player;
         }
     }
-    [SerializeField] GameObject _bubble;
+    float _time = 0;
 
-    private void Awake()
+    private void OnEnable()
     {
-        HideBubble();
+        _time = 0;
     }
-    public void ShowBubble()
+    private void Update()
     {
-        if (_bubble == null) return;
-
-        _bubble.SetActive(true);
+        if(_time > 2) {
+            
+            if (Player != null)
+            {
+                transform.position = Vector3.Lerp(transform.position, Player.transform.position, 0.1f);
+                if((transform.position - Player.transform.position).magnitude < 0.2f)
+                {
+                    Interact();
+                }
+            }
+        }else
+        {
+            _time += Time.deltaTime;
+        }
     }
 
-    public void HideBubble()
-    {
-        if (_bubble == null) return;
-
-        _bubble.SetActive(false);
-    }
     public void Interact()
     {
         Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();

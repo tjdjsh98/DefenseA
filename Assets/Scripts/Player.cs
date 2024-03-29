@@ -177,6 +177,8 @@ public class Player : MonoBehaviour
         RotateBody();
         Riding();
         CheckInteractable();
+
+        // ´« ±ôºýÀÓ
         _eyeCloseElasepdTime += Time.deltaTime;
         if(_eyeCloseElasepdTime > _eyeCloseTime)
         {
@@ -239,7 +241,7 @@ public class Player : MonoBehaviour
     {
         if (!_isSliding)
         {
-            if (Input.GetKeyDown(KeyCode.LeftControl))
+            if (Input.GetKeyDown(KeyCode.LeftShift))
             {
                 bool isRight = _rigidbody.velocity.x > 0;
                 _character.TurnBody(isRight ? Vector3.right : Vector3.left);
@@ -247,8 +249,7 @@ public class Player : MonoBehaviour
                 _character.IsInvincibility = true;
                 _character.IsEnableTurn = false;
                 _character.IsEnableMove = false;
-                Debug.Log("Slide");
-                _character.AddForce(Vector2.right * 150 * (isRight ? 1 : -1));
+                _character.AddForce(Vector2.right * 120 * (isRight ? 1 : -1));
                 _character.AnimatorSetBool("Sliding", _isSliding);
                 _slidingTime = 0;
             }
@@ -450,12 +451,17 @@ public class Player : MonoBehaviour
         }
 
 
-        float run = 0.4f;
-        if (!_isFire && Input.GetKey(KeyCode.LeftShift))
+        float run = 1f;
+        _character.IsTurnBodyAlongVelocity= true;
+        _isRun= true;
+        if (_isFire || Input.GetKey(KeyCode.LeftControl))
         {
-            run = 1f;
-            _character.IsTurnBodyAlongVelocity= true;
-            _isRun= true;
+            run = 0.4f;
+            _isRun= false;
+            _character.IsTurnBodyAlongVelocity= false;
+        }
+        else
+        {
             _runToFireElaspedTime = 0;
         }
         _character.Move(Vector2.right * run);
@@ -468,12 +474,17 @@ public class Player : MonoBehaviour
             return;
         }
 
-        float run = 0.4f;
-        if (!_isFire && Input.GetKey(KeyCode.LeftShift))
+        float run = 1f;
+        _character.IsTurnBodyAlongVelocity = true;
+        _isRun = true;
+        if (_isFire || Input.GetKey(KeyCode.LeftControl))
         {
-            run = 1f;
-            _character.IsTurnBodyAlongVelocity= true;
-            _isRun = true;
+            run = 0.4f;
+            _isRun = false;
+            _character.IsTurnBodyAlongVelocity = false;
+        }
+        else
+        {
             _runToFireElaspedTime = 0;
         }
         _character.Move(Vector2.left * run);

@@ -66,7 +66,7 @@ public class Character : MonoBehaviour,IHp
 
     float _groundAccelePower = 30;
     float _airAccelePower = 60;
-    float _groundBreakPower = 30;
+    float _groundBreakPower = 40;
     float _airBreakPower = 10;
 
     Vector3 _moveDirection;

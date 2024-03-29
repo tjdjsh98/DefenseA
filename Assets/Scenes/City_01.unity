@@ -257,7 +257,7 @@ MonoBehaviour:
   CreatureAI: {fileID: 0}
   _summonDummy: 0
   _dummyHp: 5
-  _stop: 1
+  _stop: 0
   _mapData: {fileID: 11400000, guid: 14240f8f275b1494081fb12ac529681d, type: 2}
   _allMaxExpFive: 0
   _exp: 0
@@ -349,6 +349,14 @@ PrefabInstance:
     - target: {fileID: 8495568758297498724, guid: 4ba9107ef1bf42f418a4952742bb0171, type: 3}
       propertyPath: m_Name
       value: UniqueSlime
+      objectReference: {fileID: 0}
+    - target: {fileID: 9122422102458692108, guid: 4ba9107ef1bf42f418a4952742bb0171, type: 3}
+      propertyPath: _hp
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9122422102458692108, guid: 4ba9107ef1bf42f418a4952742bb0171, type: 3}
+      propertyPath: _maxHp
+      value: 1
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

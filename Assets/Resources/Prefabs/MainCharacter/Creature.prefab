@@ -593,9 +593,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9f5a127e10f00c84d9fbf5d88df9a739, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _characterType: 2
-  _maxHp: 15
-  _hp: 15
+  _characterType: 0
+  _maxHp: 20
+  _hp: 20
   _speed: 10
   _standing: 0
   <AttackPower>k__BackingField: 1
@@ -611,7 +611,7 @@ MonoBehaviour:
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
   <IsSuperArmer>k__BackingField: 0
-  IsInvincibility: 1
+  IsInvincibility: 0
   _hpBar: {fileID: 0}
 --- !u!114 &2713146866233580908
 MonoBehaviour:

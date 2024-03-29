@@ -279,9 +279,9 @@ public class GameManager : ManagerBase
             {
                 timeWave.elapsedTime = 0;
 
-                if (timeWaveData.enemyList == null) return;
+                if (timeWaveData.enemyName == Define.EnemyName.None) return;
 
-                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWaveData.enemyList.GetRandom());
+                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWaveData.enemyName);
                 EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                 if (enemy)
                 {
@@ -326,31 +326,28 @@ public class GameManager : ManagerBase
         foreach (var wave in _distanceWaveList)
         {
             DistanceWaveData distanceWaveData = wave.waveData as DistanceWaveData;
-            if (distanceWaveData.distace <= _farDistance)
+            if (distanceWaveData.distance <= _farDistance)
             {
-                foreach (var enemyName in distanceWaveData.enemyList)
+                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)distanceWaveData.enemyName);
+                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+                if (!enemy.IsGroup)
                 {
-                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)enemyName);
-                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                    if (!enemy.IsGroup)
+                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
+                    if (topPosition.HasValue)
                     {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
-                        if (topPosition.HasValue)
-                        {
-                            Character character = enemy.GetComponent<Character>();
-                            enemy.transform.position = topPosition.Value;
-                            character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.hpMultiply));
-                        }
+                        Character character = enemy.GetComponent<Character>();
+                        enemy.transform.position = topPosition.Value;
+                        character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.hpMultiply));
                     }
-                    else
+                }
+                else
+                {
+                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
+                    if (topPosition.HasValue)
                     {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
-                        if (topPosition.HasValue)
-                        {
-                            EnemyGroup group = enemy.GetComponent<EnemyGroup>();
-                            group.transform.position = topPosition.Value;
-                            group.SetHp(distanceWaveData.hpMultiply);
-                        }
+                        EnemyGroup group = enemy.GetComponent<EnemyGroup>();
+                        group.transform.position = topPosition.Value;
+                        group.SetHp(distanceWaveData.hpMultiply);
                     }
                 }
                 _distanceWaveList.Remove(wave);
@@ -375,29 +372,26 @@ public class GameManager : ManagerBase
             {
                 wave.elapsedTime = 0;
 
-                foreach (var enemyName in mentalWaveData.enemyList)
+                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)wave.waveData.enemyName);
+                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+                if (!enemy.IsGroup)
                 {
-                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)enemyName);
-                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                    if (!enemy.IsGroup)
+                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+                    if (topPosition.HasValue)
                     {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
-                        if (topPosition.HasValue)
-                        {
-                            Character character = enemy.GetComponent<Character>();
-                            enemy.transform.position = topPosition.Value;
-                            character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.hpMultiply));
-                        }
+                        Character character = enemy.GetComponent<Character>();
+                        enemy.transform.position = topPosition.Value;
+                        character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.hpMultiply));
                     }
-                    else
+                }
+                else
+                {
+                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+                    if (topPosition.HasValue)
                     {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
-                        if (topPosition.HasValue)
-                        {
-                            EnemyGroup group = enemy.GetComponent<EnemyGroup>();
-                            group.transform.position = topPosition.Value;
-                            group.SetHp(mentalWaveData.hpMultiply);
-                        }
+                        EnemyGroup group = enemy.GetComponent<EnemyGroup>();
+                        group.transform.position = topPosition.Value;
+                        group.SetHp(mentalWaveData.hpMultiply);
                     }
                 }
 
