@@ -10,6 +10,12 @@ public class MapDataEditor : Editor
     SerializedProperty distanceWaveProperty;
     SerializedProperty mentalWaveProperty;
 
+    SerializedProperty mapSizeProperty;
+    SerializedProperty nextMapDataProperty;
+    SerializedProperty shopItemDataList;
+    SerializedProperty randomEvent;
+    SerializedProperty randomEventInterval;
+
     bool distanceWaveFoldout;
     bool timeWaveFoldout;
     bool mentalWaveFoldout;
@@ -23,6 +29,12 @@ public class MapDataEditor : Editor
         distanceWaveProperty = serializedObject.FindProperty("distanceWave");
         mentalWaveProperty = serializedObject.FindProperty("mentalWave");
 
+        mapSizeProperty = serializedObject.FindProperty("mapSize");
+        nextMapDataProperty = serializedObject.FindProperty("nextMapData");
+        shopItemDataList = serializedObject.FindProperty("shopItemDataList");
+        randomEvent = serializedObject.FindProperty("randomEvent");
+        randomEventInterval = serializedObject.FindProperty("randomEventInterval");
+
     }
     public override void OnInspectorGUI()
     {
@@ -34,21 +46,22 @@ public class MapDataEditor : Editor
         DistanceWaveGUI();
         MentalWaveGUI();
 
+        EditorGUILayout.PropertyField(mapSizeProperty);
+        EditorGUILayout.PropertyField(nextMapDataProperty);
+        EditorGUILayout.PropertyField(shopItemDataList);
+        EditorGUILayout.PropertyField(randomEvent);
+        EditorGUILayout.PropertyField(randomEventInterval);
+
+
         serializedObject.ApplyModifiedProperties();
     }
 
     void DistanceWaveGUI()
     {
-        Rect rect = EditorGUILayout.BeginHorizontal();
-        {
-            distanceWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(distanceWaveFoldout, new GUIContent("거리 웨이브"));
-            GUILayout.FlexibleSpace();
-            
-            distanceWaveProperty.arraySize = EditorGUI.IntField(new Rect(rect.x +  rect.width -50,rect.y,50,rect.height),distanceWaveProperty.arraySize);
-            GUILayout.FlexibleSpace();
-
-        }
-        EditorGUILayout.EndHorizontal();
+        
+        distanceWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(distanceWaveFoldout, new GUIContent("거리 웨이브"));
+        GUILayout.FlexibleSpace();
+           
 
         if (distanceWaveFoldout)
         {
@@ -95,28 +108,37 @@ public class MapDataEditor : Editor
                 }
                 EditorGUILayout.EndScrollView();
             }
+
+            GUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    distanceWaveProperty.arraySize += 1;
+                }
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    if (distanceWaveProperty.arraySize > 0)
+                        distanceWaveProperty.arraySize -= 1;
+                }
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
     void TimeWaveGUI()
     {
 
-        Rect rect = EditorGUILayout.BeginHorizontal();
-        {
-            timeWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(timeWaveFoldout, new GUIContent("시간 웨이브"));
-            GUILayout.FlexibleSpace();
-
-            timeWaveProperty.arraySize = EditorGUI.IntField(new Rect(rect.x + rect.width - 50, rect.y, 50, rect.height), timeWaveProperty.arraySize);
-            GUILayout.FlexibleSpace();
-
-        }
-        EditorGUILayout.EndHorizontal();
+        timeWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(timeWaveFoldout, new GUIContent("시간 웨이브"));
+        GUILayout.FlexibleSpace();
 
         if (timeWaveFoldout)
         {
             if (timeWaveProperty.arraySize > 0)
             {
-                int height = distanceWaveProperty.arraySize * 70 > 500 ? 500 : distanceWaveProperty.arraySize * 70;
+                int height = timeWaveProperty.arraySize * 70 > 500 ? 500 : timeWaveProperty.arraySize * 70;
 
                 scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
@@ -127,6 +149,8 @@ public class MapDataEditor : Editor
                         EditorGUILayout.BeginHorizontal();
                         {
                             GUILayout.Label("생성적");
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("생성주기");
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("체력배율");
                             GUILayout.FlexibleSpace();
@@ -143,13 +167,17 @@ public class MapDataEditor : Editor
                             enemy.intValue = (int)(Define.EnemyName)EditorGUILayout.EnumPopup((Define.EnemyName)enemy.intValue);
                             GUILayout.FlexibleSpace();
 
+                            SerializedProperty genTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
+                            genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
+                            GUILayout.FlexibleSpace();
+
                             SerializedProperty hpMul = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("hpMultiply");
                             hpMul.floatValue = EditorGUILayout.FloatField(hpMul.floatValue);
                             GUILayout.FlexibleSpace();
 
                             SerializedProperty startTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("startTime");
                             startTime.intValue = EditorGUILayout.IntField(startTime.intValue);
-                            GUILayout.FlexibleSpace();  
+                            GUILayout.FlexibleSpace();
 
                             SerializedProperty endTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("endTime");
                             endTime.intValue = EditorGUILayout.IntField(endTime.intValue);
@@ -157,34 +185,43 @@ public class MapDataEditor : Editor
                         }
                         EditorGUILayout.EndHorizontal();
 
-                
+
                     }
                     EditorGUILayout.EndVertical();
 
                 }
                 EditorGUILayout.EndScrollView();
             }
+            GUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    timeWaveProperty.arraySize += 1;
+                }
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    if (timeWaveProperty.arraySize > 0)
+                        timeWaveProperty.arraySize -= 1;
+                }
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
 
     void MentalWaveGUI()
     {
-        Rect rect = EditorGUILayout.BeginHorizontal();
-        {
-            mentalWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(mentalWaveFoldout, new GUIContent("정신 웨이브"));
-            GUILayout.FlexibleSpace();
-
-            mentalWaveProperty.arraySize = EditorGUI.IntField(new Rect(rect.x + rect.width - 50, rect.y, 50, rect.height), mentalWaveProperty.arraySize);
-            GUILayout.FlexibleSpace();
-        }
-        EditorGUILayout.EndHorizontal();
+        mentalWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(mentalWaveFoldout, new GUIContent("정신 웨이브"));
+        GUILayout.FlexibleSpace();
 
         if (mentalWaveFoldout)
         {
             if (mentalWaveProperty.arraySize > 0)
             {
-                int height = distanceWaveProperty.arraySize * 70 > 500 ? 500 : distanceWaveProperty.arraySize * 70;
+                int height = mentalWaveProperty.arraySize * 70 > 500 ? 500 : mentalWaveProperty.arraySize * 70;
                 scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
                 for (int i = 0; i < mentalWaveProperty.arraySize; i++)
@@ -194,6 +231,8 @@ public class MapDataEditor : Editor
                         EditorGUILayout.BeginHorizontal();
                         {
                             GUILayout.Label("생성적");
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("생성주기");
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("체력배율");
                             GUILayout.FlexibleSpace();
@@ -206,6 +245,10 @@ public class MapDataEditor : Editor
                         {
                             SerializedProperty enemy = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyName");
                             enemy.intValue = (int)(Define.EnemyName)EditorGUILayout.EnumPopup((Define.EnemyName)enemy.intValue);
+                            GUILayout.FlexibleSpace();
+
+                            SerializedProperty genTime = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
+                            genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
                             GUILayout.FlexibleSpace();
 
                             SerializedProperty hpMul = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("hpMultiply");
@@ -226,6 +269,22 @@ public class MapDataEditor : Editor
                 }
                 EditorGUILayout.EndScrollView();
             }
+            GUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    distanceWaveProperty.arraySize += 1;
+                }
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    if (distanceWaveProperty.arraySize > 0)
+                        distanceWaveProperty.arraySize -= 1;
+                }
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }

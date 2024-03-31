@@ -186,7 +186,7 @@ public class AbilityManager : ManagerBase
         if (girlCardData != null)
         {
             Girl.AddMaxHp(girlCardData.IncreaseHp);
-            Girl.IncreasedRecoverHpPower += girlCardData.IncreaseRecoverHpPower;
+            Girl.IncreasedHpRegeneration += girlCardData.IncreaseRecoverHpPower;
             Girl.IncreasedDamageReducePercentage += girlCardData.IncreaseDamageReducePercentage;
             Girl.AttackPower += girlCardData.IncreaseAttackPoint;
 
@@ -201,7 +201,7 @@ public class AbilityManager : ManagerBase
         if (creatureCardData != null)
         {
             Creature.AddMaxHp(creatureCardData.IncreaseHp);
-            Creature.IncreasedRecoverHpPower += creatureCardData.IncreaseRecoverHpPower;
+            Creature.IncreasedHpRegeneration += creatureCardData.IncreaseRecoverHpPower;
             Creature.IncreasedDamageReducePercentage += creatureCardData.IncreaseDamageReducePercentage;
             Creature.AttackPower += creatureCardData.IncreaseAttackPoint;
 

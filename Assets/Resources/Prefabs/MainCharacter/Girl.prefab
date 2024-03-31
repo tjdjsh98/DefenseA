@@ -422,7 +422,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _reloadGauge: {fileID: 0}
-  _weaponNameList: 0d0000000c00000002000000
+  _weaponNameList: ffffffff0c000000ffffffff
   _weaponSlotList:
   - {fileID: 3083050288797914090}
   - {fileID: 8951124260177341496}
@@ -436,7 +436,7 @@ SortingGroup:
   m_GameObject: {fileID: 3639864545839066193}
   m_Enabled: 1
   m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 4
   m_SortAtRoot: 0
 --- !u!1 &3687723478139697679
@@ -510,7 +510,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 877310939
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 7
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -626,7 +626,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 877310939
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 7
   m_Sprite: {fileID: 7482667652216324306, guid: 311925a002f4447b3a28927169b83ea6, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -926,7 +926,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3688054113429582870, guid: 223848e20a52bc94f8069575ac7e2007, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3688054113429582870, guid: 223848e20a52bc94f8069575ac7e2007, type: 3}
       propertyPath: m_SortingOrder
@@ -970,7 +970,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4027264212470938285, guid: 223848e20a52bc94f8069575ac7e2007, type: 3}
       propertyPath: m_SortingLayer
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 4027264212470938285, guid: 223848e20a52bc94f8069575ac7e2007, type: 3}
       propertyPath: m_SortingOrder
@@ -1088,7 +1088,7 @@ SortingGroup:
   m_GameObject: {fileID: 590668182369147291}
   m_Enabled: 1
   m_SortingLayerID: 877310939
-  m_SortingLayer: 4
+  m_SortingLayer: 5
   m_SortingOrder: 5
   m_SortAtRoot: 0
 --- !u!4 &7826797989612725590 stripped

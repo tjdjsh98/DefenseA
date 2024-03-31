@@ -13,19 +13,105 @@ MonoBehaviour:
   m_Name: City_01
   m_EditorClassIdentifier: 
   sceneName: City_01
-  timeWave: []
+  timeWave:
+  - genTime: 4
+    hpMultiply: 1
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 0
+    endTime: 105
+  - genTime: 4
+    hpMultiply: 1
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 2
+    startTime: 0
+    endTime: 60
+  - genTime: 3.5
+    hpMultiply: 1.2
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 75
+    endTime: 135
+  - genTime: 3.5
+    hpMultiply: 1.2
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 2
+    startTime: 75
+    endTime: 135
+  - genTime: 3.5
+    hpMultiply: 1.5
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 150
+    endTime: 210
+  - genTime: 3.5
+    hpMultiply: 1.5
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 2
+    startTime: 150
+    endTime: 210
+  - genTime: 3
+    hpMultiply: 2
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 225
+    endTime: 99999
+  - genTime: 3
+    hpMultiply: 2
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 2
+    startTime: 225
+    endTime: 99999
+  - genTime: 20
+    hpMultiply: 1
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 13
+    startTime: 60
+    endTime: 105
+  - genTime: 20
+    hpMultiply: 1
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 12
+    startTime: 75
+    endTime: 135
+  - genTime: 10
+    hpMultiply: 1.5
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 1
+    startTime: 105
+    endTime: 135
+  - genTime: 10
+    hpMultiply: 2
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 1
+    startTime: 165
+    endTime: 240
+  - genTime: 20
+    hpMultiply: 1
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 8
+    startTime: 195
+    endTime: 99999
   distanceWave: []
   mentalWave: []
   mapSize: 1000
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList:
-  - {fileID: 11400000, guid: 776c7037b1bf07840937cdeb852a277a, type: 2}
-  - {fileID: 11400000, guid: e2beb09c80862374e894b679f9510eb9, type: 2}
-  - {fileID: 11400000, guid: 6315c8c6c79fbc54db43c76e9e0c2f19, type: 2}
-  - {fileID: 11400000, guid: 5fab07e9a7daa49409dcd8226a66ddfa, type: 2}
-  - {fileID: 11400000, guid: cdb05f6270e4bf241b8fd6c412d1dcc5, type: 2}
+  - {fileID: 11400000, guid: bf2c334f9c6efcd43bfcc135a0cbf4b5, type: 2}
   - {fileID: 11400000, guid: e54822e4b08db6346a6b1e2602e5a48d, type: 2}
+  - {fileID: 11400000, guid: 776c7037b1bf07840937cdeb852a277a, type: 2}
+  - {fileID: 11400000, guid: a2822a3f75e0c5a4c87e08207b0a167c, type: 2}
   - {fileID: 11400000, guid: 87e67bb123d62be4183bf82853618cc7, type: 2}
+  - {fileID: 11400000, guid: 0ad3d27e6dbea3c47a7794a433b61b5b, type: 2}
+  - {fileID: 11400000, guid: 3273b0912c65db24b8a50413642dfc89, type: 2}
+  - {fileID: 11400000, guid: 57b57023ef5b058409aaebf6902ed0c6, type: 2}
+  - {fileID: 11400000, guid: a12ce3a219a85524e805e052d70367c8, type: 2}
+  - {fileID: 11400000, guid: 6bc45696c20133442927d8421867b915, type: 2}
+  - {fileID: 11400000, guid: 4570a80e408998243a09d3caaf67dde7, type: 2}
+  - {fileID: 11400000, guid: f27ccd6dce48d49429157b05aea31864, type: 2}
   randomEvent:
   - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+  - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+  - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
+  - {fileID: 6381985295212827144, guid: d330fccc1b3ff5f44b219c6c46f9de8b, type: 3}
   randomEventInterval: 100

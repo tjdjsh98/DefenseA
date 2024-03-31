@@ -9,11 +9,14 @@ public class StatusUpShopItemData : ShopItemData
     [field:SerializeField]public int IncreasingGirlMaxHp { set; get; }
     [field:SerializeField]public int IncreasingCreatureMaxHp { set; get; }
     [field: SerializeField] public int IncreasingCreatureAttackPower { set; get; }
+    [field: SerializeField] public float IncreasingGirlHpRegeneration { set; get; }
+    [field: SerializeField] public float IncreasingCreatureHpRegeneration { set; get; }
     [field: SerializeField] public int RecoverGirlHpAmount { set; get; }
     [field: SerializeField] public int RecoverCreatureHpAmount { set; get; }
 
     [field: SerializeField] public float IncreasingGirlSpeed { set; get; }
     [field: SerializeField] public float IncreasingCreatureSpeed { set; get; }
+    [field: SerializeField] public float IncreasingMental { set; get; }
 
     public void Apply()
     {
@@ -25,6 +28,7 @@ public class StatusUpShopItemData : ShopItemData
             girl.AddMaxHp(IncreasingGirlMaxHp);
             girl.Hp += RecoverGirlHpAmount;
             girl.SetSpeed(girl.Speed + IncreasingGirlSpeed);
+            girl.IncreasedHpRegeneration = IncreasingGirlHpRegeneration;
         }
 
         if(creature)
@@ -32,7 +36,10 @@ public class StatusUpShopItemData : ShopItemData
             creature.AddMaxHp(IncreasingCreatureMaxHp);
             creature.AttackPower += IncreasingCreatureAttackPower;
             creature.Hp  += RecoverCreatureHpAmount;
+            creature.IncreasedHpRegeneration += IncreasingCreatureHpRegeneration;
             creature.SetSpeed(creature.Speed + IncreasingCreatureSpeed);
         }
+
+        Managers.GetManager<GameManager>().Mental += IncreasingMental;
     }
 }

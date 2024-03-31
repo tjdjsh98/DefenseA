@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class UIShop : UIBase
@@ -12,6 +13,7 @@ public class UIShop : UIBase
     List<Image> _slotImageList = new List<Image>();
     List<TextMeshProUGUI> _slotNameList = new List<TextMeshProUGUI>();
     List<TextMeshProUGUI> _slotDescroptionList = new List<TextMeshProUGUI>();
+    List<TextMeshProUGUI> _slotMoney = new List<TextMeshProUGUI>();
 
     [SerializeField] List<Sprite> _spriteList;
 
@@ -28,6 +30,7 @@ public class UIShop : UIBase
         {
             _slotImageList.Add(slot.transform.Find("Frame").Find("Image").GetComponent<Image>());
             _slotNameList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
+            _slotMoney.Add(slot.transform.Find("MoneyText").GetComponent<TextMeshProUGUI>());
             _slotDescroptionList.Add(slot.transform.Find("Description").GetComponent<TextMeshProUGUI>());
 
             int tempIndex = index;
@@ -113,7 +116,14 @@ public class UIShop : UIBase
 
     void Refresh()
     {
-        _restockText.text = $"재입고\n{_openShop.RestockCost}";
+        if (Managers.GetManager<GameManager>().Money < _openShop.RestockCost)
+        {
+            _restockText.text = $"<color=\"red\">재입고 불가</color>";
+        }
+        else
+        {
+            _restockText.text = $"재입고\n{_openShop.RestockCost}";
+        }
 
         for (int i = 0; i < _openShop.ShopItemList.Count; i++)
         {
@@ -130,9 +140,11 @@ public class UIShop : UIBase
             if (!_openShop.ShopItemList[i].isSale)
             {
                 if (_openShop.ShopItemList[i].shopItemData.price > Managers.GetManager<GameManager>().Money)
-                    _slotNameList[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.price.ToString()}";
+                    _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.price.ToString()}</color>";
                 else
-                    _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.price.ToString()}";
+                    _slotMoney[i].text = $"{_openShop.ShopItemList[i].shopItemData.price.ToString()}";
+
+                _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.name}\n";
                 _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";
                
             }
@@ -145,6 +157,9 @@ public class UIShop : UIBase
 
     public void ReStockItems()
     {
+        if (_openShop.RestockCost > Managers.GetManager<GameManager>().Money) return;
+
+        Managers.GetManager<GameManager>().Money -= _openShop.RestockCost;
         _openShop.RestockShopItems();
         _openShop.RestockCost = _openShop.RestockCost * 2;
         Refresh();

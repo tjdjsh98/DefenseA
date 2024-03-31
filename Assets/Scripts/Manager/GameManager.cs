@@ -234,7 +234,12 @@ public class GameManager : ManagerBase
         if (Mental <= 0)
         {
             _panicLevel++;
-            Mental = 100;
+            Mental += 100;
+        }
+        if( Mental > 100)
+        {
+            _panicLevel--;
+            Mental -= 100;
         }
         if (_summonDummy)
         {

@@ -21,7 +21,7 @@ public class Character : MonoBehaviour,IHp
     public int Hp { set => _hp = value; get => _hp; }
     
     // 증가되는 능력치
-    public float IncreasedRecoverHpPower { set; get; }
+    public float IncreasedHpRegeneration { set; get; }
     public float IncreasedDamageReducePercentage { set; get; }
 
     float _recoverHpTime;
@@ -113,7 +113,7 @@ public class Character : MonoBehaviour,IHp
         if (IsDead) return;
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
 
-        _recoverHpAmount += Time.deltaTime * IncreasedRecoverHpPower;
+        _recoverHpAmount += Time.deltaTime * IncreasedHpRegeneration;
         if ((_recoverHpTime += Time.deltaTime) > 1)
         {
             _recoverHpTime = 0;
