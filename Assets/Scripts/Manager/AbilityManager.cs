@@ -16,6 +16,8 @@ public class AbilityManager : ManagerBase
 
     #endregion
 
+    public int AbilityCount { set; get; } = 0;
+
     // 공용 능력
     Dictionary<CommonAbilityName, bool> _commonAbilityUnlocks = new Dictionary<CommonAbilityName, bool>();
 
@@ -177,6 +179,7 @@ public class AbilityManager : ManagerBase
 
         BlackSphereAddedHandler?.Invoke(blackSphere);
     }
+    // 선택한 카드는 랭크가 올라간 상태
     public void ApplyCardAbility(CardData cardData)
     {
         GirlCardData girlCardData = cardData as GirlCardData;
@@ -185,11 +188,7 @@ public class AbilityManager : ManagerBase
         CommonCardData commonCardData = cardData as CommonCardData;
         if (girlCardData != null)
         {
-            Girl.AddMaxHp(girlCardData.IncreaseHp);
-            Girl.IncreasedHpRegeneration += girlCardData.IncreaseRecoverHpPower;
-            Girl.IncreasedDamageReducePercentage += girlCardData.IncreaseDamageReducePercentage;
-            Girl.AttackPower += girlCardData.IncreaseAttackPoint;
-
+      
             if (girlCardData.UnlockAbility != GirlAbilityName.None && !Player.GirlAbility.GetIsHaveAbility(girlCardData.UnlockAbility))
                 Player.GirlAbility.AddGirlAbility(girlCardData.UnlockAbility);
             Player.IncreasedAttackSpeedPercentage += girlCardData.DecreaseFireDelayPercentage;
@@ -200,80 +199,73 @@ public class AbilityManager : ManagerBase
         }
         if (creatureCardData != null)
         {
-            Creature.AddMaxHp(creatureCardData.IncreaseHp);
-            Creature.IncreasedHpRegeneration += creatureCardData.IncreaseRecoverHpPower;
-            Creature.IncreasedDamageReducePercentage += creatureCardData.IncreaseDamageReducePercentage;
-            Creature.AttackPower += creatureCardData.IncreaseAttackPoint;
-
             CreatureAI.CreatureAbility.AddAbility(creatureCardData.UnlockAbility);
 
             AddSkill(creatureCardData);
         }
       
-
         if (commonCardData != null)
         {
-            Creature.AddMaxHp(commonCardData.IncreaseHp);
-            Girl.AddMaxHp(commonCardData.IncreaseHp);
-
-            Creature.AttackPower += commonCardData.IncreaseAttackPoint;
-            Girl.AttackPower += commonCardData.IncreaseAttackPoint;
-
-            AddCommonAbility(commonCardData.UnlockAbility);
+            AddCommonAbility(commonCardData);
             AddSkill(commonCardData);
         }
+        AbilityCount++;
     }
-    public void AddCommonAbility(CommonAbilityName commonAbilityName)
+    public void AddCommonAbility(CommonCardData cardData)
     {
+        CommonAbilityName commonAbilityName = cardData.UnlockAbility;
         if ((int)commonAbilityName > (int)CommonAbilityName.None && (int)commonAbilityName < (int)CommonAbilityName.END)
         {
-            bool turnTrue = false;
 
             if (_commonAbilityUnlocks.ContainsKey(commonAbilityName))
             {
                 if (!_commonAbilityUnlocks[commonAbilityName])
                 {
-                    turnTrue = true;
                     _commonAbilityUnlocks[commonAbilityName] = true;
                 }
             }
             else
             {
-                turnTrue = true;
                 _commonAbilityUnlocks.Add(commonAbilityName, true);
             }
 
-            if (turnTrue)
+            int rank = Managers.GetManager<GameManager>().GetCardSelectionCount(cardData.CardName);
+            float value = 0;
+            if (rank == 1) value = cardData.Property1;
+            if (rank == 2) value = cardData.Property2;
+            if (rank == 3) value = cardData.Property3;
+
+            switch (commonAbilityName)
             {
-                switch (commonAbilityName)
-                {
-                    case CommonAbilityName.None:
-                        break;
-                    case CommonAbilityName.ControlSphere:
-                        MaxBlackSphereCount = 20;
-                        break;
-                    case CommonAbilityName.VolleyFire:
-                        break;
-                    case CommonAbilityName.ExplosiveSphere:
-                        break;
-                    case CommonAbilityName.Bait:
-                        break;
-                    case CommonAbilityName.MicroPower:
-                        _maxElectricity = 100;
-                        _chargeElectricty = 1;
-                        break;
-                    case CommonAbilityName.ExtraBattery:
-                        _maxElectricity = 200;
-                        break;
-                    case CommonAbilityName.SelfGeneration:
-                        _chargeElectricty = 2;
-                        break;
-                    case CommonAbilityName.Appetite:
-                        _maxPredation = 40;
-                        break;
-                    case CommonAbilityName.END:
-                        break;
-                }
+                case CommonAbilityName.None:
+                    break;
+                case CommonAbilityName.BlackSphere:
+                    _blackSphereCoolTime = value;
+                    break;
+                case CommonAbilityName.ControlSphere:
+                    MaxBlackSphereCount = (int)value;
+                    break;
+                case CommonAbilityName.VolleyFire:
+                    break;
+                case CommonAbilityName.ExplosiveSphere:
+                    break;
+                case CommonAbilityName.Bait:
+                    break;
+                case CommonAbilityName.MicroPower:
+                    _maxElectricity = 100;
+                    _chargeElectricty = 1;
+                    break;
+                case CommonAbilityName.ExtraBattery:
+                    _maxElectricity = 200;
+                    break;
+                case CommonAbilityName.SelfGeneration:
+                    _chargeElectricty = 2;
+                    break;
+                case CommonAbilityName.Appetite:
+                    _maxPredation = 40;
+                    break;
+                case CommonAbilityName.END:
+                    break;
             }
         }
     }

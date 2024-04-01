@@ -1,8 +1,10 @@
+using DuloGames.UI.Tweens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
@@ -41,33 +43,7 @@ public class GameManager : ManagerBase
     public float MaxMental { get; } = 100;
     public float Mental { set; get; } = 100;
 
-    // 플레이 경험 관련
-    [Header("경험치")]
-    [SerializeField] bool _allMaxExpFive;
-    [SerializeField] int _exp;
-    int _maxExp = 3;
-    public int Exp
-    {
-        set
-        {
-            _exp = value;
-            if (_exp >= MaxExp)
-            {
-                _exp = _exp - MaxExp;
-                Level++;
-                _maxExp = Mathf.RoundToInt(_maxExp * 1.5f);
-            }
-        }
-        get { return _exp; }
-    }
-    public int MaxExp
-    {
-        get
-        {
-            if (_allMaxExpFive) return 5;
-            return _maxExp;
-        }
-    }
+   
     public int Level { set; get; }
 
     [Header("타임라인")]
@@ -76,8 +52,6 @@ public class GameManager : ManagerBase
     [SerializeField] PlayableAsset _enteracneTimeline;
     bool _isPlayTimeline;
     public bool IsPlayTimeline => _isPlayTimeline;
-
-
 
     // 적 소환 관련 변수
     [Header("적관련변수")]
@@ -88,16 +62,21 @@ public class GameManager : ManagerBase
     float _totalTime;
     float _stageTime;
 
+    public int HuntingCount { set; get; }
+
     [Header("카드 선택지")]
     List<CardData> _remainCardSelectionList;
     List<CardData> _earnCardSelectionList;
     Dictionary<CardName, int> _cardSelectionCount = new Dictionary<CardName, int>();
     [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
 
+    [SerializeField] List<GameObject> _subObjects;
+    [SerializeField] List<GameObject> _mainObjects;
+
     [HideInInspector]public List<ShopItemData> ShopItemDataList => _mapData == null?null : _mapData.shopItemDataList;
 
     CameraController _cameraController;
-    CameraController CameraController
+    public CameraController CameraController
     {
         get
         {
@@ -122,8 +101,8 @@ public class GameManager : ManagerBase
             {
                 PriorCard prior = new PriorCard();
                 prior.cardName = d.CardName;
-                foreach (var card in d.PriorCards)
-                    prior.priorCardList.Add(card);
+                foreach (var cardData in d.PriorCards)
+                    prior.priorCardDataList.Add(cardData);
                 _priorCardList.Add(prior);
                 return false;
             }
@@ -139,6 +118,7 @@ public class GameManager : ManagerBase
         _distanceWaveList.Clear();
         _mentalWaveList.Clear();
 
+        // 적 소환 데이터
         if (_mapData)
         {
             foreach (var waveData in _mapData.timeWave)
@@ -165,7 +145,9 @@ public class GameManager : ManagerBase
                     _mentalWaveList.Add(new Wave() { waveData = mentalWaveData, elapsedTime = mentalWaveData.genTime });
                 }
             }
-            float distance = 0;
+
+            // 이벤트 배치
+            float distance = -_mapData.randomEventInterval;
             if (_mapData.randomEvent.Count > 0)
             {
                 while (distance < _mapData.mapSize)
@@ -188,6 +170,8 @@ public class GameManager : ManagerBase
             Invoke("OffTimeline", (float)_playableDirector.duration - 0.1f);
             _isPlayTimeline = true;
         }
+
+        LoadObjects();
         _stageTime = 0;
         IsLoadEnd = true;
     }
@@ -220,6 +204,32 @@ public class GameManager : ManagerBase
         _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
         _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
     }
+
+    void LoadObjects()
+    {
+        float distance = 5;
+        while (distance < _mapData.mapSize)
+        {
+            Vector3? position = GetGroundTop(Vector3.one * distance);
+            if (position.HasValue) {
+                GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mainObjects.GetRandom());
+                go.transform.position = position.Value;
+            }
+            distance += Random.Range(25, 40);
+        }
+        distance = 3.5f;
+        while (distance < _mapData.mapSize)
+        {
+            Vector3? position = GetGroundTop(Vector3.one * distance);
+            if (position.HasValue)
+            {
+                GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_subObjects.GetRandom());
+                go.transform.position = position.Value;
+            }
+            distance += Random.Range(15, 25);
+        }
+    }
+
     void OffTimeline()
     {
         _isPlayTimeline = false;
@@ -422,18 +432,31 @@ public class GameManager : ManagerBase
         if (!_cardSelectionCount.ContainsKey(data.CardName))
         {
             _cardSelectionCount.Add(data.CardName, 0);
-
-            // 선행카드가 모두 만족되었다면 남은카드에 추가
-            foreach (var prior in _priorCardList)
-            {
-                prior.priorCardList.Remove(data.CardName);
-                if (prior.priorCardList.Count <= 0)
-                {
-                    _remainCardSelectionList.Add(Managers.GetManager<DataManager>().GetData<CardData>((int)prior.cardName));
-                }
-            }
         }
         _cardSelectionCount[data.CardName]++;
+
+        // 선행카드가 모두 만족되었다면 남은카드에 추가
+        foreach (var prior in _priorCardList)
+        {
+            bool success = true;
+            foreach (var priorCardData in prior.priorCardDataList)
+            {
+                if (!_cardSelectionCount.ContainsKey(priorCardData.priorCardName))
+                {
+                    success = false;
+                    break;
+                }
+                if (_cardSelectionCount[priorCardData.priorCardName] < priorCardData.priorUpgradeCount)
+                {
+                    success = false;
+                    break;
+                }
+            }
+            if (success)
+            {
+                _remainCardSelectionList.Add(Managers.GetManager<DataManager>().GetData<CardData>((int)prior.cardName));
+            }
+        }
 
         // 업그레이드가 모두 완료 시 남은 카드에서 삭제
         if (data.MaxUpgradeCount <= _cardSelectionCount[data.CardName])
@@ -517,5 +540,5 @@ public class GameManager : ManagerBase
 public class PriorCard
 {
     public CardName cardName;
-    public List<CardName> priorCardList = new List<CardName>();
+    public List<PriorCardData> priorCardDataList = new List<PriorCardData>();
 }

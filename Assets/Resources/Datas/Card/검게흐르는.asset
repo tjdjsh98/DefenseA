@@ -14,14 +14,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CardName>k__BackingField: 13
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\uACF5\uACA9\uC2DC 20%\uD655\uB960\uB85C \uAC80\uC740\uAD6C\uCCB4\uB97C
-    \uC0DD\uC131\uD569\uB2C8\uB2E4. \uACF5\uACA9\uC18D\uB3C4\uAC00 20%\uC99D\uAC00\uD569\uB2C8\uB2E4."
+  <CardDescription>k__BackingField: "\uD53C\uACA9 \uC2DC {0}%\uD655\uB960\uB85C \uAC80\uC740\uAD6C\uCCB4\uB97C
+    \uC0DD\uC131\uD569\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
-  <PriorCards>k__BackingField: ffffffff
-  <MaxUpgradeCount>k__BackingField: 1
-  <IncreaseHp>k__BackingField: 0
-  <IncreaseRecoverHpPower>k__BackingField: 0
-  <IncreaseDamageReducePercentage>k__BackingField: 0
-  <IncreaseAttackPoint>k__BackingField: 0
+  <PriorCards>k__BackingField:
+  - priorCardName: 19
+    priorUpgradeCount: 1
+  <MaxUpgradeCount>k__BackingField: 3
+  <Property1>k__BackingField: 10
+  <Property2>k__BackingField: 20
+  <Property3>k__BackingField: 30
   <UnlockAbility>k__BackingField: 4

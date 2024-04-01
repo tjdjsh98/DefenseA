@@ -138,10 +138,16 @@ public class UICardSelection : UIBase
         {
             _cardNameTextList[i].text = _cardSelectionList[i].CardName.ToString();
 
-            string cardDescription = _cardSelectionList[i].CardDescription;
+            int cardRank = Managers.GetManager<GameManager>().GetCardSelectionCount(_cardSelectionList[i].CardName);
+            float value = 0;
+            if (cardRank == 0)
+                value = _cardSelectionList[i].Property1;
+            if (cardRank == 1)
+                value = _cardSelectionList[i].Property2;
+            if (cardRank == 2)
+                value = _cardSelectionList[i].Property3;
+            string cardDescription = string.Format(_cardSelectionList[i].CardDescription, value);
 
-
-            TranslateCardDescription(_cardSelectionList[i], ref cardDescription);
             _cardDescriptionTextList[i].text = cardDescription;
         }
     }

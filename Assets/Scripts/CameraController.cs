@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics.CodeAnalysis;
+using UnityEditor.Rendering;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class CameraController : MonoBehaviour
 {
@@ -27,6 +29,9 @@ public class CameraController : MonoBehaviour
     Coroutine _shockWaveCoroutine;
     Coroutine _shockWave2Coroutine;
     Coroutine _reverseCoroutine;
+    Coroutine _cameraShake;
+
+    Vector3 _shakePosition;
 
 
     static int _ringPostionID = Shader.PropertyToID("_RingPosition");
@@ -81,9 +86,8 @@ public class CameraController : MonoBehaviour
         {
             destination.x = Managers.GetManager<GameManager>().MapSize;
         }
-
-            transform.position = Vector3.Lerp(transform.position, destination, 0.1f);
-
+        
+        transform.position = Vector3.Lerp(transform.position, destination, 0.1f) + _shakePosition;
     }
 
     void HandleBackgroundLayers()
@@ -97,6 +101,7 @@ public class CameraController : MonoBehaviour
         {
             Vector3 position = Vector3.zero;
             position.x = Mathf.Lerp(layer.width / 2 - _cameraWidth / 2 , mapSize + _cameraWidth / 2 - layer.width / 2 , (distance / mapSize));
+            position.y = layer.layer.transform.position.y;
             layer.layer.transform.position = position;
         }
     }
@@ -184,6 +189,26 @@ public class CameraController : MonoBehaviour
         return screenHeightInUnits * Screen.width / Screen.height;
     }
 
+    public void ShakeCamera(float power, float time)
+    {
+        if(_cameraShake != null)
+            StopCoroutine(_cameraShake);
+        StartCoroutine(CorShakeCamera(power, time));
+    }
+
+    IEnumerator CorShakeCamera(float power, float time)
+    {
+        float currentTime = 0;
+        while (currentTime < time)
+        {
+            _shakePosition = Random.insideUnitCircle * power;
+            currentTime += Time.deltaTime;
+
+            yield return null;
+        }
+
+        _shakePosition = Vector3.zero;
+    }
 }
 
 [System.Serializable]

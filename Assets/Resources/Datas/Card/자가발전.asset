@@ -14,14 +14,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CardName>k__BackingField: 26
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\uCD08\uB2F9 \uCDA9\uC804\uB7C9\uC774 2\uB85C
-    \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  <CardDescription>k__BackingField: "\uCD08\uB2F9 {0}\uC529 \uC804\uB825\uC744 \uCDA9\uC804\uD569\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 1
   <IsActiveAbility>k__BackingField: 0
-  <PriorCards>k__BackingField: 18000000
-  <MaxUpgradeCount>k__BackingField: 0
-  <IncreaseHp>k__BackingField: 0
-  <IncreaseRecoverHpPower>k__BackingField: 0
-  <IncreaseDamageReducePercentage>k__BackingField: 0
-  <IncreaseAttackPoint>k__BackingField: 0
+  <PriorCards>k__BackingField:
+  - priorCardName: 24
+    priorUpgradeCount: 1
+  <MaxUpgradeCount>k__BackingField: 3
+  <Property1>k__BackingField: 1.5
+  <Property2>k__BackingField: 2
+  <Property3>k__BackingField: 4
   <UnlockAbility>k__BackingField: 7

@@ -85,6 +85,7 @@ public static class Define
         Barrier,
         Blooding,
         Slash,
+        Lighting,
     }
    
     public enum CreatureSkillRange

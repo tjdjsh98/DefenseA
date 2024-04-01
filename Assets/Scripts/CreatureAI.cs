@@ -1,7 +1,9 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Assertions.Must;
 using UnityEngine.TextCore.Text;
 using UnityEngine.Windows.WebCam;
 
@@ -100,17 +102,11 @@ public class CreatureAI : MonoBehaviour
     public float StempGroundRange => IncreasedStempGroundRangePercentage > 0 ? _stempGroundRange * (1 + IncreasedStempGroundRangePercentage / 100) : _stempGroundRange / (1 - IncreasedStempGroundRangePercentage / 100);
     public float IncreasedStempGroundRangePercentage { set; get; }
 
-    // 반경 테스트 변수
-    Vector3 _tc;
-    float _tr;
-
-
-    // 던지기
     [SerializeField] float _throwPower;
 
-    // 스킬 슬롯
-    [SerializeField] int _creatureSkillCount;
-
+    // 부활
+    float _reviveTime = 20;
+    float _reviveElasped;
     private void Awake()
     {
         _character = GetComponent<Character>();
@@ -124,23 +120,21 @@ public class CreatureAI : MonoBehaviour
 
         RegistSkill();
     }
-
-   
     private void OnCharacterDead()
     {
         _model.gameObject.SetActive(false);
         _character.Move(Vector2.zero);
+        _reviveElasped = 0;
     }
-
     private void OnDrawGizmosSelected()
     {
         if (_debugAttackRangeIndex < 0 || _attackRangeList.Count <= _debugAttackRangeIndex) return;
 
         Util.DrawRangeOnGizmos(gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
     }
-
     private void Update()
     {
+        if(_character.IsDead) return;
         if (_isSoulForm)
         {
             Player player = Managers.GetManager<GameManager>().Player;
@@ -162,6 +156,19 @@ public class CreatureAI : MonoBehaviour
         _creatureAbility.AbilityUpdate();
     }
 
+    void Revive()
+    {
+        if (_character.IsDead)
+        {
+            _reviveElasped += Time.deltaTime;
+            if (_reviveElasped > _reviveTime)
+            {
+                _character.Revive();
+                _reviveElasped = 0;
+                _model.gameObject.SetActive(true);
+            }
+        }
+    }
     void DefaultAI()
     {
         if (_closeEnemy) return;
@@ -304,6 +311,7 @@ public class CreatureAI : MonoBehaviour
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
                 _character.Attack(c, AttackDamage, 50, c.transform.position - transform.position, hit.point);
+              
             }
         }
     }
@@ -340,7 +348,8 @@ public class CreatureAI : MonoBehaviour
 
     public void UseSkill(SkillSlot slot)
     {
-        if(slot.skillData == null) return;
+        if (_character.IsDead) return;
+        if (slot.skillData == null) return;
 
         if (_skillDictionary.TryGetValue(slot.skillData.skillName, out var func))
         {
@@ -369,13 +378,11 @@ public class CreatureAI : MonoBehaviour
         List<GameObject> characterList = new List<GameObject>();
         characterList.Clear();
         Vector3 center = transform.position;
-        _tc = center;
         float radius = 0;
         Camera.main.GetComponent<CameraController>().ShockWave(center, 30, num);
         while (radius < ShockwaveRange)
         {
             radius += Time.deltaTime * 30;
-            _tr = radius;
             RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, Vector2.zero, 0);
 
             if (hits.Length > 0)

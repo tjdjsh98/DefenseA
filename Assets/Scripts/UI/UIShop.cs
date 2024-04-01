@@ -86,8 +86,14 @@ public class UIShop : UIBase
 
     public override void Open(bool except = false)
     {
+        if (_openShop == null)
+        {
+            Close();
+            return;
+        }
         if (!except)
             Managers.GetManager<UIManager>().Open(this);
+
         Refresh();
         Time.timeScale = 0;
         gameObject.SetActive(true);

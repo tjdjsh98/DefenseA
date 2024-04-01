@@ -185,7 +185,7 @@ SortingGroup:
   m_GameObject: {fileID: 4606448622780456064}
   m_Enabled: 1
   m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &181464533946432683
@@ -251,7 +251,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _spawnEnemyList: 0200000004000000
-  _spawnCoolTime: 5
+  _spawnCoolTime: 10
   _spawnTime: 0
   _spawnEnemyHpMultifly: 1.2
 --- !u!95 &6363188798159218921

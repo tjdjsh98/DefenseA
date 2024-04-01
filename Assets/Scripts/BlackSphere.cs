@@ -1,7 +1,4 @@
-using MoreMountains.Tools;
 using System.Collections;
-using System.Collections.Generic;
-using System.Runtime.InteropServices;
 using UnityEngine;
 
 public class BlackSphere : MonoBehaviour
@@ -17,7 +14,7 @@ public class BlackSphere : MonoBehaviour
     Vector3 _attackDirection;
     Define.Range _attackRange = new Define.Range() { center = Vector3.zero, size = Vector3.one, figureType = Define.FigureType.Circle };
     float _attackTime;
-    float _attackDuration= 5;
+    float _attackDuration= 20;
     [SerializeField]float _speed= 50;
     float _attackDelay;
 
@@ -81,7 +78,6 @@ public class BlackSphere : MonoBehaviour
                             Character c = hit.collider.GetComponent<Character>();
                             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                             {
-                                Debug.Log(c);
                                 c.Damage(null, 10, 10, c.transform.position - transform.position,hit.point, 1f);
                             }
                             return false;

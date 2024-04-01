@@ -12,13 +12,12 @@ public class CardData : ScriptableObject,ITypeDefine
     [field: SerializeField] public bool IsActiveAbility { set; get; }
 
     // 처음 해당 카드를 선택할 때 카드 목록을 업그레이드할 목록에 넣어줌.
-    [field: SerializeField] public List<CardName> PriorCards { set;get; }
+    [field: SerializeField] public List<PriorCardData> PriorCards { set;get; }
     [field: SerializeField] public int MaxUpgradeCount { get; set; }
+    [field: SerializeField] public float Property1 { get; set; }
+    [field: SerializeField] public float Property2 { get; set; }
+    [field: SerializeField] public float Property3 { get; set; }
 
-    [field: SerializeField] public int IncreaseHp { get; set; }
-    [field: SerializeField] public float IncreaseRecoverHpPower { get; set; }
-    [field: SerializeField] public float IncreaseDamageReducePercentage { get; set; }
-    [field:SerializeField] public int IncreaseAttackPoint { get; set; }
 
     public int GetEnumToInt()
     {
@@ -26,6 +25,13 @@ public class CardData : ScriptableObject,ITypeDefine
     }
     public static int CARD_COUNT = (int)CardName.END;
 }
+
+[System.Serializable]
+    public class PriorCardData
+    {
+        public CardName priorCardName;
+        public int priorUpgradeCount;
+    }
 public enum CardName
 {
     None = -1,      

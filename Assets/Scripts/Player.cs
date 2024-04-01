@@ -76,6 +76,15 @@ public class Player : MonoBehaviour
         _rigidbody = GetComponent<Rigidbody2D>();
         _character = GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
+        _weaponSwaper.Init();
+        for (int i = 0; i < 3; i++)
+        {
+            if (_weaponSwaper.GetWeapon(i) != null)
+            {
+                _weaponSwaper.SelectWeapon(i);
+                break;
+            }
+        }
         _cameraController = Camera.main.GetComponent<CameraController>();
         _girlAbility.Init(this);
 

@@ -14,16 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CardName>k__BackingField: 7
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\uC801\uC744 \uCC98\uCE58 \uC2DC \uD3EC\uC2DD\uC774
-    1 \uC99D\uAC00\uD569\uB2C8\uB2E4."
+  <CardDescription>k__BackingField: "\uC18C\uB140\uAC00 \uC801\uC744 \uCC98\uCE58\uD558\uBA74
+    \uD3EC\uC2DD \uC218\uCE58\uAC00 {0} \uC99D\uAC00\uD569\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
-  <PriorCards>k__BackingField: 1b000000
+  <PriorCards>k__BackingField:
+  - priorCardName: 27
+    priorUpgradeCount: 1
   <MaxUpgradeCount>k__BackingField: 1
-  <IncreaseHp>k__BackingField: 0
-  <IncreaseRecoverHpPower>k__BackingField: 0
-  <IncreaseDamageReducePercentage>k__BackingField: 0
-  <IncreaseAttackPoint>k__BackingField: 0
+  <Property1>k__BackingField: 1
+  <Property2>k__BackingField: 2
+  <Property3>k__BackingField: 3
   <UnlockAbility>k__BackingField: 7
   <DecreaseFireDelayPercentage>k__BackingField: 0
   <IncreaseReloadSpeedPercentage>k__BackingField: 0

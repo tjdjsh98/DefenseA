@@ -226,9 +226,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public void FastReload()
     {
+        if(!_isReload) return;
         if (_fastReloadFailed) return;
 
-        float ratio = ReloadElapsed / (1/ReloadTime);
+        float ratio = ReloadElapsed / ReloadTime;
         if (ratio > 0.7f && ratio < 0.9f)
         {
             CompleteReload();

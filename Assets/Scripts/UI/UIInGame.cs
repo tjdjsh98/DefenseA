@@ -1,5 +1,6 @@
 using MoreMountains.Feedbacks;
 using MoreMountains.Tools;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
@@ -17,12 +18,7 @@ public class UIInGame : UIBase
     [SerializeField]TextMeshProUGUI _ammoTextMesh;
 
     int _currentWeaponIndex = -1;
-    Vector3 _mainWeaponPos;
     int _currentAmmoCount;
-
-    [SerializeField] Image _expMaxImage;
-    [SerializeField] Image _expCurrentImage;
-    [SerializeField] TextMeshProUGUI _levelText;
 
     [SerializeField] TextMeshProUGUI _moneyText;
 
@@ -42,17 +38,20 @@ public class UIInGame : UIBase
     [SerializeField] GameObject _wallIndicator;
     [SerializeField] GameObject _wallIndicatorArrow;
 
-    float _maxHpWidth;
-    float _maxHpHeight;
-
     [SerializeField] List<Image> _skillMaskList;
     [SerializeField] List<TextMeshProUGUI> _skillNameList;
 
     [SerializeField] Image _fadeOut;
 
     int _prePanicLevel;
-
     int _preMental;
+
+    [SerializeField] Image _electrictyFill;
+    [SerializeField] TextMeshProUGUI _electrictyText;
+
+    [SerializeField] Image _predationFill;
+    [SerializeField] TextMeshProUGUI _predationText;
+
     public override void Init()
     {
         _isInitDone = true;
@@ -98,22 +97,29 @@ public class UIInGame : UIBase
 
         RefreshWeapon();
 
-        if (_expMaxImage && _expCurrentImage)
-        {
-            int maxExp = Managers.GetManager<GameManager>().MaxExp; 
-            int exp = Managers.GetManager<GameManager>().Exp; 
-            _expCurrentImage.rectTransform.sizeDelta
-                = new Vector2(_expMaxImage.rectTransform.sizeDelta.x * exp/maxExp, _expMaxImage.rectTransform.sizeDelta.y);
-
-            _levelText.text = Managers.GetManager<GameManager>().Level.ToString();
-        }
         HandleBar();
         ShowMap();
         ShowSkill();
+        ShowElectricity();
+        ShowPredation();
         //ShowAbility();
         // IndicateWall();
     }
 
+    private void ShowElectricity()
+    {
+        float max = Managers.GetManager<AbilityManager>().MaxElectricity;
+        float current = Managers.GetManager<AbilityManager>().CurrentElectricity;
+        _electrictyFill.fillAmount = current / max;
+        _electrictyText.text = $"{(int)current}";
+    }
+    private void ShowPredation()
+    {
+        float max = Managers.GetManager<AbilityManager>().MaxPredation;
+        float current = Managers.GetManager<AbilityManager>().Predation;
+        _predationFill.fillAmount = current / max;
+        _predationText.text = $"{(int)current}";
+    }
     void RefreshWeapon()
     {
         WeaponSwaper weaponSwaper = _player.WeaponSwaper;

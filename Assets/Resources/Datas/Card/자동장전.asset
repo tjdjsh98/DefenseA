@@ -16,14 +16,15 @@ MonoBehaviour:
   <CardSelectionType>k__BackingField: 0
   <CardDescription>k__BackingField: "\uC7A5\uCC29\uD558\uC9C0 \uC54A\uACE0 \uC788\uB294
     \uCD1D\uC744 \uC790\uB3D9\uC73C\uB85C \uC7AC\uC7A5\uC804\uD569\uB2C8\uB2E4."
-  <IsStartCard>k__BackingField: 1
+  <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
-  <PriorCards>k__BackingField: 
+  <PriorCards>k__BackingField:
+  - priorCardName: 4
+    priorUpgradeCount: 1
   <MaxUpgradeCount>k__BackingField: 1
-  <IncreaseHp>k__BackingField: 0
-  <IncreaseRecoverHpPower>k__BackingField: 0
-  <IncreaseDamageReducePercentage>k__BackingField: 0
-  <IncreaseAttackPoint>k__BackingField: 0
+  <Property1>k__BackingField: 0
+  <Property2>k__BackingField: 0
+  <Property3>k__BackingField: 0
   <UnlockAbility>k__BackingField: 1
   <DecreaseFireDelayPercentage>k__BackingField: 0
   <IncreaseReloadSpeedPercentage>k__BackingField: 0

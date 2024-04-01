@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 public class VendingMechine : MonoBehaviour,IInteractable,IShop
@@ -50,7 +51,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     {
         if (Managers.GetManager<GameManager>().ShopItemDataList != null)
         {
-            List<ShopItemData> datas;
+            List<ShopItemData> datas = new List<ShopItemData>();
             if (Managers.GetManager<GameManager>().ShopItemDataList.Count < 4)
             {
                 datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(Managers.GetManager<GameManager>().ShopItemDataList.Count);
@@ -58,8 +59,19 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
             }
             else
             {
+                List<ShopItemData> weaponDataList = Managers.GetManager<GameManager>().ShopItemDataList.Where((data) =>
+                {
+                    return data.SellType == SellType.Weapon;
+                }).ToList();
 
-                datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(4);
+                if (weaponDataList.Count > 0)
+                {
+                    datas.Add(weaponDataList.GetRandom());
+                }
+                for(int i = 0; i < 3; i++)
+                {
+                    datas.Add(Managers.GetManager<GameManager>().ShopItemDataList.GetRandom());
+                }
             }
             ShopItemList.Clear();
             foreach (var data in datas)

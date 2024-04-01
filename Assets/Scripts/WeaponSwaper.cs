@@ -21,7 +21,7 @@ public class WeaponSwaper : MonoBehaviour
     int _weaponIndex;
     public int WeaponIndex => _weaponIndex;
 
-    private void Awake()
+    public void Init()
     {
         _character = GetComponent<Character>();
         SelectWeapon(-1);

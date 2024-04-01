@@ -52,19 +52,23 @@ public class HelperEditor : EditorWindow
         "\n    [field: SerializeField] public bool IsActiveAbility {{ set; get; }}"+
         "\n" +
         "\n    // 처음 해당 카드를 선택할 때 카드 목록을 업그레이드할 목록에 넣어줌." +
-        "\n    [field: SerializeField] public List<CardName> PriorCards {{ set;get; }}" +
+        "\n    [field: SerializeField] public List<PriorCardData> PriorCards {{ set;get; }}" +
         "\n    [field: SerializeField] public int MaxUpgradeCount {{ get; set; }}" +
+        "\n    [field: SerializeField] public float Property1 {{ get; set; }}" +
+        "\n    [field: SerializeField] public float Property2 {{ get; set; }}" +
+        "\n    [field: SerializeField] public float Property3 {{ get; set; }}" +
         "\n" +
-        "\n    [field: SerializeField] public int IncreaseHp {{ get; set; }}" +
-        "\n    [field: SerializeField] public float IncreaseRecoverHpPower {{ get; set; }}" +
-        "\n    [field: SerializeField] public float IncreaseDamageReducePercentage {{ get; set; }}" +
-        "\n    [field:SerializeField] public int IncreaseAttackPoint {{ get; set; }}" +
         "\n\n    public int GetEnumToInt()" +
         "\n    {{" +
         "\n        return (int)CardName;" +
         "\n    }}" +
         "\n    public static int CARD_COUNT = (int)CardName.END;" +
         "\n}}" +
+        "\n\n    public class PriorCardData" +
+        "\n    {{" +
+        "\n        public CardName priorCardName;" +
+        "\n        public int priorUpgradeCount;" +
+        "\n    }}" +
         "\npublic enum CardName" +
         "\n{{" +
         "\n    None = -1," +
@@ -143,9 +147,17 @@ public class HelperEditor : EditorWindow
                 cardName += $"\n    {words[0]},";
             }
 
-            if (!string.IsNullOrEmpty(words[10]))
+            if (ParseBoolean(words[1]))
             {
-                ability += $"\n    {words[10]},";
+                if (!string.IsNullOrEmpty(words[7]))
+                {
+                    skillName += $"\n    {words[7]},";
+                }
+            }
+
+            if (!string.IsNullOrEmpty(words[7]))
+            {
+                ability += $"\n    {words[7]},";
             }
         }
         StreamWriter writer = new StreamWriter("Assets/"+GIRL_ABILITY_DATA_PATH);
@@ -174,15 +186,15 @@ public class HelperEditor : EditorWindow
 
             if (ParseBoolean(words[1]))
             {
-                if (!string.IsNullOrEmpty(words[10]))
+                if (!string.IsNullOrEmpty(words[7]))
                 {
-                    skillName += $"\n    {words[10]},";
+                    skillName += $"\n    {words[7]},";
                 }
             }
 
-            if (!string.IsNullOrEmpty(words[10]))
+            if (!string.IsNullOrEmpty(words[7]))
             {
-                ability += $"\n    {words[10]},";
+                ability += $"\n    {words[7]},";
             }
         }
         writer = new StreamWriter("Assets/" + CREATURE_ABILITY_DATA_PATH);
@@ -244,15 +256,16 @@ public class HelperEditor : EditorWindow
             }
             if (ParseBoolean(words[1]))
             {
-                if (!string.IsNullOrEmpty(words[10]))
+                if (!string.IsNullOrEmpty(words[7]))
                 {
-                    skillName += $"\n    {words[10]},";
+                    skillName += $"\n    {words[7]},";
                 }
             }
 
-            if (!string.IsNullOrEmpty(words[10]))
+            Debug.Log(words[7]);
+            if (!string.IsNullOrEmpty(words[7]))
             {
-                ability += $"\n    {words[10]},";
+                ability += $"\n    {words[7]},";
             }
         }
         writer = new StreamWriter("Assets/" + COMMON_ABILITY_DATA_PATH);
@@ -292,22 +305,24 @@ public class HelperEditor : EditorWindow
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
 
-            string[] priorCards = words[4].Split("|",options:System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<CardName>();
-            foreach (var priorCard in priorCards)
+            data.MaxUpgradeCount = words[4].Equals("") ? 0 : int.Parse(words[4]);
+            string[] priorCards = words[5].Split("|",options:System.StringSplitOptions.RemoveEmptyEntries);
+            string[] priorUpgrades = words[6].Split("|",options:System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<PriorCardData>();
+            for(int j = 0; j < priorCards.Length; j++)
             {
-                data.PriorCards.Add(GetCardName(priorCard));
+                CardName cardName = GetCardName(priorCards[j]);
+                if(cardName != CardName.None)
+                {
+                    
+                    data.PriorCards.Add(new PriorCardData() { priorCardName = cardName, priorUpgradeCount = ParseInt(priorUpgrades[j]) });
+                }
             }
-            data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
-            data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
-            data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
-            data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-            data.IncreaseAttackPoint = ParseInt(words[9]);
-
-            data.UnlockAbility = GetGirlAbility(words[10]);
-            data.DecreaseFireDelayPercentage = words[11].Equals("") ? 0 : float.Parse(words[11]);
-            data.IncreaseReloadSpeedPercentage = words[12].Equals("") ? 0 : float.Parse(words[12]);
-            data.IncreasePenerstratingPower = words[13].Equals("") ? 0 : int.Parse(words[13]);
+            data.UnlockAbility = GetGirlAbility(words[7]);
+            data.Property1 = ParseFloat(words[8]);
+            data.Property2 = ParseFloat(words[9]);
+            data.Property3 = ParseFloat(words[10]);
+            
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
@@ -335,64 +350,30 @@ public class HelperEditor : EditorWindow
             data.IsActiveAbility = ParseBoolean(words[1]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
-            string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<CardName>();
-            foreach (var priorCard in priorCards)
-            {
-                data.PriorCards.Add(GetCardName(priorCard));
-            }
-            data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
-            data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
-            data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
-            data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-            data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-            data.UnlockAbility = GetCreatureAbility(words[10]);
 
+            data.MaxUpgradeCount = words[4].Equals("") ? 0 : int.Parse(words[4]);
+            string[] priorCards = words[5].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            string[] priorUpgrades = words[6].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<PriorCardData>();
+            for (int j = 0; j < priorCards.Length; j++)
+            {
+                CardName cardName = GetCardName(priorCards[j]);
+                if (cardName != CardName.None)
+                {
+                    data.PriorCards.Add(new PriorCardData() { priorCardName = cardName, priorUpgradeCount = ParseInt(priorUpgrades[j]) });
+                }
+            }
+            data.UnlockAbility = GetCreatureAbility(words[7]);
+            data.Property1 = ParseFloat(words[8]);
+            data.Property2 = ParseFloat(words[9]);
+            data.Property3 = ParseFloat(words[10]);
 
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();
         }
     }
-    //void CreateWallCardData()
-    //{
-    //    TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + WALL_CARD_DATA_PATH);
-    //    if (textAsset == null) return;
-
-    //    string[] lines = textAsset.text.Split('\n');
-
-    //    string[] preHeadWords = lines[0].Split(',');
-    //    for (int i = 1; i < lines.Length; i++)
-    //    {
-    //        string[] words = lines[i].Split(',');
-    //        if (preHeadWords.Length != words.Length) continue;
-    //        words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length - 1, 1);
-
-    //        WallCardData data = ScriptableObject.CreateInstance<WallCardData>();
-    //        data.name = words[0];
-    //        data.CardName = GetCardName(words[0]);
-    //        data.IsActiveAbility = ParseBoolean(words[1]);
-    //        data.CardDescription = words[2];
-    //        data.IsStartCard = words[3].Equals("1") ? true : false;
-    //        string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
-    //        data.PriorCards = new List<CardName>();
-    //        foreach (var priorCard in priorCards)
-    //        {
-    //            data.PriorCards.Add(GetCardName(priorCard));
-    //        }
-    //        data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
-    //        data.IncreaseHp = words[6].Equals("") ? 0 : int.Parse(words[6]);
-    //        data.IncreaseRecoverHpPower = words[7].Equals("") ? 0 : float.Parse(words[7]);
-    //        data.IncreaseDamageReducePercentage = words[8].Equals("") ? 0 : float.Parse(words[8]);
-    //        data.IncreaseAttackPoint = words[9].Equals("") ? 0 : int.Parse(words[9]);
-    //        data.UnlockAbility = GetWallAbility(words[10]);
-    //        data.SizeUpPercentage = ParseFloat(words[11]);
-
-    //        AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
-    //        AssetDatabase.SaveAssets();
-    //        AssetDatabase.Refresh();
-    //    }
-    //}
+  
     void CreateCommonCardData()
     {
         TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_DATA_PATH);
@@ -413,19 +394,23 @@ public class HelperEditor : EditorWindow
             data.IsActiveAbility = ParseBoolean(words[1]);
             data.CardDescription = words[2];
             data.IsStartCard = words[3].Equals("1") ? true : false;
-            string[] priorCards = words[4].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
-            data.PriorCards = new List<CardName>();
-            foreach (var priorCard in priorCards)
-            {
-                data.PriorCards.Add(GetCardName(priorCard));
-            }
-            data.MaxUpgradeCount = words[5].Equals("") ? 0 : int.Parse(words[5]);
-            data.IncreaseHp = ParseInt(words[6]);
-            data.IncreaseRecoverHpPower = ParseFloat(words[7]);
-            data.IncreaseDamageReducePercentage = ParseFloat(words[8]);
-            data.IncreaseAttackPoint = ParseInt(words[9]);
-            data.UnlockAbility = GetCommonAbility(words[10]);
 
+            data.MaxUpgradeCount = words[4].Equals("") ? 0 : int.Parse(words[4]);
+            string[] priorCards = words[5].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            string[] priorUpgrades = words[6].Split("|", options: System.StringSplitOptions.RemoveEmptyEntries);
+            data.PriorCards = new List<PriorCardData>();
+            for (int j = 0; j < priorCards.Length; j++)
+            {
+                CardName cardName = GetCardName(priorCards[j]);
+                if (cardName != CardName.None)
+                {
+                    data.PriorCards.Add(new PriorCardData() { priorCardName = cardName, priorUpgradeCount = ParseInt(priorUpgrades[j]) });
+                }
+            }
+            data.UnlockAbility = GetCommonAbility(words[7]);
+            data.Property1 = ParseFloat(words[8]);
+            data.Property2 = ParseFloat(words[9]);
+            data.Property3 = ParseFloat(words[10]);
             AssetDatabase.CreateAsset(data, "Assets/" + CARD_FOLDER_DATA_PATH + data.name + ".asset");
             AssetDatabase.SaveAssets();
             AssetDatabase.Refresh();

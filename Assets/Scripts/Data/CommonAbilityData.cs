@@ -9,14 +9,14 @@ public class CommonAbilityData
 public enum CommonAbilityName
 {
     None = -1,
-    BlackSphere,
-    ControlSphere,
-    VolleyFire,
-    ExplosiveSphere,
-    Bait,
-    MicroPower,
-    ExtraBattery,
-    SelfGeneration,
-    Appetite,
+    BlackSphere,
+    ControlSphere,
+    VolleyFire,
+    ExplosiveSphere,
+    Bait,
+    MicroPower,
+    ExtraBattery,
+    SelfGeneration,
+    Appetite,
     END
 };

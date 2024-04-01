@@ -55,9 +55,11 @@ public class UIDialog : UIBase
 
         Time.timeScale = 1;
 
-        _dialogs = null;
         if (!except)
+        {
+            _dialogs = null;
             Managers.GetManager<UIManager>().Close(this);
+        }
     }
 
     void SelectDialog(string id, Vector2 postion)

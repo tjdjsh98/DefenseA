@@ -14,17 +14,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CardName>k__BackingField: 6
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\uACF5\uACA9 \uC2DC 5% \uD655\uB960\uB85C \uAC80\uC740\uAD6C\uCCB4\uAC00
-    \uC0DD\uC131\uB429\uB2C8\uB2E4. \uACF5\uACA9\uC18D\uB3C4 10%\uC99D\uAC00"
+  <CardDescription>k__BackingField: "\uACF5\uACA9 {0}% \uD655\uB960\uB85C \uAC80\uC740\uAD6C\uCCB4\uAC00
+    \uC0DD\uC131\uB429\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
-  <PriorCards>k__BackingField: 13000000
+  <PriorCards>k__BackingField:
+  - priorCardName: 19
+    priorUpgradeCount: 1
   <MaxUpgradeCount>k__BackingField: 1
-  <IncreaseHp>k__BackingField: 0
-  <IncreaseRecoverHpPower>k__BackingField: 0
-  <IncreaseDamageReducePercentage>k__BackingField: 0
-  <IncreaseAttackPoint>k__BackingField: 0
+  <Property1>k__BackingField: 5
+  <Property2>k__BackingField: 10
+  <Property3>k__BackingField: 20
   <UnlockAbility>k__BackingField: 6
-  <DecreaseFireDelayPercentage>k__BackingField: 10
+  <DecreaseFireDelayPercentage>k__BackingField: 0
   <IncreaseReloadSpeedPercentage>k__BackingField: 0
   <IncreasePenerstratingPower>k__BackingField: 0

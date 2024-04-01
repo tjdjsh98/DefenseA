@@ -65,7 +65,6 @@ public class TestNPC : MonoBehaviour,IInteractable
 
     public void Interact()
     {
-        Debug.Log(gameObject);
         OpenDialog();
     }
 }
