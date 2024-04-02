@@ -1,16 +1,19 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
-public class Player : MonoBehaviour
+public class Player : MonoBehaviour, IWeaponUsable
 {
     Animator _animator;
     Character _character;
-    public Character Character => _character;
+    public Character Character { set { Debug.LogWarning("Player 초기화 불가"); } get { return _character;} }
     Rigidbody2D _rigidbody;
     Character _ridingCharacter;
     GirlAbility _girlAbility = new GirlAbility();
@@ -67,7 +70,7 @@ public class Player : MonoBehaviour
     float _runToFireCoolTime = 0.2f;
     float _runToFireElaspedTime = 0f;
 
-    Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
+    Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
     IInteractable _interactableOjbect;
     private void Awake()
@@ -122,9 +125,9 @@ public class Player : MonoBehaviour
 
     public void UseSkill(SkillSlot skillSlot)
     {
-        if (skillSlot.skillData == null) return;
+        if (skillSlot.card == null || skillSlot.card.cardData) return;
 
-        if (_skillDictionary.TryGetValue(skillSlot.skillData.skillName, out var func))
+        if (_skillDictionary.TryGetValue(skillSlot.card.cardData.CardName, out var func))
         {
             func?.Invoke(skillSlot);
         }
@@ -142,11 +145,11 @@ public class Player : MonoBehaviour
         if (_weaponSwaper.CurrentWeapon == null) return;
 
 
-        if (GirlAbility.GetIsHaveAbility(GirlAbilityName.FastReload))
+        if (GirlAbility.GetIsHaveAbility(CardName.빠른장전))
         {
-            _weaponSwaper.CurrentWeapon.FastReload();
+            _weaponSwaper.CurrentWeapon.FastReload(this);
         }
-        _weaponSwaper.CurrentWeapon.Reload();
+        _weaponSwaper.CurrentWeapon.Reload(this);
     }
 
     private void OnReloadKeyHold()
@@ -184,8 +187,20 @@ public class Player : MonoBehaviour
         TurnBody();
         RotateArm();
         RotateBody();
-        Riding();
         CheckInteractable();
+
+        // 웨일 테스트
+        if (Input.GetKeyDown(KeyCode.T))
+        {
+            Vector3? top = Managers.GetManager<GameManager>().GetGroundTop(transform.position);
+            if (top.HasValue)
+            {
+                Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.BlackWhale);
+                effect.SetAttackProperty(_character, 10, 50, 0.2f, Define.CharacterType.Enemy);
+                effect.SetMultiflySize(3);
+                effect.PlayeAnimation(top.Value);
+            }
+        }
 
         // 눈 깜빡임
         _eyeCloseElasepdTime += Time.deltaTime;
@@ -508,7 +523,7 @@ public class Player : MonoBehaviour
 
     
         if (_weaponSwaper.CurrentWeapon != null  && !_weaponSwaper.CurrentWeapon.IsAuto)
-            _weaponSwaper.CurrentWeapon.Fire(_character);
+            _weaponSwaper.CurrentWeapon.Fire(this);
        
     }
     void AutoUseWeapon()
@@ -521,7 +536,7 @@ public class Player : MonoBehaviour
 
      
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
-            _weaponSwaper.CurrentWeapon.Fire(_character);
+            _weaponSwaper.CurrentWeapon.Fire(this);
     }
 
     bool CheckIsCloseEnemy()
@@ -546,39 +561,7 @@ public class Player : MonoBehaviour
         return true;
     }
 
-    void Riding()
-    {
-        if (Input.GetKeyDown(KeyCode.E))
-        {
-            if (_isRiding == false)
-            {
-                List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, new Define.Range { center = new Vector3(0, 0), size = Vector3.one });
-
-                foreach (var hit in hits)
-                {
-                    if (hit.collider.gameObject.name.Equals("Dog"))
-                    {
-                        transform.SetParent(hit.transform);
-                        transform.position = hit.collider.GetComponent<WallAI>().SitPosition.transform.position;
-                        _isRiding = true;
-                        _character.AnimatorSetBool("Sit", true);
-                        _ridingCharacter = hit.collider.GetComponent<Character>();
-                        _character.IsEnableMove = false;
-                        _rigidbody.isKinematic = true;
-                    }
-                }
-            }
-            else
-            {
-                _isRiding = false;
-                _character.IsEnableMove = true;
-                transform.SetParent(transform.parent.parent);
-                _rigidbody.isKinematic = false;
-                _character.AnimatorSetBool("Sit", false);
-            }
-        }
-    }
-
+    
     public void ResetRebound()
     {
         _rebound = 0;

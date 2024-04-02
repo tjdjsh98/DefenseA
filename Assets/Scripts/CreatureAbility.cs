@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEngine;
 
@@ -7,11 +8,7 @@ public class CreatureAbility
 {
     CreatureAI _creatureAI;
 
-    // 능력 해금
-    Dictionary<CreatureAbilityName, bool> _abilityUnlocks = new Dictionary<CreatureAbilityName, bool>();
-
     //생존본능
-    [SerializeField] bool _debugSurvivalIntinctRange;
     [SerializeField] Define.Range _survivalIntinctRange;
     [SerializeField] int _survivalIntinctCount;
     [SerializeField] float _survivalIntinctElapsed;
@@ -20,77 +17,79 @@ public class CreatureAbility
     {
         _creatureAI = creatureAI;
         _creatureAI.Character.AttackHandler += OnAttack;
-
+        _creatureAI.Character.CharacterDamagedHandler += OnDamage;
     }
 
-
+  
     public void AbilityUpdate()
     {
         SurvivalInstinct();
+
+        _creatureAI.Character.IncreasedHpRegeneration = GetHpRegeneration();
     }
 
     void OnAttack(Character target, int damage)
     {
-        if (GetIsHaveAbility(CreatureAbilityName.FlowingBlack))
-        {
-            if(Random.Range(0,5) == 0)
-            {
-                Managers.GetManager<AbilityManager>().AddBlackSphere(target.transform.position);
-            }
-        }
-        if (GetIsHaveAbility(CreatureAbilityName.DiningEtiquette))
-        {
-            if(target == null || target.IsDead)
-            {
-                Managers.GetManager<AbilityManager>().AddPredation(3);
-            }
-        }
-        if (GetIsHaveAbility(CreatureAbilityName.Charge))
+        CardManager manager = Managers.GetManager<CardManager>();
+        if (GetIsHaveAbility(CardName.식욕))
         {
             if (target == null || target.IsDead)
             {
-                Managers.GetManager<AbilityManager>().AddElectricity(1);
+                Managers.GetManager<CardManager>().AddPredation(1);
             }
         }
-    }
-    public void AddAbility(CreatureAbilityName creatureAbilityName)
-    {
-        if ((int)creatureAbilityName > (int)CreatureAbilityName.None && (int)creatureAbilityName < (int)CreatureAbilityName.END)
+        if (GetIsHaveAbility(CardName.식사예절))
         {
-            bool turnTrue = false;
-            if (_abilityUnlocks.ContainsKey(creatureAbilityName))
+            if(target == null || target.IsDead)
             {
-                if (!_abilityUnlocks[creatureAbilityName])
-                {
-                    turnTrue = true;
-                    _abilityUnlocks[creatureAbilityName] = true;
-                }
+                Managers.GetManager<CardManager>().AddPredation(3);
             }
-            else
+        }
+        if (GetIsHaveAbility(CardName.충전))
+        {
+            Card card = manager.GetCard(CardName.충전);
+            if (card != null)
             {
-                turnTrue = true;
-                _abilityUnlocks.Add(creatureAbilityName, true);
+                Managers.GetManager<CardManager>().AddElectricity(card.property);
             }
+        }
+    }
 
-            if (turnTrue)
+    void OnDamage(Character attacker, int damage, float power, Vector3 direction, Vector3 point, float stunTime)
+    {
+        CardManager manager = Managers.GetManager<CardManager>();
+        if (GetIsHaveAbility(CardName.검게흐르는))
+        {
+            Card card = manager.GetCard(CardName.검게흐르는);
+            if (card != null)
             {
+                if (Random.Range(0, 100) < card.property)
+                {
+                    manager.AddBlackSphere(_creatureAI.Character.GetCenter());
+                }
 
             }
         }
     }
-    public bool GetIsHaveAbility(CreatureAbilityName ability)
+    public void ApplyCardAbility(Card card)
     {
-        if (_abilityUnlocks.TryGetValue(ability, out bool value) && value)
-            return value;
+        switch (card.cardData.CardName)
+        {
 
-        return false;
+        }
+    }
+    public bool GetIsHaveAbility(CardName cardName)
+    {
+         Card card = Managers.GetManager<CardManager>().GetCard(cardName);
+        
+        return card != null;
     }
     void SurvivalInstinct()
     {
-        if (GetIsHaveAbility(CreatureAbilityName.SurvialIntinct))
+        if (GetIsHaveAbility(CardName.생존본능))
         {
-
             _survivalIntinctElapsed += Time.deltaTime;
+            //  2초마다 갱신
             if (_survivalIntinctElapsed > 2)
             {
                 _survivalIntinctElapsed = 0;
@@ -100,7 +99,7 @@ public class CreatureAbility
                 foreach (var hit in hits)
                 {
                     Character character = hit.collider.GetComponent<Character>();
-                    if (character)
+                    if (character && character.CharacterType == Define.CharacterType.Enemy)
                     {
                         _survivalIntinctCount++;
                     }
@@ -108,22 +107,40 @@ public class CreatureAbility
             }
         }
     }
-    public float GetIncreasedAttackSpeed()
+    public float GetIncreasedAttackPowerPercentage()
     {
         float percentage = 0;
-        AbilityManager abilityManager = Managers.GetManager<AbilityManager>();
+        CardManager cardManager = Managers.GetManager<CardManager>();
 
-        if (GetIsHaveAbility(CreatureAbilityName.CurrentPassing))
+        if (GetIsHaveAbility(CardName.분노))
         {
-            percentage += (int)(abilityManager.CurrentElectricity/10) * 5f;
+            percentage += 50;
         }
+
 
         return percentage;
     }
-    public List<CreatureAbilityName> GetHaveAbilityNameList()
+    public float GetIncreasedAttackSpeedPercentage()
     {
-        List<CreatureAbilityName> list = _abilityUnlocks.Keys.ToList();
+        float percentage = 0;
+        CardManager cardManager = Managers.GetManager<CardManager>();
 
-        return list;
+        if (GetIsHaveAbility(CardName.분노))
+        {
+            percentage += 50;
+        }
+
+
+        return percentage;
+    }
+    public float GetHpRegeneration()
+    {
+        float regen = 0;
+        if (GetIsHaveAbility(CardName.생존본능))
+        {
+            regen = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).property;
+        }
+
+        return regen;
     }
 }

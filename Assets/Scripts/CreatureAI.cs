@@ -1,11 +1,7 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions.Must;
-using UnityEngine.TextCore.Text;
-using UnityEngine.Windows.WebCam;
 
 public class CreatureAI : MonoBehaviour
 {
@@ -33,14 +29,13 @@ public class CreatureAI : MonoBehaviour
     bool _isSoulForm = false;
 
     // 스킬
-    Dictionary<SkillName, Action<SkillSlot>> _skillDictionary = new Dictionary<SkillName, Action<SkillSlot>>();
-    public int AttackDamage
+    Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
+    public int AttackPower
     {
         get
         {
             int ap = _character.AttackPower;
-            if (_creatureAbility.GetIsHaveAbility(CreatureAbilityName.Rage))
-                ap = Mathf.RoundToInt(ap * 1.5f);
+            ap = Mathf.RoundToInt(ap*Util.CalcPercentage(CreatureAbility.GetIncreasedAttackPowerPercentage()));
             return ap;
         }
     }
@@ -49,7 +44,7 @@ public class CreatureAI : MonoBehaviour
         get
         {
             float attackSpeed = 1;
-            attackSpeed *= Util.CalcPercentage(CreatureAbility.GetIncreasedAttackSpeed());
+            attackSpeed *= Util.CalcPercentage(CreatureAbility.GetIncreasedAttackSpeedPercentage());
             return attackSpeed;
         }
     }
@@ -66,7 +61,7 @@ public class CreatureAI : MonoBehaviour
     float _normalAttackTime = 0;
     float _normalAttackCoolTime = 3f;
     float NormalAttackCoolTime => DecreasedNormalAttackCoolTimePercentage > 0 ? _normalAttackCoolTime / (1 + (DecreasedNormalAttackCoolTimePercentage / 100)) : _normalAttackCoolTime * (1 - (DecreasedNormalAttackCoolTimePercentage / 100));
-    public int NormalAttackDamage => IncreasedNormalAttackPercentage > 0 ? AttackDamage * (1 + IncreasedNormalAttackPercentage / 100) : AttackDamage / (1 - IncreasedNormalAttackPercentage / 100);
+    public int NormalAttackDamage => IncreasedNormalAttackPercentage > 0 ? AttackPower * (1 + IncreasedNormalAttackPercentage / 100) : AttackPower / (1 - IncreasedNormalAttackPercentage / 100);
     public int IncreasedNormalAttackPercentage { set; get; }
     public float IncreasedNormalAttackSpeedPercentage { set; get; }
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
@@ -88,12 +83,12 @@ public class CreatureAI : MonoBehaviour
     public float IncreasedShockwaveRangePercentage { set; get; } = 0;
 
     public float IncreasedShockwaveDamagePercentage { set; get; } = 500;
-    public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + IncreasedShockwaveDamagePercentage / 100)) : Mathf.RoundToInt(AttackDamage / (1 + IncreasedShockwaveDamagePercentage / 100));
+    public int ShockwaveDamage => IncreasedShockwaveDamagePercentage > 0 ? Mathf.RoundToInt(AttackPower * (1 + IncreasedShockwaveDamagePercentage / 100)) : Mathf.RoundToInt(AttackPower / (1 + IncreasedShockwaveDamagePercentage / 100));
 
     // 땅구르기
     float _stempGroundElaspsedTime;
     float _stempGroundCoolTime = 5;
-    int StempGroundDamage => IncreasedStempGroundDamagePercentage > 0 ? Mathf.RoundToInt(AttackDamage * (1 + (IncreasedStempGroundDamagePercentage / 100))) : Mathf.RoundToInt(AttackDamage / (1 - (IncreasedStempGroundDamagePercentage / 100)));
+    int StempGroundDamage => IncreasedStempGroundDamagePercentage > 0 ? Mathf.RoundToInt(AttackPower * (1 + (IncreasedStempGroundDamagePercentage / 100))) : Mathf.RoundToInt(AttackPower / (1 - (IncreasedStempGroundDamagePercentage / 100)));
     public float IncreasedStempGroundDamagePercentage { set; get; } = 200;
     float _stempGroundPower = 50;
     public float StempGroundPower => IncreasedStempGroundPowerPercentage > 0 ? _stempGroundPower * (1 + (IncreasedStempGroundPowerPercentage / 100)) : _stempGroundPower / (1 - (IncreasedStempGroundPowerPercentage / 100));
@@ -134,7 +129,8 @@ public class CreatureAI : MonoBehaviour
     }
     private void Update()
     {
-        if(_character.IsDead) return;
+        Revive();
+        if (_character.IsDead) return;
         if (_isSoulForm)
         {
             Player player = Managers.GetManager<GameManager>().Player;
@@ -303,6 +299,10 @@ public class CreatureAI : MonoBehaviour
     }
     public void NormalAttack()
     {
+        if (CreatureAbility.GetIsHaveAbility(CardName.분노))
+        {
+            _character.Attack(_character, 1, 0, Vector3.zero, _character.GetCenter(), 0);
+        }
         List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRangeList[(int)Define.CreatureSkillRange.NormalAttackRange], LayerMask.GetMask("Character"));
 
         foreach (var hit in hits)
@@ -310,8 +310,7 @@ public class CreatureAI : MonoBehaviour
             Character c = hit.collider.GetComponent<Character>();
             if (c != null && c.CharacterType == Define.CharacterType.Enemy)
             {
-                _character.Attack(c, AttackDamage, 50, c.transform.position - transform.position, hit.point);
-              
+                _character.Attack(c, AttackPower, 50, c.transform.position - transform.position, hit.point);
             }
         }
     }
@@ -341,17 +340,17 @@ public class CreatureAI : MonoBehaviour
     #region 스킬관련
     void RegistSkill()
     {
-        _skillDictionary.Add(SkillName.Roar, PlayRoar);
-        _skillDictionary.Add(SkillName.Shockwave, PlayShockwave);
-        _skillDictionary.Add(SkillName.StempGround, PlayStempGround);
+        _skillDictionary.Add(CardName.울부짖기, PlayRoar);
+        _skillDictionary.Add(CardName.쇼크웨이브, PlayShockwave);
+        _skillDictionary.Add(CardName.땅구르기, PlayStempGround);
     }
 
     public void UseSkill(SkillSlot slot)
     {
         if (_character.IsDead) return;
-        if (slot.skillData == null) return;
+        if (slot.card == null || slot.card.cardData == null) return;
 
-        if (_skillDictionary.TryGetValue(slot.skillData.skillName, out var func))
+        if (_skillDictionary.TryGetValue(slot.card.cardData.CardName, out var func))
         {
             func?.Invoke(slot);
         }
@@ -363,15 +362,14 @@ public class CreatureAI : MonoBehaviour
         if (slot.skillCoolTime > slot.skillTime) return;
 
         if (ShockwaveCount >= 1)
-            StartCoroutine(CorShockwaveAttack());
+            StartCoroutine(CorShockwaveAttack(slot));
         if (ShockwaveCount >= 2)
-            StartCoroutine(CorShockwaveAttack(0.2f, 1));
-        _shockwaveElasped = 0;
+            StartCoroutine(CorShockwaveAttack(slot,0.2f, 1));
 
         slot.skillTime = 0;
     }
 
-    IEnumerator CorShockwaveAttack(float later = 0, int num = 0)
+    IEnumerator CorShockwaveAttack(SkillSlot slot,float later = 0, int num = 0)
     {
         if (later != 0)
             yield return new WaitForSeconds(later);
@@ -396,7 +394,7 @@ public class CreatureAI : MonoBehaviour
                     Character character = hit.collider.gameObject.GetComponent<Character>();
                     if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                     {
-                        _character.Attack(character, ShockwaveDamage, 50, character.transform.position - center, hit.point);
+                        _character.Attack(character, Mathf.RoundToInt(_character.AttackPower * slot.card.property), 50, character.transform.position - center, hit.point);
                     }
                 }
             }
@@ -485,7 +483,7 @@ public class CreatureAI : MonoBehaviour
                 Character c = hit.collider.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _character.Attack(c, StempGroundDamage, StempGroundPower, Vector3.up, hit.point, 1);
+                    _character.Attack(c, Mathf.RoundToInt(_character.AttackPower * slot.card.property), StempGroundPower, Vector3.up, hit.point, 1);
                 }
             }
         }

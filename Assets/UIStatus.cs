@@ -91,9 +91,9 @@ public class UIStatus : UIBase
         GirlAbility girlAbility = _player.GirlAbility;
         _stringBuilder.Clear();
         _stringBuilder.AppendLine($"보유 능력");
-        foreach (var abilityName in girlAbility.GetHaveAbilityNameList())
+        foreach (var card in Managers.GetManager<CardManager>().GetPossessCardList())
         {
-            _stringBuilder.AppendLine($"{abilityName}");
+            _stringBuilder.AppendLine($"{card.cardData.CardName}");
         }
         _abilityTextMesh.text = _stringBuilder.ToString();
 
@@ -122,9 +122,9 @@ public class UIStatus : UIBase
         CreatureAbility creatureAbility = _creatureAI.CreatureAbility;
         _stringBuilder.Clear();
         _stringBuilder.AppendLine($"보유 능력");
-        foreach (var abilityName in creatureAbility.GetHaveAbilityNameList())
+        foreach (var card in Managers.GetManager<CardManager>().GetPossessCardList())
         {
-            _stringBuilder.AppendLine($"{abilityName}");
+            _stringBuilder.AppendLine($"{card.cardData.CardName}");
         }
         _abilityTextMesh.text = _stringBuilder.ToString();
     }

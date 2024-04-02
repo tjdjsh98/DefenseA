@@ -132,7 +132,7 @@ public class Managers : MonoBehaviour
                 manager.transform.parent = _instance.gameObject.transform;
                 break;
             case Define.ContentManagers.Ability:
-                manager = Util.FindOrCreate("AbilityManager").GetOrAddComponent<AbilityManager>();
+                manager = Util.FindOrCreate("AbilityManager").GetOrAddComponent<CardManager>();
                 manager.transform.parent = _instance.gameObject.transform;
                 break;
             case Define.ContentManagers.END:

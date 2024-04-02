@@ -11,10 +11,11 @@ public class BlackSphere : MonoBehaviour
 
     // 공격 상태일 떄
     bool _isAttackMode;
-    Vector3 _attackDirection;
+    Vector2 _attackDirection;
     Define.Range _attackRange = new Define.Range() { center = Vector3.zero, size = Vector3.one, figureType = Define.FigureType.Circle };
     float _attackTime;
     float _attackDuration= 20;
+    int _attackPower;
     [SerializeField]float _speed= 50;
     float _attackDelay;
 
@@ -53,7 +54,7 @@ public class BlackSphere : MonoBehaviour
             _attackTime += Time.deltaTime;
             if (_attackDelay > _attackTime) return;
 
-            transform.position += _attackDirection * Time.deltaTime*_speed;
+            transform.position += (Vector3)_attackDirection * Time.deltaTime*_speed;
             RaycastHit2D hit = Util.RangeCast2D(gameObject,_attackRange,Define.CharacterMask);
 
             if(hit.collider != null) 
@@ -62,7 +63,7 @@ public class BlackSphere : MonoBehaviour
 
                 if(character&& character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    character.Damage(_owner, 5, 10, _attackDirection, hit.point);
+                    character.Damage(_owner, _attackPower, 10, _attackDirection, hit.point);
 
                     _owner = null;
                     _isMoveToDestination = false;
@@ -84,26 +85,66 @@ public class BlackSphere : MonoBehaviour
                         });
 
                     }
-
-                    Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                    Destroy();
                 }
             }
             if (_attackTime >= _attackDuration)
             {
-                _owner = null;
-                _isMoveToDestination = false;
-                _isAttackMode = false;
-                Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                Destroy();
             }
 
         }
     }
 
-    public void MoveToDestinationAndDestroy(GameObject target,float duration)
+    public void Destroy()
+    {
+        _owner = null;
+        _isMoveToDestination = false;
+        _isAttackMode = false;
+        _attackTime = 0;
+        Managers.GetManager<ResourceManager>().Destroy(gameObject);
+    }
+    public void MoveToDestination(GameObject target,float duration,bool isDestroy)
     {
         _isMoveToDestination = true;
 
-        StartCoroutine(CorMoveToDestination(target,duration, true));
+        StartCoroutine(CorMoveToDestination(target,duration, isDestroy));
+    }
+    IEnumerator CorMoveToDestination(GameObject target,float duration, bool isDestroy = false)
+    {
+        duration *= 60f;
+        for(int i = 0; i <= duration; i++)
+        {
+            transform.position = Vector3.Lerp(transform.position, target.transform.position, (float)i / (duration-i));
+            if (!_isMoveToDestination) break;
+            yield return new WaitForFixedUpdate();
+        }
+
+        if(_isMoveToDestination && isDestroy)
+        {
+            Destroy();
+        }
+    }
+    public void MoveToDestination(Vector3 targetPosition, float duration, bool isDestroy)
+    {
+        _isMoveToDestination = true;
+
+        StartCoroutine(CorMoveToDestination(targetPosition, duration, isDestroy));
+    }
+    IEnumerator CorMoveToDestination(Vector3 targetPosition, float duration, bool isDestroy = false)
+    {
+        duration *= 60f;
+        for (int i = 0; i <= duration; i++)
+        {
+            transform.position = Vector3.Lerp(transform.position, targetPosition, (float)i / (duration - i));
+            if (!_isMoveToDestination) break;
+            yield return new WaitForFixedUpdate();
+        }
+
+        if (_isMoveToDestination && isDestroy)
+        {
+            Destroy();
+        }
     }
 
     public void CancelMoveToDestination()
@@ -112,31 +153,14 @@ public class BlackSphere : MonoBehaviour
 
     }
 
-    IEnumerator CorMoveToDestination(GameObject target,float duration, bool isDestroy = false)
-    {
-        duration *= 60f;
-        for(int i = 0; i <= duration; i++)
-        {
-            transform.position = Vector3.Lerp(transform.position, target.transform.position, (float)i / duration);
-            if (!_isMoveToDestination) break;
-            yield return null;
-        }
-
-        if(_isMoveToDestination && isDestroy)
-        {
-            _owner = null;
-            _isMoveToDestination = false;
-            _isAttackMode = false;
-            Managers.GetManager<ResourceManager>().Destroy(gameObject);
-        }
-    }
-
-    public void ChangeAttackMode(Vector3 targetPostion,bool explosive = false,float delay = 0)
+    public void ChangeAttackMode(Vector3 targetPostion,int attackPower,bool explosive = false,float delay = 0)
     {
         _attackDelay = delay;
         _attackTime = 0;
+        _attackPower = attackPower;
         _isAttackMode = true;
         _isExplosive = explosive;
+        
         _attackDirection = (targetPostion - transform.position).normalized;
 
     }

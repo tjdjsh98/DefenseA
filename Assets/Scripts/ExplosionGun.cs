@@ -18,7 +18,7 @@ public class ExplosionGun : Weapon
         Util.DrawRangeOnGizmos(gameObject, _explosionRange,Color.red);
     }
 
-    public override void Fire(Character fireCharacter)
+    public override void Fire(IWeaponUsable user)
     {
         if (_currentAmmo <= 0)
         {
@@ -41,7 +41,7 @@ public class ExplosionGun : Weapon
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
 
-        _player?.ResetRebound();
+        user?.ResetRebound();
         float angle = FirePosition.transform.rotation.eulerAngles.z;
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
@@ -60,19 +60,23 @@ public class ExplosionGun : Weapon
         {
             projectile.transform.position = _firePosition.transform.position;
             _projectileList.Add(projectile);
-            int damage = AttackPower;
+            float damage = AttackPower;
 
-            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
-                damage = AttackPower * 3;
-            projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
-            projectile.Fire(fireCharacter, direction.normalized);
+            damage += damage * user.GetIncreasedDamagePercentage() / 100f;
+            // 플레이어 사용자가 플레이어라면
+            if (user is Player player)
+            {
+                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+            }
+            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(user.Character, direction.normalized);
 
-            Player?.Rebound(_rebound);
+            user?.Rebound(_rebound);
         }
     }
 
-    public override void Reload()
+    public override void Reload(IWeaponUsable user)
     {
         if (_maxAmmo <= _currentAmmo) return;
         if (_isReload) return;
@@ -83,9 +87,9 @@ public class ExplosionGun : Weapon
         _isReload = true;
         if (_reloadGauge)
         {
-            if (_player)
+            if (user is Player player)
             {
-                if (_player.GirlAbility.GetIsHaveAbility(GirlAbilityName.FastReload))
+                if (player.GirlAbility.GetIsHaveAbility(CardName.빠른장전))
                 {
                     _reloadGauge.Point(0.7f, 0.9f);
                 }
@@ -111,7 +115,7 @@ public class ExplosionGun : Weapon
                 Character character = hit.collider.GetComponent<Character>();
                 if(character && character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    character.Damage(_character, _explosionDamage, 20, character.transform.position - transform.position, hit.point, 1);
+                    character.Damage(_user.Character, _explosionDamage, 20, character.transform.position - transform.position, hit.point, 1);
                 }
                 return false;
             }

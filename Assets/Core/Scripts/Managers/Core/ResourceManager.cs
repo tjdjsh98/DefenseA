@@ -1,12 +1,15 @@
-using System.Collections;
+using System;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
 using UnityEngine;
+using Object = UnityEngine.Object;
 
 public class ResourceManager : ManagerBase
 {
     Dictionary<string, List<Poolable>> _pool = new Dictionary<string, List<Poolable>>();
     GameObject _poolFolder;
+
+    public Action<GameObject> GameObjectDestroyedHandler;
+
     public override void Init()
     {
         _poolFolder = new GameObject("[Pool]----------");
@@ -272,6 +275,7 @@ public class ResourceManager : ManagerBase
     public void Destroy(GameObject gameObject)
     {
         Poolable pool = null;
+        GameObjectDestroyedHandler?.Invoke(gameObject);
         if (gameObject)
         {
             if (pool = gameObject.GetComponent<Poolable>())

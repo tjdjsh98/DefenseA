@@ -7,35 +7,19 @@ public class WeaponBlack : Weapon
 {
     BlackSphere _reloadingBlackSphere;
 
-    public override void Fire(Character fireCharacter)
+    public override void FireBullet(IWeaponUsable user)
     {
-        if (_currentAmmo <= 0)
-        {
-            Reload();
-            return;
-        }
-
-        if (_fireElapsed < 1 / AttackSpeed) return;
-
-        // 재장전 중이라면 재장전을 멈춥니다.
-        if (_isReload)
-        {
-            CancelReload();
-        }
-
-
-        _fireElapsed = 0;
+        _currentAmmo--;
 
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
 
-        _player?.ResetRebound();
+        user?.ResetRebound();
         float angle = FirePosition.transform.rotation.eulerAngles.z;
         angle = angle * Mathf.Deg2Rad;
         Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
         direction = direction.normalized;
-
         // 이펙트
         Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
         Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
@@ -48,19 +32,22 @@ public class WeaponBlack : Weapon
         if (projectile != null)
         {
             projectile.transform.position = _firePosition.transform.position;
-            int damage = AttackPower * _currentAmmo;
+            float damage = AttackPower * _currentAmmo;
 
-            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot))
-                damage = AttackPower * 3;
-            
-            projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
-            projectile.Fire(fireCharacter, direction.normalized);
+            // 플레이어 사용자가 플레이어라면
+            if (user is Player player)
+            {
+                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+            }
+
+            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(user.Character, direction.normalized);
 
 
-            Player?.Rebound(_rebound);
+            user?.Rebound(_rebound);
+            _currentAmmo = 0;
         }
-        _currentAmmo = 0;
     }
     public override void CompleteReload()
     {
@@ -90,7 +77,7 @@ public class WeaponBlack : Weapon
             }
             else
             {
-                if (Managers.GetManager<AbilityManager>().BlackSphereList.Count <= 0)
+                if (Managers.GetManager<CardManager>().BlackSphereList.Count <= 0)
                 {
                     _isReload = false;
                     if (_reloadGauge)
@@ -98,13 +85,13 @@ public class WeaponBlack : Weapon
                 }
                 else
                 {
-                    _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
-                    Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
-                    _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadTime);
+                    _reloadingBlackSphere = Managers.GetManager<CardManager>().BlackSphereList[0];
+                    Managers.GetManager<CardManager>().BlackSphereList.RemoveAt(0);
+                    _reloadingBlackSphere.MoveToDestination(gameObject, _reloadTime,true);
                 }
             }
 
-            if (Managers.GetManager<AbilityManager>().BlackSphereList.Count <= 0)
+            if (Managers.GetManager<CardManager>().BlackSphereList.Count <= 0)
             {
                 _isReload = false;
                 if (_reloadGauge)
@@ -117,32 +104,20 @@ public class WeaponBlack : Weapon
             _reloadingBlackSphere = null;
         }
     }
-    public override void Reload()
+    public override void Reload(IWeaponUsable user)
     {
         if (_maxAmmo <= _currentAmmo) return;
         if (_isReload) return;
 
-        if (Managers.GetManager<AbilityManager>().BlackSphereList.Count <= 0) return;
+        if (Managers.GetManager<CardManager>().BlackSphereList.Count <= 0) return;
 
-        _reloadingBlackSphere = Managers.GetManager<AbilityManager>().BlackSphereList[0];
-        Managers.GetManager<AbilityManager>().BlackSphereList.RemoveAt(0);
-        _reloadingBlackSphere.MoveToDestinationAndDestroy(gameObject, _reloadTime);
+        _reloadingBlackSphere = Managers.GetManager<CardManager>().BlackSphereList[0];
+        Managers.GetManager<CardManager>().BlackSphereList.RemoveAt(0);
+        _reloadingBlackSphere.MoveToDestination(gameObject, _reloadTime,true);
 
         _isReload = true;
         if (_reloadGauge)
         {
-            if (_player)
-            {
-                // TODO
-                //if (_player.GetIsHaveAbility(GirlAbility.FastReload))
-                //{
-                //    _reloadGauge.Point(0.7f, 0.9f);
-                //}
-                //else
-                //{
-                //    _reloadGauge.DisablePoint();
-                //}
-            }
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
         }
@@ -154,7 +129,7 @@ public class WeaponBlack : Weapon
         if (_reloadingBlackSphere)
         {
             _reloadingBlackSphere.CancelMoveToDestination();
-            Managers.GetManager<AbilityManager>().BlackSphereList.Add(_reloadingBlackSphere);
+            Managers.GetManager<CardManager>().BlackSphereList.Add(_reloadingBlackSphere);
         }
     }
 }

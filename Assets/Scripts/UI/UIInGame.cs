@@ -108,15 +108,15 @@ public class UIInGame : UIBase
 
     private void ShowElectricity()
     {
-        float max = Managers.GetManager<AbilityManager>().MaxElectricity;
-        float current = Managers.GetManager<AbilityManager>().CurrentElectricity;
+        float max = Managers.GetManager<CardManager>().MaxElectricity;
+        float current = Managers.GetManager<CardManager>().CurrentElectricity;
         _electrictyFill.fillAmount = current / max;
         _electrictyText.text = $"{(int)current}";
     }
     private void ShowPredation()
     {
-        float max = Managers.GetManager<AbilityManager>().MaxPredation;
-        float current = Managers.GetManager<AbilityManager>().Predation;
+        float max = Managers.GetManager<CardManager>().MaxPredation;
+        float current = Managers.GetManager<CardManager>().Predation;
         _predationFill.fillAmount = current / max;
         _predationText.text = $"{(int)current}";
     }
@@ -216,26 +216,10 @@ public class UIInGame : UIBase
         _mapPlayer.transform.localPosition = new Vector3(-mapImageSize / 2 + Mathf.Clamp01(playerPosition / mapSize) * mapImageSize,0,0);
     }
 
-    //void ShowAbility()
-    //{
-    //    if (_creatureSkillCurtain)
-    //    {
-    //        CreatureAI creature = Managers.GetManager<GameManager>().CreatureAI;
-    //        if (creature.SelectedSpecialAbility != Define.CreatureSkill.None)
-    //        {
-    //            _creatureSkillCurtain.transform.localPosition =
-    //                new Vector3(0,-100 + 100 * creature.SpecialAbilityElaspedTime / creature.SpecialAbilityCoolTime, 0);
-    //        }
-    //        else
-    //        {
-    //            _creatureSkillCurtain.transform.localPosition = new Vector3(0, -100, 0);
-    //        }
-    //    }
-    //}
 
     void ShowSkill()
     {
-        List<SkillSlot> skillSlotList = Managers.GetManager<AbilityManager>().SkillSlotList;
+        List<SkillSlot> skillSlotList = Managers.GetManager<CardManager>().SkillSlotList;
 
         int i = 0;
         for (i = 0; i < skillSlotList.Count; i++)
@@ -246,10 +230,10 @@ public class UIInGame : UIBase
                 _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100);
             else
                 _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 - (skillSlotList[i].skillTime / skillSlotList[i].skillCoolTime)));
-            if (skillSlotList[i].skillData== null)
+            if (skillSlotList[i].card == null|| skillSlotList[i].card.cardData == null)
                 _skillNameList[i].text = string.Empty;
             else
-                _skillNameList[i].text = skillSlotList[i].skillData.skillName.ToString();
+                _skillNameList[i].text = skillSlotList[i].card.cardData.CardName.ToString();
         }
         for (; i < _skillMaskList.Count; i++)
         {

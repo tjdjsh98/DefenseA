@@ -86,6 +86,7 @@ public static class Define
         Blooding,
         Slash,
         Lighting,
+        BlackWhale,
     }
    
     public enum CreatureSkillRange

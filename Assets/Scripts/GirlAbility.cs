@@ -9,9 +9,6 @@ public class GirlAbility
 {
     Player _player;
 
-    // 언락된 능력
-    Dictionary<GirlAbilityName, bool> _abilityUnlocks = new Dictionary<GirlAbilityName, bool>();
-    
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
@@ -43,20 +40,29 @@ public class GirlAbility
 
     void OnAttack(Character target, int dmg)
     {
-        if (GetIsHaveAbility(GirlAbilityName.BlackBullet))
+        CardManager manager = Managers.GetManager<CardManager>();
+        if (GetIsHaveAbility(CardName.검은총알))
         {
-            if(UnityEngine.Random.Range(0,100) < 5)
-                Managers.GetManager<AbilityManager>().AddBlackSphere(target.transform.position);
+            if(UnityEngine.Random.Range(0,100) < manager.GetCard(CardName.검은총알).property)
+                Managers.GetManager<CardManager>().AddBlackSphere(target.transform.position);
         }
-
-        if (GetIsHaveAbility(GirlAbilityName.MealPreparation))
+        if (GetIsHaveAbility(CardName.식욕))
+        {
+            if (target == null || target.IsDead)
+            {
+                Managers.GetManager<CardManager>().AddPredation(1);
+            }
+        }
+        if (GetIsHaveAbility(CardName.식사준비))
         {
             if(target == null || target.IsDead)
             {
-                Managers.GetManager<AbilityManager>().AddPredation(1);
+                Card card = Managers.GetManager<CardManager>().GetCard(CardName.식사준비);
+                if(card != null) { }
+                    Managers.GetManager<CardManager>().AddPredation((int)card.property);
             }
         }
-        if (GetIsHaveAbility(GirlAbilityName.Hunger))
+        if (GetIsHaveAbility(CardName.굶주림))
         {
             if (_hungerTarget == null)
             {
@@ -76,21 +82,36 @@ public class GirlAbility
                 }
             }
 
-            if (_hungerHitCount >= 10)
+            if (_hungerHitCount >= (int)Managers.GetManager<CardManager>().GetCard(CardName.굶주림).property)
             {
                 _hungerTarget = null;
                 _hungerHitCount = 0;
-                Managers.GetManager<AbilityManager>().AddPredation(5);
+                Managers.GetManager<CardManager>().AddPredation(5);
 
-                target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position);
+                if (target.IsNotInstantlyDie)
+                {
+                    target.Damage(_player.Character, dmg*5, 0, Vector3.zero, target.transform.position);
+                }
+                else
+                {
+                    target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position);
+                }
             }
 
 
         }
+        if (GetIsHaveAbility(CardName.충전))
+        {
+            Card card = manager.GetCard(CardName.충전);
+            if (card != null)
+            {
+                manager.AddElectricity(card.property);
+            }
+        }
     }
     private void AutoReload()
     {
-        if (GetIsHaveAbility(GirlAbilityName.AutoReload))
+        if (GetIsHaveAbility(CardName.자동장전))
         {
 
             for (int i = 0; i < _player.WeaponSwaper.GetWeaponCount(); i++)
@@ -110,6 +131,7 @@ public class GirlAbility
                 {
                     if (_autoReloadElaspedTimeList[i] > weapon.ReloadTime)
                     {
+                        Managers.GetManager<TextManager>().ShowText(_player.transform.position + Vector3.up * 5,$"{weapon.WeaponName.ToString()} 장전완료" , 10, Color.green);
                         weapon.CompleteReload();
                         _autoReloadElaspedTimeList[i] = 0;
                     }
@@ -121,37 +143,21 @@ public class GirlAbility
             }
         }
     }
-    public bool GetIsHaveAbility(GirlAbilityName girlAbility)
+    public bool GetIsHaveAbility(CardName cardName)
     {
-        if (_abilityUnlocks.TryGetValue(girlAbility, out bool value) && value)
-            return value;
-
-        return false;
+        Card card = Managers.GetManager<CardManager>().GetCard(cardName);
+        
+        return card != null;
     }
 
-    public void AddGirlAbility(GirlAbilityName girlAbilityName)
+    // 추가 될 떄 변경되는 능력치 반영
+    public void ApplyCardAbility(Card card)
     {
-        if ((int)girlAbilityName > (int)GirlAbilityName.None && (int)girlAbilityName < (int)GirlAbilityName.END)
+        if (card != null && card.cardData != null)
         {
-            bool turnTrue = false;
-
-            if (_abilityUnlocks.ContainsKey(girlAbilityName))
+            switch (card.cardData.CardName)
             {
-                turnTrue = true;    
-                _abilityUnlocks[girlAbilityName] = true;
-            }
-            else
-            {
-                turnTrue = true;    
-                _abilityUnlocks.Add(girlAbilityName, true);
-            }
-
-            if(turnTrue)
-            {
-                switch (girlAbilityName)
-                {
                    
-                }
             }
         }
     }
@@ -159,14 +165,28 @@ public class GirlAbility
     public float GetIncreasedDamagePercentage()
     {
         Character creature = Managers.GetManager<GameManager>().Creature;
-
         float percentage = 0;
 
-        //if (AbilityUnlocks.TryGetValue(GirlAbilityName.LastStruggle, out bool value) && value)
-        //{
-        //    if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
-        //        percentage += 100f;
-        //}
+        // 넉넉한 총알
+        Card card = Managers.GetManager<CardManager>().GetCard(CardName.넉넉한총알);
+        if (card != null)
+        {
+            Weapon weapon = _player.WeaponSwaper.CurrentWeapon;
+            if (weapon != null)
+            {
+                percentage += card.property * (weapon.MaxAmmo / 10);
+            }
+        }
+
+        // 마지막 발악
+        if (creature.IsDead)
+        {
+            card = Managers.GetManager<CardManager>().GetCard(CardName.마지막발악);
+            if (card != null)
+            {
+                percentage += card.property;
+            }
+        }
 
         return percentage;
     }
@@ -174,22 +194,19 @@ public class GirlAbility
     public float GetIncreasedAttackSpeedPercentage()
     {
         Character creature = Managers.GetManager<GameManager>().Creature;
-
         float percentage = 0;
 
-        //if (AbilityUnlocks.TryGetValue(GirlAbilityName.LastStruggle, out bool value) && value)
-        //{
-        //    if ((wall == null || wall.IsDead) && (creature == null || creature.IsDead))
-        //        percentage += 100f;
-        //}
+        // 마지막 발악
+        if (creature.IsDead)
+        {
+            Card card = Managers.GetManager<CardManager>().GetCard(CardName.마지막발악);
+            if (card != null)
+            {
+                percentage += card.property;
+            }
+        }
+
 
         return percentage;
-    }
-
-    public List<GirlAbilityName> GetHaveAbilityNameList()
-    {
-        List<GirlAbilityName> list = _abilityUnlocks.Keys.ToList();
-
-        return list;
     }
 }

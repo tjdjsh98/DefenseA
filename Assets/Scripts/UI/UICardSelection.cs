@@ -8,13 +8,14 @@ using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.UI;
+using static UnityEngine.Rendering.DebugUI;
 
 public class UICardSelection : UIBase
 {
     [SerializeField] List<GameObject> _cardList;
     [SerializeField] List<MMF_Player> _playerList;
 
-    List<CardData> _cashDatas;
+    List<Card> _cashDatas;
 
     int _cardCount;
 
@@ -23,7 +24,7 @@ public class UICardSelection : UIBase
     List<Image> _cardBloodImageList = new List<Image>();
     List<float> _cardBloodDryValueList = new List<float>();
     List<bool> _cardBloodIsHoverList = new List<bool>();
-    List<CardData> _cardSelectionList = new List<CardData>();
+    List<Card> _cardSelectionList = new List<Card>();
 
     static int _dryValueID = Shader.PropertyToID("_DryValue");
 
@@ -99,7 +100,7 @@ public class UICardSelection : UIBase
         _cardSelectionList.Clear();
 
 
-        _cashDatas = Managers.GetManager<GameManager>().GetRemainCardSelection().ToList();
+        _cashDatas = Managers.GetManager<CardManager>().GetRemainCardSelection().ToList();
 
         for (int i = 0; i < _cardCount; i++)
         {
@@ -136,17 +137,14 @@ public class UICardSelection : UIBase
     {
         for (int i = 0; i < _cardNameTextList.Count; i++)
         {
-            _cardNameTextList[i].text = _cardSelectionList[i].CardName.ToString();
+            _cardNameTextList[i].text = _cardSelectionList[i].cardData.CardName.ToString(); 
 
-            int cardRank = Managers.GetManager<GameManager>().GetCardSelectionCount(_cardSelectionList[i].CardName);
+            int cardRank = _cardSelectionList[i].rank;
+
             float value = 0;
-            if (cardRank == 0)
-                value = _cardSelectionList[i].Property1;
-            if (cardRank == 1)
-                value = _cardSelectionList[i].Property2;
-            if (cardRank == 2)
-                value = _cardSelectionList[i].Property3;
-            string cardDescription = string.Format(_cardSelectionList[i].CardDescription, value);
+            if (_cardSelectionList[i].cardData.PropertyList.Count > cardRank)
+                value = _cardSelectionList[i].cardData.PropertyList[cardRank];
+            string cardDescription = string.Format(_cardSelectionList[i].cardData.CardDescription, value);
 
             _cardDescriptionTextList[i].text = cardDescription;
         }
@@ -154,7 +152,7 @@ public class UICardSelection : UIBase
 
     public void SelectCard(int cardIndex)
     {
-        Managers.GetManager<GameManager>().SelectCardData(_cardSelectionList[cardIndex]);
+        Managers.GetManager<CardManager>().SelectCard(_cardSelectionList[cardIndex]);
 
         Close();
     }

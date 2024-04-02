@@ -6,7 +6,7 @@ using UnityEngine;
 public class ElectricWeapon : Weapon
 {
     float _electric;
-    public override void Fire(Character fireCharacter)
+    public override void Fire(IWeaponUsable user)
     {
         if (_fireElapsed < 1 / AttackSpeed) return;
 
@@ -33,23 +33,25 @@ public class ElectricWeapon : Weapon
             GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Projectile");
             go.transform.position = _firePosition.transform.position;
             Projectile projectile = go.GetComponent<Projectile>();
-            int damage = AttackPower;
-            
+            float damage = AttackPower;
+
+            // 플레이어 사용자가 플레이어라면
+            if (user is Player player)
+            {
+                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+            }
+
+            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(user.Character, direction.normalized);
 
 
-            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
-                damage = AttackPower * 3;
-            projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
-            projectile.Fire(fireCharacter, direction.normalized);
-
-
-            Player?.Rebound(_rebound);
+            user?.Rebound(_rebound);
         }
        
     }
 
-    public override void Reload()
+    public override void Reload(IWeaponUsable user)
     {
         
     }
@@ -58,9 +60,9 @@ public class ElectricWeapon : Weapon
     {
         if (_currentAmmo < _maxAmmo)
         {
-            if (Managers.GetManager<AbilityManager>().CurrentElectricity > 0.1)
+            if (Managers.GetManager<CardManager>().CurrentElectricity > 0.1)
             {
-                Managers.GetManager<AbilityManager>().AddElectricity(-Time.deltaTime);
+                Managers.GetManager<CardManager>().AddElectricity(-Time.deltaTime);
                 _electric += Time.deltaTime;
                 if (_electric >= 1)
                 {

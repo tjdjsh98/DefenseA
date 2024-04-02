@@ -97,11 +97,11 @@ public class EnemyAI : MonoBehaviour
         Managers.GetManager<GameManager>().HuntingCount += 1;
 
         int percentage = 0;
-        if (Managers.GetManager<AbilityManager>().AbilityCount == 0) percentage = 15;
-        else if (Managers.GetManager<AbilityManager>().AbilityCount == 1) percentage = 13;
-        else if (Managers.GetManager<AbilityManager>().AbilityCount == 2) percentage = 11;
-        else if (Managers.GetManager<AbilityManager>().AbilityCount == 3) percentage = 9;
-        else if(Managers.GetManager<AbilityManager>().AbilityCount == 4) percentage = 7;
+        if (Managers.GetManager<CardManager>().AbilityCount == 0) percentage = 15;
+        else if (Managers.GetManager<CardManager>().AbilityCount == 1) percentage = 13;
+        else if (Managers.GetManager<CardManager>().AbilityCount == 2) percentage = 11;
+        else if (Managers.GetManager<CardManager>().AbilityCount == 3) percentage = 9;
+        else if(Managers.GetManager<CardManager>().AbilityCount == 4) percentage = 7;
         else percentage = 1;
         
         if (Random.Range(0, 100f) < percentage) 

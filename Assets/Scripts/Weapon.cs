@@ -1,21 +1,10 @@
-using MoreMountains.Feedbacks;
 using System.Collections;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class Weapon : MonoBehaviour, ITypeDefine
 {
-    protected Character _character;
-    protected Player _player;
+    protected IWeaponUsable _user;
     protected AudioSource _audioSource;
-    protected Character Character
-    {
-        get { if (_character == null) _character = GetComponentInParent<Character>(); return _character; }
-    }
-    protected Player Player
-    {
-        get { if(_player == null) _player = GetComponentInParent<Player>(); return _player; }
-    }
 
     [SerializeField] protected bool _debug;
 
@@ -51,7 +40,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         get
         {
             int result = 0;
-            result += Mathf.RoundToInt(_attackPower * (1+IncreasedAttackPowerPercentage / 100));
+            result += Mathf.RoundToInt(_attackPower * (1+IncreasedAttackPowerPercentage / 100) * (1 + _user.GetIncreasedDamagePercentage()/100));
             return result;
         }
     }
@@ -69,7 +58,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _attackSpeed;
     public float OriginalAttackSpeed => _attackSpeed;
-    public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100));
+    public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100) * (1+ _user.GetIncreasedAttackSpeedPercentage()/100));
     [SerializeField] protected float _reloadTime;
     public float OriginalReloadTime => _reloadTime;
     public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100));
@@ -105,12 +94,12 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public GameObject HandlePosition { private set; get; }
 
-    public void Init(Character character)
+    public void Init(IWeaponUsable user)
     {
         _audioSource = GetComponent<AudioSource>();
         _currentAmmo = _maxAmmo;
-        _character = character;
-        _reloadGauge = _character.transform.Find("GagueBar").GetComponent<GaugeBar>();
+        _user= user;
+        _reloadGauge = _user.Character.transform.Find("GagueBar").GetComponent<GaugeBar>();
         _firePosition = transform.Find("FirePoint").gameObject;
         HandlePosition = transform.Find("HandlePosition").gameObject;
         
@@ -118,11 +107,11 @@ public class Weapon : MonoBehaviour, ITypeDefine
             _reloadGauge.gameObject.SetActive(false);
 
     }
-    public virtual void Fire(Character fireCharacter)
+    public virtual void Fire(IWeaponUsable user)
     {
         if (_currentAmmo <= 0)
         {
-            Reload();
+            Reload(user);
             return;
         }
 
@@ -133,19 +122,24 @@ public class Weapon : MonoBehaviour, ITypeDefine
         {
             CancelReload();
         }
-        _currentAmmo--;
         _fireElapsed = 0;
+
+        FireBullet(user);
+    }
+
+    public virtual void FireBullet(IWeaponUsable user)
+    {
+        _currentAmmo--;
 
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
 
-        _player?.ResetRebound();
+        user?.ResetRebound();
         float angle = FirePosition.transform.rotation.eulerAngles.z;
         angle = angle * Mathf.Deg2Rad;
-        Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x/ Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
+        Vector3 direction = new Vector3(Mathf.Cos(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(angle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
         direction = direction.normalized;
-
         // 이펙트
         Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
         Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
@@ -155,18 +149,23 @@ public class Weapon : MonoBehaviour, ITypeDefine
         // ---------------
 
         Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_bulletName);
-        if (projectile != null) {
+        if (projectile != null)
+        {
             projectile.transform.position = _firePosition.transform.position;
-            int damage = AttackPower;
+            float damage = AttackPower;
 
-            // 플레이어가 라스트샷 능력이 있다면 데미지 3배
-            if (Player.GirlAbility.GetIsHaveAbility(GirlAbilityName.LastShot) && _currentAmmo == 0)
-                damage = AttackPower * 3;
-            projectile.Init(KnockBackPower, BulletSpeed, damage, Define.CharacterType.Enemy, PenerstratingPower, StunTime);
-            projectile.Fire(fireCharacter, direction.normalized);
+            // 플레이어 사용자가 플레이어라면
+            if (user is Player player)
+            {
+                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+            }
+
+            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(user.Character, direction.normalized);
 
 
-            Player?.Rebound(_rebound);
+            user?.Rebound(_rebound);
         }
     }
     public void Update()
@@ -190,7 +189,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             CompleteReload();
         }
     }
-    public virtual void Reload()
+    public virtual void Reload(IWeaponUsable user)
     {
         if (_maxAmmo <= _currentAmmo) return;
         if (_isReload) return;
@@ -199,9 +198,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
         _isReload = true;
         if (_reloadGauge)
         {
-            if (_player)
+            if (user is Player player)
             {
-                if (_player.GirlAbility.GetIsHaveAbility(GirlAbilityName.FastReload))
+                if (player.GirlAbility.GetIsHaveAbility(CardName.빠른장전))
                 {
                     _reloadGauge.Point(0.7f, 0.9f);
                 }
@@ -224,7 +223,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     }
 
-    public void FastReload()
+    public virtual void FastReload(IWeaponUsable user)
     {
         if(!_isReload) return;
         if (_fastReloadFailed) return;
@@ -232,7 +231,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         float ratio = ReloadElapsed / ReloadTime;
         if (ratio > 0.7f && ratio < 0.9f)
         {
-            CompleteReload();
+            CompleteFastReload(user);
         }
         else
         {
@@ -244,10 +243,40 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            if (_player.GirlAbility.GetIsHaveAbility(GirlAbilityName.ExtraAmmo) && !_fastReloadFailed)
-                _currentAmmo = Mathf.CeilToInt(_maxAmmo * 1.5f);
-            else
+            
+            _currentAmmo = _maxAmmo;
+            _reloadElapsed = 0;
+            if (_reloadGauge)
+                _reloadGauge.gameObject.SetActive(false);
+        }
+        else
+        {
+            _currentAmmo++;
+            if (_currentAmmo >= _maxAmmo)
+            {
                 _currentAmmo = _maxAmmo;
+                _isReload = false;
+                if (_reloadGauge)
+                    _reloadGauge.gameObject.SetActive(false);
+            }
+            _reloadElapsed = 0;
+        }
+    }
+
+    public virtual void CompleteFastReload(IWeaponUsable user)
+    {
+        if (_isAllReloadAmmo)
+        {
+            _isReload = false;
+
+            if (!_fastReloadFailed && user is Player player)
+            {
+                if (player.GirlAbility.GetIsHaveAbility(CardName.추가장전))
+                {
+                    _currentAmmo = _maxAmmo + Mathf.RoundToInt(_maxAmmo * Managers.GetManager<CardManager>().GetCard(CardName.추가장전).property/100f);
+                }
+            }
+
             _reloadElapsed = 0;
             if (_reloadGauge)
                 _reloadGauge.gameObject.SetActive(false);

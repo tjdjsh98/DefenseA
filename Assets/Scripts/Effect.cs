@@ -1,8 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Timeline;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 using UnityEngine.VFX;
 
 public class Effect : MonoBehaviour, ITypeDefine
@@ -22,14 +18,25 @@ public class Effect : MonoBehaviour, ITypeDefine
     int _attackPower;
     float _knockBackPower;
     float _stunTime;
+
+    float _multiflyAttackSIze = 1;
+
     Define.CharacterType _enableAttackCharacter;
     [SerializeField]Define.Range _attackRange;
 
+    [Header("애니메이션")]
+    Animator _animator;
+    [SerializeField] string _animatorTriggerName;
+    [SerializeField]Vector2 _attackDirection;
 
     private void Awake()
     {
+        _animator = GetComponent<Animator>();
         _visualEffect = GetComponent<VisualEffect>();
-        _visualEffect.Stop();
+        if(_visualEffect)
+            _visualEffect.Stop();
+        if(_animator)
+            _animator.StopPlayback();
     }
 
     private void OnDrawGizmos()
@@ -43,38 +50,19 @@ public class Effect : MonoBehaviour, ITypeDefine
     {
         if (_isPlay)
         {
-            if (_isAttack)
-            {
-                Util.RangeCastAll2D(gameObject, _attackRange, Define.CharacterMask, (hit) =>
-                {
-                    if (hit.collider == null) return false;
-
-                    IHp hp = hit.collider.GetComponent<IHp>();
-                    Character character = hp as Character; 
-                    CharacterPart characterPart = hp as CharacterPart;
-                    if (character == null && characterPart != null)
-                    {
-                        character = characterPart.Character;
-                    }
-
-                    if (character != null && (character.CharacterType & _enableAttackCharacter) != 0)
-                    {
-                        _attacker.Attack(character, _attackPower, _knockBackPower, character.transform.position - transform.position, hit.point, _stunTime);
-                    }
-
-                    return false;
-                });
-                _isAttack = false;
-            }
             _eleasped += Time.deltaTime;
         }
-        if(_visualEffect && _eleasped >= _offTime)
+        if(_eleasped >= _offTime)
         {
-            _visualEffect.Stop();
+            if(_visualEffect)
+                _visualEffect.Stop();
+            if(_animator)
+                _animator.StopPlayback();
             gameObject.SetActive(false);
             _isPlay= false;
             _eleasped=0;
-
+            _multiflyAttackSIze = 1;
+            transform.localScale = Vector3.one;
             Managers.GetManager<ResourceManager>().Destroy(gameObject);
         }
     }
@@ -115,4 +103,44 @@ public class Effect : MonoBehaviour, ITypeDefine
         _isPlay = true;
     }
 
+    public void PlayeAnimation(Vector3 position)
+    {
+        transform.position = position;
+        gameObject.SetActive(true);
+        _animator.SetTrigger(_animatorTriggerName);
+        _isPlay = true;
+    }
+
+    public void SetMultiflySize(float size)
+    {
+        _multiflyAttackSIze= size;
+        transform.localScale *= size;
+    }
+
+    public void Attack()
+    {
+        Define.Range range = _attackRange;
+        range.size = _attackRange.size * +_multiflyAttackSIze;
+        range.center = _attackRange.center * +_multiflyAttackSIze;
+
+        Util.RangeCastAll2D(gameObject, range, Define.CharacterMask, (hit) =>
+        {
+            if (hit.collider == null) return false;
+
+            IHp hp = hit.collider.GetComponent<IHp>();
+            Character character = hp as Character;
+            CharacterPart characterPart = hp as CharacterPart;
+            if (character == null && characterPart != null)
+            {
+                character = characterPart.Character;
+            }
+
+            if (character != null && (character.CharacterType & _enableAttackCharacter) != 0)
+            {
+                _attacker.Attack(character, _attackPower, _knockBackPower, _attackDirection, hit.point, _stunTime);
+            }
+
+            return false;
+        });
+    }
 }

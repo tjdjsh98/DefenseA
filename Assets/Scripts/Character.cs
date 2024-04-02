@@ -35,6 +35,7 @@ public class Character : MonoBehaviour,IHp
     [field:SerializeField]public int AttackPower { set; get; }
 
     [SerializeField] float _jumpPower = 10;
+    [field:SerializeField]public  bool IsNotInstantlyDie = false;
     [SerializeField] bool _isEnableRevive;
     [SerializeField] bool _isEnableFly = false;
     public bool IsEnableFly => _isEnableFly;
@@ -74,7 +75,7 @@ public class Character : MonoBehaviour,IHp
     // 핸들러
     public Action CharacterDeadHandler;
     public Action<Character,int> AttackHandler; // 공격한 적, 데미지
-    public Action<Character, int, float, Vector3,Vector3, float> CharacterDamaged { set; get; }
+    public Action<Character, int, float, Vector3,Vector3, float> CharacterDamagedHandler { set; get; }
 
     [SerializeField] GaugeBar _hpBar;
 
@@ -346,7 +347,7 @@ public class Character : MonoBehaviour,IHp
             _stunTime = stunTime;
         }
 
-        CharacterDamaged?.Invoke(attackerCharacter, damage, power, direction,damagePoint, stunTime);
+        CharacterDamagedHandler?.Invoke(attackerCharacter, damage, power, direction,damagePoint, stunTime);
 
         if (_hp <= 0)
         {

@@ -10,13 +10,12 @@ public class CardData : ScriptableObject,ITypeDefine
     [field: SerializeField] public string CardDescription { set; get; }
     [field: SerializeField] public bool IsStartCard { set; get; }
     [field: SerializeField] public bool IsActiveAbility { set; get; }
+    [field: SerializeField] public List<float> coolTimeList { set; get; }
 
     // 처음 해당 카드를 선택할 때 카드 목록을 업그레이드할 목록에 넣어줌.
     [field: SerializeField] public List<PriorCardData> PriorCards { set;get; }
     [field: SerializeField] public int MaxUpgradeCount { get; set; }
-    [field: SerializeField] public float Property1 { get; set; }
-    [field: SerializeField] public float Property2 { get; set; }
-    [field: SerializeField] public float Property3 { get; set; }
+    [field: SerializeField] public List<float> PropertyList { get; set; }
 
 
     public int GetEnumToInt()
@@ -25,8 +24,8 @@ public class CardData : ScriptableObject,ITypeDefine
     }
     public static int CARD_COUNT = (int)CardName.END;
 }
+    [System.Serializable]
 
-[System.Serializable]
     public class PriorCardData
     {
         public CardName priorCardName;
@@ -35,6 +34,15 @@ public class CardData : ScriptableObject,ITypeDefine
 public enum CardName
 {
     None = -1,      
+    검은구체,
+    구체통제,
+    일제사격,
+    폭발성구체,
+    미끼,
+    미세전력,
+    추가배터리,
+    자가발전,
+    식욕,
     라스트샷,
     자동장전,
     넉넉한총알,
@@ -49,19 +57,9 @@ public enum CardName
     생존본능,
     분노,
     검게흐르는,
-    전류통과,
     충전,
     전기방출,
     식사예절,
     울부짖기,
-    검은구체,
-    구체통제,
-    일제사격,
-    폭발성구체,
-    미끼,
-    미세전력,
-    추가배터리,
-    자가발전,
-    식욕,
     END,
 }

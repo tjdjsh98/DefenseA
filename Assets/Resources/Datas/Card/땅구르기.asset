@@ -9,19 +9,21 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 771321b21297a34439fd8667a7488a44, type: 3}
+  m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
   m_Name: "\uB545\uAD6C\uB974\uAE30"
   m_EditorClassIdentifier: 
-  <CardName>k__BackingField: 10
+  <CardName>k__BackingField: 19
   <CardSelectionType>k__BackingField: 0
   <CardDescription>k__BackingField: "\uAD34\uBB3C\uC774 \uC8FC\uBCC0 \uB545 \uC704\uC758
     \uC801\uC5D0\uAC8C \uACF5\uACA9\uB825\uC758 {0}\uBC30 \uB370\uBBF8\uC9C0\uB97C
     \uC8FC\uBA70 \uC77C\uC815\uC2DC\uAC04 \uAE30\uC808\uC2DC\uD0B5\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 1
   <IsActiveAbility>k__BackingField: 1
+  <coolTimeList>k__BackingField:
+  - 30
   <PriorCards>k__BackingField: []
   <MaxUpgradeCount>k__BackingField: 3
-  <Property1>k__BackingField: 2
-  <Property2>k__BackingField: 3
-  <Property3>k__BackingField: 5
-  <UnlockAbility>k__BackingField: 1
+  <PropertyList>k__BackingField:
+  - 2
+  - 3
+  - 5

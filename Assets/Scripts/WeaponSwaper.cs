@@ -7,6 +7,7 @@ using UnityEngine;
 public class WeaponSwaper : MonoBehaviour
 {
     Character _character;
+    IWeaponUsable _user;
     Weapon _currentWeapon;
     [SerializeField] protected GaugeBar _reloadGauge;
 
@@ -24,11 +25,10 @@ public class WeaponSwaper : MonoBehaviour
     public void Init()
     {
         _character = GetComponent<Character>();
+        _user = GetComponent<IWeaponUsable>();
         SelectWeapon(-1);
         _weaponList= new List<Weapon>();
         _reloadGauge = _character.transform.Find("GagueBar")?.GetComponent<GaugeBar>();
-
-       
 
         for (int i = 0; i < _weaponSlotList.Count; i++)
         {
@@ -53,7 +53,7 @@ public class WeaponSwaper : MonoBehaviour
             _weaponList[index].transform.localPosition = Vector3.zero;
             _weaponList[index].transform.localScale = Vector3.one;
             _weaponList[index].transform.localRotation = new Quaternion(0, 0, 0,0);
-            _weaponList[index].Init(_character);
+            _weaponList[index].Init(GetComponent<IWeaponUsable>());
             _weaponList[index].gameObject.SetActive(false);
         }
 

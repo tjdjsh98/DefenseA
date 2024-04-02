@@ -1,3 +1,4 @@
+
 using DuloGames.UI.Tweens;
 using System;
 using System.Collections;
@@ -64,12 +65,7 @@ public class GameManager : ManagerBase
 
     public int HuntingCount { set; get; }
 
-    [Header("카드 선택지")]
-    List<CardData> _remainCardSelectionList;
-    List<CardData> _earnCardSelectionList;
-    Dictionary<CardName, int> _cardSelectionCount = new Dictionary<CardName, int>();
-    [SerializeField] List<PriorCard> _priorCardList = new List<PriorCard>();
-
+   
     [SerializeField] List<GameObject> _subObjects;
     [SerializeField] List<GameObject> _mainObjects;
 
@@ -90,23 +86,6 @@ public class GameManager : ManagerBase
     public override void Init()
     {
         LoadMainCharacters();
-
-        _remainCardSelectionList = Managers.GetManager<DataManager>().GetDataList<CardData>((d) =>
-        {
-            if (d.IsStartCard)
-            {
-                return true;
-            }
-            else
-            {
-                PriorCard prior = new PriorCard();
-                prior.cardName = d.CardName;
-                foreach (var cardData in d.PriorCards)
-                    prior.priorCardDataList.Add(cardData);
-                _priorCardList.Add(prior);
-                return false;
-            }
-        });
 
         _cameraController = Camera.main.GetComponent<CameraController>();
         LoadMapData();
@@ -413,80 +392,7 @@ public class GameManager : ManagerBase
             }
         }
     }
-    public CardData GetRandomCardSelectionData()
-    {
-        return _remainCardSelectionList.GetRandom();
-    }
-    public List<CardData> GetRandomCardSelectionData(int count)
-    {
-        return _remainCardSelectionList.GetRandom(count);
-    }
-    public List<CardData> GetRemainCardSelection()
-    {
-        return _remainCardSelectionList;
-    }
-    // 카드를 선택하여 능력치 추가
-    public void SelectCardData(CardData data)
-    {
-
-        if (!_cardSelectionCount.ContainsKey(data.CardName))
-        {
-            _cardSelectionCount.Add(data.CardName, 0);
-        }
-        _cardSelectionCount[data.CardName]++;
-
-        // 선행카드가 모두 만족되었다면 남은카드에 추가
-        foreach (var prior in _priorCardList)
-        {
-            bool success = true;
-            foreach (var priorCardData in prior.priorCardDataList)
-            {
-                if (!_cardSelectionCount.ContainsKey(priorCardData.priorCardName))
-                {
-                    success = false;
-                    break;
-                }
-                if (_cardSelectionCount[priorCardData.priorCardName] < priorCardData.priorUpgradeCount)
-                {
-                    success = false;
-                    break;
-                }
-            }
-            if (success)
-            {
-                _remainCardSelectionList.Add(Managers.GetManager<DataManager>().GetData<CardData>((int)prior.cardName));
-            }
-        }
-
-        // 업그레이드가 모두 완료 시 남은 카드에서 삭제
-        if (data.MaxUpgradeCount <= _cardSelectionCount[data.CardName])
-        {
-            _remainCardSelectionList.Remove(data);
-        }
-
-        // TODO
-        // 능력적용
-
-        if (data.CardSelectionType == Define.CardType.Weapon)
-        {
-            WeaponCardSelection weaponCardSelection = data as WeaponCardSelection;
-
-            WeaponSwaper swaper = Player.GetComponent<WeaponSwaper>();
-
-            swaper.ChangeNewWeapon(weaponCardSelection.WeaponSlotIndex, weaponCardSelection.WeaponName);
-        }
-        else
-        {
-            Managers.GetManager<AbilityManager>().ApplyCardAbility(data);
-        }
-    }
-    public int GetCardSelectionCount(CardName cardSelection)
-    {
-        int count = 0;
-        _cardSelectionCount.TryGetValue(cardSelection, out count);
-
-        return count;
-    }
+    
 
     public Vector3? GetGroundTop(Vector3 position)
     {
@@ -533,12 +439,4 @@ public class GameManager : ManagerBase
         position.x += _cameraController.GetCameraWidth() / 2;
         return position;
     }
-}
-
-
-[System.Serializable]
-public class PriorCard
-{
-    public CardName cardName;
-    public List<PriorCardData> priorCardDataList = new List<PriorCardData>();
 }

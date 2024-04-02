@@ -10,32 +10,25 @@ public class Shotgun : Weapon
     [SerializeField] int _fireCount = 5;
     [SerializeField][Range(0,1)] float _collectionRate = 1;
 
-
-    public override void Fire(Character fireCharacter)
+    public override void FireBullet(IWeaponUsable user)
     {
-        if (_currentAmmo <= 0)
-        {
-            Reload();
-            return;
-        }
-
-        if (_fireElapsed < 1 / AttackSpeed) return;
-        if (_isReload)
-        {
-            CancelReload();
-        }
         _currentAmmo--;
-        _fireElapsed = 0;
 
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
 
-        _player?.ResetRebound();
-
-        float angle = transform.rotation.eulerAngles.z;
-
+        user?.ResetRebound();
+        float angle = FirePosition.transform.rotation.eulerAngles.z;
         angle = angle * Mathf.Deg2Rad;
+        // 이펙트
+        Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
+        Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
+        fireFlare.Play(_firePosition.transform.position);
+        fireFlare.transform.localScale = _firePosition.transform.lossyScale;
+        fireFlare.transform.rotation = _firePosition.transform.rotation;
+
+
         
         for (int i = 0; i < _fireCount; i++)
         {
@@ -43,13 +36,21 @@ public class Shotgun : Weapon
             bulletAngle += Random.Range(-0.2f * (1-_collectionRate), 0.2f* (1-_collectionRate));
 
             Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
+            float damage = AttackPower;
+
+            // 플레이어 사용자가 플레이어라면
+            if (user is Player player)
+            {
+                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+            }
             Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bullet);
             projectile.transform.position = _firePosition.transform.position;
-            projectile.Init(_knockBackPower, Random.Range(_bulletSpeed -20, BulletSpeed +20), _attackPower, Define.CharacterType.Enemy);
 
-            projectile.Fire(fireCharacter, direction.normalized);
-       
+            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Fire(user.Character, direction.normalized);
+
         }
-        Player?.Rebound(_rebound);
+        user?.Rebound(_rebound);
     }
 }
