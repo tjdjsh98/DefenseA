@@ -40,9 +40,9 @@ public class UIShop : UIBase
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
-                if (_openShop.ShopItemList[tempIndex].shopItemData.price <= gameManager.Money)
+                if (_openShop.ShopItemList[tempIndex].shopItemData.Price <= gameManager.Money)
                 {
-                    gameManager.Money -= _openShop.ShopItemList[tempIndex].shopItemData.price;
+                    gameManager.Money -= _openShop.ShopItemList[tempIndex].shopItemData.Price;
                     ShopItem info = _openShop.ShopItemList[tempIndex];
                     info.isSale = true;
                     _openShop.ShopItemList[tempIndex] = info;
@@ -145,10 +145,10 @@ public class UIShop : UIBase
             }
             if (!_openShop.ShopItemList[i].isSale)
             {
-                if (_openShop.ShopItemList[i].shopItemData.price > Managers.GetManager<GameManager>().Money)
-                    _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.price.ToString()}</color>";
+                if (_openShop.ShopItemList[i].shopItemData.Price > Managers.GetManager<GameManager>().Money)
+                    _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.Price.ToString()}</color>";
                 else
-                    _slotMoney[i].text = $"{_openShop.ShopItemList[i].shopItemData.price.ToString()}";
+                    _slotMoney[i].text = $"{_openShop.ShopItemList[i].shopItemData.Price.ToString()}";
 
                 _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.name}\n";
                 _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";

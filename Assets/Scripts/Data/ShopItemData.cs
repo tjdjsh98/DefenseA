@@ -9,7 +9,8 @@ public class ShopItemData : ScriptableObject
     [field: SerializeField] public SellType SellType { set; get; }
     [field: SerializeField] public Sprite Image { set; get; }
     [field:SerializeField][field:TextArea] public string Description { set; get; }
-    public int price;
+    [field: SerializeField] public int Rank { set; get; }
+    [field: SerializeField] public int Price => Rank == 0 ? 10 : Rank == 1 ? 30 : Rank == 2 ? 100 : Rank == 3 ? 200 : 500;
 }
 public enum SellType
 {
