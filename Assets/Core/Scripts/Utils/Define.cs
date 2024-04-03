@@ -87,6 +87,7 @@ public static class Define
         Slash,
         Lighting,
         BlackWhale,
+        NormalAttack,
     }
    
     public enum CreatureSkillRange
@@ -125,7 +126,7 @@ public static class Define
 
     public enum WeaponPosition
     {
-        Nonoe = -1,
+        None = -1,
         Main,
         Sub,
         Melee,

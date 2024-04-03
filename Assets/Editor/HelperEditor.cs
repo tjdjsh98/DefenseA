@@ -1,7 +1,9 @@
+using Codice.Client.BaseCommands.Merge.Xml;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using Unity.VisualScripting;
+using Unity.VisualScripting.YamlDotNet.Core.Events;
 using UnityEditor;
 using UnityEditor.Rendering;
 using UnityEngine;
@@ -9,9 +11,10 @@ using static Define;
 
 public class HelperEditor : EditorWindow
 {
-    const string COMMON_CARD_DATA_PATH = "Data/공용카드.csv";
-    const string CARD_DATA_PATH = "Scripts/Data/CardData.cs";
-    const string SKILL_DATA_PATH = "Scripts/Data/SkillData.cs";
+    const string COMMON_CARD_CSV_PATH = "Data/공용카드.csv";
+    const string ITEM_CSV_PATH = "Data/아이템.csv";
+    const string CARD_DEFINE_PATH = "Scripts/Data/CardData.cs";
+    const string ITEM_DEFINE_PATH = "Scripts/Data/ItemData.cs";
 
     //0 : 카드 이름
     const string CardFormat =
@@ -52,9 +55,41 @@ public class HelperEditor : EditorWindow
         "      {0}" +
         "\n    END," +
         "\n}}";
-        
+
+    // {0} : 판매종류
+    // {1} : 판매아이템
+    const string ItemDataFormat =
+        "using System.Collections;" +
+        "\nusing System.Collections.Generic;" +
+        "\nusing UnityEngine;" +
+        "\n\n[CreateAssetMenu(fileName = \"Create Item\", menuName = \"AddData/Create ItemData\", order = 0)]" +
+        "\npublic class ItemData : ScriptableObject, ITypeDefine" +
+        "\n{{" +
+        "\n    [field: SerializeField] public ItemName ItemName {{ set; get; }}" +
+        "\n    [field: SerializeField] public ItemType ItemType {{ set; get; }}" +
+        "\n    [field: SerializeField] public Sprite Image {{ set; get; }}" +
+        "\n    [field:SerializeField][field:TextArea] public string Description {{ set; get; }}" +
+        "\n    [field: SerializeField] public int Rank {{ set; get; }}" +
+        "\n    public int Price => Rank == 0 ? 10 : Rank == 1 ? 30 : Rank == 2 ? 100 : Rank == 3 ? 200 : 500;" +
+        "\n    public int GetEnumToInt()" +
+        "\n    {{" +
+        "\n        return (int)ItemName;" +
+        "\n    }}"+
+        "\n}}" +
+        "\npublic enum ItemType" +
+        "\n{{" +
+        "    {0}" +
+        "\n}}" +
+        "\n\npublic enum ItemName" +
+        "\n{{" +
+        "\n    None = -1," +
+        "    {1}" +
+        "\n    END" +
+        "\n}}";
+
     const string CARD_FOLDER_DATA_PATH = "Resources/Datas/Card/";
-    const string SKILL_FOLDER_DATA_PATH = "Resources/Datas/Skill/";
+    const string ITEM_FOLDER_DATA_PATH = "Resources/Datas/Item/";
+
     [MenuItem("CustomWindow/HelperWindow", false, 0)]
     static void Init()
     {
@@ -64,31 +99,39 @@ public class HelperEditor : EditorWindow
     }
     void OnGUI()
     {
-        if (GUILayout.Button(new GUIContent("데이터 정의 재생성")))
+        if (GUILayout.Button(new GUIContent("카드 데이터 정의 재생성")))
         {
-            CreateDefineFile();
+            CreateCardDefineFile();
+        }
+        if (GUILayout.Button(new GUIContent("아이템 데이터 정의 재생성")))
+        {
+            CreateItemDefineFile();
         }
         if (GUILayout.Button(new GUIContent("카드데이터 생성")))
         {
-            CreateCardData(COMMON_CARD_DATA_PATH);
+            CreateCardData(ITEM_CSV_PATH);
+            AssetDatabase.Refresh();
+        }
+        if (GUILayout.Button(new GUIContent("아이템데이터 생성")))
+        {
+            CreateItemData(ITEM_CSV_PATH);
             AssetDatabase.Refresh();
         }
     }
-    void CreateDefineFile()
+    void CreateCardDefineFile()
     {
         // 공용 정의 로드
-        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_DATA_PATH);
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + COMMON_CARD_CSV_PATH);
         if (textAsset == null) return;
 
         string cardName = "";
-    
-        string[] lines = textAsset.text.Split('\n');
-        string[] preHeadWords = lines[0].Split(',');
+
+        string split = $"{(char)13}\n";
+        string[] lines = textAsset.text.Split(split, System.StringSplitOptions.RemoveEmptyEntries);
 
         for (int i = 1; i < lines.Length; i++)
         {
             string[] words = lines[i].Split(',');
-            if (preHeadWords.Length != words.Length) continue;
 
             if (!string.IsNullOrEmpty(words[0]))
             {
@@ -98,28 +141,67 @@ public class HelperEditor : EditorWindow
         }
 
 
-        StreamWriter writer = new StreamWriter("Assets/" + CARD_DATA_PATH);
+        StreamWriter writer = new StreamWriter("Assets/" + CARD_DEFINE_PATH);
         writer.Write(string.Format(CardFormat, cardName));
         writer.Close();
 
         AssetDatabase.SaveAssets();
         AssetDatabase.Refresh();
     }
+    void CreateItemDefineFile()
+    {
+        // 공용 정의 로드
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + ITEM_CSV_PATH);
+        if (textAsset == null) return;
 
+        string itemName = "";
+        List<string> sellTypeList = new List<string>();
+
+        string split = $"{(char)13}\n";
+        string[] lines = textAsset.text.Split(split,System.StringSplitOptions.RemoveEmptyEntries);
+        
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+
+            Debug.Log(words[0]);
+            if (!string.IsNullOrEmpty(words[0]))
+            {
+                itemName += $"\n    {words[0]},";
+            }
+            if (!string.IsNullOrEmpty(words[1]))
+            {
+                if (!sellTypeList.Contains(words[1]))
+                    sellTypeList.Add(words[1]);
+
+            }
+
+        }
+        string sellType = "";
+        foreach(string word in sellTypeList)
+        {
+            sellType += $"\n    {word},";
+        }
+
+
+        StreamWriter writer = new StreamWriter("Assets/" + ITEM_DEFINE_PATH);
+        writer.Write(string.Format(ItemDataFormat,sellType,itemName));
+        writer.Close();
+
+        AssetDatabase.SaveAssets();
+        AssetDatabase.Refresh();
+    }
     void CreateCardData(string cardDataPath)
     {
         TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + cardDataPath);
         if (textAsset == null) return;
 
-        string[] lines = textAsset.text.Split('\n');
-        string[] preHeadWords = lines[0].Split(',');
-
+        string split = $"{(char)13}\n";
+        string[] lines = textAsset.text.Split(split, System.StringSplitOptions.None);
+        
         for (int i = 1; i < lines.Length; i++)
         {
-            string[] words = lines[i].Split(',');
-            if (preHeadWords.Length != words.Length) continue;
-
-            words[words.Length - 1] = words[words.Length - 1].Remove(words[words.Length - 1].Length - 1, 1);
+            string[] words = lines[i].Split(',');    
 
             CardData data = ScriptableObject.CreateInstance<CardData>();
             data.name = words[0];
@@ -163,6 +245,59 @@ public class HelperEditor : EditorWindow
             AssetDatabase.SaveAssets();
         }
     }
+    void CreateItemData(string itemDataPath)
+    {
+        TextAsset textAsset = UnityEditor.AssetDatabase.LoadAssetAtPath<TextAsset>("Assets/" + itemDataPath);
+        if (textAsset == null) return;
+
+        string split = $"{(char)13}\n";
+        string[] lines = textAsset.text.Split(split, System.StringSplitOptions.RemoveEmptyEntries);
+        string[] preHeadWords = lines[0].Split(',');
+
+        for (int i = 1; i < lines.Length; i++)
+        {
+            string[] words = lines[i].Split(',');
+
+            ItemType itemType = GetItemType(words[1]);
+
+            if (itemType == ItemType.StatusUp || itemType == ItemType.Ability)
+            {
+                StatusUpItemData data = ScriptableObject.CreateInstance<StatusUpItemData>();
+                data.name = words[0];
+                data.ItemName = GetItemName(words[0]);
+                data.ItemType = GetItemType(words[1]);
+                data.Description = words[2];
+                data.Rank = ParseInt(words[3]);
+                data.IncreasingGirlMaxHp = ParseInt(words[4]);
+                data.RecoverGirlHpAmount = ParseInt(words[5]);
+                data.IncreasingGirlHpRegeneration = ParseFloat(words[6]);
+                data.IncreasingGirlSpeed = ParseFloat(words[7]);
+                data.IncreasingCreatureMaxHp = ParseInt(words[8]);
+                data.RecoverCreatureHpAmount = ParseInt(words[9]);
+                data.IncreasingCreatureHpRegeneration = ParseFloat(words[10]);
+                data.IncreasingCreatureAttackPower = ParseInt(words[11]);
+                data.IncreasingCreatureSpeed = ParseFloat(words[12]);
+                data.RecoverMentalAmount = ParseFloat(words[13]);
+
+                AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
+                AssetDatabase.SaveAssets();
+            }
+            if (itemType == ItemType.Weapon)
+            {
+                WeaponItemData data = ScriptableObject.CreateInstance<WeaponItemData>();
+                data.name = words[0];
+                data.ItemName = GetItemName(words[0]);
+                data.ItemType = GetItemType(words[1]);
+                data.Description = words[2];
+                data.Rank = ParseInt(words[3]);
+                data.weaponName = ConvertItemToWeapon(data.ItemName);
+                data.weaponPosition = GetWeaponPosition(words[14]);
+               
+                AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
+                AssetDatabase.SaveAssets();
+            }
+        }
+    }
     public static T[] GetAssetsAtPath<T>(string path) where T : Object
     {
         List<T> returnList = new List<T>();
@@ -199,9 +334,52 @@ public class HelperEditor : EditorWindow
         }
         return  CardName.None;
     }
-   
-   
- 
+
+    ItemName GetItemName(string itemName)
+    {
+        for (int i = 0; i < (int)ItemName.END; i++)
+        {
+            if (itemName.Equals(((ItemName)i).ToString()))
+            {
+                return (ItemName)i;
+            }
+        }
+        return ItemName.None;
+    }
+    ItemType GetItemType(string itemType)
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            if (itemType.Equals(((ItemType)i).ToString()))
+            {
+                return (ItemType)i;
+            }
+        }
+        return ItemType.StatusUp;
+    }
+    WeaponName ConvertItemToWeapon(ItemName itemName)
+    {
+        for(int i = 0; i < (int)WeaponName.END;i++)
+        {
+            if (itemName.ToString().Equals(((WeaponName)i).ToString()))
+            {
+                return (WeaponName)i;
+            }
+        }
+        return WeaponName.None;
+    }
+    WeaponPosition GetWeaponPosition(string weaponPosition)
+    {
+        for (int i = 0; i < (int)WeaponPosition.END; i++)
+        {
+            if (weaponPosition.Equals(((WeaponPosition)i).ToString()))
+            {
+                return (WeaponPosition)i;
+            }
+        }
+        return WeaponPosition.None;
+    }
+
     int ParseInt(string value)
     {
         int result = 0;

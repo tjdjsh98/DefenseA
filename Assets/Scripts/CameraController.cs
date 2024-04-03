@@ -1,8 +1,6 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Diagnostics.CodeAnalysis;
 using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -24,6 +22,7 @@ public class CameraController : MonoBehaviour
     Vector3 _mouseDirection;
     [SerializeField]float _expandsionLimit = 1.0f;
 
+    Camera _effectCamera;
     SpriteRenderer _screenSpriteRenderer;
 
     Coroutine _shockWaveCoroutine;
@@ -42,15 +41,17 @@ public class CameraController : MonoBehaviour
 
     private void Awake()
     {
+        _effectCamera = transform.Find("EffectCamera").GetComponent<Camera>();  
         _screenSpriteRenderer = transform.Find("ScreenEffect").GetComponent<SpriteRenderer>();
         _initCameraPosition = transform.position;
         _screenSpriteRenderer.material.SetFloat(_cameraSizeID, Camera.main.orthographicSize);
         _cameraWidth = GetCameraWidth();
         _screenSpriteRenderer.transform.localScale = new Vector3(_cameraWidth,Camera.main.orthographicSize*2);
+
+        OffEffectScreen();
     }
     private void Update()
     {
-        ScreenEffect(); 
         if(_mouseDirection.x >=1)
         {
             _mouseView.x = Mathf.Lerp(_mouseView.x, _expandsionLimit, 0.01f);
@@ -90,6 +91,16 @@ public class CameraController : MonoBehaviour
         transform.position = Vector3.Lerp(transform.position, destination, 0.1f) + _shakePosition;
     }
 
+    void OnEffectScreen()
+    {
+        _effectCamera.gameObject.SetActive(true);
+        _screenSpriteRenderer.gameObject.SetActive(true);
+    }
+    void OffEffectScreen()
+    {
+        _effectCamera.gameObject.SetActive(false);
+        _screenSpriteRenderer.gameObject.SetActive(false);
+    }
     void HandleBackgroundLayers()
     {
         float mapSize = Managers.GetManager<GameManager>().MapSize;
@@ -112,14 +123,10 @@ public class CameraController : MonoBehaviour
         _mouseDirection = pos;
     }
 
-    void ScreenEffect()
-    {
-      
-
-    }
 
     public void ShockWave(Vector3 position, float speed,int num =0)
     {
+        OnEffectScreen();
         if(num == 0 && _shockWaveCoroutine != null) 
             StopCoroutine(_shockWaveCoroutine);
 
@@ -134,6 +141,7 @@ public class CameraController : MonoBehaviour
 
     public void StopShockwave(int num =0)
     {
+        OffEffectScreen();
         if (num == 0 && _shockWaveCoroutine != null)
             StopCoroutine(_shockWaveCoroutine);
 
@@ -150,6 +158,7 @@ public class CameraController : MonoBehaviour
     }
     IEnumerator CorShockWave(Vector3 position,float speed, int num = 0)
     {
+        OnEffectScreen();
         float time = 0;
 
         Vector3 screenPosition = Camera.main.WorldToViewportPoint(position);
@@ -166,10 +175,13 @@ public class CameraController : MonoBehaviour
             _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenterID, -5.0f);
         else
             _screenSpriteRenderer.material.SetFloat(_waveDistacneFromCenter2ID, -5.0f);
+
+        OffEffectScreen();
     }
 
     IEnumerator CorReverse(float time)
     {
+        OnEffectScreen();
         float current = 0;
 
         _screenSpriteRenderer.material.SetInt(_reverseID, 1);
@@ -180,6 +192,7 @@ public class CameraController : MonoBehaviour
             yield return null;
         }
         _screenSpriteRenderer.material.SetInt(_reverseID, 0);
+        OffEffectScreen();
     }
 
     public float GetCameraWidth()

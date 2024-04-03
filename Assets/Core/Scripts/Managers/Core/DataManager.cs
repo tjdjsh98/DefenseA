@@ -10,6 +10,7 @@ public class DataManager : ManagerBase
     public override void Init()
     {
         LoadData<CardData>("Datas/Card");
+        LoadData<ItemData>("Datas/Item");
         LoadData<EnemyNameDefine>("Prefabs/Enemy");
         LoadData<Effect>("Prefabs/Effect");
         LoadData<Weapon>("Prefabs/Weapon");

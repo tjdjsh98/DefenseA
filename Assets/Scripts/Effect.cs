@@ -1,42 +1,45 @@
+using System.Net.Http.Headers;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.VFX;
 
 public class Effect : MonoBehaviour, ITypeDefine
 {
     [SerializeField] bool _debug;
+
     VisualEffect _visualEffect;
+    ParticleSystem _particleSystem;
+    Animator _animator;
+
 
     [SerializeField] Define.EffectName _effectName;
-
     [SerializeField]float _offTime = 1f;
     float _eleasped;
-
     bool _isPlay;
 
+    // 공격 변수
     Character _attacker;
     bool _isAttack;
     int _attackPower;
     float _knockBackPower;
     float _stunTime;
-
     float _multiflyAttackSIze = 1;
 
     Define.CharacterType _enableAttackCharacter;
     [SerializeField]Define.Range _attackRange;
 
     [Header("애니메이션")]
-    Animator _animator;
     [SerializeField] string _animatorTriggerName;
     [SerializeField]Vector2 _attackDirection;
+
+    [field:SerializeField]public bool Start;
 
     private void Awake()
     {
         _animator = GetComponent<Animator>();
         _visualEffect = GetComponent<VisualEffect>();
-        if(_visualEffect)
-            _visualEffect.Stop();
-        if(_animator)
-            _animator.StopPlayback();
+        _particleSystem = GetComponent<ParticleSystem>();
+        Stop();
     }
 
     private void OnDrawGizmos()
@@ -48,16 +51,18 @@ public class Effect : MonoBehaviour, ITypeDefine
 
     private void Update()
     {
+        if (Start == true)
+        {
+            _isPlay =true;
+            Start = false;
+        }
         if (_isPlay)
         {
             _eleasped += Time.deltaTime;
         }
         if(_eleasped >= _offTime)
         {
-            if(_visualEffect)
-                _visualEffect.Stop();
-            if(_animator)
-                _animator.StopPlayback();
+            Stop();
             gameObject.SetActive(false);
             _isPlay= false;
             _eleasped=0;
@@ -65,6 +70,15 @@ public class Effect : MonoBehaviour, ITypeDefine
             transform.localScale = Vector3.one;
             Managers.GetManager<ResourceManager>().Destroy(gameObject);
         }
+    }
+    void Stop()
+    {
+        if (_visualEffect)
+            _visualEffect.Stop();
+        if (_animator)
+            _animator.StopPlayback();
+        if (_particleSystem)
+            _particleSystem.Stop();
     }
     public int GetEnumToInt()
     {
@@ -99,22 +113,25 @@ public class Effect : MonoBehaviour, ITypeDefine
     {
         transform.position = position;
         gameObject.SetActive(true);
-        _visualEffect.Play();
         _isPlay = true;
+        if(_visualEffect)
+            _visualEffect?.Play();
+        if(_animator)
+            _animator?.SetTrigger(_animatorTriggerName);
+        if(_particleSystem)
+            _particleSystem?.Play();
     }
 
-    public void PlayeAnimation(Vector3 position)
-    {
-        transform.position = position;
-        gameObject.SetActive(true);
-        _animator.SetTrigger(_animatorTriggerName);
-        _isPlay = true;
-    }
-
+ 
     public void SetMultiflySize(float size)
     {
         _multiflyAttackSIze= size;
         transform.localScale *= size;
+    }
+    public void SetMultiflySize(Vector3 size)
+    {
+        _multiflyAttackSIze = size.x ;
+        transform.localScale = size;
     }
 
     public void Attack()

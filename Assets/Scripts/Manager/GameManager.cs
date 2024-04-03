@@ -1,11 +1,9 @@
-
-using DuloGames.UI.Tweens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Playables;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 using Random = UnityEngine.Random;
 
@@ -69,7 +67,8 @@ public class GameManager : ManagerBase
     [SerializeField] List<GameObject> _subObjects;
     [SerializeField] List<GameObject> _mainObjects;
 
-    [HideInInspector]public List<ShopItemData> ShopItemDataList => _mapData == null?null : _mapData.shopItemDataList;
+
+    public List<List<ItemData>> RankItemDataList = new List<List<ItemData>>();
 
     CameraController _cameraController;
     public CameraController CameraController
@@ -82,13 +81,45 @@ public class GameManager : ManagerBase
         }
     }
 
+    GameObject _objectFolder;
+    GameObject ObjectFolder
+    {
+        get
+        {
+            if (_objectFolder == null)
+            {
+                _objectFolder = new GameObject("ObjectFolder");
+            }
+
+            return _objectFolder;
+        }
+    }
 
     public override void Init()
     {
+        LoadItemData();
         LoadMainCharacters();
 
         _cameraController = Camera.main.GetComponent<CameraController>();
         LoadMapData();
+
+    }
+
+    void LoadItemData()
+    {
+        Debug.Log("Rank");
+        List<ItemData> itemList = Managers.GetManager<DataManager>().GetDataList<ItemData>();
+        
+        foreach (var item in itemList)
+        {
+            int rank = item.Rank;
+
+            for (int i = RankItemDataList.Count; i <= rank; i++)
+            {
+                RankItemDataList.Add(new List<ItemData>());
+            }
+            RankItemDataList[rank].Add(item);
+        }
     }
 
     void LoadMapData()
@@ -192,7 +223,12 @@ public class GameManager : ManagerBase
             Vector3? position = GetGroundTop(Vector3.one * distance);
             if (position.HasValue) {
                 GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mainObjects.GetRandom());
-                go.transform.position = position.Value;
+                if (go)
+                {
+                    go.transform.position = position.Value;
+                    go.transform.SetParent(ObjectFolder.transform);
+
+                }
             }
             distance += Random.Range(25, 40);
         }
@@ -203,7 +239,11 @@ public class GameManager : ManagerBase
             if (position.HasValue)
             {
                 GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_subObjects.GetRandom());
-                go.transform.position = position.Value;
+                if (go)
+                {
+                    go.transform.position = position.Value;
+                    go.transform.SetParent(ObjectFolder.transform);
+                }
             }
             distance += Random.Range(15, 25);
         }

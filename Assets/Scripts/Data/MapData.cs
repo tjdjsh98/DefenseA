@@ -15,7 +15,7 @@ public class MapData : ScriptableObject
     public float mapSize;
     public MapData nextMapData;
 
-    public List<ShopItemData> shopItemDataList;
+    public List<ItemData> shopItemDataList;
     public List<GameObject> randomEvent;
     public float randomEventInterval = 200;
 }

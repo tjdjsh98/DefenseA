@@ -16,6 +16,7 @@ public class Wallet : MonoBehaviour
             return _player;
         }
     }
+
     float _time = 0;
 
     private void OnEnable()

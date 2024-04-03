@@ -9,6 +9,10 @@ public class GirlAbility
 {
     Player _player;
 
+    // 스킬
+    Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
+
+
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
@@ -16,27 +20,39 @@ public class GirlAbility
     Character _hungerTarget;
     int _hungerHitCount = 0;
 
+    // 식사
+    SkillSlot _diningSlot;
+    private bool _dining;
+
     public void Init(Player player)
     {
         _player = player;
         _player.Character.AttackHandler += OnAttack;
+
+        RegistSkill();
     }
     public void AbilityUpdate()
     {
         AutoReload();
     }
 
-    void PlentyOfBullets()
+    #region 스킬 관련
+    void RegistSkill()
     {
-        //if (_weaponSwaper.CurrentWeapon)
-        //{
-        //    if (GetIsHaveAbility(GirlAbilityName.PlentyOfBullets))
-        //    {
-        //        int amount = _weaponSwaper.CurrentWeapon.MaxAmmo / 10;
-        //        _plentyOfBulletsIncreasedAttackPointPercentage = amount * 10f;
-        //    }
-        //}
+        _skillDictionary.Add(CardName.식사, Dining);
     }
+
+    public void UseSkill(SkillSlot skillSlot)
+    {
+        if (skillSlot.card == null || skillSlot.card.cardData == null) return;
+
+        if (_skillDictionary.TryGetValue(skillSlot.card.cardData.CardName, out var func))
+        {
+            func?.Invoke(skillSlot);
+        }
+    }
+
+    #endregion
 
     void OnAttack(Character target, int dmg)
     {
@@ -107,6 +123,17 @@ public class GirlAbility
             {
                 manager.AddElectricity(card.property);
             }
+        }
+        if (_dining)
+        {
+            if (_diningSlot != null && _diningSlot.card != null && _diningSlot.card.cardData.CardName == CardName.식사)
+            {
+                target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position, 0);
+                _diningSlot.skillTime = 0;
+                _diningSlot.isActive = false;
+            }
+            _dining = false;
+            _diningSlot = null;
         }
     }
     private void AutoReload()
@@ -208,5 +235,16 @@ public class GirlAbility
 
 
         return percentage;
+    }
+    public void Dining(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+        if (Managers.GetManager<CardManager>().Predation < 20) return;
+
+        Managers.GetManager<CardManager>().AddPredation(-20);
+        slot.isActive = true;
+        _dining = true;
+        _diningSlot = slot;
     }
 }

@@ -1,16 +1,9 @@
 
-using Lofelt.NiceVibrations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.PackageManager;
-using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
-using UnityEngine.UI;
 
 public class CardManager : ManagerBase
 {
@@ -268,7 +261,7 @@ public class CardManager : ManagerBase
             Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.BlackWhale);
             effect.SetAttackProperty(Girl, 10 + (count-1)* 3, 50, 0.2f, Define.CharacterType.Enemy);
             effect.SetMultiflySize(1+ count * 0.3f);
-            effect.PlayeAnimation(top.Value);
+            effect.Play(top.Value);
         }
 
         yield return new WaitForSeconds(1f);
@@ -375,7 +368,7 @@ public class CardManager : ManagerBase
                     break;
                 case CardName.미세전력:
                     _maxElectricity = 100;
-                    _chargeElectricty += 1;
+                    _chargeElectricty += 0.1f;
                     break;
                 case CardName.추가배터리:
                     _maxElectricity += value;
@@ -457,8 +450,8 @@ public class CardManager : ManagerBase
     {
         if (_skillSlotList[index].card == null|| _skillSlotList[index].card.cardData == null) return;
 
-        Player.UseSkill(_skillSlotList[index]);
-        CreatureAI.UseSkill(_skillSlotList[index]);
+        Player.GirlAbility.UseSkill(_skillSlotList[index]);
+        CreatureAI.CreatureAbility.UseSkill(_skillSlotList[index]);
         UseSkill(_skillSlotList[index]);
 
     }
@@ -472,7 +465,22 @@ public class CardManager : ManagerBase
 public class SkillSlot
 {
     public Card card;
-    public float skillCoolTime => ((card == null || card.cardData==null )? 0 : card.cardData.coolTimeList[card.rank-1]);
+    public float skillCoolTime
+    {
+        get
+        {
+            if(card != null && card.cardData != null)
+            {
+                if (card.cardData.coolTimeList.Count == 0) return 99999;
+                if (card.cardData.coolTimeList.Count <= card.rank)
+                {
+                    return card.cardData.coolTimeList[card.cardData.coolTimeList.Count - 1];
+                }
+                return card.cardData.coolTimeList[card.rank];
+            }
+            return 99999;
+        }
+    } 
     public float skillTime;
     public bool isActive;
 }

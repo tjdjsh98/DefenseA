@@ -37,6 +37,7 @@ public class UIShop : UIBase
             slot.onClick.AddListener(() => {
                 if (_openShop.ShopItemList.Count <= tempIndex) return;
                 if (_openShop.ShopItemList[tempIndex].isSale) return;
+                if (_openShop.ShopItemList[tempIndex].shopItemData == null) return;
 
                 GameManager gameManager = Managers.GetManager<GameManager>();
 
@@ -47,23 +48,20 @@ public class UIShop : UIBase
                     info.isSale = true;
                     _openShop.ShopItemList[tempIndex] = info;
 
-                    if (info.sellType == SellType.Weapon)
+                    if (info.sellType == ItemType.Weapon)
                     {
-                        WeaponShopItemData weaponShopItemData = info.shopItemData as WeaponShopItemData;
+                        WeaponItemData weaponShopItemData = info.shopItemData as WeaponItemData;
                         if (weaponShopItemData)
                             gameManager.Player.WeaponSwaper.ChangeNewWeapon((int)weaponShopItemData.weaponPosition, weaponShopItemData.weaponName);
                     }
-                    else if (info.sellType == SellType.Ability)
+                    else if (info.sellType == ItemType.Ability)
                     {
                         Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
                     }
-                    else if (info.sellType == SellType.UpgradeWeapon)
+                 
+                    else if(info.sellType == ItemType.StatusUp)
                     {
-                        Managers.GetManager<UIManager>().GetUI<UIUpgrade>().Open();
-                    }
-                    else if(info.sellType == SellType.StatusUp)
-                    {
-                        StatusUpShopItemData statusUpShopItemData = info.shopItemData as StatusUpShopItemData;
+                        StatusUpItemData statusUpShopItemData = info.shopItemData as StatusUpItemData;
                         if (statusUpShopItemData)
                         {
                             statusUpShopItemData.Apply();
@@ -133,30 +131,41 @@ public class UIShop : UIBase
 
         for (int i = 0; i < _openShop.ShopItemList.Count; i++)
         {
-            if (_openShop.ShopItemList[i].shopItemData.Image)
-            {
-                _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_openShop.ShopItemList[i].shopItemData.Image, 130);
-                _slotImageList[i].sprite = _openShop.ShopItemList[i].shopItemData.Image;
-            }
-            else
+            if (_openShop.ShopItemList[i].shopItemData == null)
             {
                 _slotImageList[i].rectTransform.sizeDelta = Vector2.zero;
                 _slotImageList[i].sprite = null;
-            }
-            if (!_openShop.ShopItemList[i].isSale)
-            {
-                if (_openShop.ShopItemList[i].shopItemData.Price > Managers.GetManager<GameManager>().Money)
-                    _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.Price.ToString()}</color>";
-                else
-                    _slotMoney[i].text = $"{_openShop.ShopItemList[i].shopItemData.Price.ToString()}";
-
-                _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.name}\n";
-                _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";
-               
+                _slotMoney[i].text = "";
+                _slotNameList[i].text = "";
+                _slotDescroptionList[i].text = "";
             }
             else
             {
-                _slotNameList[i].text = "판매완료";
+                if (_openShop.ShopItemList[i].shopItemData.Image)
+                {
+                    _slotImageList[i].rectTransform.sizeDelta = Util.GetFitSpriteSize(_openShop.ShopItemList[i].shopItemData.Image, 130);
+                    _slotImageList[i].sprite = _openShop.ShopItemList[i].shopItemData.Image;
+                }
+                else
+                {
+                    _slotImageList[i].rectTransform.sizeDelta = Vector2.zero;
+                    _slotImageList[i].sprite = null;
+                }
+                if (!_openShop.ShopItemList[i].isSale)
+                {
+                    if (_openShop.ShopItemList[i].shopItemData.Price > Managers.GetManager<GameManager>().Money)
+                        _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.Price.ToString()}</color>";
+                    else
+                        _slotMoney[i].text = $"{_openShop.ShopItemList[i].shopItemData.Price.ToString()}";
+
+                    _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.name}\n";
+                    _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";
+
+                }
+                else
+                {
+                    _slotNameList[i].text = "판매완료";
+                }
             }
         }
     }
@@ -177,8 +186,8 @@ public class UIShop : UIBase
 [System.Serializable]
 public class ShopItem
 {
-    public ShopItemData shopItemData;
+    public ItemData shopItemData;
     public bool isSale;
-    public SellType sellType=>shopItemData.SellType;
+    public ItemType sellType=>shopItemData.ItemType;
 }
 

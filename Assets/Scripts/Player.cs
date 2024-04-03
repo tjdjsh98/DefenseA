@@ -70,7 +70,6 @@ public class Player : MonoBehaviour, IWeaponUsable
     float _runToFireCoolTime = 0.2f;
     float _runToFireElaspedTime = 0f;
 
-    Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
     IInteractable _interactableOjbect;
     private void Awake()
@@ -107,9 +106,8 @@ public class Player : MonoBehaviour, IWeaponUsable
         Managers.GetManager<InputManager>().Num1KeyDownHandler += () => _weaponSwaper.SelectWeapon(0);
         Managers.GetManager<InputManager>().Num2KeyDownHandler += () => _weaponSwaper.SelectWeapon(1);
         Managers.GetManager<InputManager>().Num3KeyDownHandler += () => _weaponSwaper.SelectWeapon(2);
-        Managers.GetManager<InputManager>().JumpKeyDownHandler += _character.Jump;
+        Managers.GetManager<InputManager>().JumpKeyDownHandler += OnJumpKeyDown;
 
-        RegistSkill();
 
     }
     private void OnDrawGizmos()
@@ -118,26 +116,17 @@ public class Player : MonoBehaviour, IWeaponUsable
 
         Util.DrawRangeOnGizmos(gameObject, _meleeAttackRange, Color.red);
     }
-    #region 스킬 관련
-    void RegistSkill()
-    {
-    }
-
-    public void UseSkill(SkillSlot skillSlot)
-    {
-        if (skillSlot.card == null || skillSlot.card.cardData) return;
-
-        if (_skillDictionary.TryGetValue(skillSlot.card.cardData.CardName, out var func))
-        {
-            func?.Invoke(skillSlot);
-        }
-    }
-
-    #endregion
+  
     private void OnCharacterDead()
     {
         SceneManager.LoadScene("MainMenu");
 
+    }
+    private void OnJumpKeyDown()
+    {
+        if(_isSliding) return;
+
+        _character.Jump();
     }
 
     private void OnReloadKeyDown()
@@ -198,7 +187,7 @@ public class Player : MonoBehaviour, IWeaponUsable
                 Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.BlackWhale);
                 effect.SetAttackProperty(_character, 10, 50, 0.2f, Define.CharacterType.Enemy);
                 effect.SetMultiflySize(3);
-                effect.PlayeAnimation(top.Value);
+                effect.Play(top.Value);
             }
         }
 
@@ -263,7 +252,7 @@ public class Player : MonoBehaviour, IWeaponUsable
 
     void HandleSliding()
     {
-        if (!_isSliding)
+        if (!_isSliding && _character.IsContactGround)
         {
             if (Input.GetKeyDown(KeyCode.LeftShift))
             {
@@ -589,4 +578,6 @@ public class Player : MonoBehaviour, IWeaponUsable
 
         return percentage;
     }
+
+    
 }

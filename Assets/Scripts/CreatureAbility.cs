@@ -1,12 +1,27 @@
+using MoreMountains.FeedbacksForThirdParty;
+using System;
+using System.Collections;
 using System.Collections.Generic;
-using System.Diagnostics.CodeAnalysis;
-using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 [System.Serializable]
 public class CreatureAbility
 {
+    [SerializeField] bool _debug;
+    [SerializeField] Character _creature;
+  
     CreatureAI _creatureAI;
+
+    /*
+    * 0 = 땅구르기 공격
+    * 1 = 울부짓기
+    */
+    [SerializeField] int _debugAttackRangeIndex;
+    [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
+
+    Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
     //생존본능
     [SerializeField] Define.Range _survivalIntinctRange;
@@ -16,11 +31,22 @@ public class CreatureAbility
     public void Init(CreatureAI creatureAI)
     {
         _creatureAI = creatureAI;
+        _creature = _creatureAI.GetComponent<Character>();
         _creatureAI.Character.AttackHandler += OnAttack;
         _creatureAI.Character.CharacterDamagedHandler += OnDamage;
+
+        RegistSkill();
     }
 
-  
+    public void OnDrawGizmosSelected()
+    {
+        if (!_debug || _creature == null) return;
+
+        if (_debugAttackRangeIndex < 0 || _attackRangeList.Count <= _debugAttackRangeIndex) return;
+
+        Util.DrawRangeOnGizmos(_creature.gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
+    }
+
     public void AbilityUpdate()
     {
         SurvivalInstinct();
@@ -143,4 +169,212 @@ public class CreatureAbility
 
         return regen;
     }
+    #region 스킬관련
+    void RegistSkill()
+    {
+        _skillDictionary.Add(CardName.울부짖기, PlayRoar);
+        _skillDictionary.Add(CardName.쇼크웨이브, PlayShockwave);
+        _skillDictionary.Add(CardName.땅구르기, PlayStempGround);
+        _skillDictionary.Add(CardName.전기방출, PlayElectricRelease);
+    }
+
+    public void UseSkill(SkillSlot slot)
+    {
+        if (_creatureAI.Character.IsDead) return;
+        if (_creature.IsAttack) return;
+        if (slot.card == null || slot.card.cardData == null) return;
+
+        if (_skillDictionary.TryGetValue(slot.card.cardData.CardName, out var func))
+        {
+            func?.Invoke(slot);
+        }
+    }
+
+    void PlayShockwave(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
+        _creatureAI.StartCoroutine(CorShockwaveAttack(slot));
+
+        slot.skillTime = 0;
+    }
+
+    IEnumerator CorShockwaveAttack(SkillSlot slot, float later = 0, int num = 0)
+    {
+        if (later != 0)
+            yield return new WaitForSeconds(later);
+        List<GameObject> characterList = new List<GameObject>();
+        characterList.Clear();
+        Vector3 center = _creature.transform.position;
+        float radius = 0;
+        Camera.main.GetComponent<CameraController>().ShockWave(center, 30, num);
+        while (radius < 30)
+        {
+            radius += Time.deltaTime * 30;
+            RaycastHit2D[] hits = Physics2D.CircleCastAll(center, radius, Vector2.zero, 0);
+
+            if (hits.Length > 0)
+            {
+                foreach (var hit in hits)
+                {
+                    if (characterList.Contains(hit.collider.gameObject)) continue;
+
+                    characterList.Add(hit.collider.gameObject);
+
+                    Character character = hit.collider.gameObject.GetComponent<Character>();
+                    if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        _creature.Attack(character, Mathf.RoundToInt(_creature.AttackPower * slot.card.property), 50, character.transform.position - center, hit.point);
+                    }
+                }
+            }
+            yield return null;
+        }
+
+        Camera.main.GetComponent<CameraController>().StopShockwave(num);
+    }
+
+
+
+    void PlayStempGround(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[4]);
+        Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
+        Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
+        effect.SetProperty("Range", _attackRangeList[4].size.x);
+        effect.Play(_creature.transform.position);
+        if (hits.Count > 0)
+        {
+            foreach (var hit in hits)
+            {
+                Character c = hit.collider.GetComponent<Character>();
+                if (c != null && c.CharacterType == Define.CharacterType.Enemy)
+                {
+                    _creature.Attack(c, Mathf.RoundToInt(_creature.AttackPower * slot.card.property), 100, Vector3.up, hit.point, 1);
+                }
+            }
+        }
+        slot.skillTime = 0;
+    }
+
+    void PlayRoar(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
+        slot.isActive = true;
+
+        _creatureAI.StartCoroutine(CorPlayRoar(slot));
+    }
+    IEnumerator CorPlayRoar(SkillSlot slot)
+    {
+        _creature.IsAttack = true;
+
+        while (Mathf.Abs(_creature.MySpeed.x) > 0.1f)
+        {
+            yield return null;
+        }
+
+        Character character = _creatureAI.GetCloseEnemy();
+        if (character)
+        {
+            _creature.TurnBody(character.transform.position - _creature.transform.position);
+            _creature.AnimatorSetBool("Roar", true);
+
+            yield return new WaitForSeconds(0.2f);
+            Roar();
+
+            _creature.IsAttack = true;
+            _creature.IsEnableMove = false;
+            _creature.IsEnableTurn = false;
+
+            yield return new WaitForSeconds(1);
+            _creature.AnimatorSetBool("Roar", false);
+
+            _creature.IsAttack = false;
+            _creature.IsEnableMove = true;
+            _creature.IsEnableTurn = true;
+
+        }
+        slot.isActive = false;
+        slot.skillTime = 0;
+    }
+    public void Roar()
+    {
+        Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[1], Define.CharacterMask, (hit) =>
+        {
+            if (hit.collider == null) return false;
+
+            IHp hpComponent = hit.collider.GetComponent<IHp>();
+
+            if (hpComponent != null)
+            {
+                Character character = hpComponent as Character;
+                CharacterPart characterPart = hpComponent as CharacterPart;
+
+                Card card = Managers.GetManager<CardManager>().GetCard(CardName.울부짖기);
+                if ((character && character.CharacterType == Define.CharacterType.Enemy) ||
+                (characterPart && characterPart.Character.CharacterType == Define.CharacterType.Enemy))
+                {
+                    _creature.Attack(hpComponent, _creature.AttackPower, card.property, Vector3.right * _creature.transform.localScale.x, hit.point, 2);
+                }
+
+            }
+            return true;
+        });
+    }
+    void PlayElectricRelease(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillTime) return;
+
+        slot.isActive = true;
+
+        _creatureAI.StartCoroutine(CorPlayElectricRelease(slot));
+    }
+    IEnumerator CorPlayElectricRelease(SkillSlot slot)
+    {
+
+        _creature.AnimatorSetTrigger("Roar");
+
+        _creature.IsAttack = true;
+        _creature.IsEnableMove = false;
+        _creature.IsEnableTurn = false;
+
+        while (_creature.IsAttack)
+        {
+            yield return null;
+        }
+
+        slot.isActive = false;
+        slot.skillTime = 0;
+    }
+
+
+
+    // 미사용 스킬
+    /*
+    void ThrowPlayer(CreatureSkillSlot creatureSkillSlot)
+    {
+        if (creatureSkillSlot.creatureSkill == Define.CreatureSkill.Throw)
+        {
+            if (Input.GetMouseButtonDown(0))
+            {
+                Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
+                Vector3 directionVel = mousePosition - transform.position;
+
+                float power = directionVel.magnitude * _throwPower;
+                if (power > 200)
+                    power = 200;
+                _player.Character.Damage(_character, 0, power, directionVel, 0);
+                creatureSkillSlot.skillTime = 0;
+            }
+        }
+    }
+    */
+    #endregion
 }

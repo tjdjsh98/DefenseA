@@ -61,5 +61,6 @@ public enum CardName
     전기방출,
     식사예절,
     울부짖기,
+    식사,
     END,
 }

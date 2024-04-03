@@ -1,7 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
+using UnityEditor.Experimental.GraphView;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class VendingMechine : MonoBehaviour,IInteractable,IShop
 {
@@ -47,37 +50,58 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
         OpenShop();
     }
 
+    // È®·ü 0 : 60, 1 : 25, 2 : 13 ,3 :2
     public void RestockShopItems()
     {
-        if (Managers.GetManager<GameManager>().ShopItemDataList != null)
+        List<ItemData> datas = new List<ItemData>();
+        int rank = 0;
+        float randomValue = Random.Range(0, 100);
+        if (randomValue < 60)
         {
-            List<ShopItemData> datas = new List<ShopItemData>();
-            if (Managers.GetManager<GameManager>().ShopItemDataList.Count < 4)
-            {
-                datas = Managers.GetManager<GameManager>().ShopItemDataList.GetRandom(Managers.GetManager<GameManager>().ShopItemDataList.Count);
+            rank = 0;
+        }
+        else if (randomValue < 85)
+        {
+            rank = 1;
+        }
+        else if (randomValue < 98)
+        {
+            rank = 2;
+        }
+        else
+        {
+            rank = 3;
+        }
 
+        for(int i = 0; i < 4; i++)
+        {
+            List<ItemData> itemList = Managers.GetManager<GameManager>().RankItemDataList[rank];
+            if (itemList.Count == 0)
+            {
+                datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.µþ±âÄÉÀÌÅ©));
             }
             else
             {
-                List<ShopItemData> weaponDataList = Managers.GetManager<GameManager>().ShopItemDataList.Where((data) =>
+                // Ã¹ Ä­Àº ¹«Á¶°Ç ¹«±â
+                if (i == 0)
                 {
-                    return data.SellType == SellType.Weapon;
-                }).ToList();
+                    ItemData weaponData = itemList.Where(data => { return data.ItemType == ItemType.Weapon; }).ToList().GetRandom();
+                    if(weaponData != null)
+                        datas.Add(weaponData);
+                    else
+                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.µþ±âÄÉÀÌÅ©));
+                }
+                else
+                {
 
-                if (weaponDataList.Count > 0)
-                {
-                    datas.Add(weaponDataList.GetRandom());
+                    datas.Add(itemList.GetRandom());
                 }
-                for(int i = 0; i < 3; i++)
-                {
-                    datas.Add(Managers.GetManager<GameManager>().ShopItemDataList.GetRandom());
-                }
-            }
-            ShopItemList.Clear();
-            foreach (var data in datas)
-            {
-                ShopItemList.Add(new ShopItem() { isSale = false, shopItemData = data });
             }
         }
+        foreach (var data in datas)
+        {
+            ShopItemList.Add(new ShopItem() { isSale = false, shopItemData = data });
+        }
+
     }
 }
