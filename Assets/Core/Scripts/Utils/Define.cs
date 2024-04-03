@@ -129,7 +129,7 @@ public static class Define
         None = -1,
         Main,
         Sub,
-        Melee,
+        Special,
         END
     }
 
