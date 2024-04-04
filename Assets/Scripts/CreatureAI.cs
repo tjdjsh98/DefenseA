@@ -43,17 +43,10 @@ public class CreatureAI : MonoBehaviour
         }
     }
 
-    Character _closeOne;
-
 
     // 일반공격 변수
-    Vector3 _normalAttackPosition;
     float _normalAttackTime = 0;
-    float _normalAttackCoolTime = 3f;
-    float NormalAttackCoolTime => DecreasedNormalAttackCoolTimePercentage > 0 ? _normalAttackCoolTime / (1 + (DecreasedNormalAttackCoolTimePercentage / 100)) : _normalAttackCoolTime * (1 - (DecreasedNormalAttackCoolTimePercentage / 100));
-    public int NormalAttackDamage => IncreasedNormalAttackPercentage > 0 ? AttackPower * (1 + IncreasedNormalAttackPercentage / 100) : AttackPower / (1 - IncreasedNormalAttackPercentage / 100);
-    public int IncreasedNormalAttackPercentage { set; get; }
-    public float IncreasedNormalAttackSpeedPercentage { set; get; }
+    float _normalAttackCoolTime => 3f/Util.CalcPercentage(CreatureAbility.GetIncreasedAttackSpeedPercentage());
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
 
     Character _closeEnemy;

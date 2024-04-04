@@ -341,9 +341,14 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   CreatureAI: {fileID: 0}
   _summonDummy: 0
+  _destroyDummy: 0
   _dummyHp: 55
+  _itemName: 45
+  _addItem: 0
+  _removeItem: 0
   _stop: 1
   _mapData: {fileID: 11400000, guid: 14240f8f275b1494081fb12ac529681d, type: 2}
+  MentalAccelerationPercentage: 0
   _isSkip: 1
   _playableDirector: {fileID: 1210361353}
   _enteracneTimeline: {fileID: 11400000, guid: 6787141088082784b9c881817533cd54, type: 2}
@@ -369,6 +374,9 @@ MonoBehaviour:
   - {fileID: 2101283654202954292, guid: 2f9e5c7d651ac2f4d88652894b83d2e2, type: 3}
   - {fileID: 1030953760157690692, guid: 5f42625601c654e4aa2a31802c1380bf, type: 3}
   - {fileID: 7157520732221318968, guid: eee17c232028e9940a8bf6f9876e0ff3, type: 3}
+  <Inventory>k__BackingField:
+    _slotList: []
+    _itemHistroyList: []
 --- !u!1 &193953244 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 7859202843946095984, guid: d0d994228a102aa4bb80b3163b0ac716, type: 3}

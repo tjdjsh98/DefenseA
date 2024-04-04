@@ -61,7 +61,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100) * (1+ _user.GetIncreasedAttackSpeedPercentage()/100));
     [SerializeField] protected float _reloadTime;
     public float OriginalReloadTime => _reloadTime;
-    public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100));
+    public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100) /(1 + _user.GetIncreasedReloadSpeedPercentage()/100));
 
 
     // 추가 능력치

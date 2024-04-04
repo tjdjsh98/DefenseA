@@ -1,6 +1,9 @@
+using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Security;
+using Unity.VisualScripting;
 using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Playables;
@@ -23,8 +26,14 @@ public class GameManager : ManagerBase
 
     [Header("Debug")]
     [SerializeField] bool _summonDummy;
+    [SerializeField] bool _destroyDummy;
+    GameObject _dummy;
     [SerializeField] int _dummyHp;
+    [SerializeField] ItemName _itemName;
+    [SerializeField] bool _addItem;
+    [SerializeField] bool _removeItem;
 
+    
     [Header("게임 진행")]
     [SerializeField] bool _stop;
     [SerializeField] MapData _mapData;
@@ -35,15 +44,16 @@ public class GameManager : ManagerBase
     public bool IsLoadEnd { set; get; }
     public Action<MapData> LoadNewSceneHandler { set; get; }
 
-    public int Money { set; get; }
+    public int Money { set; get; } = 0;
 
+    #region 멘탈, 패닉
     int _panicLevel = 0;
     public int PanicLevel =>_panicLevel;
     public float MaxMental { get; } = 100;
     public float Mental { set; get; } = 100;
+    public float MentalAccelerationPercentage = 0;
 
-   
-    public int Level { set; get; }
+    #endregion
 
     [Header("타임라인")]
     [SerializeField] bool _isSkip;
@@ -63,23 +73,9 @@ public class GameManager : ManagerBase
 
     public int HuntingCount { set; get; }
 
-   
+    [Header("꾸며지는 오브젝트")]
     [SerializeField] List<GameObject> _subObjects;
     [SerializeField] List<GameObject> _mainObjects;
-
-
-    public List<List<ItemData>> RankItemDataList = new List<List<ItemData>>();
-
-    CameraController _cameraController;
-    public CameraController CameraController
-    {
-        get
-        {
-            if(_cameraController == null)
-                _cameraController = Camera.main.GetComponent<CameraController>();
-            return _cameraController;
-        }
-    }
 
     GameObject _objectFolder;
     GameObject ObjectFolder
@@ -95,8 +91,27 @@ public class GameManager : ManagerBase
         }
     }
 
+
+    public List<List<ItemData>> RankItemDataList = new List<List<ItemData>>();
+
+    CameraController _cameraController;
+    public CameraController CameraController
+    {
+        get
+        {
+            if(_cameraController == null)
+                _cameraController = Camera.main.GetComponent<CameraController>();
+            return _cameraController;
+        }
+    }
+
+
+    [field: SerializeField] public Inventory Inventory { set; get; }
+   
+
     public override void Init()
     {
+        Inventory = new Inventory();
         LoadItemData();
         LoadMainCharacters();
 
@@ -104,10 +119,47 @@ public class GameManager : ManagerBase
         LoadMapData();
 
     }
+    public override void ManagerUpdate()
+    {
+        Debuging();
+        Mental -= Time.deltaTime * Util.CalcPercentage(MentalAccelerationPercentage);
+        _totalTime += Time.deltaTime;
+        _stageTime += Time.deltaTime;
+        if (Mental <= 0)
+        {
+            _panicLevel++;
+            Mental += 100;
+        }
+        if (Mental > 100)
+        {
+            _panicLevel--;
+            Mental -= 100;
+        }
+
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            UIStatus uIStatus = Managers.GetManager<UIManager>().GetUI<UIStatus>();
+            if (uIStatus.gameObject.activeSelf)
+                uIStatus.Close();
+            else
+                uIStatus.Open();
+        }
+
+        Inventory.InventoryUpdate();
+        if (_stop) return;
+
+        TimeWave();
+        DistanceWave();
+        MentalWave();
+
+        if (Player)
+            _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
+
+
+    }
 
     void LoadItemData()
     {
-        Debug.Log("Rank");
         List<ItemData> itemList = Managers.GetManager<DataManager>().GetDataList<ItemData>();
         
         foreach (var item in itemList)
@@ -255,49 +307,35 @@ public class GameManager : ManagerBase
         _creature?.SetVelocityForcibly(Vector3.zero);
         _girl?.SetVelocityForcibly(Vector3.zero);
     }
-    public override void ManagerUpdate()
+  
+    void Debuging()
     {
-        Mental -= Time.deltaTime;
-        _totalTime += Time.deltaTime;
-        _stageTime += Time.deltaTime;
-        if (Mental <= 0)
-        {
-            _panicLevel++;
-            Mental += 100;
-        }
-        if( Mental > 100)
-        {
-            _panicLevel--;
-            Mental -= 100;
-        }
         if (_summonDummy)
         {
             EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Slime);
             EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
             enemy.transform.position = Player.transform.position + Vector3.right * 10;
+            _dummy = enemy.gameObject;
             Character enemyCharacter = enemy.GetComponent<Character>();
             enemyCharacter.SetHp(_dummyHp);
             _summonDummy = false;
         }
-        if (Input.GetKeyDown(KeyCode.I))
+        if (_destroyDummy)
         {
-            UIStatus uIStatus = Managers.GetManager<UIManager>().GetUI<UIStatus>();
-            if (uIStatus.gameObject.activeSelf)
-                uIStatus.Close();
-            else
-                uIStatus.Open();
+            if(_dummy)
+                Managers.GetManager<ResourceManager>().Destroy(_dummy);
+            _destroyDummy = false;
         }
-
-
-        if (_stop) return;
-
-        TimeWave();
-        DistanceWave();
-        MentalWave();
-
-        if (Player)
-            _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
-
+        if (_addItem)
+        {
+            Inventory.AddItem(Managers.GetManager<DataManager>().GetData<ItemData>((int)(_itemName)));
+            _addItem = false;
+        }
+        if(_removeItem)
+        {
+            Inventory.RemoveItem(Managers.GetManager<DataManager>().GetData<ItemData>((int)(_itemName)));
+            _removeItem = false;
+        }
        
     }
     void TimeWave()

@@ -12,15 +12,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fece2be9257aeab45a6b14d73efe4950, type: 3}
   m_Name: "\uAC80\uC740\uC138\uD3EC"
   m_EditorClassIdentifier: 
-  <ItemName>k__BackingField: 7
-  <ItemType>k__BackingField: 2
+  <ItemName>k__BackingField: 6
+  <ItemType>k__BackingField: 1
   <Image>k__BackingField: {fileID: 0}
   <Description>k__BackingField: "\uAD34\uBB3C\uC758 \uACF5\uACA9\uB825\uC744 \uC18C\uD3ED
     \uC0C1\uC2B9\uC2DC\uD0B5\uB2C8\uB2C8\uB2E4."
-  <Rank>k__BackingField: 0
+  <Rank>k__BackingField: 1
   <IncreasingGirlMaxHp>k__BackingField: 0
   <IncreasingCreatureMaxHp>k__BackingField: 0
-  <IncreasingCreatureAttackPower>k__BackingField: 1
+  <IncreasingGirlAttackPowerPercentage>k__BackingField: 0
+  <IncreasingCreatureAttackPower>k__BackingField: 3
+  <IncreasingCreatureAttackSpeedPercentage>k__BackingField: 0
   <IncreasingGirlHpRegeneration>k__BackingField: 0
   <IncreasingCreatureHpRegeneration>k__BackingField: 0
   <RecoverGirlHpAmount>k__BackingField: 0

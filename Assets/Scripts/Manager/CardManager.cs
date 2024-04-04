@@ -3,6 +3,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CardManager : ManagerBase
@@ -21,7 +22,6 @@ public class CardManager : ManagerBase
     Dictionary<CardName, Card> _possessCardDic = new Dictionary<CardName, Card>();
     List<PriorCard> _priorCardList = new List<PriorCard>();
 
-
     public int AbilityCount { set; get; } = 0;
 
     // 스킬 슬롯
@@ -35,24 +35,22 @@ public class CardManager : ManagerBase
     public List<BlackSphere> BlackSphereList => _blackSphereList;
     public int MaxBlackSphereCount { set; get; } = 10;
     public Action<BlackSphere> BlackSphereAddedHandler;             // 갯수가 초과 되면 null로 실행됨
-    float _blackSphereCoolTime = 5;
+    float _blackSphereCoolTime = 0;
     float _blackSphereTime;
-    int _blackSphereAttackPower;
+    public int BlackSphereAttackPower { set; get; }
 
     // 전기 관련 능력
     float _maxElectricity = 0;
     public float MaxElectricity { get { return _maxElectricity; } }
-    float _currentElectricity;
-    public float CurrentElectricity => _currentElectricity;
-    float _chargeElectricty = 0;
-    public float ChargeElectricty { get { return _chargeElectricty; } }
+    public float CurrentElectricity { get; set; }
+    public float ChargeElectricty { get; set; }
     public bool IsUnlockOverCharge { set; get; } = false;
 
     // 포식 관련 능력
     int _maxPredation = 0;
     public int MaxPredation => _maxPredation;
-    int _predation = 0;
-    public int Predation => _predation;
+    
+    public int Predation { get; set; }
 
 
     public override void Init()
@@ -76,7 +74,7 @@ public class CardManager : ManagerBase
             else
             {
                 PriorCard prior = new PriorCard();
-                prior.card = new Card() { cardData = data, rank = 0 };
+                prior.card = new Card() { cardData = data, rank = -1 };
                 foreach (var cardData in data.PriorCards)
                     prior.priorCardDataList.Add(cardData);
                 _priorCardList.Add(prior);
@@ -85,7 +83,7 @@ public class CardManager : ManagerBase
         });
         foreach (var cardData in cardDatas)
         {
-            _remainCardSelectionDic.Add(cardData.CardName, new Card() { cardData = cardData, rank = 0 });
+            _remainCardSelectionDic.Add(cardData.CardName, new Card() { cardData = cardData, rank = -1 });
         }
     }
 
@@ -117,16 +115,20 @@ public class CardManager : ManagerBase
         return _remainCardSelectionDic.Values.ToList();
     }
     // 카드를 선택하여 능력치 추가
-    public void SelectCard(Card card)
-    {
 
+   
+    public void AddCard(Card card)
+    {
         // 소유중인 카드에 없을 때 추가
         if (!_possessCardDic.ContainsKey(card.cardData.CardName))
         {
             _possessCardDic.Add(card.cardData.CardName, card);
+            card.rank = 0;
         }
-
-        card.rank++;
+        else
+        {
+            card.rank++;
+        }
 
         // 선행카드가 모두 만족되었다면 남은카드에 추가
         for (int i = _priorCardList.Count - 1; i >= 0; i--)
@@ -156,23 +158,34 @@ public class CardManager : ManagerBase
         {
             _remainCardSelectionDic.Remove(card.cardData.CardName);
         }
+        ApplyCardAbility(card);
+    }
+    public void RemoveCard(Card card)
+    {
+        if (!_possessCardDic.ContainsKey(card.cardData.CardName)) return;
 
-        // TODO
-        // 능력적용
+        RevertCardAbility(card);
 
-        if (card.cardData.CardSelectionType == Define.CardType.Weapon)
+        card.rank--;
+
+        if (card.rank < 0)
         {
-            WeaponCardSelection weaponCardSelection = card.cardData as WeaponCardSelection;
+            card.rank = 0;
+            _possessCardDic.Remove(card.cardData.CardName);
+            if(!_remainCardSelectionDic.ContainsKey(card.cardData.CardName))
+                _remainCardSelectionDic.Add(card.cardData.CardName, card);
 
-            WeaponSwaper swaper = Player.GetComponent<WeaponSwaper>();
-
-            swaper.ChangeNewWeapon(weaponCardSelection.WeaponSlotIndex, weaponCardSelection.WeaponName);
-        }
-        else
-        {
-            Managers.GetManager<CardManager>().ApplyCardAbility(card);
         }
     }
+    public bool RemoveRandomCard()
+    {
+        if (_possessCardDic.Count <= 0) return false;
+
+        RemoveCard(_possessCardDic.Values.ToList().GetRandom());
+
+        return true;
+    }
+
     public Card GetCard(CardName cardname)
     {
         if (_possessCardDic.TryGetValue(cardname, out Card card))
@@ -216,8 +229,9 @@ public class CardManager : ManagerBase
         {
             BlackSphere blackSphere = _blackSphereList[i];
             _blackSphereList.RemoveAt(i);
-            blackSphere.ChangeAttackMode(mousePosition,_blackSphereAttackPower, GetIsHaveAbility(CardName.폭발성구체), i*0.1f);
+            blackSphere.ChangeAttackMode(mousePosition,BlackSphereAttackPower, GetIsHaveAbility(CardName.폭발성구체), i*0.1f);
         }
+        slot.skillTime = 0;
     }
 
     void PlayBait(SkillSlot slot)
@@ -270,31 +284,6 @@ public class CardManager : ManagerBase
         slot.skillTime = 0;
     }
 
-    public void AddPredation(int value)
-    {
-        if (_maxPredation < _predation + value)
-        {
-            _predation = _maxPredation;
-        }
-        else
-        {
-            _predation += value;
-        }
-    }
-    public void AddElectricity(float value)
-    {
-        float maxElectricity = MaxElectricity;
-        maxElectricity *= IsUnlockOverCharge ? 2 : 1;
-        if (_currentElectricity + value < maxElectricity)
-            _currentElectricity += value;
-        else
-            _currentElectricity = maxElectricity;
-    }
-
-    public void ResetElectricity()
-    {
-        _currentElectricity = 0;
-    }
     void ProcessCommonAbility()
     {
         // 전기충전
@@ -302,10 +291,10 @@ public class CardManager : ManagerBase
         {
             float maxElectricity = MaxElectricity;
             maxElectricity *= IsUnlockOverCharge ? 2 : 1;
-            if (_currentElectricity + ChargeElectricty * Time.deltaTime > maxElectricity)
-                _currentElectricity = maxElectricity;
+            if (CurrentElectricity + ChargeElectricty * Time.deltaTime > maxElectricity)
+                CurrentElectricity = maxElectricity;
             else
-                _currentElectricity += ChargeElectricty * Time.deltaTime;
+                CurrentElectricity += ChargeElectricty * Time.deltaTime;
         }
 
         if (GetIsHaveAbility(CardName.검은구체))
@@ -348,38 +337,111 @@ public class CardManager : ManagerBase
         AbilityCount++;
     }
 
+    // 랭크가 내려가지 않은 상태로 들어온다.
+    public void RevertCardAbility(Card card)
+    {
+        AbilityCount--;
+        RemoveSkill(card);
+        RevertCommonAbility(card);
+        Player.GirlAbility.RevertCardAbility(card);
+
+        CreatureAI.CreatureAbility.RevertCardAbility(card);
+    }
+
     public void ApplyCommonAbility(Card card)
     {
         if (card != null && card.cardData != null)
         {
             int rank = card.rank;
-            float value = card.cardData.PropertyList[rank - 1];
+            float value = card.cardData.PropertyList[rank];
 
             switch (card.cardData.CardName)
             {
                 case CardName.검은구체:
-                    _blackSphereCoolTime = value;
+                    if (rank > 0)
+                        _blackSphereCoolTime -= card.cardData.PropertyList[rank - 1];
+                    _blackSphereCoolTime += value;
                     break;
                 case CardName.구체통제:
-                    MaxBlackSphereCount = (int)value;
+                    if (rank > 0)
+                        MaxBlackSphereCount -= (int)card.cardData.PropertyList[rank - 1];
+                    MaxBlackSphereCount += (int)value;
                     break;
                 case CardName.일제사격:
-                    _blackSphereAttackPower = (int)value;
+                    if (rank > 0)
+                        BlackSphereAttackPower -= (int)card.cardData.PropertyList[rank - 1];
+                    BlackSphereAttackPower += (int)value;
                     break;
                 case CardName.미세전력:
-                    _maxElectricity = 100;
-                    _chargeElectricty += 0.1f;
+                    _maxElectricity += 100;
+                    ChargeElectricty += 0.1f;
                     break;
                 case CardName.추가배터리:
+                    if (rank > 0)
+                        _maxElectricity -= card.cardData.PropertyList[rank - 1];
                     _maxElectricity += value;
                     break;
                 case CardName.자가발전:
-                    _chargeElectricty += value;
+                    if (rank > 0)
+                        ChargeElectricty -= card.cardData.PropertyList[rank - 1];
+                    ChargeElectricty += value;
                     break;
                 case CardName.식욕:
-                    _maxPredation= (int)value;
+                    if (rank > 0)
+                        _maxPredation -= (int)card.cardData.PropertyList[rank - 1];
+                    _maxPredation += (int)value;
                     break;
             }
+        }
+    }
+    public void RevertCommonAbility(Card card)
+    {
+        if (card != null && card.cardData != null)
+        {
+            int rank = card.rank;
+            if (rank >= 0)
+            {
+                float value = card.cardData.PropertyList[rank];
+
+                switch (card.cardData.CardName)
+                {
+                    case CardName.검은구체:
+                        if (rank > 0)
+                            _blackSphereCoolTime += card.cardData.PropertyList[rank - 1];
+                        _blackSphereCoolTime -= value;
+                        break;
+                    case CardName.구체통제:
+                        if (rank > 0)
+                            MaxBlackSphereCount += (int)card.cardData.PropertyList[rank - 1];
+                        MaxBlackSphereCount -= (int)value;
+                        break;
+                    case CardName.일제사격:
+                        if (rank > 0)
+                            BlackSphereAttackPower += (int)card.cardData.PropertyList[rank - 1];
+                        BlackSphereAttackPower -= (int)value;
+                        break;
+                    case CardName.미세전력:
+                        _maxElectricity -= 100;
+                        ChargeElectricty -= 0.1f;
+                        break;
+                    case CardName.추가배터리:
+                        if (rank > 0)
+                            _maxElectricity += card.cardData.PropertyList[rank - 1];
+                        _maxElectricity -= value;
+                        break;
+                    case CardName.자가발전:
+                        if (rank > 0)
+                            ChargeElectricty += card.cardData.PropertyList[rank - 1];
+                        ChargeElectricty -= value;
+                        break;
+                    case CardName.식욕:
+                        if (rank > 0)
+                            _maxPredation += (int)card.cardData.PropertyList[rank - 1];
+                        _maxPredation -= (int)value;
+                        break;
+                }
+            }
+        
         }
     }
     public bool GetIsHaveAbility(CardName cardName)
@@ -415,7 +477,27 @@ public class CardManager : ManagerBase
         _skillSlotList[index].isActive = false;
 
     }
+    // 랭크가 내려가기 전의 카드 정보
+    public void RemoveSkill(Card card)
+    {
+        if (card == null || card.cardData == null || !card.cardData.IsActiveAbility) return;
+        if(card.rank == 0)
+        {
+            for (int i = 0; i < _skillCount; i++)
+            {
+                if (_skillSlotList[i].card == card)
+                {
+                    _skillSlotList[i].card= null;
+                    _skillSlotList[i].skillTime = 0;
+                    _skillSlotList[i].isActive = false;
+                    break;
+                }
+
+            }
+        }
+    }
     
+   
     void HandleSkill()
     {
         foreach (var skill in _skillSlotList)
@@ -496,15 +578,15 @@ public class PriorCard
 public class Card
 {
     public CardData cardData;
-    public int rank = 0;
+    public int rank = -1;
     public float property
     {
         get
         {
-            if (cardData == null || cardData.PropertyList.Count < rank)
+            if (cardData == null || cardData.PropertyList.Count <= rank)
                 return 0;
 
-            return cardData.PropertyList[rank - 1];
+            return cardData.PropertyList[rank];
         }
     }
 }

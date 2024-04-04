@@ -17,16 +17,18 @@ public class ItemData : ScriptableObject, ITypeDefine
     }
 }
 public enum ItemType
-{    
-    Weapon,
+{
+    None = -1,      
     Ability,
     StatusUp,
+    CreatureWeapon,
+    Weapon,
+    END
 }
 
 public enum ItemName
 {
     None = -1,    
-    AK47,
     일반능력카드,
     상급능력카드,
     골라콜라,
@@ -55,5 +57,34 @@ public enum ItemName
     망각석,
     강렬한별빛,
     이쁜가게전단지,
+    까마귀깃털,
+    눈동자구슬,
+    검은유리창파편,
+    바늘과가죽,
+    문들어진어금니,
+    닿아가는고서,
+    전봇대,
+    망각의서,
+    포크,
+    나이프,
+    살점상자,
+    알사탕,
+    초콜릿,
+    아르라제코인,
+    빛나는상자,
+    유리건틀릿,
+    피묻은뼈목걸이,
+    눈알케이크,
+    닿아야하는석상,
+    탁한잎,
+    급조된소총,
+    급조된권총,
+    경찰권총,
+    돌격소총,
+    리볼버,
+    블랙,
+    더블배럭샷건,
+    펌프샷건,
+    호출기,
     END
 }

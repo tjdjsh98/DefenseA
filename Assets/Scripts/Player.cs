@@ -1,12 +1,7 @@
 using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections.Generic;
-using System.Security.Cryptography;
-using TMPro;
-using Unity.VisualScripting;
-using UnityEditor;
 using UnityEngine;
-using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
 
 public class Player : MonoBehaviour, IWeaponUsable
@@ -51,8 +46,6 @@ public class Player : MonoBehaviour, IWeaponUsable
 
     // 추가적인 능력
     public int IncreasedPenerstratingPower { set; get; } = 0;
-    public float IncreasedAttackSpeedPercentage { set; get; }
-    public float IncreasedReloadSpeedPercentage { set; get; }
     [field:SerializeField]public float IncreasedReboundRecoverPercent { set; get; }
 
    
@@ -566,7 +559,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     }
     public float GetIncreasedAttackSpeedPercentage()
     {
-        float percentage = IncreasedAttackSpeedPercentage;
+        float percentage = 0;
         percentage += GirlAbility.GetIncreasedAttackSpeedPercentage();
 
         return percentage;
@@ -579,5 +572,11 @@ public class Player : MonoBehaviour, IWeaponUsable
         return percentage;
     }
 
-    
+    public float GetIncreasedReloadSpeedPercentage()
+    {
+        float percentage = 0;
+        percentage += GirlAbility.GetIncreasedReloadSpeedPercentage();
+
+        return percentage;
+    }
 }

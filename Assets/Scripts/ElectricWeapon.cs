@@ -62,7 +62,7 @@ public class ElectricWeapon : Weapon
         {
             if (Managers.GetManager<CardManager>().CurrentElectricity > 0.1)
             {
-                Managers.GetManager<CardManager>().AddElectricity(-Time.deltaTime);
+                Managers.GetManager<CardManager>().CurrentElectricity += -Time.deltaTime;
                 _electric += Time.deltaTime;
                 if (_electric >= 1)
                 {

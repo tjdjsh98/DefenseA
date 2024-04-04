@@ -1,8 +1,6 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,8 +9,13 @@ public class CreatureAbility
 {
     [SerializeField] bool _debug;
     [SerializeField] Character _creature;
-  
+    Inventory _inventory;
+
     CreatureAI _creatureAI;
+
+    // 추가 능력치
+    public float IncreasedAttackPowerPercentage { get; set; }
+    public float IncreasedAttackSpeedPercentage { get; set; }
 
     /*
     * 0 = 땅구르기 공격
@@ -25,15 +28,27 @@ public class CreatureAbility
 
     //생존본능
     [SerializeField] Define.Range _survivalIntinctRange;
+    float _preSurvivalIntinctValue;
     [SerializeField] int _survivalIntinctCount;
     [SerializeField] float _survivalIntinctElapsed;
 
+
+    #region 아이템
+    //바늘과 가죽
+    int _preNeedleAndLeatherIncreasedPower;
+    float _needleAndLeatherIncreasedPower;
+
+    //나이프
+    int _preKnifeIncreasedPower;
+
+    #endregion
     public void Init(CreatureAI creatureAI)
     {
         _creatureAI = creatureAI;
         _creature = _creatureAI.GetComponent<Character>();
         _creatureAI.Character.AttackHandler += OnAttack;
         _creatureAI.Character.CharacterDamagedHandler += OnDamage;
+        _inventory = Managers.GetManager<GameManager>().Inventory;
 
         RegistSkill();
     }
@@ -51,32 +66,36 @@ public class CreatureAbility
     {
         SurvivalInstinct();
 
+        _creatureAI.Character.AttackPower = GetAttackPower();
         _creatureAI.Character.IncreasedHpRegeneration = GetHpRegeneration();
     }
 
     void OnAttack(Character target, int damage)
     {
         CardManager manager = Managers.GetManager<CardManager>();
-        if (GetIsHaveAbility(CardName.식욕))
-        {
-            if (target == null || target.IsDead)
-            {
-                Managers.GetManager<CardManager>().AddPredation(1);
-            }
-        }
-        if (GetIsHaveAbility(CardName.식사예절))
-        {
-            if(target == null || target.IsDead)
-            {
-                Managers.GetManager<CardManager>().AddPredation(3);
-            }
-        }
+
         if (GetIsHaveAbility(CardName.충전))
         {
             Card card = manager.GetCard(CardName.충전);
             if (card != null)
             {
-                Managers.GetManager<CardManager>().AddElectricity(card.property);
+                Managers.GetManager<CardManager>().CurrentElectricity += card.property;
+            }
+        }
+        if (target == null || target.IsDead)
+        {
+            if (GetIsHaveAbility(CardName.식욕))
+            {
+                Managers.GetManager<CardManager>().Predation+=1;
+            }
+            if (GetIsHaveAbility(CardName.식사예절))
+            {
+                Managers.GetManager<CardManager>().Predation += 3;
+            }
+            int count = _inventory.GetItemCount(ItemName.바늘과가죽);
+            if (count >0 )
+            {
+                _needleAndLeatherIncreasedPower += 0.1f * count;
             }
         }
     }
@@ -103,6 +122,10 @@ public class CreatureAbility
         {
 
         }
+    }
+    public void RevertCardAbility(Card card)
+    {
+
     }
     public bool GetIsHaveAbility(CardName cardName)
     {
@@ -136,6 +159,7 @@ public class CreatureAbility
     public float GetIncreasedAttackPowerPercentage()
     {
         float percentage = 0;
+        percentage += IncreasedAttackPowerPercentage;
         CardManager cardManager = Managers.GetManager<CardManager>();
 
         if (GetIsHaveAbility(CardName.분노))
@@ -149,6 +173,7 @@ public class CreatureAbility
     public float GetIncreasedAttackSpeedPercentage()
     {
         float percentage = 0;
+        percentage += IncreasedAttackSpeedPercentage;
         CardManager cardManager = Managers.GetManager<CardManager>();
 
         if (GetIsHaveAbility(CardName.분노))
@@ -162,12 +187,41 @@ public class CreatureAbility
     public float GetHpRegeneration()
     {
         float regen = 0;
+        regen = _creature.IncreasedHpRegeneration;
         if (GetIsHaveAbility(CardName.생존본능))
         {
-            regen = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).property;
+            regen -= _preSurvivalIntinctValue;
+            _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).property;
+            regen += _preSurvivalIntinctValue;
         }
 
         return regen;
+    }
+    public int GetAttackPower()
+    {
+        int attackPower = 0;
+        attackPower = _creature.AttackPower;
+
+        // 아이템 : 바늘과 가죽
+        if (_inventory.GetItemCount(ItemName.바늘과가죽) > 0)
+        {
+            attackPower -= _preNeedleAndLeatherIncreasedPower;
+            _preNeedleAndLeatherIncreasedPower = Mathf.FloorToInt(_needleAndLeatherIncreasedPower); ;
+            attackPower += _preNeedleAndLeatherIncreasedPower;
+        }
+        else
+        {
+            attackPower -= _preNeedleAndLeatherIncreasedPower;
+            _needleAndLeatherIncreasedPower = 0;
+            _preNeedleAndLeatherIncreasedPower = 0;
+        }
+
+        // 아이템 : 나이프
+        attackPower -= _preKnifeIncreasedPower;
+        _preKnifeIncreasedPower = (int)(Managers.GetManager<CardManager>().Predation / 5) * _inventory.GetItemCount(ItemName.나이프);
+        attackPower += _preKnifeIncreasedPower;
+
+        return attackPower;
     }
     #region 스킬관련
     void RegistSkill()

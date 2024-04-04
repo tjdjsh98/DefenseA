@@ -1,18 +1,21 @@
+using DuloGames.UI.Tweens;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 
 public class GirlAbility 
 {
     Player _player;
+    Inventory _inventory;
+    // 아이템 등으로 추가된 능력치
+    public float IncreasedAttackPowerPercentage { set;get; }
+    public float IncreasedAttackSpeedPercentage { set;get; }
+    public float IncreasedReloadSpeedPercentage { set;get; }
 
     // 스킬
     Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
-
+    #region 카드 능력
     // 자동장전
     List<float> _autoReloadElaspedTimeList = new List<float>();
 
@@ -24,16 +27,34 @@ public class GirlAbility
     SkillSlot _diningSlot;
     private bool _dining;
 
+    #endregion
+
+    #region 아이템 능력
+
+    // 검은유리창파편
+    float _preBlackShardsOfGlassHpRegen;
+    float _blackShardsOfGlassCoefficient = 0.01f;
+    // 탁한 잎
+    float _cludyLeafTime;
+    #endregion
+
     public void Init(Player player)
     {
         _player = player;
         _player.Character.AttackHandler += OnAttack;
+        _inventory = Managers.GetManager<GameManager>().Inventory;
 
         RegistSkill();
     }
     public void AbilityUpdate()
     {
         AutoReload();
+        _player.Character.IncreasedHpRegeneration = GetHpRegeneration();
+    }
+
+    private void HandleCloudyLeaf()
+    {
+        
     }
 
     #region 스킬 관련
@@ -66,7 +87,7 @@ public class GirlAbility
         {
             if (target == null || target.IsDead)
             {
-                Managers.GetManager<CardManager>().AddPredation(1);
+                Managers.GetManager<CardManager>().Predation += 1;
             }
         }
         if (GetIsHaveAbility(CardName.식사준비))
@@ -75,7 +96,7 @@ public class GirlAbility
             {
                 Card card = Managers.GetManager<CardManager>().GetCard(CardName.식사준비);
                 if(card != null) { }
-                    Managers.GetManager<CardManager>().AddPredation((int)card.property);
+                    Managers.GetManager<CardManager>().Predation += (int)card.property;
             }
         }
         if (GetIsHaveAbility(CardName.굶주림))
@@ -102,7 +123,7 @@ public class GirlAbility
             {
                 _hungerTarget = null;
                 _hungerHitCount = 0;
-                Managers.GetManager<CardManager>().AddPredation(5);
+                Managers.GetManager<CardManager>().Predation += 5;
 
                 if (target.IsNotInstantlyDie)
                 {
@@ -121,7 +142,7 @@ public class GirlAbility
             Card card = manager.GetCard(CardName.충전);
             if (card != null)
             {
-                manager.AddElectricity(card.property);
+                manager.CurrentElectricity += card.property;
             }
         }
         if (_dining)
@@ -189,11 +210,16 @@ public class GirlAbility
         }
     }
 
+    public void RevertCardAbility(Card card)
+    {
+
+    }
     public float GetIncreasedDamagePercentage()
     {
         Character creature = Managers.GetManager<GameManager>().Creature;
         float percentage = 0;
 
+        percentage += IncreasedAttackPowerPercentage;
         // 넉넉한 총알
         Card card = Managers.GetManager<CardManager>().GetCard(CardName.넉넉한총알);
         if (card != null)
@@ -215,6 +241,12 @@ public class GirlAbility
             }
         }
 
+        // 아이템 : 포크
+        percentage += (int)(Managers.GetManager<CardManager>().Predation/5) * _inventory.GetItemCount(ItemName.포크)* 2f;
+
+        // 아이템 : 탁한 잎
+        
+
         return percentage;
     }
 
@@ -223,6 +255,7 @@ public class GirlAbility
         Character creature = Managers.GetManager<GameManager>().Creature;
         float percentage = 0;
 
+        percentage += IncreasedAttackSpeedPercentage;
         // 마지막 발악
         if (creature.IsDead)
         {
@@ -236,15 +269,35 @@ public class GirlAbility
 
         return percentage;
     }
+    public float GetIncreasedReloadSpeedPercentage()
+    {
+        float percentage = 0;
+
+        percentage += IncreasedReloadSpeedPercentage;
+
+        return percentage;
+    }
     public void Dining(SkillSlot slot)
     {
         if (slot.isActive) return;
         if (slot.skillCoolTime > slot.skillTime) return;
         if (Managers.GetManager<CardManager>().Predation < 20) return;
 
-        Managers.GetManager<CardManager>().AddPredation(-20);
+        Managers.GetManager<CardManager>().Predation -= 20;
         slot.isActive = true;
         _dining = true;
         _diningSlot = slot;
+    }
+
+    public float GetHpRegeneration()
+    {
+        float regen = 0;
+        regen = _player.Character.IncreasedHpRegeneration;
+
+        regen -= _preBlackShardsOfGlassHpRegen;
+        _preBlackShardsOfGlassHpRegen = _blackShardsOfGlassCoefficient * _inventory.GetItemCount(ItemName.검은유리창파편);
+        regen += _preBlackShardsOfGlassHpRegen;
+        
+        return regen;
     }
 }

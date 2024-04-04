@@ -1,8 +1,6 @@
 using System.Collections.Generic;
 using TMPro;
-using Unity.VisualScripting;
 using UnityEngine;
-using UnityEngine.Rendering.Universal;
 using UnityEngine.UI;
 
 public class UIShop : UIBase
@@ -36,39 +34,10 @@ public class UIShop : UIBase
             int tempIndex = index;
             slot.onClick.AddListener(() => {
                 if (_openShop.ShopItemList.Count <= tempIndex) return;
-                if (_openShop.ShopItemList[tempIndex].isSale) return;
-                if (_openShop.ShopItemList[tempIndex].shopItemData == null) return;
 
-                GameManager gameManager = Managers.GetManager<GameManager>();
-
-                if (_openShop.ShopItemList[tempIndex].shopItemData.Price <= gameManager.Money)
-                {
-                    gameManager.Money -= _openShop.ShopItemList[tempIndex].shopItemData.Price;
-                    ShopItem info = _openShop.ShopItemList[tempIndex];
-                    info.isSale = true;
-                    _openShop.ShopItemList[tempIndex] = info;
-
-                    if (info.sellType == ItemType.Weapon)
-                    {
-                        WeaponItemData weaponShopItemData = info.shopItemData as WeaponItemData;
-                        if (weaponShopItemData)
-                            gameManager.Player.WeaponSwaper.ChangeNewWeapon((int)weaponShopItemData.weaponPosition, weaponShopItemData.weaponName);
-                    }
-                    else if (info.sellType == ItemType.Ability)
-                    {
-                        Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
-                    }
-                 
-                    else if(info.sellType == ItemType.StatusUp)
-                    {
-                        StatusUpItemData statusUpShopItemData = info.shopItemData as StatusUpItemData;
-                        if (statusUpShopItemData)
-                        {
-                            statusUpShopItemData.Apply();
-                        }
-                    }
-                    Refresh();
-                }
+                if (_openShop.ShopItemList[tempIndex].isSaled) return;
+                _openShop.SellItem(_openShop.ShopItemList[tempIndex]);
+                Refresh();
             });
             index++;
         }
@@ -151,12 +120,12 @@ public class UIShop : UIBase
                     _slotImageList[i].rectTransform.sizeDelta = Vector2.zero;
                     _slotImageList[i].sprite = null;
                 }
-                if (!_openShop.ShopItemList[i].isSale)
+                if (!_openShop.ShopItemList[i].isSaled)
                 {
-                    if (_openShop.ShopItemList[i].shopItemData.Price > Managers.GetManager<GameManager>().Money)
-                        _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].shopItemData.Price.ToString()}</color>";
+                    if (_openShop.ShopItemList[i].Price > Managers.GetManager<GameManager>().Money)
+                        _slotMoney[i].text = $"<color=\"red\">{_openShop.ShopItemList[i].Price.ToString()}</color>";
                     else
-                        _slotMoney[i].text = $"{_openShop.ShopItemList[i].shopItemData.Price.ToString()}";
+                        _slotMoney[i].text = $"{_openShop.ShopItemList[i].Price.ToString()}";
 
                     _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.name}\n";
                     _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";
@@ -183,11 +152,5 @@ public class UIShop : UIBase
 }
 
 
-[System.Serializable]
-public class ShopItem
-{
-    public ItemData shopItemData;
-    public bool isSale;
-    public ItemType sellType=>shopItemData.ItemType;
-}
+
 

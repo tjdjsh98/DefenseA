@@ -178,12 +178,18 @@ public class UIInGame : UIBase
 
         if (girl)
         {
-            _girlHpBar.UpdateBar01((float)girl.Hp / girl.MaxHp);
+            if(girl.MaxHp == 0)
+                _girlHpBar.UpdateBar01(0);
+            else
+                _girlHpBar.UpdateBar01((float)girl.Hp / girl.MaxHp);
             _girlHpTextMesh.text = girl.Hp.ToString();
 
             if ((int)Managers.GetManager<GameManager>().Mental != _preMental)
             {
-                _girlMentalBar.UpdateBar01((float)Managers.GetManager<GameManager>().Mental / Managers.GetManager<GameManager>().MaxMental);
+                if(Managers.GetManager<GameManager>().MaxMental == 0)
+                    _girlMentalBar.UpdateBar01(0);
+                else
+                    _girlMentalBar.UpdateBar01((float)Managers.GetManager<GameManager>().Mental / Managers.GetManager<GameManager>().MaxMental);
                 _preMental = (int)Managers.GetManager<GameManager>().Mental;
                 _mentalTextMesh.text = _preMental.ToString();
             }
@@ -196,7 +202,10 @@ public class UIInGame : UIBase
 
         if (creature)
         {
-            _creatureHpBar.UpdateBar01((float)creature.Hp / creature.MaxHp);
+            if(creature.MaxHp ==0)
+                _creatureHpBar.UpdateBar01(0);
+            else
+                _creatureHpBar.UpdateBar01((float)creature.Hp / creature.MaxHp);
             _creatureHpTextMesh.text = creature.Hp.ToString();
         }
         else

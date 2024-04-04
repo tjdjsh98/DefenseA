@@ -18,10 +18,23 @@ public class Character : MonoBehaviour,IHp
     [SerializeField] int _maxHp;
     public int MaxHp => _maxHp;
     [SerializeField] int _hp;
-    public int Hp { set => _hp = value; get => _hp; }
-    
+    public int Hp { set => _hp = Math.Clamp(value,0,_maxHp); get => _hp; }
+
     // 증가되는 능력치
-    public float IncreasedHpRegeneration { set; get; }
+    float _increasedHpRegeneration = 0;
+    public float IncreasedHpRegeneration
+    {
+        set
+        {
+            _increasedHpRegeneration = value;
+            _increasedHpRegeneration = (float)Math.Round(_increasedHpRegeneration, 2);
+
+        }
+        get
+        {
+            return _increasedHpRegeneration;
+        }
+    }
     public float IncreasedDamageReducePercentage { set; get; }
 
     float _recoverHpTime;

@@ -93,7 +93,7 @@ public class UIStatus : UIBase
         _stringBuilder.AppendLine($"보유 능력");
         foreach (var card in Managers.GetManager<CardManager>().GetPossessCardList())
         {
-            _stringBuilder.AppendLine($"{card.cardData.CardName}");
+            _stringBuilder.AppendLine($"{card.cardData.CardName} Rank {card.rank}");
         }
         _abilityTextMesh.text = _stringBuilder.ToString();
 
@@ -124,7 +124,7 @@ public class UIStatus : UIBase
         _stringBuilder.AppendLine($"보유 능력");
         foreach (var card in Managers.GetManager<CardManager>().GetPossessCardList())
         {
-            _stringBuilder.AppendLine($"{card.cardData.CardName}");
+            _stringBuilder.AppendLine($"{card.cardData.CardName} Rank {card.rank}");
         }
         _abilityTextMesh.text = _stringBuilder.ToString();
     }

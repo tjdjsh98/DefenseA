@@ -142,8 +142,8 @@ public class UICardSelection : UIBase
             int cardRank = _cardSelectionList[i].rank;
 
             float value = 0;
-            if (_cardSelectionList[i].cardData.PropertyList.Count > cardRank)
-                value = _cardSelectionList[i].cardData.PropertyList[cardRank];
+            if (_cardSelectionList[i].cardData.PropertyList.Count > cardRank+1)
+                value = _cardSelectionList[i].cardData.PropertyList[cardRank+1];
             string cardDescription = string.Format(_cardSelectionList[i].cardData.CardDescription, value);
 
             _cardDescriptionTextList[i].text = cardDescription;
@@ -152,7 +152,7 @@ public class UICardSelection : UIBase
 
     public void SelectCard(int cardIndex)
     {
-        Managers.GetManager<CardManager>().SelectCard(_cardSelectionList[cardIndex]);
+        Managers.GetManager<CardManager>().AddCard(_cardSelectionList[cardIndex]);
 
         Close();
     }

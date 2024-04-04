@@ -58,6 +58,11 @@ public class Effect : MonoBehaviour, ITypeDefine
         }
         if (_isPlay)
         {
+            if (_isAttack)
+            {
+                Attack();
+                _isAttack = false;
+            }
             _eleasped += Time.deltaTime;
         }
         if(_eleasped >= _offTime)
