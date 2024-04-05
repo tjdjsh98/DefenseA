@@ -72,6 +72,7 @@ public class Player : MonoBehaviour, IWeaponUsable
         _character = GetComponent<Character>();
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _weaponSwaper.Init();
+
         for (int i = 0; i < 3; i++)
         {
             if (_weaponSwaper.GetWeapon(i) != null)
@@ -126,12 +127,18 @@ public class Player : MonoBehaviour, IWeaponUsable
     {
         if (_weaponSwaper.CurrentWeapon == null) return;
 
-
-        if (GirlAbility.GetIsHaveAbility(CardName.빠른장전))
+        if (_weaponSwaper.CurrentWeapon.IsReload)
         {
-            _weaponSwaper.CurrentWeapon.FastReload(this);
+
+            if (GirlAbility.GetIsHaveAbility(CardName.빠른장전))
+            {
+                _weaponSwaper.CurrentWeapon.FastReload(this);
+            }
         }
-        _weaponSwaper.CurrentWeapon.Reload(this);
+        else
+        {
+            _weaponSwaper.CurrentWeapon.Reload(this);
+        }
     }
 
     private void OnReloadKeyHold()

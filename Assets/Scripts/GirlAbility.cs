@@ -42,6 +42,7 @@ public class GirlAbility
     {
         _player = player;
         _player.Character.AttackHandler += OnAttack;
+        _player.Character.AddtionalAttackHandler += OnAddtionalAttack;
         _inventory = Managers.GetManager<GameManager>().Inventory;
 
         RegistSkill();
@@ -78,26 +79,24 @@ public class GirlAbility
     void OnAttack(Character target, int dmg)
     {
         CardManager manager = Managers.GetManager<CardManager>();
+    
+        if (target == null || target.IsDead)
+        {
+            if (GetIsHaveAbility(CardName.식욕))
+            {
+                Managers.GetManager<CardManager>().Predation += 1;
+            }
+            if (GetIsHaveAbility(CardName.식사준비))
+            {
+                Card card = Managers.GetManager<CardManager>().GetCard(CardName.식사준비);
+                if (card != null) { }
+                Managers.GetManager<CardManager>().Predation += (int)card.property;
+            }
+        }
         if (GetIsHaveAbility(CardName.검은총알))
         {
             if(UnityEngine.Random.Range(0,100) < manager.GetCard(CardName.검은총알).property)
                 Managers.GetManager<CardManager>().AddBlackSphere(target.transform.position);
-        }
-        if (GetIsHaveAbility(CardName.식욕))
-        {
-            if (target == null || target.IsDead)
-            {
-                Managers.GetManager<CardManager>().Predation += 1;
-            }
-        }
-        if (GetIsHaveAbility(CardName.식사준비))
-        {
-            if(target == null || target.IsDead)
-            {
-                Card card = Managers.GetManager<CardManager>().GetCard(CardName.식사준비);
-                if(card != null) { }
-                    Managers.GetManager<CardManager>().Predation += (int)card.property;
-            }
         }
         if (GetIsHaveAbility(CardName.굶주림))
         {
@@ -127,11 +126,11 @@ public class GirlAbility
 
                 if (target.IsNotInstantlyDie)
                 {
-                    target.Damage(_player.Character, dmg*5, 0, Vector3.zero, target.transform.position);
+                    _player.Character.AddtionalAttack(_player.Character, dmg * 5, 0, Vector3.zero, target.transform.position); 
                 }
                 else
                 {
-                    target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position);
+                    _player.Character.AddtionalAttack(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position);
                 }
             }
 
@@ -156,6 +155,11 @@ public class GirlAbility
             _dining = false;
             _diningSlot = null;
         }
+    }
+
+    void OnAddtionalAttack(Character target, int dmg)
+    {
+
     }
     private void AutoReload()
     {

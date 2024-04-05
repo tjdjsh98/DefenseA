@@ -653,6 +653,7 @@ MonoBehaviour:
   IsNotInstantlyDie: 0
   _isEnableRevive: 1
   _isEnableFly: 0
+  _isHaveDamageInvincibility: 1
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
@@ -676,11 +677,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6c095ae0f0c8d58499c7db2b14d39285, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _debug: 0
+  _debug: 1
   _creatureAbility:
     _debug: 1
     _creature: {fileID: 7911687910084010545}
-    _debugAttackRangeIndex: 1
+    _debugAttackRangeIndex: 0
     _attackRangeList:
     - center: {x: 0, y: 4, z: 0}
       size: {x: 35, y: 8, z: 0}
@@ -699,7 +700,7 @@ MonoBehaviour:
     _survivalIntinctElapsed: 0
   _normalAttackDetectRange:
     center: {x: 0, y: 5, z: 0}
-    size: {x: 30, y: 10, z: 0}
+    size: {x: 60, y: 10, z: 0}
     angle: 0
     figureType: 0
   _normalAttackRange:

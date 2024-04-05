@@ -199,10 +199,11 @@ public class HelperEditor : EditorWindow
         if (textAsset == null) return;
 
         string split = $"{(char)13}\n";
-        string[] lines = textAsset.text.Split(split, System.StringSplitOptions.None);
+        string[] lines = textAsset.text.Split(split, System.StringSplitOptions.RemoveEmptyEntries);
         
         for (int i = 1; i < lines.Length; i++)
         {
+            Debug.Log(lines[i]);
             string[] words = lines[i].Split(',');    
 
             CardData data = ScriptableObject.CreateInstance<CardData>();

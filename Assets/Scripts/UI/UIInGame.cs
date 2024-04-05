@@ -46,9 +46,11 @@ public class UIInGame : UIBase
     int _prePanicLevel;
     int _preMental;
 
+    [SerializeField] GameObject _electricity;
     [SerializeField] Image _electrictyFill;
     [SerializeField] TextMeshProUGUI _electrictyText;
 
+    [SerializeField] GameObject _predation;
     [SerializeField] Image _predationFill;
     [SerializeField] TextMeshProUGUI _predationText;
 
@@ -108,17 +110,33 @@ public class UIInGame : UIBase
 
     private void ShowElectricity()
     {
-        float max = Managers.GetManager<CardManager>().MaxElectricity;
-        float current = Managers.GetManager<CardManager>().CurrentElectricity;
-        _electrictyFill.fillAmount = current / max;
-        _electrictyText.text = $"{(int)current}";
+        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.미세전력))
+        {
+            _electricity.gameObject.SetActive(true);
+            float max = Managers.GetManager<CardManager>().MaxElectricity;
+            float current = Managers.GetManager<CardManager>().CurrentElectricity;
+            _electrictyFill.fillAmount = current / max;
+            _electrictyText.text = $"{(int)current}";
+        }
+        else
+        {
+            _electricity.gameObject.SetActive(false);
+        }
     }
     private void ShowPredation()
     {
-        float max = Managers.GetManager<CardManager>().MaxPredation;
-        float current = Managers.GetManager<CardManager>().Predation;
-        _predationFill.fillAmount = current / max;
-        _predationText.text = $"{(int)current}";
+        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.식욕))
+        {
+            _predation.gameObject.SetActive(true);
+            float max = Managers.GetManager<CardManager>().MaxPredation;
+            float current = Managers.GetManager<CardManager>().Predation;
+            _predationFill.fillAmount = current / max;
+            _predationText.text = $"{(int)current}";
+        }
+        else
+        {
+            _predation.gameObject.SetActive(false);
+        }
     }
     void RefreshWeapon()
     {

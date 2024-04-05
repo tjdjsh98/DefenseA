@@ -53,27 +53,28 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     public void RestockShopItems()
     {
         List<ItemData> datas = new List<ItemData>();
-        int rank = 0;
-        float randomValue = Random.Range(0, 100);
-        if (randomValue < 60)
-        {
-            rank = 0;
-        }
-        else if (randomValue < 85)
-        {
-            rank = 1;
-        }
-        else if (randomValue < 98)
-        {
-            rank = 2;
-        }
-        else
-        {
-            rank = 3;
-        }
-
+       
         for(int i = 0; i < 4; i++)
         {
+            int rank = 0;
+            float randomValue = Random.Range(0, 100);
+            if (randomValue < 60)
+            {
+                rank = 0;
+            }
+            else if (randomValue < 85)
+            {
+                rank = 1;
+            }
+            else if (randomValue < 98)
+            {
+                rank = 2;
+            }
+            else
+            {
+                rank = 3;
+            }
+
             List<ItemData> itemList = Managers.GetManager<GameManager>().RankItemDataList[rank];
             if (itemList.Count == 0)
             {

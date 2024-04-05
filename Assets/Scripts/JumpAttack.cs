@@ -1,8 +1,5 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System.Collections;
 using System.Collections.Generic;
-using TMPro.EditorUtilities;
-using Unity.VisualScripting;
 using UnityEngine;
 
 public class JumpAttack : MonoBehaviour
@@ -47,19 +44,7 @@ public class JumpAttack : MonoBehaviour
     {
         if (_isJumpAttack)
         {
-            List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
-
-            foreach (var hit in hits)
-            {
-                if (_attackList.Contains(hit.collider.gameObject)) continue;
-                _attackList.Add(hit.collider.gameObject);
-
-                Character character = hit.collider.GetComponent<Character>();
-                if (character && character.CharacterType == Define.CharacterType.Player)
-                {
-                    _character.Attack(character, _character.AttackPower, 10, _rigidbody.velocity, hit.point);
-                }
-            }
+           
             if (_character.IsContactGround)
             {
                 EndJumpAttack();

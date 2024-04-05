@@ -47,7 +47,7 @@ public class CreatureAbility
         _creatureAI = creatureAI;
         _creature = _creatureAI.GetComponent<Character>();
         _creatureAI.Character.AttackHandler += OnAttack;
-        _creatureAI.Character.CharacterDamagedHandler += OnDamage;
+        _creatureAI.Character.DamagedHandler += OnDamage;
         _inventory = Managers.GetManager<GameManager>().Inventory;
 
         RegistSkill();
@@ -296,10 +296,10 @@ public class CreatureAbility
         if (slot.isActive) return;
         if (slot.skillCoolTime > slot.skillTime) return;
 
-        List<RaycastHit2D> hits = Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[4]);
+        List<RaycastHit2D> hits = Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[0]);
         Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
         Effect effect = Managers.GetManager<ResourceManager>().Instantiate(effectOrigin);
-        effect.SetProperty("Range", _attackRangeList[4].size.x);
+        effect.SetProperty("Range", _attackRangeList[0].size.x);
         effect.Play(_creature.transform.position);
         if (hits.Count > 0)
         {

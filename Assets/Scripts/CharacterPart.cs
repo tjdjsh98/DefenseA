@@ -7,6 +7,7 @@ public class CharacterPart : MonoBehaviour,IHp
     public Character Character => _character;
 
     public Action<Character, int, float, Vector3, float> CharacterPartDamagedHandler;
+    public Action<Character, int, float, Vector3, float> CharacterPartAddtionalDamagedHandler;
 
     private void Awake()
     {
@@ -27,5 +28,17 @@ public class CharacterPart : MonoBehaviour,IHp
         return resultDamage;
     }
 
-    
+    public int AddtionalDamage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0.1F)
+    {
+        int resultDamage = _character.AddtionalDamage(attacker, damage, power, direction, damagePoint, stunTime);
+
+        CharacterPartAddtionalDamagedHandler?.Invoke(attacker as Character, resultDamage, power, direction, stunTime);
+
+        return resultDamage;
+    }
+
+    public int AddtionalAttack(IHp target, int damage, float power, Vector3 direction, Vector3 attackPoint, float stunTime = 0.1F)
+    {
+        return _character.AddtionalAttack(target, damage, power, direction, attackPoint, stunTime);
+    }
 }

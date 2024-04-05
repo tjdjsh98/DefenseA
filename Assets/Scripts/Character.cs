@@ -46,11 +46,11 @@ public class Character : MonoBehaviour,IHp
 
     #endregion
     [field:SerializeField]public int AttackPower { set; get; }
-
     [SerializeField] float _jumpPower = 10;
     [field:SerializeField]public  bool IsNotInstantlyDie = false;
     [SerializeField] bool _isEnableRevive;
     [SerializeField] bool _isEnableFly = false;
+    [SerializeField] bool _isHaveDamageInvincibility = false;
     public bool IsEnableFly => _isEnableFly;
     [field:SerializeField]public bool IsEnableMove { set; get; } = true;
     // 스턴 후 전 움직임 가능상태로 변경
@@ -74,6 +74,7 @@ public class Character : MonoBehaviour,IHp
 
     public bool IsFaceRight => transform.lossyScale.x > 0;
     [field: SerializeField] public bool IsInvincibility;
+    bool _isDamagedInvincibility;
 
     public bool IsContactGround => _isContactGround;
     private bool _isJump;
@@ -88,7 +89,9 @@ public class Character : MonoBehaviour,IHp
     // 핸들러
     public Action CharacterDeadHandler;
     public Action<Character,int> AttackHandler; // 공격한 적, 데미지
-    public Action<Character, int, float, Vector3,Vector3, float> CharacterDamagedHandler { set; get; }
+    public Action<Character,int> AddtionalAttackHandler; // 공격한 적, 데미지
+    public Action<Character, int, float, Vector3,Vector3, float> DamagedHandler { set; get; }
+    public Action<Character, int, float, Vector3,Vector3, float> AddtionalDamagedHandler { set; get; }
 
     [SerializeField] GaugeBar _hpBar;
 
@@ -328,14 +331,23 @@ public class Character : MonoBehaviour,IHp
     public void AddMaxHp(int value)
     {
         _maxHp += value; 
-        _hp += value;
+        if(!IsDead)
+            _hp += value;
     }
 
 
+    IEnumerator CorDamageInvincibility()
+    {
+        _isDamagedInvincibility = true;
+
+        yield return new WaitForSeconds(1f);
+
+        _isDamagedInvincibility = false;
+    }
     // 최종적으로 가한 데미지를 반환합니다.
     public int Damage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0f)
     {
-        if (IsInvincibility) return 0;
+        if (IsInvincibility || _isDamagedInvincibility) return 0;
 
         Character attackerCharacter = attacker as Character;
         direction = direction.normalized;
@@ -359,8 +371,10 @@ public class Character : MonoBehaviour,IHp
             _stunEleasped = 0;
             _stunTime = stunTime;
         }
+        if (_isHaveDamageInvincibility) 
+            StartCoroutine(CorDamageInvincibility());
 
-        CharacterDamagedHandler?.Invoke(attackerCharacter, damage, power, direction,damagePoint, stunTime);
+        DamagedHandler?.Invoke(attackerCharacter, damage, power, direction,damagePoint, stunTime);
 
         if (_hp <= 0)
         {
@@ -387,6 +401,63 @@ public class Character : MonoBehaviour,IHp
         return damage;
     }
 
+    // 추가적으로 받는 공격 효과를 처리합니다.
+    public int AddtionalDamage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0f)
+    {
+        if (IsInvincibility) return 0;
+
+        Character attackerCharacter = attacker as Character;
+        direction = direction.normalized;
+        damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
+            Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
+
+        if (damage != 0)
+            Managers.GetManager<TextManager>().ShowText(damagePoint, damage.ToString(), 10, Color.red);
+
+
+        _hp -= damage;
+
+        float knockBack = power;
+        knockBack *= (1 - _standing / 100f);
+        Vector3 knockBackPower = direction * knockBack;
+        _rigidBody.AddForce(direction * knockBack, ForceMode2D.Impulse);
+        if (!IsSuperArmer && stunTime > 0)
+        {
+
+            IsStun = true;
+            _stunEleasped = 0;
+            _stunTime = stunTime;
+        }
+
+
+        AddtionalDamagedHandler?.Invoke(attackerCharacter, damage, power, direction, damagePoint, stunTime);
+
+        if (_hp <= 0)
+        {
+            _rigidBody.velocity = Vector3.zero;
+            IsDead = true;
+            CharacterDeadHandler?.Invoke();
+
+            if (!_isEnableRevive)
+            {
+                Destroy(gameObject);
+            }
+            else
+            {
+                if (_boxCollider)
+                    _boxCollider.enabled = false;
+                if (_capsuleCollider)
+                    _capsuleCollider.enabled = false;
+                _rigidBody.isKinematic = true;
+            }
+        }
+
+
+
+        return damage;
+    }
+
+    // 상대방으로 공격하는 함수
     public int Attack(IHp target, int damage, float power, Vector3 direction,Vector3 attackPoint, float stunTime = 0.1f)
     {
         if (target == null) return 0;
@@ -397,8 +468,19 @@ public class Character : MonoBehaviour,IHp
         return resultDamage;
     }
 
+    // 공격 이후에 추가적 효과로 적을 공격한 함수
+    public int AddtionalAttack(IHp target, int damage, float power, Vector3 direction, Vector3 attackPoint, float stunTime = 0.1f)
+    {
+        if (target == null) return 0;
 
-  
+        int resultDamage = target.AddtionalDamage(this, damage, power, direction, attackPoint, stunTime);
+        AddtionalAttackHandler?.Invoke(target as Character, resultDamage);
+
+        return resultDamage;
+    }
+
+
+
 
     public void Jump()
     {

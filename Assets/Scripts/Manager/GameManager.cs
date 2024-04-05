@@ -209,7 +209,7 @@ public class GameManager : ManagerBase
             }
 
             // 이벤트 배치
-            float distance = -_mapData.randomEventInterval;
+            float distance = 0;
             if (_mapData.randomEvent.Count > 0)
             {
                 while (distance < _mapData.mapSize)

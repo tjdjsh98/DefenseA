@@ -271,9 +271,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
             if (!_fastReloadFailed && user is Player player)
             {
+                    _currentAmmo = _maxAmmo;
                 if (player.GirlAbility.GetIsHaveAbility(CardName.추가장전))
                 {
-                    _currentAmmo = _maxAmmo + Mathf.RoundToInt(_maxAmmo * Managers.GetManager<CardManager>().GetCard(CardName.추가장전).property/100f);
+                    _currentAmmo += Mathf.RoundToInt(_maxAmmo * Managers.GetManager<CardManager>().GetCard(CardName.추가장전).property/100f);
                 }
             }
 

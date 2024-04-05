@@ -42,15 +42,17 @@ public class CardManager : ManagerBase
     // 전기 관련 능력
     float _maxElectricity = 0;
     public float MaxElectricity { get { return _maxElectricity; } }
-    public float CurrentElectricity { get; set; }
+    float _currentElectricity;
+    public float CurrentElectricity { get { return _currentElectricity; } set { _currentElectricity = Mathf.Clamp(value, 0, _maxElectricity); } }
     public float ChargeElectricty { get; set; }
     public bool IsUnlockOverCharge { set; get; } = false;
 
     // 포식 관련 능력
     int _maxPredation = 0;
     public int MaxPredation => _maxPredation;
-    
-    public int Predation { get; set; }
+
+    int _predation;
+    public int Predation { get { return _predation; }set { _predation = Mathf.Clamp(value, 0, _maxPredation); } }
 
 
     public override void Init()

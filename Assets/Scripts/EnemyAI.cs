@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
 using Unity.Loading;
@@ -18,6 +19,8 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField] protected Character _target;
     public Character Target=>_target;
+
+    [field:SerializeField]public bool IsEnableBodyAttack = true;
 
     // 움직임
     public float MoveRate { get; set; } = 1;     //움직임 배율 => 달리기 , 걷기에 사용
@@ -41,13 +44,19 @@ public class EnemyAI : MonoBehaviour
 
     [SerializeField] float _itemDropPercentage;
 
-
     Coroutine _detectTargetCoroutine;
+
+    // 바디 어택
+    Define.Range _bodySize;
+    [SerializeField]float _bodyAttackCoolTime = 1;
+    List<GameObject> _bodyAttackList = new List<GameObject>();
+    Coroutine _bodyAttackCoroutine;
 
     protected virtual void Awake()
     {
         _character = GetComponent<Character>();
         _rigidbody = _character.GetComponent<Rigidbody2D>();
+        _bodySize = _character.GetSize();
         _character.CharacterDeadHandler += OnCharacterDead;
 
         if (transform.Find("AttackRange"))
@@ -73,6 +82,12 @@ public class EnemyAI : MonoBehaviour
         if (_detectTargetCoroutine != null)
             StopCoroutine(_detectTargetCoroutine);
         _detectTargetCoroutine = StartCoroutine(CorDetectTarget());
+
+        
+        if(_bodyAttackCoroutine != null)
+            StopCoroutine(_bodyAttackCoroutine);
+        if (IsEnableBodyAttack) 
+            _bodyAttackCoroutine = StartCoroutine(CorBodyAttack());
     }
 
     private void OnDisable()
@@ -81,6 +96,8 @@ public class EnemyAI : MonoBehaviour
         {
             if(_detectTargetCoroutine!=null)
                 StopCoroutine(_detectTargetCoroutine);
+            if (_bodyAttackCoroutine != null)
+                StopCoroutine(_bodyAttackCoroutine);
         }
 
     }
@@ -91,6 +108,30 @@ public class EnemyAI : MonoBehaviour
         PlayAttack();
     }
 
+    IEnumerator CorBodyAttack()
+    {
+        while(true)
+        {
+            Util.RangeCastAll2D(gameObject, _bodySize, Define.CharacterMask, (hit) =>
+            {
+                if (hit.collider == null) return false;
+                Character character = hit.collider.GetComponent<Character>();
+
+                if (character != null && character.CharacterType == Define.CharacterType.Player)
+                {
+                    _character.Attack(character, _character.AttackPower, 50, character.transform.position - transform.position, hit.point, 0.1f);
+                    _bodyAttackList.Add(hit.collider.gameObject);
+                }
+                return false;
+            });
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+    IEnumerator CorRemoveBodyAttackList(GameObject gameObject)
+    {
+        yield return new WaitForSeconds(_bodyAttackCoolTime);
+        _bodyAttackList.Remove(gameObject);
+    }
     void OnCharacterDead()
     {
         Managers.GetManager<GameManager>().Money += 1;
