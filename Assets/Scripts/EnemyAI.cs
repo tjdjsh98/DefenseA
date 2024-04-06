@@ -48,6 +48,7 @@ public class EnemyAI : MonoBehaviour
 
     // 바디 어택
     Define.Range _bodySize;
+    [SerializeField]float _bodyAttackKnockBackPower = 50;
     [SerializeField]float _bodyAttackCoolTime = 1;
     List<GameObject> _bodyAttackList = new List<GameObject>();
     Coroutine _bodyAttackCoroutine;
@@ -119,7 +120,7 @@ public class EnemyAI : MonoBehaviour
 
                 if (character != null && character.CharacterType == Define.CharacterType.Player)
                 {
-                    _character.Attack(character, _character.AttackPower, 50, character.transform.position - transform.position, hit.point, 0.1f);
+                    _character.Attack(character, _character.AttackPower, _bodyAttackKnockBackPower, character.transform.position - transform.position, hit.point, 0.1f);
                     _bodyAttackList.Add(hit.collider.gameObject);
                 }
                 return false;

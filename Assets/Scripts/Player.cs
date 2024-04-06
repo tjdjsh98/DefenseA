@@ -127,18 +127,8 @@ public class Player : MonoBehaviour, IWeaponUsable
     {
         if (_weaponSwaper.CurrentWeapon == null) return;
 
-        if (_weaponSwaper.CurrentWeapon.IsReload)
-        {
-
-            if (GirlAbility.GetIsHaveAbility(CardName.빠른장전))
-            {
-                _weaponSwaper.CurrentWeapon.FastReload(this);
-            }
-        }
-        else
-        {
-            _weaponSwaper.CurrentWeapon.Reload(this);
-        }
+      
+         _weaponSwaper.CurrentWeapon.Reload(this);
     }
 
     private void OnReloadKeyHold()

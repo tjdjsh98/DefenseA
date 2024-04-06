@@ -7,32 +7,43 @@ public class UIShop : UIBase
 {
     [SerializeField]TextMeshProUGUI _currentMoneyText;
 
-    [SerializeField] List<Button> _slotList;
+    [SerializeField] List<GameObject> _slotList;
+    [SerializeField] List<Button> _purchaseButtonList;
     List<Image> _slotImageList = new List<Image>();
+    List<Image> _slotFrameList = new List<Image>();
     List<TextMeshProUGUI> _slotNameList = new List<TextMeshProUGUI>();
-    List<TextMeshProUGUI> _slotDescroptionList = new List<TextMeshProUGUI>();
     List<TextMeshProUGUI> _slotMoney = new List<TextMeshProUGUI>();
 
     [SerializeField] List<Sprite> _spriteList;
 
     [SerializeField] TextMeshProUGUI _restockText;
 
+    [SerializeField] GameObject _itemDescription;
+    TextMeshProUGUI _itemNameText;
+    TextMeshProUGUI _itemDescriptionText;
+
     IShop _openShop;
+
+    GameObject _hoverImage;
 
     public override void Init()
     {
         gameObject.SetActive(false);
 
+        _itemNameText = _itemDescription.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>();
+        _itemDescriptionText = _itemDescription.transform.Find("DescriptionText").GetComponent<TextMeshProUGUI>();
+
         int index = 0;
         foreach (var slot in _slotList)
         {
+            _slotFrameList.Add(slot.transform.Find("Frame").GetComponent<Image>());
             _slotImageList.Add(slot.transform.Find("Frame").Find("Image").GetComponent<Image>());
             _slotNameList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
-            _slotMoney.Add(slot.transform.Find("MoneyText").GetComponent<TextMeshProUGUI>());
-            _slotDescroptionList.Add(slot.transform.Find("Description").GetComponent<TextMeshProUGUI>());
+            _purchaseButtonList.Add(slot.transform.Find("PurchaseButton").GetComponent<Button>());
+            _slotMoney.Add(slot.transform.Find("PurchaseButton").Find("MoneyText").GetComponent<TextMeshProUGUI>());
 
             int tempIndex = index;
-            slot.onClick.AddListener(() => {
+            _purchaseButtonList[_purchaseButtonList.Count-1].onClick.AddListener(() => {
                 if (_openShop.ShopItemList.Count <= tempIndex) return;
 
                 if (_openShop.ShopItemList[tempIndex].isSaled) return;
@@ -42,13 +53,9 @@ public class UIShop : UIBase
             index++;
         }
 
+        Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
+
         _isInitDone = true;
-    }
-
-    private void Update()
-    {
-        if (!_isInitDone) return;
-
     }
 
     public override void Open(bool except = false)
@@ -74,12 +81,14 @@ public class UIShop : UIBase
         Managers.GetManager<UIManager>().Open(this);
         Refresh();
         Time.timeScale = 0;
+        _itemDescription.gameObject.SetActive(false);
         gameObject.SetActive(true);
     }
     public override void Close(bool except = false)
     {
         Time.timeScale = 1;
         gameObject.SetActive(false);
+        _itemDescription.gameObject.SetActive(false);
         if (!except)
         {
             Managers.GetManager<UIManager>().Close(this);
@@ -106,7 +115,6 @@ public class UIShop : UIBase
                 _slotImageList[i].sprite = null;
                 _slotMoney[i].text = "";
                 _slotNameList[i].text = "";
-                _slotDescroptionList[i].text = "";
             }
             else
             {
@@ -128,7 +136,6 @@ public class UIShop : UIBase
                         _slotMoney[i].text = $"{_openShop.ShopItemList[i].Price.ToString()}";
 
                     _slotNameList[i].text = $"{_openShop.ShopItemList[i].shopItemData.name}\n";
-                    _slotDescroptionList[i].text = $"{_openShop.ShopItemList[i].shopItemData.Description}\n";
 
                 }
                 else
@@ -149,6 +156,41 @@ public class UIShop : UIBase
         Refresh();
     }
 
+    void RefreshDescription(int index)
+    {
+        GameObject slot = _slotList[index];
+        if (slot.transform.transform.position.x < 0)
+            _itemDescription.transform.position = slot.transform.position + Vector3.right * 10;
+        else
+            _itemDescription.transform.position = slot.transform.position - Vector3.right * 10;
+        _itemNameText.text = _openShop.ShopItemList[index].shopItemData.ItemName.ToString();
+        _itemDescriptionText.text = _openShop.ShopItemList[index].shopItemData.Description;
+    }
+
+    void OnUIMouseHover(List<GameObject> list)
+    {
+        bool isHover = false;
+
+        for(int i = 0; i < _slotFrameList.Count; i++)
+        {
+            if (list.Contains(_slotFrameList[i].gameObject))
+            {
+                isHover = true;
+                if (_hoverImage != _slotFrameList[i].gameObject)
+                {
+                    _itemDescription.gameObject.SetActive(true);
+                    _hoverImage = _slotFrameList[i].gameObject;
+                    RefreshDescription(i);
+                    return;
+                }
+            }
+        }
+
+        if (!isHover)
+        {
+            _itemDescription.gameObject.SetActive(false);
+        }
+    }
 }
 
 

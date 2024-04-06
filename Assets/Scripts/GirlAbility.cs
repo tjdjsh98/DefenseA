@@ -279,6 +279,12 @@ public class GirlAbility
 
         percentage += IncreasedReloadSpeedPercentage;
 
+        Card card = Managers.GetManager<CardManager>().GetCard(CardName.빠른장전);
+        if (card != null)
+        {
+            percentage += card.property;
+        }
+
         return percentage;
     }
     public void Dining(SkillSlot slot)

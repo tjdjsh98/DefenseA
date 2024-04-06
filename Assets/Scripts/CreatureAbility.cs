@@ -164,7 +164,7 @@ public class CreatureAbility
 
         if (GetIsHaveAbility(CardName.분노))
         {
-            percentage += 50;
+            percentage += 20;
         }
 
 
@@ -178,7 +178,7 @@ public class CreatureAbility
 
         if (GetIsHaveAbility(CardName.분노))
         {
-            percentage += 50;
+            percentage += 20;
         }
 
 

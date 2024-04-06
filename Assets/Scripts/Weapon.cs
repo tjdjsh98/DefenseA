@@ -200,14 +200,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         {
             if (user is Player player)
             {
-                if (player.GirlAbility.GetIsHaveAbility(CardName.빠른장전))
-                {
-                    _reloadGauge.Point(0.7f, 0.9f);
-                }
-                else
-                {
-                    _reloadGauge.DisablePoint();
-                }
+                _reloadGauge.DisablePoint();
             }
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);

@@ -54,7 +54,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     {
         List<ItemData> datas = new List<ItemData>();
        
-        for(int i = 0; i < 4; i++)
+        for(int i = 0; i < 8; i++)
         {
             int rank = 0;
             float randomValue = Random.Range(0, 100);
