@@ -282,14 +282,15 @@ public class HelperEditor : EditorWindow
                 data.RecoverGirlHpAmount = ParseInt(words[5]);
                 data.IncreasingGirlHpRegeneration = ParseFloat(words[6]);
                 data.IncreasingGirlAttackPowerPercentage= ParseFloat(words[7]);
-                data.IncreasingGirlSpeed = ParseFloat(words[8]);
-                data.IncreasingCreatureMaxHp = ParseInt(words[9]);
-                data.RecoverCreatureHpAmount = ParseInt(words[10]);
-                data.IncreasingCreatureHpRegeneration = ParseFloat(words[11]);
-                data.IncreasingCreatureAttackPower = ParseInt(words[12]);
-                data.IncreasingCreatureSpeed = ParseFloat(words[13]);
+                data.IncreasingGirlAttackSpeedPercentage= ParseFloat(words[8]);
+                data.IncreasingGirlSpeed = ParseFloat(words[9]);
+                data.IncreasingCreatureMaxHp = ParseInt(words[10]);
+                data.RecoverCreatureHpAmount = ParseInt(words[11]);
+                data.IncreasingCreatureHpRegeneration = ParseFloat(words[12]);
+                data.IncreasingCreatureAttackPower = ParseInt(words[13]);
                 data.IncreasingCreatureAttackSpeedPercentage = ParseFloat(words[14]);
-                data.RecoverMentalAmount = ParseFloat(words[15]);
+                data.IncreasingCreatureSpeed = ParseFloat(words[15]);
+                data.RecoverMentalAmount = ParseFloat(words[16]);
 
                 AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
                 AssetDatabase.SaveAssets();
@@ -302,8 +303,8 @@ public class HelperEditor : EditorWindow
                 data.ItemType = GetItemType(words[1]);
                 data.Description = words[2];
                 data.Rank = ParseInt(words[3]);
-                data.weaponName = ConvertItemToWeapon(data.ItemName);
-                data.weaponPosition = GetWeaponPosition(words[16]);
+                data.weaponPosition = GetWeaponPosition(words[17]);
+                data.weaponName = ConvertItemToWeapon(words[18]);
                
                 AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
                 AssetDatabase.SaveAssets();
@@ -369,11 +370,11 @@ public class HelperEditor : EditorWindow
         }
         return ItemType.StatusUp;
     }
-    WeaponName ConvertItemToWeapon(ItemName itemName)
+    WeaponName ConvertItemToWeapon(string itemName)
     {
         for(int i = 0; i < (int)WeaponName.END;i++)
         {
-            if (itemName.ToString().Equals(((WeaponName)i).ToString()))
+            if (itemName.Equals(((WeaponName)i).ToString()))
             {
                 return (WeaponName)i;
             }
