@@ -35,6 +35,8 @@ public class OctoHeadAttackPattern : MonoBehaviour
                     Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(_enemyAI.Target.transform.position);
                     if (position.HasValue)
                     {
+                        _character.IsEnableMove = false;
+                        _character.IsEnableTurn = false;
                         _character.AnimatorSetTrigger("Attack1Ready");
                         _sequence = 1;
                         GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/AttackPattern/TentacleAttackPattern");
@@ -72,6 +74,9 @@ public class OctoHeadAttackPattern : MonoBehaviour
             {
                 _sequence = 0;
                 _attackTime = 0;
+                _enemyAI.ResetTarget();
+                _character.IsEnableMove = true;
+                _character.IsEnableTurn = true;
             }
         }
     }

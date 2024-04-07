@@ -26,7 +26,7 @@ public class UIUpgrade : UIBase
     }
     public void Open(WeaponUpgrader weaponUpgrader, bool except = false)
     {
-        if (weaponUpgrader == null || weaponUpgrader.IsEndUpgrede) return;
+        if (weaponUpgrader == null) return;
 
         if (!except)
             Managers.GetManager<UIManager>().Open(this);
@@ -78,10 +78,7 @@ public class UIUpgrade : UIBase
     {
         if (_upgradePriceTextMesh)
         {
-            if (!_weaponUpgrader.IsEndUpgrede)
-                _upgradePriceTextMesh.text = _weaponUpgrader.UpgradePrice.ToString();
-            else
-                _upgradePriceTextMesh.text = "업그레이드 종료";
+            _upgradePriceTextMesh.text = _weaponUpgrader.UpgradePrice.ToString();   
         }
         _weaponUpgrader.Refresh();
         _fromWeaponUI.Refresh(_weaponUpgrader.Weapon);

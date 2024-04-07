@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -11,15 +12,64 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
     public List<ShopItem> ShopItemList { get; set; } = new List<ShopItem>();
     public int RestockCost { get; set; } = 5;
-
     [SerializeField] GameObject _bubble;
+
+    public float RestockTime { get; set; } = 180;
+    public float MaxRestockTime { get; set; } = 180;
+
+    float rank0Probability = 80f;
+    float rank1Probability = 15f;
+    float rank2Probability = 5f;
+
+    int _restockCount = 0;
 
     private void Awake()
     {
         RestockShopItems();
         HideBubble();
     }
-   
+
+    private void Update()
+    {
+        RestockTime -= Time.deltaTime;
+        if(MaxRestockTime < RestockTime)
+        {
+            RestockTime = MaxRestockTime;
+            RestockShopItems();
+            RestockCost = 0;
+
+            if (_restockCount == 0)     // 0 분
+            {
+                rank0Probability = 85f;
+                rank1Probability = 14f;
+                rank2Probability = 1f;
+            }
+            if (_restockCount == 1)     // 3분
+            {
+                rank0Probability = 70f;
+                rank1Probability = 25f;
+                rank2Probability = 5f;
+            }
+            if (_restockCount == 2)     // 6분
+            {
+                rank0Probability = 50f;
+                rank1Probability = 35f;
+                rank2Probability = 10f;
+            }
+            if (_restockCount == 3)     // 9분
+            {
+                rank0Probability = 35f;
+                rank1Probability = 35f;
+                rank2Probability = 20f;
+            }
+            if(_restockCount == 4)      // 12분
+            {
+                rank0Probability = 10f;
+                rank1Probability = 40f;
+                rank2Probability = 30f;
+            }
+        }
+    }
     public void ShowBubble()
     {
         if(_bubble== null) return;
@@ -58,15 +108,15 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
         {
             int rank = 0;
             float randomValue = Random.Range(0, 100);
-            if (randomValue < 80)
+            if (randomValue < rank0Probability)
             {
                 rank = 0;
             }
-            else if (randomValue < 95)
+            else if (randomValue < rank0Probability + rank1Probability)
             {
                 rank = 1;
             }
-            else if (randomValue < 100)
+            else if (randomValue < rank0Probability + rank1Probability + rank2Probability)
             {
                 rank = 2;
             }

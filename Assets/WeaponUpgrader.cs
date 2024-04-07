@@ -7,8 +7,9 @@ public class WeaponUpgrader : MonoBehaviour
     int _weaponIndex;
     public Weapon Weapon { get; set; }
 
-    public bool IsEndUpgrede = false;
-    [field:SerializeField] public int UpgradePrice { set; get; }
+    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * (Weapon.UpgradeCount+1); } }
+
+    int _upgradePrice = 30;
 
     public int IncreasingAttackPowerPercentage { get; set; }
     public float IncreasingKnockBackPowerPercentage { get; set; }
@@ -32,7 +33,8 @@ public class WeaponUpgrader : MonoBehaviour
         weapon.IncreasedPenerstratingPower += IncreasingPenerstratingPower;
         weapon.DecreasedReloadTimePercentage += DecreasingReloadTimePercentage;
 
-        IsEndUpgrede = true;
+        weapon.UpgradeCount++;
+
     }
 
     public void Refresh()

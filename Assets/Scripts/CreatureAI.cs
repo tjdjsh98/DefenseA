@@ -120,6 +120,7 @@ public class CreatureAI : MonoBehaviour
                 _character.Revive();
                 _reviveElasped = 0;
                 _model.gameObject.SetActive(true);
+                transform.position = Managers.GetManager<GameManager>().Player.transform.position;
             }
         }
     }
@@ -128,11 +129,17 @@ public class CreatureAI : MonoBehaviour
         if (_closeEnemy) return;
         if (_character.IsAttack) return;
 
-        if (_normalAttackCoolTime > _normalAttackTime)
+        if (_player == null)
         {
-            _normalAttackTime += Time.deltaTime;
+            _player = Managers.GetManager<GameManager>().Player;
+            return;
+        }
+
+        if ((_player.transform.position - transform.position).magnitude > _girlToCreatureDistance)
+        {
             FollowPlayer();
         }
+        
         else
         {
             if(_closeEnemy == null)
@@ -141,7 +148,8 @@ public class CreatureAI : MonoBehaviour
             if (_closeEnemy == null)
                 FollowPlayer();
 
-            StartCoroutine(CorPlayNormalAttack());
+           
+                StartCoroutine(CorPlayNormalAttack());
         }
     }
     IEnumerator CorPlayNormalAttack()
@@ -192,12 +200,7 @@ public class CreatureAI : MonoBehaviour
     void FollowPlayer()
     {
         if (_character.IsAttack) return;
-        if (_player == null)
-        {
-            _player = Managers.GetManager<GameManager>().Player;
-            return;
-        }
-
+      
         Vector3 distacne = _player.transform.position - transform.position;
         if (Mathf.Abs(distacne.y) < 3 && Mathf.Abs(distacne.x) > _girlToCreatureDistance)
         {
@@ -260,20 +263,18 @@ public class CreatureAI : MonoBehaviour
     public Character GetCloseEnemy()
     {
         Character close = null;
-        Character player = Managers.GetManager<GameManager>().Girl;
 
-        if (player != null)
-            Util.RangeCastAll2D(player.gameObject, _normalAttackDetectRange, Define.CharacterMask, (hit) =>
+        Util.RangeCastAll2D(gameObject, _normalAttackDetectRange, Define.CharacterMask, (hit) =>
+        {
+            if (hit.collider != null)
             {
-                if (hit.collider != null)
-                {
-                    Character character = hit.collider.GetComponent<Character>();
-                    if (character == null || character.CharacterType != Define.CharacterType.Enemy || character.IsEnableFly) return false;
-                    if (close == null || (close.transform.position - player.transform.position).magnitude > (character.transform.position - player.transform.position).magnitude)
-                        close = character;
-                }
-                return true;
-            });
+                Character character = hit.collider.GetComponent<Character>();
+                if (character == null || character.CharacterType != Define.CharacterType.Enemy || character.IsEnableFly) return false;
+                if (close == null || (close.transform.position - transform.position).magnitude > (character.transform.position - transform.position).magnitude)
+                    close = character;
+            }
+            return true;
+        });
 
         return close;
     }

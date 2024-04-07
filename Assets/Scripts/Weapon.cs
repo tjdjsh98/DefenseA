@@ -91,8 +91,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
     [SerializeField] protected Define.EffectName _hitEffect;
 
     protected bool _fastReloadFailed;
-
     public GameObject HandlePosition { private set; get; }
+
+    public int UpgradeCount { set; get; }
 
     public void Init(IWeaponUsable user)
     {

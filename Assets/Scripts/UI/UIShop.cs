@@ -1,3 +1,4 @@
+using DuloGames.UI.Tweens;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -21,6 +22,8 @@ public class UIShop : UIBase
     [SerializeField] GameObject _itemDescription;
     TextMeshProUGUI _itemNameText;
     TextMeshProUGUI _itemDescriptionText;
+
+    [SerializeField] TextMeshProUGUI _restockTimeTextmesh;
 
     IShop _openShop;
 
@@ -56,6 +59,16 @@ public class UIShop : UIBase
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
 
         _isInitDone = true;
+    }
+
+    private void Update()
+    {
+        if (_openShop != null)
+        {
+            int min = (int)_openShop.RestockTime/60;
+            int sec = (int)_openShop.RestockTime%60;
+            _restockTimeTextmesh.text = $"{min}:{sec}";
+        }
     }
 
     public override void Open(bool except = false)

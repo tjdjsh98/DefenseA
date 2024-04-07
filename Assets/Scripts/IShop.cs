@@ -8,4 +8,7 @@ public interface IShop
     public void RestockShopItems();
     public void Refresh();
     public void SellItem(ShopItem item);
+    public float RestockTime { set; get; }
+    public float MaxRestockTime { set; get; }
+
 }

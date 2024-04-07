@@ -108,7 +108,10 @@ public class EnemyAI : MonoBehaviour
         Move();
         PlayAttack();
     }
-
+    public void ResetTarget()
+    {
+        _target = null;
+    }
     IEnumerator CorBodyAttack()
     {
         while(true)
@@ -161,11 +164,15 @@ public class EnemyAI : MonoBehaviour
         if (_character.IsStun) return;
 
         if (!IsAutoMove) return;
+
+     
+
         if (_target == null)
         {
-            Player player = Managers.GetManager<GameManager>().Player;
-            if (player == null) return;
-            _character.Move((player.transform.position - transform.position).normalized * MoveRate);
+            Character house = Managers.GetManager<GameManager>().House;
+            if (house == null) return;
+
+            _character.Move((house.transform.position - transform.position).normalized * MoveRate);
         }else
         {
             _character.Move((_target.transform.position - transform.position).normalized* MoveRate);
