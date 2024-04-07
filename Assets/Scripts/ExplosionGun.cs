@@ -25,7 +25,7 @@ public class ExplosionGun : Weapon
             return;
         }
 
-        if (_fireElapsed < AttackSpeed) return;
+        if (_fireElapsed < (1/AttackSpeed )) return;
 
         // 재장전 중이라면 재장전을 멈춥니다.
         if (_isReload)
@@ -108,7 +108,8 @@ public class ExplosionGun : Weapon
         {
             if (bullet == null) continue;
             Effect explosion = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
-            explosion.SetProperty("Radius", _explosionRange.size.x);
+            float radius = _explosionRange.size.x;
+            explosion.SetMultiflySize(radius/6);
             explosion.Play(bullet.transform.position);
             Util.RangeCastAll2D(bullet.gameObject, _explosionRange, Define.CharacterMask, (hit) =>
             {

@@ -246,7 +246,7 @@ public class GirlAbility
         }
 
         // 아이템 : 포크
-        percentage += (int)(Managers.GetManager<CardManager>().Predation/5) * _inventory.GetItemCount(ItemName.포크)* 2f;
+        percentage += (int)(Managers.GetManager<CardManager>().Predation/10) * _inventory.GetItemCount(ItemName.포크)* 3f;
 
         // 아이템 : 탁한 잎
         

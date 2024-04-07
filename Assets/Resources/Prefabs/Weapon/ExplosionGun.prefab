@@ -156,16 +156,15 @@ MonoBehaviour:
   _stunTime: 0
   _bulletSpeed: 100
   _attackMultiplier: 1
-  _damage: 1
+  _attackPower: 1
   _penerstratingPower: 0
   _maxAmmo: 10
   _currentAmmo: 10
   _isAllReloadAmmo: 1
-  _fireSpeed: 3
-  _reloadDelay: 2
+  _attackSpeed: 3
+  _reloadTime: 1
   _firePosition: {fileID: 7455358267748486297}
   _rebound: 0
-  _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 0
   _explosionRange:

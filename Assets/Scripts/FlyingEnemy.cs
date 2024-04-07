@@ -118,14 +118,14 @@ public class FlyingEnemy : EnemyAI
             {
                 if (_flyAttackDirection.x > 0)
                 {
-                    if (_targetPosition.x < transform.position.x)
+                    if (_targetPosition.x < _character.GetCenter().x)
                     {
                         _flyAttackDirection.y = Mathf.Abs(_flyAttackDirection.y);
                     }
                 }
                 else
                 {
-                    if (_targetPosition.x > transform.position.x)
+                    if (_targetPosition.x > _character.GetCenter().x)
                     {
 
                         _flyAttackDirection.y = Mathf.Abs(_flyAttackDirection.y);

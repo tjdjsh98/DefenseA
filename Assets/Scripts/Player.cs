@@ -498,8 +498,8 @@ public class Player : MonoBehaviour, IWeaponUsable
         if (Time.timeScale == 0) return;
 
         _isFire= true;
-        if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
+        _character.TurnBody(Managers.GetManager<InputManager>().MouseWorldPosition - transform.position);
     
         if (_weaponSwaper.CurrentWeapon != null  && !_weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(this);
@@ -510,10 +510,12 @@ public class Player : MonoBehaviour, IWeaponUsable
         if (Time.timeScale == 0) return;
 
         _isFire= true;
-        if (_runToFireElaspedTime < _runToFireCoolTime) return;
 
 
-     
+        _character.TurnBody(Managers.GetManager<InputManager>().MouseWorldPosition - transform.position);
+
+
+
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(this);
     }

@@ -14,87 +14,120 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneName: City_01
   timeWave:
-  - genTime: 4
-    hpMultiply: 1
+  - genTime: 6
+    multiply: 1
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyName: 0
     startTime: 0
-    endTime: 105
-  - genTime: 4
-    hpMultiply: 1
+    endTime: 60
+  - genTime: 6
+    multiply: 1
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyName: 2
     startTime: 0
     endTime: 60
-  - genTime: 3.5
-    hpMultiply: 1.2
+  - genTime: 5.5
+    multiply: 1.2
     genLocalPosition: {x: 0, y: 0, z: 0}
     enemyName: 0
-    startTime: 75
-    endTime: 135
-  - genTime: 3.5
-    hpMultiply: 1.2
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 75
-    endTime: 135
-  - genTime: 3.5
-    hpMultiply: 1.5
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 0
-    startTime: 150
-    endTime: 210
-  - genTime: 3.5
-    hpMultiply: 1.5
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 150
-    endTime: 210
-  - genTime: 3
-    hpMultiply: 2
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 0
-    startTime: 225
-    endTime: 99999
-  - genTime: 3
-    hpMultiply: 2
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 225
-    endTime: 99999
-  - genTime: 20
-    hpMultiply: 1
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 13
     startTime: 60
-    endTime: 105
-  - genTime: 0
-    hpMultiply: 0
+    endTime: 120
+  - genTime: 5.5
+    multiply: 1.2
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 12
-    startTime: 0
-    endTime: 0
-  - genTime: 10
-    hpMultiply: 1.5
+    enemyName: 2
+    startTime: 60
+    endTime: 120
+  - genTime: 5.5
+    multiply: 1.4
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 1
-    startTime: 105
-    endTime: 135
-  - genTime: 10
-    hpMultiply: 2
+    enemyName: 0
+    startTime: 120
+    endTime: 180
+  - genTime: 5.5
+    multiply: 1.4
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 1
-    startTime: 165
+    enemyName: 2
+    startTime: 120
+    endTime: 180
+  - genTime: 5.5
+    multiply: 1.6
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 180
     endTime: 240
-  - genTime: 20
-    hpMultiply: 1
+  - genTime: 5.5
+    multiply: 1.6
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 8
-    startTime: 195
-    endTime: 99999
+    enemyName: 2
+    startTime: 180
+    endTime: 240
+  - genTime: 5.5
+    multiply: 1.8
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 240
+    endTime: 300
+  - genTime: 5.5
+    multiply: 1.8
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 2
+    startTime: 240
+    endTime: 300
   distanceWave: []
-  mentalWave: []
-  mapSize: 1000
+  mentalWave:
+  - genTime: 20
+    multiply: 1
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 14
+    genMentalLevelOrMore: 1
+  presetWave:
+  - genTime: 20
+    multiply: 1
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
+  - genTime: 40
+    multiply: 1
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
+  - genTime: 60
+    multiply: 1.2
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 100
+    multiply: 1.2
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 120
+    multiply: 1.4
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 140
+    multiply: 1.4
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 160
+    multiply: 1.6
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 180
+    multiply: 1.8
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 200
+    multiply: 1
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 0
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  mapSize: 100
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList: []
   randomEvent:

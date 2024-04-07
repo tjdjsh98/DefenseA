@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 1338747963396321650}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 7.637, y: 7.07, z: -0.004086449}
+  m_LocalPosition: {x: 1000, y: 0, z: -0.004086449}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -119,7 +119,7 @@ SortingGroup:
   m_GameObject: {fileID: 1338747963396321650}
   m_Enabled: 1
   m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &4413086375596073726
@@ -137,22 +137,24 @@ MonoBehaviour:
   _characterType: 1
   _maxHp: 10
   _hp: 0
-  _maxMental: 100
-  <Mental>k__BackingField: 0
   _speed: 3
-  _isGainMentalWhenKillIt: 0
-  _gainMentalAmount: 0
+  _standing: 0
   <AttackPower>k__BackingField: 0
   _jumpPower: 10
+  IsNotInstantlyDie: 0
   _isEnableRevive: 0
   _isEnableFly: 1
+  _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    angle: 0
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 1
+  <IsSuperArmer>k__BackingField: 0
+  IsInvincibility: 0
   _hpBar: {fileID: 0}
 --- !u!114 &-4908263118160617402
 MonoBehaviour:
@@ -180,20 +182,32 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a911ddac8833259408e80a4e0b347c89, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _attackDetectRange:
+  _targetDetectRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 0, y: 0, z: 0}
+    angle: 0
+    figureType: 0
+  _enableAttackRange:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    angle: 0
     figureType: 0
   _attackRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 30.01, y: 12.97, z: 0}
+    angle: 0
     figureType: 0
   _target: {fileID: 0}
+  IsEnableBodyAttack: 1
   _noAttack: 0
   _attackDelay: 1
-  _isRangedAttack: 1
-  _attackTriggerName: 
+  <IsAutoMove>k__BackingField: 1
+  _isHaveAnimation: 0
+  _itemDropPercentage: 0
+  _bodyAttackKnockBackPower: 50
+  _bodyAttackCoolTime: 1
   _flyHeight: 3.5
+  _flyRange: 0
   _flyAttackSpeed: 10
 --- !u!1 &5966991373612841047
 GameObject:

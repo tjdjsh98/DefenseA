@@ -15,6 +15,8 @@ public class UIUpgrade : UIBase
 
     [SerializeField] TextMeshProUGUI _upgradePriceTextMesh;
 
+    [SerializeField] TextMeshProUGUI _upgradeButtonText;
+
     public override void Init()
     {
         _fromWeaponUI.InitWeaponUI(_fromWeaponFolder);
@@ -87,7 +89,12 @@ public class UIUpgrade : UIBase
 
         _toWeaponUI.Refresh(_weaponUpgrader.Weapon);
         StartCoroutine(_toWeaponUI.CorFillGauge(_weaponUpgrader));
-        
+
+
+        if (Managers.GetManager<GameManager>().Money < _weaponUpgrader.UpgradePrice)
+            _upgradeButtonText.text = "금액 부족";
+        else
+            _upgradeButtonText.text = "업그레이드";
     }
 }
 
@@ -96,9 +103,6 @@ public class WeaponUI
     public GameObject _weaponFolder;
     public Image _weaponImage;
     public TextMeshProUGUI _weaponName;
-
-    string weaponName;
-    string weaponDescription;
 
     public Image _attackPowerFill;
     public TextMeshProUGUI _attackPowerValueText;

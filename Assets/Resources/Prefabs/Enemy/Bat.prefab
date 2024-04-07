@@ -31,7 +31,7 @@ Transform:
   m_GameObject: {fileID: 1338747963396321650}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.542088, y: 6.2959266, z: 0.026139587}
+  m_LocalPosition: {x: 1000, y: 0, z: 0.026139587}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -119,7 +119,7 @@ SortingGroup:
   m_GameObject: {fileID: 1338747963396321650}
   m_Enabled: 1
   m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &4413086375596073726
@@ -141,8 +141,10 @@ MonoBehaviour:
   _standing: 0
   <AttackPower>k__BackingField: 2
   _jumpPower: 10
+  IsNotInstantlyDie: 0
   _isEnableRevive: 0
   _isEnableFly: 1
+  _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
@@ -182,11 +184,14 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _target: {fileID: 0}
+  IsEnableBodyAttack: 1
   _noAttack: 0
   _attackDelay: 2
   <IsAutoMove>k__BackingField: 1
   _isHaveAnimation: 0
   _itemDropPercentage: 1
+  _bodyAttackKnockBackPower: 50
+  _bodyAttackCoolTime: 1
   _flyHeight: 15
   _flyRange: 3
   _flyAttackSpeed: 20

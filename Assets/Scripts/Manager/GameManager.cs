@@ -22,6 +22,8 @@ public class GameManager : ManagerBase
 
     Character _creature;
     public Character Creature { get { if (CreatureAI && _creature == null) _creature = CreatureAI?.GetComponent<Character>(); return _creature; } }
+
+    public Character House { get; set; }
     #endregion
 
     [Header("Debug")]
@@ -68,6 +70,7 @@ public class GameManager : ManagerBase
     List<Wave> _timeWaveList = new List<Wave>();
     List<Wave> _distanceWaveList = new List<Wave>();
     List<Wave> _mentalWaveList = new List<Wave>();
+    List<Wave> _presetWaveList = new List<Wave>();
     float _totalTime;
     float _stageTime;
 
@@ -151,6 +154,7 @@ public class GameManager : ManagerBase
         TimeWave();
         DistanceWave();
         MentalWave();
+        PresetWave();
 
         if (Player)
             _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
@@ -205,6 +209,14 @@ public class GameManager : ManagerBase
                 if (mentalWaveData != null)
                 {
                     _mentalWaveList.Add(new Wave() { waveData = mentalWaveData, elapsedTime = mentalWaveData.genTime });
+                }
+            }
+            foreach (var presetData in _mapData.presetWave)
+            {
+                PresetWaveData presetWaveData = presetData as PresetWaveData;
+                if (presetWaveData != null)
+                {
+                    _presetWaveList.Add(new Wave() { waveData =presetWaveData,elapsedTime = presetWaveData.genTime });
                 }
             }
 
@@ -262,6 +274,17 @@ public class GameManager : ManagerBase
         DontDestroyOnLoad(_creature);
         CreatureAI = _creature.GetComponent<CreatureAI>();
 
+
+        if (GameObject.Find("House") != null)
+        {
+            House = GameObject.Find("House").gameObject.GetComponent<Character>();
+        }
+        else
+        {
+            House = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/MainCharacter/House").GetComponent<Character>();
+        }
+        DontDestroyOnLoad(House);
+        
 
         _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
         _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
@@ -361,9 +384,9 @@ public class GameManager : ManagerBase
 
                     // 체력 설정
                     if (enemy.IsGroup)
-                        enemy.GetComponent<EnemyGroup>().SetHp(timeWaveData.hpMultiply);
+                        enemy.GetComponent<EnemyGroup>().SetHp(timeWaveData.multiply);
                     else
-                        enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * timeWaveData.hpMultiply));
+                        enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * timeWaveData.multiply));
 
 
                     // 위치 설정
@@ -409,7 +432,7 @@ public class GameManager : ManagerBase
                     {
                         Character character = enemy.GetComponent<Character>();
                         enemy.transform.position = topPosition.Value;
-                        character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.hpMultiply));
+                        character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.multiply));
                     }
                 }
                 else
@@ -419,7 +442,7 @@ public class GameManager : ManagerBase
                     {
                         EnemyGroup group = enemy.GetComponent<EnemyGroup>();
                         group.transform.position = topPosition.Value;
-                        group.SetHp(distanceWaveData.hpMultiply);
+                        group.SetHp(distanceWaveData.multiply);
                     }
                 }
                 _distanceWaveList.Remove(wave);
@@ -427,7 +450,6 @@ public class GameManager : ManagerBase
             }
         }
     }
-
     void MentalWave()
     {
         foreach (var wave in _mentalWaveList)
@@ -453,7 +475,7 @@ public class GameManager : ManagerBase
                     {
                         Character character = enemy.GetComponent<Character>();
                         enemy.transform.position = topPosition.Value;
-                        character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.hpMultiply));
+                        character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.multiply));
                     }
                 }
                 else
@@ -463,14 +485,46 @@ public class GameManager : ManagerBase
                     {
                         EnemyGroup group = enemy.GetComponent<EnemyGroup>();
                         group.transform.position = topPosition.Value;
-                        group.SetHp(mentalWaveData.hpMultiply);
+                        group.SetHp(mentalWaveData.multiply);
                     }
                 }
 
             }
         }
     }
-    
+    void PresetWave()
+    {
+        foreach (var wave in _presetWaveList)
+        {
+            PresetWaveData presetWaveData = wave.waveData as PresetWaveData;
+            if (presetWaveData.genTime < _stageTime)
+            {
+                Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + presetWaveData.genLocalPosition).Value;
+                
+                if(topPosition.HasValue)
+                {
+                    GameObject presetOrigin = presetWaveData.enemyPreset;
+                    if (presetOrigin)
+                    {
+                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(presetOrigin);
+
+                        for(int i = 0; i < preset.transform.childCount; i++)
+                        {
+                            Character enemy =  preset.transform.GetChild(i).GetComponent<Character>();
+                            if (enemy)
+                            {
+                                enemy.SetHp(Mathf.FloorToInt(enemy.Hp * presetWaveData.multiply));
+                                enemy.AttackPower = Mathf.FloorToInt(enemy.AttackPower * presetWaveData.multiply);
+                            }
+                        }
+                        preset.transform.position = topPosition.Value;
+                    }
+                }
+                _presetWaveList.Remove(wave);
+                return;
+            }
+        }
+    }
 
     public Vector3? GetGroundTop(Vector3 position)
     {

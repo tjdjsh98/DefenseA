@@ -32,7 +32,7 @@ Transform:
   m_GameObject: {fileID: 773839743147531744}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalPosition: {x: 1000, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -121,7 +121,7 @@ SortingGroup:
   m_GameObject: {fileID: 773839743147531744}
   m_Enabled: 1
   m_SortingLayerID: 1343365121
-  m_SortingLayer: 1
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_SortAtRoot: 0
 --- !u!114 &6206991771833405507
@@ -139,16 +139,14 @@ MonoBehaviour:
   _characterType: 1
   _maxHp: 10
   _hp: 10
-  _maxMental: 100
-  <Mental>k__BackingField: 0
   _speed: 5
   _standing: 0
-  _isGainMentalWhenKillIt: 0
-  _gainMentalAmount: 0
   <AttackPower>k__BackingField: 0
   _jumpPower: 0
+  IsNotInstantlyDie: 0
   _isEnableRevive: 0
   _isEnableFly: 0
+  _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 0
   <IsEnableTurn>k__BackingField: 0
   _groundCheckRange:
@@ -158,6 +156,7 @@ MonoBehaviour:
     figureType: 0
   <IsTurnBodyAlongVelocity>k__BackingField: 0
   <IsSuperArmer>k__BackingField: 1
+  IsInvincibility: 0
   _hpBar: {fileID: 0}
 --- !u!114 &7537992071220699705
 MonoBehaviour:
@@ -187,12 +186,14 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _target: {fileID: 0}
+  IsEnableBodyAttack: 1
   _noAttack: 1
   _attackDelay: 1
-  _isRangedAttack: 0
   <IsAutoMove>k__BackingField: 0
-  _attackTriggerName: 
+  _isHaveAnimation: 0
   _itemDropPercentage: 0
+  _bodyAttackKnockBackPower: 50
+  _bodyAttackCoolTime: 1
 --- !u!114 &570808304168965782
 MonoBehaviour:
   m_ObjectHideFlags: 0

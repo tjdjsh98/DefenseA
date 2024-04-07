@@ -10,7 +10,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     Player Player { get {if(_player==null) _player = Managers.GetManager<GameManager>().Player;  return _player; } }
 
     public List<ShopItem> ShopItemList { get; set; } = new List<ShopItem>();
-    public int RestockCost { get; set; } = 10;
+    public int RestockCost { get; set; } = 5;
 
     [SerializeField] GameObject _bubble;
 
@@ -49,7 +49,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
         OpenShop();
     }
 
-    // 확률 0 : 60, 1 : 25, 2 : 13 ,3 :2
+    // 확률 0 : 80, 1 : 15, 2 : 5 ,3 :0
     public void RestockShopItems()
     {
         List<ItemData> datas = new List<ItemData>();
@@ -58,15 +58,15 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
         {
             int rank = 0;
             float randomValue = Random.Range(0, 100);
-            if (randomValue < 60)
+            if (randomValue < 80)
             {
                 rank = 0;
             }
-            else if (randomValue < 85)
+            else if (randomValue < 95)
             {
                 rank = 1;
             }
-            else if (randomValue < 98)
+            else if (randomValue < 100)
             {
                 rank = 2;
             }
@@ -91,10 +91,15 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                     else
                         datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.딸기케이크));
                 }
+                // 나머지는 무기가 아닌 것으로
                 else
                 {
 
-                    datas.Add(itemList.GetRandom());
+                    ItemData weaponData = itemList.Where(data => { return data.ItemType != ItemType.Weapon; }).ToList().GetRandom();
+                    if (weaponData != null)
+                        datas.Add(weaponData);
+                    else
+                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.딸기케이크));
                 }
             }
         }

@@ -115,13 +115,15 @@ public class EnemyAI : MonoBehaviour
         {
             Util.RangeCastAll2D(gameObject, _bodySize, Define.CharacterMask, (hit) =>
             {
-                if (hit.collider == null) return false;
+                if (hit.collider == null || _bodyAttackList.Contains(hit.collider.gameObject)) return false;
+
                 Character character = hit.collider.GetComponent<Character>();
 
                 if (character != null && character.CharacterType == Define.CharacterType.Player)
                 {
                     _character.Attack(character, _character.AttackPower, _bodyAttackKnockBackPower, character.transform.position - transform.position, hit.point, 0.1f);
                     _bodyAttackList.Add(hit.collider.gameObject);
+                    StartCoroutine(CorRemoveBodyAttackList(hit.collider.gameObject));
                 }
                 return false;
             });

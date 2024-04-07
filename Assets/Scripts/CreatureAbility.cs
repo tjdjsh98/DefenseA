@@ -218,7 +218,7 @@ public class CreatureAbility
 
         // 아이템 : 나이프
         attackPower -= _preKnifeIncreasedPower;
-        _preKnifeIncreasedPower = (int)(Managers.GetManager<CardManager>().Predation / 5) * _inventory.GetItemCount(ItemName.나이프);
+        _preKnifeIncreasedPower = (int)(Managers.GetManager<CardManager>().Predation / 10) * _inventory.GetItemCount(ItemName.나이프);
         attackPower += _preKnifeIncreasedPower;
 
         return attackPower;

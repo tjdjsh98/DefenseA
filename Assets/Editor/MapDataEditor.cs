@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEditor;
+using Codice.Client.Common;
 
 [CustomEditor(typeof(MapData))]
 [CanEditMultipleObjects]
@@ -9,6 +10,7 @@ public class MapDataEditor : Editor
     SerializedProperty timeWaveProperty;
     SerializedProperty distanceWaveProperty;
     SerializedProperty mentalWaveProperty;
+    SerializedProperty presetWaveProperty;
 
     SerializedProperty mapSizeProperty;
     SerializedProperty nextMapDataProperty;
@@ -19,8 +21,12 @@ public class MapDataEditor : Editor
     bool distanceWaveFoldout;
     bool timeWaveFoldout;
     bool mentalWaveFoldout;
+    bool presetWaveFoldout;
 
-    Vector2 scrollPos;
+    Vector2 timeScrollPos;
+    Vector2 distanceScrollPos;
+    Vector2 mentalScrollPos;
+    Vector2 presetScrollPos;
 
     public virtual void OnEnable()
     {
@@ -28,6 +34,7 @@ public class MapDataEditor : Editor
         timeWaveProperty = serializedObject.FindProperty("timeWave");
         distanceWaveProperty = serializedObject.FindProperty("distanceWave");
         mentalWaveProperty = serializedObject.FindProperty("mentalWave");
+        presetWaveProperty = serializedObject.FindProperty("presetWave");
 
         mapSizeProperty = serializedObject.FindProperty("mapSize");
         nextMapDataProperty = serializedObject.FindProperty("nextMapData");
@@ -45,6 +52,7 @@ public class MapDataEditor : Editor
         TimeWaveGUI();
         DistanceWaveGUI();
         MentalWaveGUI();
+        PresetWaveGUI();
 
         EditorGUILayout.PropertyField(mapSizeProperty);
         EditorGUILayout.PropertyField(nextMapDataProperty);
@@ -68,7 +76,7 @@ public class MapDataEditor : Editor
             if (distanceWaveProperty.arraySize > 0)
             {
                 int height = distanceWaveProperty.arraySize * 70 > 500 ? 500 : distanceWaveProperty.arraySize * 70;
-                scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25),GUILayout.MinHeight(height));
+                distanceScrollPos = EditorGUILayout.BeginScrollView(distanceScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25),GUILayout.MinHeight(height));
 
                 for (int i = 0; i < distanceWaveProperty.arraySize; i++)
                 {
@@ -78,7 +86,7 @@ public class MapDataEditor : Editor
                         {
                             GUILayout.Label("적");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("체력배율");
+                            GUILayout.Label("배율");
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("거리");
                             GUILayout.FlexibleSpace();
@@ -91,8 +99,8 @@ public class MapDataEditor : Editor
                             enemy.intValue = (int)(Define.EnemyName)EditorGUILayout.EnumPopup((Define.EnemyName)enemy.intValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty hpMul = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("hpMultiply");
-                            hpMul.floatValue = EditorGUILayout.FloatField(hpMul.floatValue);
+                            SerializedProperty multiply = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
+                            multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
                             GUILayout.FlexibleSpace();
 
                             SerializedProperty distance = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("distance");
@@ -125,6 +133,7 @@ public class MapDataEditor : Editor
                 GUILayout.FlexibleSpace();
             }
             GUILayout.EndHorizontal();
+
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
@@ -140,7 +149,7 @@ public class MapDataEditor : Editor
             {
                 int height = timeWaveProperty.arraySize * 70 > 500 ? 500 : timeWaveProperty.arraySize * 70;
 
-                scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
+                timeScrollPos = EditorGUILayout.BeginScrollView(timeScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
                 for (int i = 0; i < timeWaveProperty.arraySize; i++)
                 {
@@ -152,7 +161,7 @@ public class MapDataEditor : Editor
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("생성주기");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("체력배율");
+                            GUILayout.Label("배율");
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("시작");
                             GUILayout.FlexibleSpace();
@@ -171,8 +180,8 @@ public class MapDataEditor : Editor
                             genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty hpMul = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("hpMultiply");
-                            hpMul.floatValue = EditorGUILayout.FloatField(hpMul.floatValue);
+                            SerializedProperty multiply = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
+                            multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
                             GUILayout.FlexibleSpace();
 
                             SerializedProperty startTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("startTime");
@@ -211,7 +220,6 @@ public class MapDataEditor : Editor
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
-
     void MentalWaveGUI()
     {
         mentalWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(mentalWaveFoldout, new GUIContent("정신 웨이브"));
@@ -222,7 +230,7 @@ public class MapDataEditor : Editor
             if (mentalWaveProperty.arraySize > 0)
             {
                 int height = mentalWaveProperty.arraySize * 70 > 500 ? 500 : mentalWaveProperty.arraySize * 70;
-                scrollPos = EditorGUILayout.BeginScrollView(scrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
+                mentalScrollPos = EditorGUILayout.BeginScrollView(mentalScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
                 for (int i = 0; i < mentalWaveProperty.arraySize; i++)
                 {
@@ -234,7 +242,7 @@ public class MapDataEditor : Editor
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("생성주기");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("체력배율");
+                            GUILayout.Label("배율");
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("정신력");
                             GUILayout.FlexibleSpace();
@@ -251,8 +259,8 @@ public class MapDataEditor : Editor
                             genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty hpMul = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("hpMultiply");
-                            hpMul.floatValue = EditorGUILayout.FloatField(hpMul.floatValue);
+                            SerializedProperty multiply = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
+                            multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
                             GUILayout.FlexibleSpace();
 
                             SerializedProperty genMentalLevelOrMore = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genMentalLevelOrMore");
@@ -262,7 +270,8 @@ public class MapDataEditor : Editor
                         }
                         EditorGUILayout.EndHorizontal();
 
-
+                        SerializedProperty property = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genLocalPosition");
+                        EditorGUILayout.PropertyField(property);
                     }
                     EditorGUILayout.EndVertical();
 
@@ -273,14 +282,85 @@ public class MapDataEditor : Editor
             {
                 if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
                 {
-                    distanceWaveProperty.arraySize += 1;
+                    mentalWaveProperty.arraySize += 1;
                 }
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
                 {
-                    if (distanceWaveProperty.arraySize > 0)
-                        distanceWaveProperty.arraySize -= 1;
+                    if (mentalWaveProperty.arraySize > 0)
+                        mentalWaveProperty.arraySize -= 1;
+                }
+                GUILayout.FlexibleSpace();
+            }
+            GUILayout.EndHorizontal();
+        }
+        EditorGUILayout.EndFoldoutHeaderGroup();
+    }
+    void PresetWaveGUI()
+    {
+
+        presetWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(presetWaveFoldout, new GUIContent("프리셋 웨이브"));
+        GUILayout.FlexibleSpace();
+
+
+        if (presetWaveFoldout)
+        {
+            if (presetWaveProperty.arraySize > 0)
+            {
+                int height = presetWaveProperty.arraySize * 70 > 500 ? 500 : presetWaveProperty.arraySize * 70;
+                presetScrollPos = EditorGUILayout.BeginScrollView(presetScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.MinHeight(height));
+
+                for (int i = 0; i < presetWaveProperty.arraySize; i++)
+                {
+                    EditorGUILayout.BeginVertical("HelpBox");
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            GUILayout.Label("프리셋");
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("시간");
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("배율");
+                            GUILayout.FlexibleSpace();
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            SerializedProperty enemy = presetWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyPreset");
+                            enemy.objectReferenceValue = EditorGUILayout.ObjectField(enemy.objectReferenceValue,typeof(GameObject), true) as GameObject;
+                            GUILayout.FlexibleSpace();
+
+                            SerializedProperty time = presetWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
+                            time.floatValue = EditorGUILayout.FloatField(time.floatValue);
+                            GUILayout.FlexibleSpace();
+
+                            SerializedProperty multiply = presetWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
+                            multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
+                            GUILayout.FlexibleSpace();
+                        }
+                        EditorGUILayout.EndHorizontal();
+                        SerializedProperty property = presetWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genLocalPosition");
+                        EditorGUILayout.PropertyField(property);
+                    }
+                    EditorGUILayout.EndVertical();
+                }
+                EditorGUILayout.EndScrollView();
+            }
+
+            GUILayout.BeginHorizontal();
+            {
+                if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    presetWaveProperty.arraySize += 1;
+                }
+                GUILayout.FlexibleSpace();
+
+                if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
+                {
+                    if (presetWaveProperty.arraySize > 0)
+                        presetWaveProperty.arraySize -= 1;
                 }
                 GUILayout.FlexibleSpace();
             }
