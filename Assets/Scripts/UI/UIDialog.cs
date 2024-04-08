@@ -16,6 +16,7 @@ public class UIDialog : UIBase
     Dictionary<int, UnityEvent> _selectionActionHanlders = new Dictionary<int, UnityEvent>();
 
     Dialog[] _dialogs;
+    public NPC NPC { private set; get; }
 
     int _dialogIndex = 0;
 
@@ -32,8 +33,9 @@ public class UIDialog : UIBase
         gameObject.SetActive(false);
     }
 
-    public void AssginDialog(Dialog[] dialogs)
+    public void AssginDialog(NPC npc,Dialog[] dialogs)
     {
+        NPC= npc;
         _dialogs = dialogs;
         _dialogIndex = 0;
     }
@@ -101,6 +103,8 @@ public class UIDialog : UIBase
         {
             Dialog dialog = _dialogs[_dialogIndex];
 
+            string text = dialog.dialog;
+
             _dialogText.SetText(dialog.dialog);
             _selectionActionHanlders.Clear();
             int selectionIndex = 1;
@@ -112,4 +116,6 @@ public class UIDialog : UIBase
             }
         }
     }
+
+
 }

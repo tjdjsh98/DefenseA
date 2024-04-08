@@ -132,27 +132,9 @@ public class FlyingEnemy : EnemyAI
                     }
                 }
                 _character.Move(_flyAttackDirection);
-                OnPlayAttack();
             }
            
 
         }
     }
-    protected override void OnPlayAttack()
-    {
-        List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _attackRange, LayerMask.GetMask("Character"));
-
-        foreach (var hit in hits)
-        {
-            Character character = hit.collider.GetComponent<Character>();
-            if (character == null || character.CharacterType == _character.CharacterType) continue;
-            if (_attackedList.Contains(character)) continue;
-
-            _character.Attack(character, _character.AttackPower, 1, Vector3.zero, hit.point);
-            _attackedList.Add(character);
-
-            Managers.GetManager<EffectManager>().InstantiateHitEffect(hit.point, hit.centroid -  hit.point);
-        }
-    }
-
 }

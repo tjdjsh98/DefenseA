@@ -16,82 +16,53 @@ MonoBehaviour:
   timeWave:
   - genTime: 5
     multiply: 1
-    genLocalPosition: {x: 0, y: 0, z: 0}
+    genLocalPosition: {x: 120, y: 0, z: 0}
     enemyName: 0
     startTime: 0
-    endTime: 60
+    endTime: 150
+    enemyPreset: {fileID: 0}
   - genTime: 5
     multiply: 1
-    genLocalPosition: {x: 0, y: 0, z: 0}
+    genLocalPosition: {x: 120, y: 0, z: 0}
     enemyName: 2
     startTime: 0
-    endTime: 60
-  - genTime: 4
-    multiply: 1.2
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 0
-    startTime: 60
-    endTime: 120
-  - genTime: 4
-    multiply: 1.2
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 60
-    endTime: 120
-  - genTime: 3
-    multiply: 1.4
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 0
-    startTime: 120
-    endTime: 180
-  - genTime: 3
-    multiply: 1.4
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 120
-    endTime: 180
-  - genTime: 3
-    multiply: 1.6
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 0
-    startTime: 180
-    endTime: 240
-  - genTime: 3
-    multiply: 1.6
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 180
-    endTime: 240
-  - genTime: 3
-    multiply: 1.8
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 0
-    startTime: 240
-    endTime: 300
-  - genTime: 3
-    multiply: 1.8
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 2
-    startTime: 240
-    endTime: 300
+    endTime: 150
+    enemyPreset: {fileID: 0}
   - genTime: 10
-    multiply: 1.5
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 13
-    startTime: 180
-    endTime: 300
-  - genTime: 30
     multiply: 1
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 12
-    startTime: 120
-    endTime: 300
-  - genTime: 30
+    genLocalPosition: {x: 120, y: 0, z: 0}
+    enemyName: -1
+    startTime: 0
+    endTime: 150
+    enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
+  - genTime: 4.5
     multiply: 1
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyName: 9
-    startTime: 240
-    endTime: 600
+    genLocalPosition: {x: 120, y: 0, z: 0}
+    enemyName: 0
+    startTime: 150
+    endTime: 300
+    enemyPreset: {fileID: 0}
+  - genTime: 4.5
+    multiply: 1
+    genLocalPosition: {x: 120, y: 0, z: 0}
+    enemyName: 2
+    startTime: 150
+    endTime: 300
+    enemyPreset: {fileID: 0}
+  - genTime: 15
+    multiply: 1
+    genLocalPosition: {x: 120, y: 0, z: 0}
+    enemyName: -1
+    startTime: 143
+    endTime: 315
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
+  - genTime: 15
+    multiply: 1
+    genLocalPosition: {x: -120, y: 0, z: 0}
+    enemyName: -1
+    startTime: 150
+    endTime: 300
+    enemyPreset: {fileID: 3835410314699287608, guid: 4246aaf2e7756c34f9e946138c2a4d7e, type: 3}
   distanceWave: []
   mentalWave:
   - genTime: 20
@@ -99,13 +70,7 @@ MonoBehaviour:
     genLocalPosition: {x: 60, y: 0, z: 0}
     enemyName: 8
     genMentalLevelOrMore: 1
-  presetWave:
-  - genTime: 60
-    multiply: 1
-    genLocalPosition: {x: 60, y: 0, z: 0}
-    enemyName: 0
-    enemyPreset: {fileID: 882222657658996634, guid: c09c0b533103beb418ffe297ac3f0361, type: 3}
-  mapSize: 100
+  mapSize: 1000
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList: []
   randomEvent:
@@ -114,3 +79,6 @@ MonoBehaviour:
   - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
   - {fileID: 6381985295212827144, guid: d330fccc1b3ff5f44b219c6c46f9de8b, type: 3}
   randomEventInterval: 150
+  initMutifly: 1
+  multiflyInterval: 60
+  addMultifly: 0.2

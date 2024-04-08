@@ -10,7 +10,7 @@ public class ItemData : ScriptableObject, ITypeDefine
     [field: SerializeField] public Sprite Image { set; get; }
     [field:SerializeField][field:TextArea] public string Description { set; get; }
     [field: SerializeField] public int Rank { set; get; }
-    public int Price => Rank == 0 ? 10 : Rank == 1 ? 30 : Rank == 2 ? 100 : Rank == 3 ? 200 : 500;
+    public int Price => Rank == 0 ? 30 : Rank == 1 ? 100 : Rank == 2 ? 200 : Rank == 3 ? 500 : 1000;
     public int GetEnumToInt()
     {
         return (int)ItemName;

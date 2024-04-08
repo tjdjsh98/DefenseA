@@ -1,6 +1,3 @@
-using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class Wallet : MonoBehaviour
@@ -18,10 +15,11 @@ public class Wallet : MonoBehaviour
     }
 
     float _time = 0;
-
+    float _reachTime = 0;
     private void OnEnable()
     {
         _time = 0;
+        _reachTime = 0;
     }
     private void Update()
     {
@@ -29,7 +27,9 @@ public class Wallet : MonoBehaviour
             
             if (Player != null)
             {
-                transform.position = Vector3.Lerp(transform.position, Player.transform.position, 0.1f);
+                _reachTime += Time.deltaTime;
+                if (_reachTime >= 2) _reachTime = 1.99f;
+                transform.position = Vector3.Lerp(transform.position, Player.transform.position, Time.deltaTime/(2-_reachTime));
                 if((transform.position - Player.transform.position).magnitude < 0.2f)
                 {
                     Interact();

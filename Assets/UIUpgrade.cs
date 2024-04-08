@@ -147,7 +147,7 @@ public class WeaponUI
     }
     public IEnumerator CorFillGauge(WeaponUpgrader weaponUpgrader)
     {
-        int duration = 30;
+        float duration = 30;
         Weapon weapon = weaponUpgrader.Weapon;
         if (weaponUpgrader.IncreasingAttackPowerPercentage != 0)
             _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage + weaponUpgrader.IncreasingAttackPowerPercentage) /100f}";
@@ -174,20 +174,20 @@ public class WeaponUI
         else
             _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
 
-        for (int i = 0; i < duration; i++)
+        for (int i = 0; i <= duration; i++)
         {
-            _attackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.AttackPower + weaponUpgrader.IncreasingAttackPowerPercentage / 100f * weapon.OriginalAttackPower ) / 10f, 1f/(duration - i));
-            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.KnockBackPower+ weaponUpgrader.IncreasingKnockBackPowerPercentage / 100f * weapon.OriginalKnockBackPower) / 100f, 1f / (duration - i));
+            _attackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.AttackPower + weaponUpgrader.IncreasingAttackPowerPercentage / 100f * weapon.OriginalAttackPower ) / 10f, i/(duration));
+            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.KnockBackPower+ weaponUpgrader.IncreasingKnockBackPowerPercentage / 100f * weapon.OriginalKnockBackPower) / 100f, i / (duration));
             _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, (weapon.PenerstratingPower+ weaponUpgrader.IncreasingPenerstratingPower) /10f, 1f / (duration - i));
-            _attackSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.AttackSpeed + weapon.OriginalAttackSpeed * weaponUpgrader.IncreasingAttackSpeedPercentage / 100f) /10f, 1f / (duration - i));
-            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f/(weapon.ReloadTime + weapon.OriginalReloadTime * weaponUpgrader.DecreasingReloadTimePercentage / 100f) , 1f / (duration - i));
+            _attackSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.AttackSpeed + weapon.OriginalAttackSpeed * weaponUpgrader.IncreasingAttackSpeedPercentage / 100f) /10f, i / (duration));
+            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f/(weapon.ReloadTime + weapon.OriginalReloadTime * weaponUpgrader.DecreasingReloadTimePercentage / 100f) , i / (duration));
 
             yield return null;
         }
     }
     public IEnumerator CorFillGauge(Weapon weapon)
     {
-        int duration = 30;
+        float duration = 30;
         _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage) / 100f}";
 
         _knockBackPowersValueText.text = $"{weapon.KnockBackPower}  + {weapon.OriginalKnockBackPower * (weapon.IncreasedKnockbackPowerPercentage) / 100f}";
@@ -198,13 +198,13 @@ public class WeaponUI
 
         _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
 
-        for (int i = 0; i < duration; i++)
+        for (int i = 0; i <= duration; i++)
         {
-            _attackPowerFill.fillAmount = Mathf.Lerp(0, weapon.AttackPower /10f, 1f / (duration - i));
-            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, weapon.KnockBackPower / 100f, 1f / (duration - i));
-            _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, weapon.PenerstratingPower /10f, 1f / (duration - i));
-            _attackSpeedFill.fillAmount = Mathf.Lerp(0, weapon.AttackSpeed / 10f, 1f / (duration - i));
-            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f /weapon.ReloadTime, 1f / (duration - i));
+            _attackPowerFill.fillAmount = Mathf.Lerp(0, weapon.AttackPower /10f, i / (duration));
+            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, weapon.KnockBackPower / 100f, i / (duration));
+            _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, weapon.PenerstratingPower /10f, i / (duration));
+            _attackSpeedFill.fillAmount = Mathf.Lerp(0, weapon.AttackSpeed / 10f, i / (duration));
+            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f /weapon.ReloadTime, i / (duration));
 
             yield return null;
         }

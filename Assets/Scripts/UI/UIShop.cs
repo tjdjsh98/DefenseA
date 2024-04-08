@@ -23,8 +23,6 @@ public class UIShop : UIBase
     TextMeshProUGUI _itemNameText;
     TextMeshProUGUI _itemDescriptionText;
 
-    [SerializeField] TextMeshProUGUI _restockTimeTextmesh;
-
     IShop _openShop;
 
     GameObject _hoverImage;
@@ -59,16 +57,6 @@ public class UIShop : UIBase
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
 
         _isInitDone = true;
-    }
-
-    private void Update()
-    {
-        if (_openShop != null)
-        {
-            int min = (int)_openShop.RestockTime/60;
-            int sec = (int)_openShop.RestockTime%60;
-            _restockTimeTextmesh.text = $"{min}:{sec}";
-        }
     }
 
     public override void Open(bool except = false)
@@ -202,6 +190,7 @@ public class UIShop : UIBase
         if (!isHover)
         {
             _itemDescription.gameObject.SetActive(false);
+            _hoverImage = null;
         }
     }
 }

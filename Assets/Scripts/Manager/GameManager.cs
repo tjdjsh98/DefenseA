@@ -8,6 +8,7 @@ using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore.Text;
 using Random = UnityEngine.Random;
 
 public class GameManager : ManagerBase
@@ -22,8 +23,6 @@ public class GameManager : ManagerBase
 
     Character _creature;
     public Character Creature { get { if (CreatureAI && _creature == null) _creature = CreatureAI?.GetComponent<Character>(); return _creature; } }
-
-    public Character House { get; set; }
     #endregion
 
     [Header("Debug")]
@@ -70,7 +69,6 @@ public class GameManager : ManagerBase
     List<Wave> _timeWaveList = new List<Wave>();
     List<Wave> _distanceWaveList = new List<Wave>();
     List<Wave> _mentalWaveList = new List<Wave>();
-    List<Wave> _presetWaveList = new List<Wave>();
     float _totalTime;
     float _stageTime;
 
@@ -154,7 +152,6 @@ public class GameManager : ManagerBase
         TimeWave();
         DistanceWave();
         MentalWave();
-        PresetWave();
 
         if (Player)
             _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
@@ -211,14 +208,6 @@ public class GameManager : ManagerBase
                     _mentalWaveList.Add(new Wave() { waveData = mentalWaveData, elapsedTime = mentalWaveData.genTime });
                 }
             }
-            foreach (var presetData in _mapData.presetWave)
-            {
-                PresetWaveData presetWaveData = presetData as PresetWaveData;
-                if (presetWaveData != null)
-                {
-                    _presetWaveList.Add(new Wave() { waveData =presetWaveData,elapsedTime = presetWaveData.genTime });
-                }
-            }
 
             // 이벤트 배치
             float distance = 0;
@@ -273,18 +262,6 @@ public class GameManager : ManagerBase
         }
         DontDestroyOnLoad(_creature);
         CreatureAI = _creature.GetComponent<CreatureAI>();
-
-
-        if (GameObject.Find("House") != null)
-        {
-            House = GameObject.Find("House").gameObject.GetComponent<Character>();
-        }
-        else
-        {
-            House = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/MainCharacter/House").GetComponent<Character>();
-        }
-        DontDestroyOnLoad(House);
-        
 
         _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
         _creature.transform.position = GetGroundTop(new Vector3(-46, 0, 0)).Value;
@@ -374,40 +351,47 @@ public class GameManager : ManagerBase
             {
                 timeWave.elapsedTime = 0;
 
-                if (timeWaveData.enemyName == Define.EnemyName.None) return;
-
-                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWaveData.enemyName);
-                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                if (enemy)
+                if (timeWaveData.enemyName == Define.EnemyName.None)
                 {
-                    Character enemyCharacter = enemy.GetComponent<Character>();
-
-                    // 체력 설정
-                    if (enemy.IsGroup)
-                        enemy.GetComponent<EnemyGroup>().SetHp(timeWaveData.multiply);
-                    else
-                        enemyCharacter.SetHp((int)(enemyCharacter.MaxHp * timeWaveData.multiply));
-
-
-                    // 위치 설정
-                    Vector3 position = GetRightOutScreenPosition();
-                    position.x += 10;
-                    Vector3? topPosition = GetGroundTop(position);
+                    Vector3? topPosition = GetGroundTop(_cameraController.transform.position + timeWaveData.genLocalPosition);
                     if (topPosition.HasValue)
-                        position.y = GetGroundTop(position).Value.y;
-
-                    if (enemyCharacter.IsEnableFly)
                     {
-                        FlyingEnemy flyingEnemy = enemyCharacter.GetComponent<FlyingEnemy>();
-                        if (flyingEnemy)
-                            position.y += flyingEnemy.FlyingHeight;
+                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(timeWaveData.enemyPreset);
+                        preset.transform.position = topPosition.Value;
+                        for(int i = 0; i < preset.transform.childCount; i++)
+                        {
+                            // 각 개체 체력 설정
+                            Character character = preset.transform.GetChild(i).GetComponent<Character>();
+                            character.SetHp(Mathf.RoundToInt(character.MaxHp * (_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly)));
+                        }
                     }
-
-                    enemyCharacter.transform.position = position;
-
-                    // 맵 적 스폰추가
+                }
+                else
+                {
+                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWaveData.enemyName);
+                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                     if (enemy)
-                        _enemySpawnList.Add(enemy.gameObject);
+                    {
+                        // 위치 설정
+                        Vector3? topPosition = GetGroundTop(_cameraController.transform.position + timeWaveData.genLocalPosition);
+                        if (topPosition.HasValue)
+                        {
+                            Character enemyCharacter = enemy.GetComponent<Character>();
+
+                            // 체력 설정
+                            if (enemy.IsGroup)
+                                enemy.GetComponent<EnemyGroup>().SetHp(_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly);
+                            else
+                                enemyCharacter.SetHp(Mathf.RoundToInt(enemyCharacter.MaxHp * (_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly)));
+
+
+                            enemyCharacter.transform.position = topPosition.Value;
+
+                            // 맵 적 스폰추가
+                            if (enemy)
+                                _enemySpawnList.Add(enemy.gameObject);
+                        }
+                    }
                 }
             }
             else
@@ -492,39 +476,7 @@ public class GameManager : ManagerBase
             }
         }
     }
-    void PresetWave()
-    {
-        foreach (var wave in _presetWaveList)
-        {
-            PresetWaveData presetWaveData = wave.waveData as PresetWaveData;
-            if (presetWaveData.genTime < _stageTime)
-            {
-                Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + presetWaveData.genLocalPosition).Value;
-                
-                if(topPosition.HasValue)
-                {
-                    GameObject presetOrigin = presetWaveData.enemyPreset;
-                    if (presetOrigin)
-                    {
-                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(presetOrigin);
-
-                        for(int i = 0; i < preset.transform.childCount; i++)
-                        {
-                            Character enemy =  preset.transform.GetChild(i).GetComponent<Character>();
-                            if (enemy)
-                            {
-                                enemy.SetHp(Mathf.FloorToInt(enemy.Hp * presetWaveData.multiply));
-                                enemy.AttackPower = Mathf.FloorToInt(enemy.AttackPower * presetWaveData.multiply);
-                            }
-                        }
-                        preset.transform.position = topPosition.Value;
-                    }
-                }
-                _presetWaveList.Remove(wave);
-                return;
-            }
-        }
-    }
+  
 
     public Vector3? GetGroundTop(Vector3 position)
     {

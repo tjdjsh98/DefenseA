@@ -1,10 +1,11 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using TMPro;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
-public class UIDialogText : MonoBehaviour, IPointerDownHandler, IPointerMoveHandler,IPointerEnterHandler
+public class UIDialogText : MonoBehaviour, IPointerDownHandler, IPointerMoveHandler, IPointerEnterHandler
 {
     UIDialog _uiDialog;
     TextMeshProUGUI _dialogTextMesh;
@@ -16,19 +17,48 @@ public class UIDialogText : MonoBehaviour, IPointerDownHandler, IPointerMoveHand
     string _mainText;
     List<string> _selectionTextList = new List<string>();
 
-    public void Init(UIDialog dialog )
+
+    public void Init(UIDialog dialog)
     {
-        _dialogTextMesh = GetComponent<TextMeshProUGUI>();    
-        _uiDialog= dialog;
+        _dialogTextMesh = GetComponent<TextMeshProUGUI>();
+        _uiDialog = dialog;
     }
     public void SetText(string text)
     {
         _selectionTextList.Clear();
 
-        _dialogTextMesh.text = text;
-        _mainText= text;
+        _mainText = ConvertText(text);
+        _dialogTextMesh.text = _mainText;
         _selectionCount = 0;
         _selectIndex = -1;
+    }
+
+    string ConvertText(string text)
+    {
+        StringBuilder sb = new StringBuilder();
+
+        string[] lines = text.Split('{');
+        foreach(var line in lines)
+        {
+            string[] words = line.Split('}');
+
+            if (words.Length == 1)
+            {
+                sb.Append(words[0]);
+            }
+            else
+            {
+                int arg = int.Parse(words[0]);
+                // 아이템 프로퍼티
+                if (arg >= 0 && arg <= 9)
+                {
+                    sb.Append($"<color=green>{_uiDialog.NPC.ItemDataProperties[arg].ItemName}</color>");
+
+                }
+                sb.Append(words[1]);
+            }
+        }
+        return sb.ToString();
     }
 
     public void AddSelectText(int id,string text)

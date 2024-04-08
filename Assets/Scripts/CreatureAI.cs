@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -21,7 +22,7 @@ public class CreatureAI : MonoBehaviour
     [SerializeField] Define.Range _normalAttackDetectRange;
     [SerializeField] Define.Range _normalAttackRange;
 
-    float _girlToCreatureDistance = 5f;
+    float _girlToCreatureDistance = 8f;
     bool _isSoulForm = false;
 
     public int AttackPower
@@ -51,6 +52,7 @@ public class CreatureAI : MonoBehaviour
 
     Character _closeEnemy;
 
+    Coroutine _followPlayerCoroutine;
    
 
     [SerializeField] float _throwPower;
@@ -127,6 +129,7 @@ public class CreatureAI : MonoBehaviour
     void DefaultAI()
     {
         if (_closeEnemy) return;
+        if (_followPlayerCoroutine != null) return;
         if (_character.IsAttack) return;
 
         if (_player == null)
@@ -139,7 +142,6 @@ public class CreatureAI : MonoBehaviour
         {
             FollowPlayer();
         }
-        
         else
         {
             if(_closeEnemy == null)
@@ -200,14 +202,39 @@ public class CreatureAI : MonoBehaviour
     void FollowPlayer()
     {
         if (_character.IsAttack) return;
-      
-        Vector3 distacne = _player.transform.position - transform.position;
-        if (Mathf.Abs(distacne.y) < 3 && Mathf.Abs(distacne.x) > _girlToCreatureDistance)
-        {
-            _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -_girlToCreatureDistance : _girlToCreatureDistance)) / (_girlToCreatureDistance));
-        }
+
+        _followPlayerCoroutine = StartCoroutine(CorFollowPlayer());
     }
-    
+
+    IEnumerator CorFollowPlayer()
+    {
+        while (true)
+        {
+            Vector3 distacne = _player.transform.position - transform.position;
+            if (Mathf.Abs(distacne.y) < 3 && Mathf.Abs(distacne.x) > _girlToCreatureDistance)
+            {
+                _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -1 : 1)));
+                _closeEnemy = GetCloseEnemy();
+                if (_closeEnemy != null)
+                {
+                    if ((_closeEnemy.transform.position.x > _player.transform.position.x && _closeEnemy.transform.position.x < transform.position.x)||
+                        (_closeEnemy.transform.position.x < _player.transform.position.x && _closeEnemy.transform.position.x > transform.position.x))
+                    {
+                        yield return StartCoroutine(CorPlayNormalAttack());
+                    }
+                    _closeEnemy = null;
+                }
+            }
+            else
+            {
+                break;
+            }
+            yield return null;
+        }
+
+        _followPlayerCoroutine = null;
+    }
+
     public void Transform()
     {
         if (!_isSoulForm)

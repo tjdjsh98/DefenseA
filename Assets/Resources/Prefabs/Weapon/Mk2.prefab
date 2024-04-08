@@ -141,16 +141,15 @@ MonoBehaviour:
   _stunTime: 0.1
   _bulletSpeed: 400
   _attackMultiplier: 5
-  _damage: 10
+  _attackPower: 10
   _penerstratingPower: 5
   _maxAmmo: 5
   _currentAmmo: 5
   _isAllReloadAmmo: 1
-  _fireDelay: 2
-  _reloadDelay: 5
+  _attackSpeed: 0
+  _reloadTime: 0
   _firePosition: {fileID: 7782747334190270009}
   _rebound: 50
-  _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 0
 --- !u!82 &6751600197474223337

@@ -114,6 +114,7 @@ public class EnemyAI : MonoBehaviour
     }
     IEnumerator CorBodyAttack()
     {
+        yield return new WaitForSeconds(1);
         while(true)
         {
             Util.RangeCastAll2D(gameObject, _bodySize, Define.CharacterMask, (hit) =>
@@ -169,10 +170,10 @@ public class EnemyAI : MonoBehaviour
 
         if (_target == null)
         {
-            Character house = Managers.GetManager<GameManager>().House;
-            if (house == null) return;
+            Character girl = Managers.GetManager<GameManager>().Girl;
+            if (girl == null) return;
 
-            _character.Move((house.transform.position - transform.position).normalized * MoveRate);
+            _character.Move((girl.transform.position - transform.position).normalized * MoveRate);
         }else
         {
             _character.Move((_target.transform.position - transform.position).normalized* MoveRate);

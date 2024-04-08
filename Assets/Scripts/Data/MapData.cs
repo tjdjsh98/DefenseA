@@ -9,13 +9,16 @@ public class MapData : ScriptableObject
     public List<TimeWaveData> timeWave;
     public List<DistanceWaveData> distanceWave;
     public List<MentalWaveData> mentalWave;
-    public List<PresetWaveData> presetWave;
     public float mapSize;
     public MapData nextMapData;
 
     public List<ItemData> shopItemDataList;
     public List<GameObject> randomEvent;
     public float randomEventInterval = 200;
+
+    public float initMutifly;
+    public float multiflyInterval;
+    public float addMultifly;
 }
 
 public class Wave
@@ -39,6 +42,8 @@ public class TimeWaveData : WaveData
 {
     public int startTime;
     public int endTime;
+
+    public GameObject enemyPreset;
 }
 [System.Serializable]
 public class DistanceWaveData : WaveData
@@ -50,10 +55,4 @@ public class DistanceWaveData : WaveData
 public class MentalWaveData : WaveData
 {
     public int genMentalLevelOrMore;
-}
-
-[System.Serializable]
-public class PresetWaveData : WaveData
-{
-    public GameObject enemyPreset;
 }

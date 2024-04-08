@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Xml.XPath;
 using UnityEngine;
+using static UnityEngine.Rendering.DebugUI;
 
 public static class Extension
 {
@@ -35,7 +36,18 @@ public static class Extension
 
         return list[Random.Range(0, list.Count)];
     }
+    public static T GetRandom<T>(this IEnumerable<T> list)
+    {
+        if (list.Count() == 0)
+        {
+            Debug.LogWarning("리스트의 갯수가 부족하여 랜덤 값을 가져올 수 없습니다.");
+            return default(T);
+        }
 
+        int random = Random.Range(0, list.Count());
+        return list.ElementAt(random);
+
+    }
     public static List<T> GetRandom<T>(this List<T> list, int count)
     {
         if (list.Count == 0 || list.Count < count) return default(List<T>);
@@ -53,6 +65,8 @@ public static class Extension
         return result;
         
     }
+
+   
     public static Vector3 GetRandom(this Vector3 vector,float min, float max)
     {
         Vector3 result = vector;

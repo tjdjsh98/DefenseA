@@ -221,4 +221,9 @@ public static class Util
 
         return spriteSize;
     }
+
+    public static float GetDistance(GameObject go1, GameObject go2)
+    {
+        return (go1.transform.position - go2.transform.position).magnitude;
+    }
 }
