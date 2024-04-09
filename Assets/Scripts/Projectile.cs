@@ -53,12 +53,13 @@ public class Projectile : MonoBehaviour,ITypeDefine
         if((Camera.main.transform.position - transform.position).magnitude > 100)
         {
             Managers.GetManager<ResourceManager>().Destroy(gameObject);
+            _isAttack = false;
         }
     }
 
     protected virtual void CheckCollision()
     {
-        if (_isAttack) return;
+        if (!_isAttack) return;
         if(transform.position == _prePostion) return;
 
         Vector3 direction = (transform.position - _prePostion);
@@ -121,6 +122,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
 
         _direction = direction.normalized;
         _prePostion = transform.position;
+        _isAttack = true;
     }
     // 중력에 영향을 받는 투사체에 사용
     public virtual void Fire(Character attacker,float power, Vector3 direction)
@@ -133,6 +135,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
 
         _direction = direction.normalized;
         _prePostion = transform.position;
+        _isAttack = true;
     }
     public int GetEnumToInt()
     {

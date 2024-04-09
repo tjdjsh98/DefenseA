@@ -19,6 +19,7 @@ public class BezierProjection : Projectile
             else
             {
                 Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                _isAttack = false;
             }
             base.Update();
         }
@@ -44,6 +45,7 @@ public class BezierProjection : Projectile
 
     public override void Fire(Character attacker, Vector3 direction)
     {
+        _prePostion = transform.position;
         _isAttack = true;
         _attacker = attacker;
         _injectTime = 0;

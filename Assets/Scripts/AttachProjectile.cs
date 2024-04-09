@@ -41,7 +41,7 @@ public class AttachProjectile : Projectile
     protected override void CheckCollision()
     {
         if (_isAttach) return;
-        if (_isAttack) return;
+        if (!_isAttack) return;
         if (transform.position == _prePostion) return;
 
         Vector3 direction = (transform.position - _prePostion);
@@ -81,7 +81,7 @@ public class AttachProjectile : Projectile
                         _attachPosition = hit.point - (Vector2)character.transform.position;
                         _trailRenderer.enabled = false;
                         _isAttach = true;
-                        _isAttack = true;
+                        _isAttack = false;
                         return;
                     }
                 }

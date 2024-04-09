@@ -76,7 +76,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -256922147
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_Sprite: {fileID: -2413806693520163455, guid: a86470a33a6bf42c4b3595704624658b, type: 3}
   m_Color: {r: 0.7830189, g: 0.77928114, b: 0.34349412, a: 1}
@@ -156,7 +156,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -256922147
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Time: 0.1
   m_PreviewTimeScale: 1
@@ -241,6 +241,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 382b2a60172a6b74da3a1d27a25dc70f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  <ProjectileName>k__BackingField: 0
 --- !u!114 &-2031705283549549350
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -262,6 +263,6 @@ SortingGroup:
   m_GameObject: {fileID: 2311784550131828774}
   m_Enabled: 1
   m_SortingLayerID: -256922147
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 1
   m_SortAtRoot: 0
