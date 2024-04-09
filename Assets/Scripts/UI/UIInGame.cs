@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Text;
 using TMPro;
 using UnityEngine;
+using UnityEngine.Rendering;
 using UnityEngine.UI;
 
 public class UIInGame : UIBase
@@ -33,7 +34,8 @@ public class UIInGame : UIBase
     TextMeshProUGUI _mentalTextMesh;
     [SerializeField] MMProgressBar _creatureHpBar;
     TextMeshProUGUI _creatureHpTextMesh;
-    
+    [SerializeField] MMProgressBar _creatureReviveBar;
+
 
     [SerializeField] GameObject _wallIndicator;
     [SerializeField] GameObject _wallIndicatorArrow;
@@ -53,6 +55,10 @@ public class UIInGame : UIBase
     [SerializeField] GameObject _predation;
     [SerializeField] Image _predationFill;
     [SerializeField] TextMeshProUGUI _predationText;
+
+
+    [SerializeField] GameObject _bossState;
+    [SerializeField] MMProgressBar _bossHpBar;
 
     public override void Init()
     {
@@ -104,6 +110,7 @@ public class UIInGame : UIBase
         ShowSkill();
         ShowElectricity();
         ShowPredation();
+        ShowBoss();
         //ShowAbility();
         // IndicateWall();
     }
@@ -193,7 +200,7 @@ public class UIInGame : UIBase
     {
         Character girl = Managers.GetManager<GameManager>().Girl;
         Character creature = Managers.GetManager<GameManager>().Creature;
-
+        CreatureAI creatureAI = Managers.GetManager<GameManager>().CreatureAI;
         if (girl)
         {
             if(girl.MaxHp == 0)
@@ -224,6 +231,11 @@ public class UIInGame : UIBase
                 _creatureHpBar.UpdateBar01(0);
             else
                 _creatureHpBar.UpdateBar01((float)creature.Hp / creature.MaxHp);
+
+            if(creatureAI.ReviveTime ==0)
+                _creatureReviveBar.UpdateBar01(0);
+            else 
+                _creatureReviveBar.UpdateBar01((float)creatureAI.ReviveElasped/ creatureAI.ReviveTime); 
             _creatureHpTextMesh.text = creature.Hp.ToString();
         }
         else
@@ -235,7 +247,14 @@ public class UIInGame : UIBase
     }
     void ShowMap()
     {
-        if (!Managers.GetManager<GameManager>().Player) return;
+        if (!Managers.GetManager<GameManager>().Player || Managers.GetManager<GameManager>().Boss)
+        {
+            _mapImage.gameObject.SetActive(false);
+            _mapPlayer.gameObject.SetActive(false);
+            return;
+        }
+        _mapImage.gameObject.SetActive(true);
+        _mapPlayer.gameObject.SetActive(true);
         float mapImageSize = _mapImage.rectTransform.sizeDelta.x;
         float mapSize = Managers.GetManager<GameManager>().MapSize;
         float playerPosition = Managers.GetManager<GameManager>().Player.transform.position.x;
@@ -476,6 +495,20 @@ public class UIInGame : UIBase
             if (color.a <= 0)
                 break;
             yield return null;
+        }
+    }
+
+    void ShowBoss()
+    {
+        if (Managers.GetManager<GameManager>().Boss != null)
+        {
+            Character boss = Managers.GetManager<GameManager>().Boss;
+            _bossState.gameObject.SetActive(true);
+            _bossHpBar.SetBar01((float)boss.Hp / boss.MaxHp);
+        }
+        else
+        {
+            _bossState.SetActive(false);
         }
     }
 }

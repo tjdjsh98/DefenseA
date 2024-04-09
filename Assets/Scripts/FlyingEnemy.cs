@@ -27,7 +27,6 @@ public class FlyingEnemy : EnemyAI
     {
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
-        if (!IsAutoMove) return;
 
         Vector3 targetPosition = Vector3.zero;
 

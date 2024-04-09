@@ -40,7 +40,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
         get
         {
             int result = 0;
-            result += Mathf.RoundToInt(_attackPower * (1+IncreasedAttackPowerPercentage / 100) * (1 + _user.GetIncreasedDamagePercentage()/100));
+            result += Mathf.RoundToInt(_attackPower * (1+IncreasedAttackPowerPercentage / 100) * (1 + _user.GetIncreasedAttackPowerPercentage()/100));
             return result;
         }
     }
@@ -159,7 +159,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             if (user is Player player)
             {
                 if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).Property;
             }
 
             projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
@@ -169,7 +169,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             user?.Rebound(_rebound);
         }
     }
-    public void Update()
+    protected virtual void Update()
     {
         // 발사 딜레이
         if (_fireElapsed < 1/AttackSpeed)
@@ -232,7 +232,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             _fastReloadFailed = true;
         }
     }
-    public virtual void CompleteReload()
+    public virtual void CompleteReload(bool isHideGauge = true)
     {
         if (_isAllReloadAmmo)
         {
@@ -240,7 +240,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             
             _currentAmmo = _maxAmmo;
             _reloadElapsed = 0;
-            if (_reloadGauge)
+            if (_reloadGauge && isHideGauge)
                 _reloadGauge.gameObject.SetActive(false);
         }
         else
@@ -250,7 +250,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
             {
                 _currentAmmo = _maxAmmo;
                 _isReload = false;
-                if (_reloadGauge)
+                if (_reloadGauge && isHideGauge)
                     _reloadGauge.gameObject.SetActive(false);
             }
             _reloadElapsed = 0;
@@ -265,11 +265,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
             if (!_fastReloadFailed && user is Player player)
             {
-                    _currentAmmo = _maxAmmo;
-                if (player.GirlAbility.GetIsHaveAbility(CardName.추가장전))
-                {
-                    _currentAmmo += Mathf.RoundToInt(_maxAmmo * Managers.GetManager<CardManager>().GetCard(CardName.추가장전).property/100f);
-                }
+                _currentAmmo = _maxAmmo;
             }
 
             _reloadElapsed = 0;

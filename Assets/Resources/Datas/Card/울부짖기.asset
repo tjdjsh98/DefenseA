@@ -12,12 +12,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
   m_Name: "\uC6B8\uBD80\uC9D6\uAE30"
   m_EditorClassIdentifier: 
-  <CardName>k__BackingField: 26
+  <CardName>k__BackingField: 7
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\uD50C\uB808\uC774\uC5B4 \uC704\uCE58\uC5D0
+  <CardDescription>k__BackingField: "\"\uD50C\uB808\uC774\uC5B4 \uC704\uCE58\uC5D0
     \uC640\uC11C \uD50C\uB808\uC774\uC5B4\uAC00 \uBC14\uB7EC\uBCF4\uB294 \uBC29\uD5A5\uC758
-    \uC801\uB4E4\uC5D0\uAC8C \uACF5\uACA9\uB825\uC758 \uB370\uBBF8\uC9C0\uB97C \uC8FC\uACE0
-    {0}\uB9CC\uD07C \uB109\uBC31\uC2DC\uD0B5\uB2C8\uB2E4."
+    \uC801\uB4E4\uC5D0\uAC8C \n\uACF5\uACA9\uB825\uC758 \uB370\uBBF8\uC9C0\uB97C
+    \uC8FC\uACE0 {0}\uB9CC\uD07C \uB109\uBC31\uC2DC\uD0B5\uB2C8\uB2E4.\""
   <IsStartCard>k__BackingField: 1
   <IsActiveAbility>k__BackingField: 1
   <coolTimeList>k__BackingField:
@@ -28,3 +28,5 @@ MonoBehaviour:
   - 100
   - 125
   - 150
+  <Property2List>k__BackingField:
+  - 0

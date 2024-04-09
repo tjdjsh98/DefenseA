@@ -2,10 +2,13 @@ using DuloGames.UI.Tweens;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class GirlAbility 
 {
     Player _player;
+    CardManager _cardManager;
+
     Inventory _inventory;
     // 아이템 등으로 추가된 능력치
     public float IncreasedAttackPowerPercentage { set;get; }
@@ -27,6 +30,10 @@ public class GirlAbility
     SkillSlot _diningSlot;
     private bool _dining;
 
+
+    //빠른재장전
+    Weapon _preWeapon;
+    int _preAmmoCount;
     #endregion
 
     #region 아이템 능력
@@ -35,7 +42,7 @@ public class GirlAbility
     float _preBlackShardsOfGlassHpRegen;
     float _blackShardsOfGlassCoefficient = 0.01f;
     // 탁한 잎
-    float _cludyLeafTime;
+    float _cludyLeafIncreaseAttackPowerPercentage = 20f;
     #endregion
 
     public void Init(Player player)
@@ -44,15 +51,37 @@ public class GirlAbility
         _player.Character.AttackHandler += OnAttack;
         _player.Character.AddtionalAttackHandler += OnAddtionalAttack;
         _inventory = Managers.GetManager<GameManager>().Inventory;
-
+        _cardManager = Managers.GetManager<CardManager>();
         RegistSkill();
     }
     public void AbilityUpdate()
     {
         AutoReload();
+        FastReload();
         _player.Character.IncreasedHpRegeneration = GetHpRegeneration();
     }
 
+    void FastReload()
+    {
+        if (!_cardManager.GetIsHaveAbility(CardName.빠른재장전)) return;
+        if (_player.WeaponSwaper.CurrentWeapon == null) return;
+
+        if (_preWeapon != _player.WeaponSwaper.CurrentWeapon)
+        {
+            _preWeapon = _player.WeaponSwaper.CurrentWeapon;
+            _preAmmoCount = _preWeapon.CurrentAmmo;
+            return;
+        }
+
+        if(_preAmmoCount > 0 && _player.WeaponSwaper.CurrentWeapon.CurrentAmmo == 0)
+        {
+            if(Random.Range(0,100) < _cardManager.GetCard(CardName.빠른재장전).Property)
+                _player.WeaponSwaper.CurrentWeapon.CompleteFastReload(_player);
+        }
+
+        _preAmmoCount = _player.WeaponSwaper.CurrentWeapon.CurrentAmmo;
+
+    }
     private void HandleCloudyLeaf()
     {
         
@@ -79,24 +108,10 @@ public class GirlAbility
     void OnAttack(Character target, int dmg)
     {
         CardManager manager = Managers.GetManager<CardManager>();
-    
+
         if (target == null || target.IsDead)
         {
-            if (GetIsHaveAbility(CardName.식욕))
-            {
-                Managers.GetManager<CardManager>().Predation += 1;
-            }
-            if (GetIsHaveAbility(CardName.식사준비))
-            {
-                Card card = Managers.GetManager<CardManager>().GetCard(CardName.식사준비);
-                if (card != null) { }
-                Managers.GetManager<CardManager>().Predation += (int)card.property;
-            }
-        }
-        if (GetIsHaveAbility(CardName.검은총알))
-        {
-            if(UnityEngine.Random.Range(0,100) < manager.GetCard(CardName.검은총알).property)
-                Managers.GetManager<CardManager>().AddBlackSphere(target.transform.position);
+            Managers.GetManager<CardManager>().Predation += Managers.GetManager<CardManager>().HuntingPredation;
         }
         if (GetIsHaveAbility(CardName.굶주림))
         {
@@ -118,7 +133,7 @@ public class GirlAbility
                 }
             }
 
-            if (_hungerHitCount >= (int)Managers.GetManager<CardManager>().GetCard(CardName.굶주림).property)
+            if (_hungerHitCount >= (int)Managers.GetManager<CardManager>().GetCard(CardName.굶주림).Property)
             {
                 _hungerTarget = null;
                 _hungerHitCount = 0;
@@ -126,11 +141,11 @@ public class GirlAbility
 
                 if (target.IsNotInstantlyDie)
                 {
-                    _player.Character.AddtionalAttack(_player.Character, dmg * 5, 0, Vector3.zero, target.transform.position); 
+                    _player.Character.AddtionalAttack(target, dmg * 5, 0, Vector3.zero, target.transform.position); 
                 }
                 else
                 {
-                    _player.Character.AddtionalAttack(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position);
+                    _player.Character.AddtionalAttack(target, target.MaxHp, 0, Vector3.zero, target.transform.position);
                 }
             }
 
@@ -141,7 +156,7 @@ public class GirlAbility
             Card card = manager.GetCard(CardName.충전);
             if (card != null)
             {
-                manager.CurrentElectricity += card.property;
+                manager.CurrentElectricity += card.Property;
             }
         }
         if (_dining)
@@ -181,10 +196,10 @@ public class GirlAbility
 
                 if (weapon.CurrentAmmo < weapon.MaxAmmo)
                 {
-                    if (_autoReloadElaspedTimeList[i] > weapon.ReloadTime)
+                    if (_autoReloadElaspedTimeList[i] > weapon.ReloadTime*2)
                     {
                         Managers.GetManager<TextManager>().ShowText(_player.transform.position + Vector3.up * 5,$"{weapon.WeaponName.ToString()} 장전완료" , 10, Color.green);
-                        weapon.CompleteReload();
+                        weapon.CompleteReload(false);
                         _autoReloadElaspedTimeList[i] = 0;
                     }
                     else
@@ -218,7 +233,7 @@ public class GirlAbility
     {
 
     }
-    public float GetIncreasedDamagePercentage()
+    public float GetIncreasedAttackPowerPercentage()
     {
         Character creature = Managers.GetManager<GameManager>().Creature;
         float percentage = 0;
@@ -231,7 +246,7 @@ public class GirlAbility
             Weapon weapon = _player.WeaponSwaper.CurrentWeapon;
             if (weapon != null)
             {
-                percentage += card.property * (weapon.MaxAmmo / 10);
+                percentage += card.Property * (weapon.MaxAmmo / 10);
             }
         }
 
@@ -241,7 +256,7 @@ public class GirlAbility
             card = Managers.GetManager<CardManager>().GetCard(CardName.마지막발악);
             if (card != null)
             {
-                percentage += card.property;
+                percentage += card.Property;
             }
         }
 
@@ -249,7 +264,7 @@ public class GirlAbility
         percentage += (int)(Managers.GetManager<CardManager>().Predation/10) * _inventory.GetItemCount(ItemName.포크)* 3f;
 
         // 아이템 : 탁한 잎
-        
+        percentage += _inventory.CloudyLeafActiveCount * _cludyLeafIncreaseAttackPowerPercentage;
 
         return percentage;
     }
@@ -266,7 +281,7 @@ public class GirlAbility
             Card card = Managers.GetManager<CardManager>().GetCard(CardName.마지막발악);
             if (card != null)
             {
-                percentage += card.property;
+                percentage += card.Property;
             }
         }
 
@@ -279,12 +294,7 @@ public class GirlAbility
 
         percentage += IncreasedReloadSpeedPercentage;
 
-        Card card = Managers.GetManager<CardManager>().GetCard(CardName.빠른장전);
-        if (card != null)
-        {
-            percentage += card.property;
-        }
-
+      
         return percentage;
     }
     public void Dining(SkillSlot slot)
@@ -311,3 +321,4 @@ public class GirlAbility
         return regen;
     }
 }
+

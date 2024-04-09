@@ -29,6 +29,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
     {
         _rigid = GetComponent<Rigidbody2D>();
         _trailRenderer = GetComponent<TrailRenderer>();
+        
     }
 
     public virtual void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0f)

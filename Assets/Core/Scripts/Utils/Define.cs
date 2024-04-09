@@ -121,6 +121,7 @@ public static class Define
         ImprovisedRifle,
         ImprovisedPistol,
         PumpShotgun,
+        LittleBlack,
         END
     }
 
@@ -140,6 +141,7 @@ public static class Define
         Parabola,
         Attach,
         Bullet,
+        Bezier,
         END
     }
 

@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
   m_Name: "\uB9C8\uC9C0\uB9C9\uBC1C\uC545"
   m_EditorClassIdentifier: 
-  <CardName>k__BackingField: 12
+  <CardName>k__BackingField: 11
   <CardSelectionType>k__BackingField: 0
   <CardDescription>k__BackingField: "\uAD34\uBB3C\uC774 \uC0AC\uB9DD\uD588\uB2E4\uBA74
     \uC18C\uB140\uC758 \uACF5\uACA9\uB825\uACFC \uACF5\uACA9\uC18D\uB3C4\uAC00 {0}%
@@ -24,6 +24,8 @@ MonoBehaviour:
   <PriorCards>k__BackingField: []
   <MaxUpgradeCount>k__BackingField: 2
   <PropertyList>k__BackingField:
-  - 20
-  - 40
-  - 60
+  - 50
+  - 75
+  - 150
+  <Property2List>k__BackingField:
+  - 0

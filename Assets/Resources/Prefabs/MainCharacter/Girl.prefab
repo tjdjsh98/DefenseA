@@ -369,7 +369,7 @@ MonoBehaviour:
   IsNotInstantlyDie: 0
   _isEnableRevive: 0
   _isEnableFly: 0
-  _isHaveDamageInvincibility: 1
+  _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
   _groundCheckRange:
@@ -424,7 +424,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _reloadGauge: {fileID: 0}
-  _weaponNameList: ffffffff0c000000ffffffff
+  _weaponNameList: 0a0000000c0000000e000000
   _weaponSlotList:
   - {fileID: 3083050288797914090}
   - {fileID: 8951124260177341496}

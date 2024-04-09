@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using TreeEditor;
 using UnityEngine;
 
-public class DashAttack : MonoBehaviour
+public class Boar : MonoBehaviour
 {
     Character _character;
     EnemyAI _enemyAI;
@@ -20,14 +21,20 @@ public class DashAttack : MonoBehaviour
     float _dashDuration = 2;
     Vector3 _dashDirection;
 
+    [SerializeField] GameObject[] _injectionPositions;
+
     private void Awake()
     {
+        
         _character = GetComponent<Character>();
         _enemyAI = GetComponent<EnemyAI>();
+        
     }
 
     private void Update()
     {
+    
+
         if (_dashCoolTime > _dashCoolTimeElased)
         {
             _dashCoolTimeElased+= Time.deltaTime;

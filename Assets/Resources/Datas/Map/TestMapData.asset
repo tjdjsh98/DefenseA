@@ -13,9 +13,14 @@ MonoBehaviour:
   m_Name: TestMapData
   m_EditorClassIdentifier: 
   sceneName: City_01
-  mentalDownTime: 180
   timeWave: []
   distanceWave: []
+  mentalWave: []
   mapSize: 100
   nextMapData: {fileID: 0}
   shopItemDataList: []
+  randomEvent: []
+  randomEventInterval: 200
+  initMutifly: 1
+  multiflyInterval: 60
+  addMultifly: 0.2

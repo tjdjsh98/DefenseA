@@ -39,7 +39,7 @@ public class ElectricWeapon : Weapon
             if (user is Player player)
             {
                 if (player.GirlAbility.GetIsHaveAbility(CardName.¶ó½ºÆ®¼¦) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.¶ó½ºÆ®¼¦).property;
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.¶ó½ºÆ®¼¦).Property;
             }
 
             projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);

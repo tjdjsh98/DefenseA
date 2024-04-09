@@ -33,7 +33,7 @@ public class GameManager : ManagerBase
     [SerializeField] ItemName _itemName;
     [SerializeField] bool _addItem;
     [SerializeField] bool _removeItem;
-
+    [SerializeField] float _timeScale = 1;
     
     [Header("게임 진행")]
     [SerializeField] bool _stop;
@@ -54,6 +54,8 @@ public class GameManager : ManagerBase
     public float Mental { set; get; } = 100;
     public float MentalAccelerationPercentage = 0;
 
+    public Character Boss { get; set; }
+
     #endregion
 
     [Header("타임라인")]
@@ -71,6 +73,7 @@ public class GameManager : ManagerBase
     List<Wave> _mentalWaveList = new List<Wave>();
     float _totalTime;
     float _stageTime;
+    public float StatusMultifly => _mapData != null ?(_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly): 1;
 
     public int HuntingCount { set; get; }
 
@@ -310,6 +313,13 @@ public class GameManager : ManagerBase
   
     void Debuging()
     {
+        if (Time.timeScale != 0)
+        {
+            if (_timeScale <= 0)
+                Time.timeScale = 0.01f;
+            else
+                Time.timeScale = _timeScale;
+        }
         if (_summonDummy)
         {
             EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Slime);
@@ -417,6 +427,7 @@ public class GameManager : ManagerBase
                         Character character = enemy.GetComponent<Character>();
                         enemy.transform.position = topPosition.Value;
                         character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.multiply));
+                        Boss = character;
                     }
                 }
                 else

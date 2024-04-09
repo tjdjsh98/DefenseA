@@ -10,21 +10,21 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
-  m_Name: "\uAC80\uC740\uCD1D\uC54C"
+  m_Name: "\uBE60\uB978\uC7AC\uC7A5\uC804"
   m_EditorClassIdentifier: 
-  <CardName>k__BackingField: 15
+  <CardName>k__BackingField: 16
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\uACF5\uACA9 {0}% \uD655\uB960\uB85C \uAC80\uC740\uAD6C\uCCB4\uAC00
-    \uC0DD\uC131\uB429\uB2C8\uB2E4."
+  <CardDescription>k__BackingField: "\uD0C4\uD658\uC744 \uBAA8\uB450 \uC0AC\uC6A9\uD55C
+    \uCD1D\uC744 {0}% \uD655\uB960\uB85C \uC989\uC2DC \uC7A5\uC804\uC644\uB8CC\uD569\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
   <coolTimeList>k__BackingField:
   - 0
-  <PriorCards>k__BackingField:
-  - priorCardName: 0
-    priorUpgradeCount: 0
+  <PriorCards>k__BackingField: []
   <MaxUpgradeCount>k__BackingField: 2
   <PropertyList>k__BackingField:
-  - 5
   - 10
   - 20
+  - 50
+  <Property2List>k__BackingField:
+  - 0

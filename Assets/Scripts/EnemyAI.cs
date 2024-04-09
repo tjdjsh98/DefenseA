@@ -11,47 +11,48 @@ public class EnemyAI : MonoBehaviour
     protected Character _character;
     protected Rigidbody2D _rigidbody;
 
+    [Header("적 감지 범위 & 공격 사거리")]
     [SerializeField] protected Define.Range _targetDetectRange;
     [SerializeField]protected Define.Range _enableAttackRange;
     public Define.Range EnableAttackRange => _enableAttackRange;
     [SerializeField]protected Define.Range _attackRange;
     public Define.Range AttackRange => _attackRange;
-
+    protected bool _isTargetInRange;
+    public bool IsTargetInRange => _isTargetInRange;
     [SerializeField] protected Character _target;
+
     public Character Target=>_target;
+    Coroutine _detectTargetCoroutine;
 
+    [Header("행동 제약")]
     [field:SerializeField]public bool IsEnableBodyAttack = true;
-
-    // 움직임
+    [field:SerializeField]public bool IsStopDetectTarget { get; set; }      // 적이 감지 되었을 떄 움직임을 멈춤
     public float MoveRate { get; set; } = 1;     //움직임 배율 => 달리기 , 걷기에 사용
+    [SerializeField] protected bool _noAttack;                              // 체크되면 일반 공격하지 않음
 
     // 공격과 공격사이의 딜레이
-    [SerializeField] protected bool _noAttack;
+    [Header("공격 조건")]
     [SerializeField] protected float _attackDelay = 1;
     protected  float _attackElapsed;
-    protected bool _isTargetInRange;
-    public bool IsTargetInRange=>_isTargetInRange;
-
+  
     // 공격하는 중의 딜레이
     protected float _attackingDelay = 2;
     protected float _attackingElasepd = 0;
-
-    [field:SerializeField] public bool IsAutoMove { set; get; } = true;
-    [SerializeField] bool _isHaveAnimation;
-
-    protected SpriteRenderer _attackRangeSprite;
+    [SerializeField] bool _isHaveAnimation;     // 일반 공격 때 특정 공격 모션을 가지고 있다면 체크
     protected List<Character> _attackedList = new List<Character>();
 
-    [SerializeField] float _itemDropPercentage;
 
-    Coroutine _detectTargetCoroutine;
+    // 임시로 공격 범위 표시
+    protected SpriteRenderer _attackRangeSprite;
 
     // 바디 어택
+    [Header("바디 어택")]
     Define.Range _bodySize;
     [SerializeField]float _bodyAttackKnockBackPower = 50;
     [SerializeField]float _bodyAttackCoolTime = 1;
     List<GameObject> _bodyAttackList = new List<GameObject>();
     Coroutine _bodyAttackCoroutine;
+
 
     protected virtual void Awake()
     {
@@ -144,18 +145,6 @@ public class EnemyAI : MonoBehaviour
         Managers.GetManager<GameManager>().Money += 1;
         Managers.GetManager<GameManager>().HuntingCount += 1;
 
-        int percentage = 0;
-        if (Managers.GetManager<CardManager>().AbilityCount == 0) percentage = 15;
-        else if (Managers.GetManager<CardManager>().AbilityCount == 1) percentage = 13;
-        else if (Managers.GetManager<CardManager>().AbilityCount == 2) percentage = 11;
-        else if (Managers.GetManager<CardManager>().AbilityCount == 3) percentage = 9;
-        else if(Managers.GetManager<CardManager>().AbilityCount == 4) percentage = 7;
-        else percentage = 1;
-        
-        if (Random.Range(0, 100f) < percentage) 
-        {
-            Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
-        }
     }
 
     protected virtual void Move()
@@ -163,8 +152,7 @@ public class EnemyAI : MonoBehaviour
         if (_isTargetInRange) return;
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
-
-        if (!IsAutoMove) return;
+        if (IsStopDetectTarget && _target != null) return;
 
      
 

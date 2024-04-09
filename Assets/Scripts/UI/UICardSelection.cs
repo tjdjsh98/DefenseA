@@ -144,7 +144,10 @@ public class UICardSelection : UIBase
             float value = 0;
             if (_cardSelectionList[i].cardData.PropertyList.Count > cardRank+1)
                 value = _cardSelectionList[i].cardData.PropertyList[cardRank+1];
-            string cardDescription = string.Format(_cardSelectionList[i].cardData.CardDescription, value);
+            float value2 = 0;
+            if (_cardSelectionList[i].cardData.Property2List.Count > cardRank + 1)
+                value2 = _cardSelectionList[i].cardData.Property2List[cardRank + 1];
+            string cardDescription = string.Format(_cardSelectionList[i].cardData.CardDescription,value, value2);
 
             _cardDescriptionTextList[i].text = cardDescription;
         }

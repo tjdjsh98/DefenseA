@@ -59,6 +59,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     bool _isSliding;
     bool _isRun;
     bool _isFire;
+    public bool IsFire => _isFire;
 
     float _runToFireCoolTime = 0.2f;
     float _runToFireElaspedTime = 0f;
@@ -92,6 +93,7 @@ public class Player : MonoBehaviour, IWeaponUsable
 
         Managers.GetManager<InputManager>().MouseButtonDownHandler += UseWeapon;
         Managers.GetManager<InputManager>().MouseButtonHoldHandler += AutoUseWeapon;
+        Managers.GetManager<InputManager>().MouseButtonUpHandler += UnuseWeapon;
         Managers.GetManager<InputManager>().ReloadKeyDownHandler += OnReloadKeyDown;
         Managers.GetManager<InputManager>().ReloadKeyHoldHandler += OnReloadKeyHold;
         Managers.GetManager<InputManager>().ReloadKeyUpHandler += OnReloadKeyUp;
@@ -198,7 +200,6 @@ public class Player : MonoBehaviour, IWeaponUsable
         // 달리기 -> 총 전환 시 약간의 텀
         _runToFireElaspedTime += Time.deltaTime;
         _isRun = false;
-        _isFire = false;
 
     }
 
@@ -519,7 +520,10 @@ public class Player : MonoBehaviour, IWeaponUsable
         if (_weaponSwaper.CurrentWeapon != null && _weaponSwaper.CurrentWeapon.IsAuto)
             _weaponSwaper.CurrentWeapon.Fire(this);
     }
-
+    void UnuseWeapon()
+    {
+        _isFire = false;
+    }
     bool CheckIsCloseEnemy()
     {
         Define.Range range = new Define.Range()
@@ -563,10 +567,10 @@ public class Player : MonoBehaviour, IWeaponUsable
 
         return percentage;
     }
-    public float GetIncreasedDamagePercentage()
+    public float GetIncreasedAttackPowerPercentage()
     {
         float percentage = 0;
-        percentage += GirlAbility.GetIncreasedDamagePercentage();
+        percentage += GirlAbility.GetIncreasedAttackPowerPercentage();
 
         return percentage;
     }

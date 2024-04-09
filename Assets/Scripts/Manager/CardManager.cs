@@ -33,7 +33,7 @@ public class CardManager : ManagerBase
     // 검은구체 관련 변수
     List<BlackSphere> _blackSphereList = new List<BlackSphere>();
     public List<BlackSphere> BlackSphereList => _blackSphereList;
-    public int MaxBlackSphereCount { set; get; } = 10;
+    public int MaxBlackSphereCount { set; get; } = 0;
     public Action<BlackSphere> BlackSphereAddedHandler;             // 갯수가 초과 되면 null로 실행됨
     float _blackSphereCoolTime = 0;
     float _blackSphereTime;
@@ -54,7 +54,7 @@ public class CardManager : ManagerBase
     int _predation;
     public int Predation { get { return _predation; }set { _predation = Mathf.Clamp(value, 0, _maxPredation); } }
 
-
+    public int HuntingPredation { set; get; }
     public override void Init()
     {
         RegistSkill();
@@ -92,7 +92,7 @@ public class CardManager : ManagerBase
     public override void ManagerUpdate()
     {
         HandleSkill();
-        ProcessCommonAbility();
+        HandleCommonAbility();
 
         // 제거된 검은구체 제거
         for (int i = _blackSphereList.Count - 1; i >= 0; i--)
@@ -286,7 +286,7 @@ public class CardManager : ManagerBase
         slot.skillTime = 0;
     }
 
-    void ProcessCommonAbility()
+    void HandleCommonAbility()
     {
         // 전기충전
         if (MaxElectricity != 0)
@@ -355,19 +355,23 @@ public class CardManager : ManagerBase
         if (card != null && card.cardData != null)
         {
             int rank = card.rank;
-            float value = card.cardData.PropertyList[rank];
+            float value = 0;
+            if (rank < card.cardData.PropertyList.Count)
+                value = card.cardData.PropertyList[rank];
+            float value2 = 0;
+            if(rank < card.cardData.Property2List.Count)
+                value2 = card.cardData.Property2List[rank];
 
             switch (card.cardData.CardName)
             {
                 case CardName.검은구체:
                     if (rank > 0)
+                    {
                         _blackSphereCoolTime -= card.cardData.PropertyList[rank - 1];
+                        MaxBlackSphereCount -= (int)card.cardData.Property2List[rank - 1];
+                    }
                     _blackSphereCoolTime += value;
-                    break;
-                case CardName.구체통제:
-                    if (rank > 0)
-                        MaxBlackSphereCount -= (int)card.cardData.PropertyList[rank - 1];
-                    MaxBlackSphereCount += (int)value;
+                    MaxBlackSphereCount += (int)value2;
                     break;
                 case CardName.일제사격:
                     if (rank > 0)
@@ -375,23 +379,22 @@ public class CardManager : ManagerBase
                     BlackSphereAttackPower += (int)value;
                     break;
                 case CardName.미세전력:
-                    _maxElectricity += 100;
-                    ChargeElectricty += 0.1f;
-                    break;
-                case CardName.추가배터리:
                     if (rank > 0)
+                    {
                         _maxElectricity -= card.cardData.PropertyList[rank - 1];
+                        ChargeElectricty -= (int)card.cardData.Property2List[rank - 1];
+                    }
                     _maxElectricity += value;
-                    break;
-                case CardName.자가발전:
-                    if (rank > 0)
-                        ChargeElectricty -= card.cardData.PropertyList[rank - 1];
-                    ChargeElectricty += value;
+                    ChargeElectricty += value2;
                     break;
                 case CardName.식욕:
                     if (rank > 0)
+                    {
                         _maxPredation -= (int)card.cardData.PropertyList[rank - 1];
+                        HuntingPredation -= (int)card.cardData.Property2List[rank - 1];
+                    }
                     _maxPredation += (int)value;
+                    HuntingPredation += (int)value2;
                     break;
             }
         }
@@ -403,19 +406,23 @@ public class CardManager : ManagerBase
             int rank = card.rank;
             if (rank >= 0)
             {
-                float value = card.cardData.PropertyList[rank];
+                float value = 0;
+                if (rank < card.cardData.PropertyList.Count)
+                    value = card.cardData.PropertyList[rank];
+                float value2 = 0;
+                if (rank < card.cardData.Property2List.Count)
+                    value2 = card.cardData.Property2List[rank];
 
                 switch (card.cardData.CardName)
                 {
                     case CardName.검은구체:
                         if (rank > 0)
+                        {
                             _blackSphereCoolTime += card.cardData.PropertyList[rank - 1];
+                            MaxBlackSphereCount += (int)card.cardData.Property2List[rank - 1];
+                        }
                         _blackSphereCoolTime -= value;
-                        break;
-                    case CardName.구체통제:
-                        if (rank > 0)
-                            MaxBlackSphereCount += (int)card.cardData.PropertyList[rank - 1];
-                        MaxBlackSphereCount -= (int)value;
+                        MaxBlackSphereCount -= (int)value2;
                         break;
                     case CardName.일제사격:
                         if (rank > 0)
@@ -423,23 +430,22 @@ public class CardManager : ManagerBase
                         BlackSphereAttackPower -= (int)value;
                         break;
                     case CardName.미세전력:
-                        _maxElectricity -= 100;
-                        ChargeElectricty -= 0.1f;
-                        break;
-                    case CardName.추가배터리:
                         if (rank > 0)
+                        {
                             _maxElectricity += card.cardData.PropertyList[rank - 1];
+                            ChargeElectricty += card.cardData.Property2List[rank - 1];
+                        }
                         _maxElectricity -= value;
-                        break;
-                    case CardName.자가발전:
-                        if (rank > 0)
-                            ChargeElectricty += card.cardData.PropertyList[rank - 1];
-                        ChargeElectricty -= value;
+                        ChargeElectricty -= value2 ;
                         break;
                     case CardName.식욕:
                         if (rank > 0)
+                        {
                             _maxPredation += (int)card.cardData.PropertyList[rank - 1];
+                            HuntingPredation += (int)card.cardData.Property2List[rank - 1];
+                        }
                         _maxPredation -= (int)value;
+                        HuntingPredation -= (int)value2;
                         break;
                 }
             }
@@ -581,7 +587,7 @@ public class Card
 {
     public CardData cardData;
     public int rank = -1;
-    public float property
+    public float Property
     {
         get
         {
@@ -589,6 +595,16 @@ public class Card
                 return 0;
 
             return cardData.PropertyList[rank];
+        }
+    }
+    public float Property2
+    {
+        get
+        {
+            if (cardData == null || cardData.Property2List.Count <= rank)
+                return 0;
+
+            return cardData.Property2List[rank];
         }
     }
 }

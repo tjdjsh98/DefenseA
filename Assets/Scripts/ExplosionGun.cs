@@ -62,12 +62,12 @@ public class ExplosionGun : Weapon
             _projectileList.Add(projectile);
             float damage = AttackPower;
 
-            damage += damage * user.GetIncreasedDamagePercentage() / 100f;
+            damage += damage * user.GetIncreasedAttackPowerPercentage() / 100f;
             // 플레이어 사용자가 플레이어라면
             if (user is Player player)
             {
                 if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).property;
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).Property;
             }
             projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(user.Character, direction.normalized);
@@ -89,14 +89,7 @@ public class ExplosionGun : Weapon
         {
             if (user is Player player)
             {
-                if (player.GirlAbility.GetIsHaveAbility(CardName.빠른장전))
-                {
-                    _reloadGauge.Point(0.7f, 0.9f);
-                }
-                else
-                {
-                    _reloadGauge.DisablePoint();
-                }
+                 _reloadGauge.DisablePoint();
             }
             _reloadGauge.SetRatio(0, 1);
             _reloadGauge.gameObject.SetActive(true);
@@ -109,7 +102,7 @@ public class ExplosionGun : Weapon
             if (bullet == null) continue;
             Effect explosion = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
             float radius = _explosionRange.size.x;
-            explosion.SetMultiflySize(radius/6);
+            explosion.SetMultiflySize(radius/4);
             explosion.Play(bullet.transform.position);
             Util.RangeCastAll2D(bullet.gameObject, _explosionRange, Define.CharacterMask, (hit) =>
             {

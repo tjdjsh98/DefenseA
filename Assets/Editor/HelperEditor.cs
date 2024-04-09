@@ -36,6 +36,7 @@ public class HelperEditor : EditorWindow
         "\n    [field: SerializeField] public List<PriorCardData> PriorCards {{ set;get; }}" +
         "\n    [field: SerializeField] public int MaxUpgradeCount {{ get; set; }}" +
         "\n    [field: SerializeField] public List<float> PropertyList {{ get; set; }}" +
+        "\n    [field: SerializeField] public List<float> Property2List {{ get; set; }}" +
         "\n" +
         "\n\n    public int GetEnumToInt()" +
         "\n    {{" +
@@ -204,8 +205,8 @@ public class HelperEditor : EditorWindow
         for (int i = 1; i < lines.Length; i++)
         {
             Debug.Log(lines[i]);
-            string[] words = lines[i].Split(',');    
-
+            string[] words = lines[i].Split(',');
+            if (words[0].Equals(string.Empty)) continue;
             CardData data = ScriptableObject.CreateInstance<CardData>();
             data.name = words[0];
             data.CardName = GetCardName(words[0]);
@@ -247,6 +248,14 @@ public class HelperEditor : EditorWindow
             for (int j = 0;j < properties.Length; j++)
             {
                 data.PropertyList.Add(ParseFloat(properties[j]));
+            }
+
+            string[] properties2 = words[9].Split("|");
+            data.Property2List = new List<float>();
+
+            for (int j = 0; j < properties2.Length; j++)
+            {
+                data.Property2List.Add(ParseFloat(properties2[j]));
             }
 
 

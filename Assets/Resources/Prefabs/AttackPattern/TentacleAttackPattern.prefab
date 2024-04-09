@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7114780370982223898}
   - component: {fileID: 6759732668928186902}
   - component: {fileID: 4040140315195187390}
+  - component: {fileID: 5330741860164512006}
   m_Layer: 0
   m_Name: TentacleAttackPattern
   m_TagString: Untagged
@@ -887,6 +888,18 @@ MonoBehaviour:
         ResetEvents:
           m_PersistentCalls:
             m_Calls: []
+--- !u!210 &5330741860164512006
+SortingGroup:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3254248921352035256}
+  m_Enabled: 1
+  m_SortingLayerID: -256922147
+  m_SortingLayer: 3
+  m_SortingOrder: 3
+  m_SortAtRoot: 0
 --- !u!1 &3436320771805773187
 GameObject:
   m_ObjectHideFlags: 0
@@ -990,7 +1003,7 @@ SpriteRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -256922147
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 5
   m_Sprite: {fileID: 7482667652216324306, guid: 48e93eef0688c4a259cb0eddcd8661f7, type: 3}
   m_Color: {r: 1, g: 0, b: 0, a: 0.24705882}

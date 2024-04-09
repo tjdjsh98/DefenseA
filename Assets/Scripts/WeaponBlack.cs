@@ -38,7 +38,7 @@ public class WeaponBlack : Weapon
             if (user is Player player)
             {
                 if (player.GirlAbility.GetIsHaveAbility(CardName.¶ó½ºÆ®¼¦) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.¶ó½ºÆ®¼¦).property;
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.¶ó½ºÆ®¼¦).Property;
             }
 
             projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
@@ -49,7 +49,7 @@ public class WeaponBlack : Weapon
             _currentAmmo = 0;
         }
     }
-    public override void CompleteReload()
+    public override void CompleteReload(bool isHideGauge = false)
     {
         if (_isAllReloadAmmo)
         {
@@ -60,7 +60,7 @@ public class WeaponBlack : Weapon
             //else
             //  _currentAmmo = _maxAmmo;
             _reloadElapsed = 0;
-            if (_reloadGauge)
+            if (_reloadGauge && isHideGauge)
                 _reloadGauge.gameObject.SetActive(false);
 
             _reloadingBlackSphere = null;

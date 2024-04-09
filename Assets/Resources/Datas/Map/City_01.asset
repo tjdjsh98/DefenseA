@@ -63,7 +63,12 @@ MonoBehaviour:
     startTime: 150
     endTime: 300
     enemyPreset: {fileID: 3835410314699287608, guid: 4246aaf2e7756c34f9e946138c2a4d7e, type: 3}
-  distanceWave: []
+  distanceWave:
+  - genTime: 0
+    multiply: 1
+    genLocalPosition: {x: 100, y: 0, z: 0}
+    enemyName: 5
+    distance: 400
   mentalWave:
   - genTime: 20
     multiply: 1

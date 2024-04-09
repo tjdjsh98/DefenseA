@@ -50,16 +50,18 @@ public class CreatureAI : MonoBehaviour
     float _normalAttackCoolTime => 3f/Util.CalcPercentage(CreatureAbility.GetIncreasedAttackSpeedPercentage());
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
 
+    public bool IsStopAI { set; get; }
     Character _closeEnemy;
-
     Coroutine _followPlayerCoroutine;
    
 
     [SerializeField] float _throwPower;
 
     // 부활
-    float _reviveTime = 20;
-    float _reviveElasped;
+    public float ReviveTime { private set; get; } = 20;
+    public float ReviveElasped { get;private set; }
+
+
     private void Awake()
     {
         _character = GetComponent<Character>();
@@ -67,16 +69,26 @@ public class CreatureAI : MonoBehaviour
         _model = transform.Find("Model").gameObject;
         _soulModel = transform.Find("SoulModel").gameObject;
         _creatureAbility.Init(this);
-
         Managers.GetManager<GameManager>().CreatureAI = this;
         _character.CharacterDeadHandler += OnCharacterDead;
+        _character.DamagedHandler += OnDamaged;
 
     }
+
     private void OnCharacterDead()
     {
         _model.gameObject.SetActive(false);
         _character.Move(Vector2.zero);
-        _reviveElasped = 0;
+        ReviveElasped = 0;
+    }
+    void OnDamaged(Character attacker, int damage, float power, Vector3 direction, Vector3 point, float stunTime)
+    {
+        _closeEnemy = null;
+        if (_followPlayerCoroutine != null)
+        {
+            StopCoroutine(_followPlayerCoroutine);
+        }
+
     }
     private void OnDrawGizmosSelected()
     {
@@ -107,8 +119,6 @@ public class CreatureAI : MonoBehaviour
         }
 
         DefaultAI();
-
-
         _creatureAbility.AbilityUpdate();
     }
 
@@ -116,11 +126,11 @@ public class CreatureAI : MonoBehaviour
     {
         if (_character.IsDead)
         {
-            _reviveElasped += Time.deltaTime;
-            if (_reviveElasped > _reviveTime)
+            ReviveElasped += Time.deltaTime;
+            if (ReviveElasped > ReviveTime)
             {
                 _character.Revive();
-                _reviveElasped = 0;
+                ReviveElasped = 0;
                 _model.gameObject.SetActive(true);
                 transform.position = Managers.GetManager<GameManager>().Player.transform.position;
             }
@@ -131,6 +141,8 @@ public class CreatureAI : MonoBehaviour
         if (_closeEnemy) return;
         if (_followPlayerCoroutine != null) return;
         if (_character.IsAttack) return;
+        if (IsStopAI) return;
+
 
         if (_player == null)
         {
@@ -138,7 +150,7 @@ public class CreatureAI : MonoBehaviour
             return;
         }
 
-        if ((_player.transform.position - transform.position).magnitude > _girlToCreatureDistance)
+        if (!_player.IsFire && (_player.transform.position - transform.position).magnitude > _girlToCreatureDistance)
         {
             FollowPlayer();
         }
@@ -163,7 +175,7 @@ public class CreatureAI : MonoBehaviour
             attackRange.size = new Vector3(attackRange.size.x / 4, attackRange.size.y, 0);
             while (true)
             {
-                if (_closeEnemy == null || _character.IsAttack) break;
+                if (_closeEnemy == null || _character.IsAttack || _character.IsStun) break;
                 _character.Move(_closeEnemy.transform.position - transform.position);
 
                 if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (hit) =>
@@ -178,7 +190,7 @@ public class CreatureAI : MonoBehaviour
                 }).Count > 0) break;
                 yield return null;
             }
-            if (_closeEnemy != null && !_character.IsAttack)
+            if (_closeEnemy != null && !_character.IsAttack && !_character.IsStun)
             {
                 _character.Move(Vector2.zero);
                 _character.TurnBody(_closeEnemy.transform.position - transform.position);
@@ -210,10 +222,11 @@ public class CreatureAI : MonoBehaviour
     {
         while (true)
         {
+            if (_player.IsFire || _character.IsAttack) break;
             Vector3 distacne = _player.transform.position - transform.position;
             if (Mathf.Abs(distacne.y) < 3 && Mathf.Abs(distacne.x) > _girlToCreatureDistance)
             {
-                _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -1 : 1)));
+                _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -1 : 1))/ _girlToCreatureDistance);
                 _closeEnemy = GetCloseEnemy();
                 if (_closeEnemy != null)
                 {
@@ -261,10 +274,6 @@ public class CreatureAI : MonoBehaviour
    
     void NormalAttack()
     {
-        if (CreatureAbility.GetIsHaveAbility(CardName.분노))
-        {
-            _character.Attack(_character, 1, 0, Vector3.zero, _character.GetCenter(), 0);
-        }
         List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _normalAttackRange, LayerMask.GetMask("Character"));
 
         foreach (var hit in hits)

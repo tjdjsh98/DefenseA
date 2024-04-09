@@ -109,6 +109,7 @@ public class Character : MonoBehaviour,IHp
         _animator = GetComponent<Animator>();
         _boxCollider = GetComponent<BoxCollider2D>(); 
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
+
         _hp = _maxHp;
         if (_animator)
             _animator.logWarnings = false;

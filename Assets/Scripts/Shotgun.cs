@@ -42,7 +42,7 @@ public class Shotgun : Weapon
             if (user is Player player)
             {
                 if (player.GirlAbility.GetIsHaveAbility(CardName.¶ó½ºÆ®¼¦) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.¶ó½ºÆ®¼¦).property;
+                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.¶ó½ºÆ®¼¦).Property;
             }
             Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bullet);
             projectile.transform.position = _firePosition.transform.position;

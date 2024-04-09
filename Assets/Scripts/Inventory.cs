@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
+using Unity.VisualScripting.ReorderableList;
 using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -66,11 +67,17 @@ public class Inventory
     bool _isActiveBloodyBoneNecklace = false;
     float _bloodyBoneNecklaceTime;
 
+    // 탁한 잎
+    public int CloudyLeafActiveCount = 0;
+    public float _cloudyLeafDuration = 7;
+    public float _cloudyLeafTime = 0;
+
     public void InventoryUpdate()
     {
         HandleDarkSphereForthFragment();
         HandleLightingRod();
         BloodyBoneNecklace();
+        HandleCloudyLeaf();
     }
 
     private void HandleDarkSphereForthFragment()
@@ -125,6 +132,25 @@ public class Inventory
                     Managers.GetManager<GameManager>().Girl.Hp += 3;
                     Managers.GetManager<GameManager>().Creature.Hp += 3;
                 }
+            }
+        }
+    }
+
+    void HandleCloudyLeaf()
+    {
+        _cloudyLeafTime += Time.deltaTime;
+        if (_cloudyLeafDuration < _cloudyLeafTime)
+        {
+            CloudyLeafActiveCount = 0;
+            _cloudyLeafTime = 0;
+            for(int i = 0; i < GetItemCount(ItemName.탁한잎); i++)
+            {
+                if (CardManager.BlackSphereList.Count <= 0) return;
+
+                BlackSphere blackSphere = CardManager.BlackSphereList[0];
+                CardManager.BlackSphereList.RemoveAt(0);
+                blackSphere.MoveToDestination(Girl.GetCenter(), 0.1f, true);
+                CloudyLeafActiveCount++;
             }
         }
     }

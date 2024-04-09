@@ -32,7 +32,6 @@ public class EnemyGroup : MonoBehaviour
           
             _initLocalPositions.Add(Vector3.zero);
 
-            enemy.IsAutoMove = false;
             _enemyCharacterList.Add(enemy.GetComponent<Character>());
             _targetPositions.Add(enemy.transform.localPosition);
             _enemyCharacterList[_enemyCharacterList.Count - 1].SetSpeed(_speed);

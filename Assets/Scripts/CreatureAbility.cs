@@ -1,3 +1,5 @@
+using MoreMountains.Feedbacks;
+using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -23,8 +25,8 @@ public class CreatureAbility
     */
     [SerializeField] int _debugAttackRangeIndex;
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
-
     Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
+    bool _isProhibitSkill;
 
     //생존본능
     [SerializeField] Define.Range _survivalIntinctRange;
@@ -32,6 +34,7 @@ public class CreatureAbility
     [SerializeField] int _survivalIntinctCount;
     [SerializeField] float _survivalIntinctElapsed;
 
+    
 
     #region 아이템
     //바늘과 가죽
@@ -70,6 +73,7 @@ public class CreatureAbility
         _creatureAI.Character.IncreasedHpRegeneration = GetHpRegeneration();
     }
 
+    
     void OnAttack(Character target, int damage)
     {
         CardManager manager = Managers.GetManager<CardManager>();
@@ -79,19 +83,13 @@ public class CreatureAbility
             Card card = manager.GetCard(CardName.충전);
             if (card != null)
             {
-                Managers.GetManager<CardManager>().CurrentElectricity += card.property;
+                Managers.GetManager<CardManager>().CurrentElectricity += card.Property;
             }
         }
         if (target == null || target.IsDead)
         {
-            if (GetIsHaveAbility(CardName.식욕))
-            {
-                Managers.GetManager<CardManager>().Predation+=1;
-            }
-            if (GetIsHaveAbility(CardName.식사예절))
-            {
-                Managers.GetManager<CardManager>().Predation += 3;
-            }
+            Managers.GetManager<CardManager>().Predation += Managers.GetManager<CardManager>().HuntingPredation;
+
             int count = _inventory.GetItemCount(ItemName.바늘과가죽);
             if (count >0 )
             {
@@ -103,18 +101,7 @@ public class CreatureAbility
     void OnDamage(Character attacker, int damage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
-        if (GetIsHaveAbility(CardName.검게흐르는))
-        {
-            Card card = manager.GetCard(CardName.검게흐르는);
-            if (card != null)
-            {
-                if (Random.Range(0, 100) < card.property)
-                {
-                    manager.AddBlackSphere(_creatureAI.Character.GetCenter());
-                }
-
-            }
-        }
+      
     }
     public void ApplyCardAbility(Card card)
     {
@@ -162,11 +149,7 @@ public class CreatureAbility
         percentage += IncreasedAttackPowerPercentage;
         CardManager cardManager = Managers.GetManager<CardManager>();
 
-        if (GetIsHaveAbility(CardName.분노))
-        {
-            percentage += 20;
-        }
-
+       
 
         return percentage;
     }
@@ -176,11 +159,7 @@ public class CreatureAbility
         percentage += IncreasedAttackSpeedPercentage;
         CardManager cardManager = Managers.GetManager<CardManager>();
 
-        if (GetIsHaveAbility(CardName.분노))
-        {
-            percentage += 20;
-        }
-
+ 
 
         return percentage;
     }
@@ -191,7 +170,7 @@ public class CreatureAbility
         if (GetIsHaveAbility(CardName.생존본능))
         {
             regen -= _preSurvivalIntinctValue;
-            _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).property;
+            _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).Property;
             regen += _preSurvivalIntinctValue;
         }
 
@@ -228,14 +207,13 @@ public class CreatureAbility
     {
         _skillDictionary.Add(CardName.울부짖기, PlayRoar);
         _skillDictionary.Add(CardName.쇼크웨이브, PlayShockwave);
-        _skillDictionary.Add(CardName.땅구르기, PlayStempGround);
         _skillDictionary.Add(CardName.전기방출, PlayElectricRelease);
     }
 
     public void UseSkill(SkillSlot slot)
     {
         if (_creatureAI.Character.IsDead) return;
-        if (_creature.IsAttack) return;
+        if (_isProhibitSkill) return;
         if (slot.card == null || slot.card.cardData == null) return;
 
         if (_skillDictionary.TryGetValue(slot.card.cardData.CardName, out var func))
@@ -279,7 +257,7 @@ public class CreatureAbility
                     Character character = hit.collider.gameObject.GetComponent<Character>();
                     if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                     {
-                        _creature.Attack(character, Mathf.RoundToInt(_creature.AttackPower * slot.card.property), 50, character.transform.position - center, hit.point);
+                        _creature.Attack(character, Mathf.RoundToInt(_creature.AttackPower * slot.card.Property), 50, character.transform.position - center, hit.point);
                     }
                 }
             }
@@ -308,7 +286,7 @@ public class CreatureAbility
                 Character c = hit.collider.GetComponent<Character>();
                 if (c != null && c.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _creature.Attack(c, Mathf.RoundToInt(_creature.AttackPower * slot.card.property), 100, Vector3.up, hit.point, 1);
+                    _creature.Attack(c, Mathf.RoundToInt(_creature.AttackPower * slot.card.Property), 100, Vector3.up, hit.point, 1);
                 }
             }
         }
@@ -320,12 +298,18 @@ public class CreatureAbility
         if (slot.isActive) return;
         if (slot.skillCoolTime > slot.skillTime) return;
 
+        _isProhibitSkill = true;
         slot.isActive = true;
-
         _creatureAI.StartCoroutine(CorPlayRoar(slot));
     }
     IEnumerator CorPlayRoar(SkillSlot slot)
     {
+        _creatureAI.IsStopAI = true;
+        // 괴물이 일반 공격 시 잠시 기다린다.
+        while (_creature.IsAttack)
+        {
+            yield return null;
+        }
         _creature.IsAttack = true;
 
         while (Mathf.Abs(_creature.MySpeed.x) > 0.1f)
@@ -337,23 +321,26 @@ public class CreatureAbility
         if (character)
         {
             _creature.TurnBody(character.transform.position - _creature.transform.position);
-            _creature.AnimatorSetBool("Roar", true);
-
-            yield return new WaitForSeconds(0.2f);
-            Roar();
-
-            _creature.IsAttack = true;
-            _creature.IsEnableMove = false;
-            _creature.IsEnableTurn = false;
-
-            yield return new WaitForSeconds(1);
-            _creature.AnimatorSetBool("Roar", false);
-
-            _creature.IsAttack = false;
-            _creature.IsEnableMove = true;
-            _creature.IsEnableTurn = true;
+        
 
         }
+        _creature.AnimatorSetBool("Roar", true);
+
+        yield return new WaitForSeconds(0.2f);
+        Roar();
+
+        _creature.IsAttack = true;
+        _creature.IsEnableMove = false;
+        _creature.IsEnableTurn = false;
+
+        yield return new WaitForSeconds(1);
+        _creature.AnimatorSetBool("Roar", false);
+
+        _creature.IsAttack = false;
+        _creatureAI.IsStopAI = false;
+        _creature.IsEnableMove = true;
+        _creature.IsEnableTurn = true;
+        _isProhibitSkill = false;
         slot.isActive = false;
         slot.skillTime = 0;
     }
@@ -374,7 +361,7 @@ public class CreatureAbility
                 if ((character && character.CharacterType == Define.CharacterType.Enemy) ||
                 (characterPart && characterPart.Character.CharacterType == Define.CharacterType.Enemy))
                 {
-                    _creature.Attack(hpComponent, _creature.AttackPower, card.property, Vector3.right * _creature.transform.localScale.x, hit.point, 2);
+                    _creature.Attack(hpComponent, _creature.AttackPower, card.Property, Vector3.right * _creature.transform.localScale.x, hit.point, 2);
                 }
 
             }

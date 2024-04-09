@@ -86,6 +86,9 @@ public class UIStatus : UIBase
         _stringBuilder.AppendLine($"체력 : {_girl.Hp}/{_girl.MaxHp}");
         _stringBuilder.AppendLine($"공격력 : {_girl.AttackPower}");
         _stringBuilder.AppendLine($"체력재생력 : {_girl.IncreasedHpRegeneration}");
+        _stringBuilder.AppendLine($"증가공격력(%) : {_player.GetIncreasedAttackPowerPercentage()}%");
+        _stringBuilder.AppendLine($"증가공격속도(%) : {_player.GetIncreasedAttackSpeedPercentage()}%");
+        _stringBuilder.AppendLine($"증가재장전속도(%) : {_player.GetIncreasedReloadSpeedPercentage()}%");
         _descriptionTextMesh.text = _stringBuilder.ToString();
 
         GirlAbility girlAbility = _player.GirlAbility;
@@ -116,6 +119,8 @@ public class UIStatus : UIBase
         _stringBuilder.AppendLine($"체력 : {_creature.Hp}/{_creature.MaxHp}");
         _stringBuilder.AppendLine($"공격력 : {_creature.AttackPower}");
         _stringBuilder.AppendLine($"체력재생력 : {_creature.IncreasedHpRegeneration}");
+        _stringBuilder.AppendLine($"증가공격력(%) : {_creatureAI.CreatureAbility.IncreasedAttackPowerPercentage}%");
+        _stringBuilder.AppendLine($"증가공격속도(%) : {_creatureAI.CreatureAbility.IncreasedAttackSpeedPercentage}");
         _descriptionTextMesh.text = _stringBuilder.ToString();
 
 

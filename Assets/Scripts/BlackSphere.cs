@@ -113,9 +113,9 @@ public class BlackSphere : MonoBehaviour
     IEnumerator CorMoveToDestination(GameObject target,float duration, bool isDestroy = false)
     {
         duration *= 60f;
-        for(int i = 0; i <= duration; i++)
+        for(int i = 0; i < duration; i++)
         {
-            transform.position = Vector3.Lerp(transform.position, target.transform.position, (float)i / (duration-i));
+            transform.position = Vector3.Lerp(transform.position, target.transform.position, (float)1 / (duration-i));
             if (!_isMoveToDestination) break;
             yield return new WaitForFixedUpdate();
         }

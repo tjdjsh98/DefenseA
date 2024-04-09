@@ -16,6 +16,7 @@ public class CardData : ScriptableObject,ITypeDefine
     [field: SerializeField] public List<PriorCardData> PriorCards { set;get; }
     [field: SerializeField] public int MaxUpgradeCount { get; set; }
     [field: SerializeField] public List<float> PropertyList { get; set; }
+    [field: SerializeField] public List<float> Property2List { get; set; }
 
 
     public int GetEnumToInt()
@@ -35,32 +36,22 @@ public enum CardName
 {
     None = -1,      
     검은구체,
-    구체통제,
     일제사격,
-    폭발성구체,
     미끼,
-    미세전력,
-    추가배터리,
-    자가발전,
+    폭발성구체,
     식욕,
+    굶주림,
+    식사,
+    울부짖기,
+    쇼크웨이브,
     라스트샷,
-    자동장전,
     넉넉한총알,
     마지막발악,
-    빠른장전,
-    추가장전,
-    검은총알,
-    식사준비,
-    굶주림,
-    쇼크웨이브,
-    땅구르기,
     생존본능,
-    분노,
-    검게흐르는,
+    미세전력,
     충전,
     전기방출,
-    식사예절,
-    울부짖기,
-    식사,
+    빠른재장전,
+    자동장전,
     END,
 }
