@@ -200,13 +200,13 @@ MonoBehaviour:
     figureType: 0
   _target: {fileID: 0}
   IsEnableBodyAttack: 1
+  <IsStopDetectTarget>k__BackingField: 0
   _noAttack: 0
   _attackDelay: 1
-  <IsAutoMove>k__BackingField: 1
   _isHaveAnimation: 0
-  _itemDropPercentage: 1
-  _bodyAttackKnockBackPower: 150
+  _bodyAttackKnockBackPower: 100
   _bodyAttackCoolTime: 1
+  _dropPercentage: 0
 --- !u!95 &1915835440912298901
 Animator:
   serializedVersion: 5

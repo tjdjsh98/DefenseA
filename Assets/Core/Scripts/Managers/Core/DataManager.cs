@@ -68,4 +68,9 @@ public class DataManager : ManagerBase
         return list;
 
     }
+
+    public override void Destroy()
+    {
+
+    }
 }

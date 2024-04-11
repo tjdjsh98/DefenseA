@@ -1,13 +1,8 @@
-
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
-using UnityEngine.InputSystem;
-using UnityEngine.Rendering;
 using UnityEngine.UI;
-using UnityEngine.UIElements;
 
 public class InputManager : ManagerBase
 {
@@ -170,5 +165,9 @@ public class InputManager : ManagerBase
             if (hit.collider == null) continue;
             _mouseRaycastGameobjects.Add(hit.collider.gameObject);
         }
+    }
+
+    public override void Destroy()
+    {
     }
 }

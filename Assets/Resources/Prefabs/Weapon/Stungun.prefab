@@ -107,7 +107,7 @@ SpriteRenderer:
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 22
+  m_SortingOrder: 45
   m_Sprite: {fileID: -2935296433163283113, guid: 3491c47e1f57ff24eb5bd3617d2e5b62, type: 3}
   m_Color: {r: 0, g: 0.3332994, b: 1, a: 1}
   m_FlipX: 0
@@ -141,16 +141,15 @@ MonoBehaviour:
   _stunTime: 2
   _bulletSpeed: 50
   _attackMultiplier: 1
-  _damage: 1
+  _attackPower: 1
   _penerstratingPower: 0
   _maxAmmo: 1
   _currentAmmo: 1
   _isAllReloadAmmo: 0
-  _fireDelay: 2
-  _reloadDelay: 5
+  _attackSpeed: 0
+  _reloadTime: 0
   _firePosition: {fileID: 7782747334190270009}
   _rebound: 50
-  _knockBack: 0
   _reloadGauge: {fileID: 0}
   _hitEffect: 0
 --- !u!82 &6751600197474223337

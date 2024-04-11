@@ -7,6 +7,11 @@ public class TextManager : ManagerBase
 {
     List<TextMeshPro> _textList= new List<TextMeshPro>();
     GameObject _textFolder;
+
+    public override void Destroy()
+    {
+    }
+
     public override void Init()
     {
         _textFolder = new GameObject("TextContainer");

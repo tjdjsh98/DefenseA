@@ -15,7 +15,7 @@ public class Character : MonoBehaviour,IHp
     [Header("캐릭터 능력치")]
     [SerializeField] Define.CharacterType _characterType;
     public Define.CharacterType CharacterType=>_characterType;
-    [SerializeField] int _maxHp;
+    [SerializeField] int _maxHp;        
     public int MaxHp => _maxHp;
     [SerializeField] int _hp;
     public int Hp { set => _hp = Math.Clamp(value,0,_maxHp); get => _hp; }
@@ -482,7 +482,10 @@ public class Character : MonoBehaviour,IHp
 
 
 
-
+    public void SetVelocity(Vector2 velcoity)
+    {
+        _rigidBody.velocity = velcoity;
+    }
     public void Jump()
     {
         if (!_isContactGround) return;
@@ -632,7 +635,7 @@ public class Character : MonoBehaviour,IHp
 
     public void Revive()
     {
-        _hp = _maxHp/2;
+        _hp = _maxHp;
         IsDead = false;
         if (_boxCollider)
             _boxCollider.enabled = true;

@@ -1,6 +1,7 @@
 using DuloGames.UI.Tweens;
 using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -26,10 +27,6 @@ public class GirlAbility
     Character _hungerTarget;
     int _hungerHitCount = 0;
 
-    // 식사
-    SkillSlot _diningSlot;
-    private bool _dining;
-
 
     //빠른재장전
     Weapon _preWeapon;
@@ -40,9 +37,10 @@ public class GirlAbility
 
     // 검은유리창파편
     float _preBlackShardsOfGlassHpRegen;
-    float _blackShardsOfGlassCoefficient = 0.01f;
+    float _blackShardsOfGlassCoefficient = 2f;
     // 탁한 잎
     float _cludyLeafIncreaseAttackPowerPercentage = 20f;
+    
     #endregion
 
     public void Init(Player player)
@@ -90,7 +88,6 @@ public class GirlAbility
     #region 스킬 관련
     void RegistSkill()
     {
-        _skillDictionary.Add(CardName.식사, Dining);
     }
 
     public void UseSkill(SkillSlot skillSlot)
@@ -156,19 +153,8 @@ public class GirlAbility
             Card card = manager.GetCard(CardName.충전);
             if (card != null)
             {
-                manager.CurrentElectricity += card.Property;
+                manager.CurrentElectricity += (int)card.Property;
             }
-        }
-        if (_dining)
-        {
-            if (_diningSlot != null && _diningSlot.card != null && _diningSlot.card.cardData.CardName == CardName.식사)
-            {
-                target.Damage(_player.Character, target.MaxHp, 0, Vector3.zero, target.transform.position, 0);
-                _diningSlot.skillTime = 0;
-                _diningSlot.isActive = false;
-            }
-            _dining = false;
-            _diningSlot = null;
         }
     }
 
@@ -266,6 +252,10 @@ public class GirlAbility
         // 아이템 : 탁한 잎
         percentage += _inventory.CloudyLeafActiveCount * _cludyLeafIncreaseAttackPowerPercentage;
 
+        // 아이템 : 검은 액체
+        percentage += Mathf.Clamp(_cardManager.BlackSphereList.Count * 2,0,20) * _inventory.GetItemCount(ItemName.검은액체);
+
+
         return percentage;
     }
 
@@ -285,6 +275,8 @@ public class GirlAbility
             }
         }
 
+        // 아이템 : 검은유리창파편
+        percentage += Mathf.Clamp(_blackShardsOfGlassCoefficient * _cardManager.BlackSphereList.Count,0,40) * _inventory.GetItemCount(ItemName.검은유리창파편);
 
         return percentage;
     }
@@ -294,30 +286,17 @@ public class GirlAbility
 
         percentage += IncreasedReloadSpeedPercentage;
 
-      
+        // 아이템 : 검은 가루
+        percentage += Mathf.Clamp(2* _cardManager.BlackSphereList.Count, 0, 20) * _inventory.GetItemCount(ItemName.검은가루);
         return percentage;
     }
-    public void Dining(SkillSlot slot)
-    {
-        if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
-        if (Managers.GetManager<CardManager>().Predation < 20) return;
-
-        Managers.GetManager<CardManager>().Predation -= 20;
-        slot.isActive = true;
-        _dining = true;
-        _diningSlot = slot;
-    }
+  
 
     public float GetHpRegeneration()
     {
         float regen = 0;
         regen = _player.Character.IncreasedHpRegeneration;
 
-        regen -= _preBlackShardsOfGlassHpRegen;
-        _preBlackShardsOfGlassHpRegen = _blackShardsOfGlassCoefficient * _inventory.GetItemCount(ItemName.검은유리창파편);
-        regen += _preBlackShardsOfGlassHpRegen;
-        
         return regen;
     }
 }

@@ -54,7 +54,7 @@ public class OctoHeadAttackPattern : MonoBehaviour
         if (_sequence == 1)
         {
             int random = Random.Range(0,2);
-            for (int i = 0; i < 5; i++) 
+            for (int i = 0; i < 10; i++) 
             {
                 Vector3 pos = transform.position + new Vector3(transform.localScale.x * 10*(i+random),0,0);
                 Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(pos);
@@ -106,12 +106,21 @@ public class OctoHeadAttackPattern : MonoBehaviour
         }
         else if (_sequence == 12)
         {
-            _attackTime+= Time.deltaTime;
-            if(_attackTime > 3)
+            _attackTime += Time.deltaTime;
+            if (_attackTime > 3)
             {
                 _attackTime = 0;
-                _sequence = 0;
+                _sequence++;
                 _enemyAI.ResetTarget();
+            }
+        }
+        else if (_sequence == 13)
+        {
+            _attackTime += Time.deltaTime;
+            if (_attackTime > 3)
+            {
+                _sequence = 0;
+                _attackTime = 0;
             }
         }
     }

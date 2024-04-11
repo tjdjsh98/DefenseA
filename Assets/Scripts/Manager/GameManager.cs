@@ -216,16 +216,33 @@ public class GameManager : ManagerBase
             float distance = 0;
             if (_mapData.randomEvent.Count > 0)
             {
+                // 상점 일정 거리마다 배치
                 while (distance < _mapData.mapSize)
                 {
-                    distance += _mapData.randomEventInterval + Random.Range(-20, 20);
+                    distance += 150;
                     Vector3? position = GetGroundTop(new Vector3(distance, 0));
                     if (position.HasValue)
                     {
-                        GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent.GetRandom());
+                        GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent[0]);
                         go.transform.position = position.Value;
                     }
                 }
+                distance = 0;
+
+                while (distance < _mapData.mapSize)
+                {
+                    distance += Random.Range( _mapData.randomEventInterval-20, _mapData.randomEventInterval + 20);
+                    Vector3? position = GetGroundTop(new Vector3(distance, 0));
+                    if (position.HasValue)
+                    {
+                        if (_mapData.randomEvent.Count > 1)
+                        {
+                            GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent[Random.Range(1, _mapData.randomEvent.Count)]);
+                            go.transform.position = position.Value;
+                        }
+                    }
+                }
+
             }
         }
 
@@ -275,6 +292,7 @@ public class GameManager : ManagerBase
         float distance = 5;
         while (distance < _mapData.mapSize)
         {
+
             Vector3? position = GetGroundTop(Vector3.one * distance);
             if (position.HasValue) {
                 GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mainObjects.GetRandom());
@@ -533,5 +551,17 @@ public class GameManager : ManagerBase
         position.z = 0;
         position.x += _cameraController.GetCameraWidth() / 2;
         return position;
+    }
+
+    public void GameOver()
+    {
+        Managers.Destroy();
+        SceneManager.LoadScene("MainMenu");
+    }
+
+    public override void Destroy()
+    {
+        Destroy(_girl.gameObject);
+        Destroy(_creature.gameObject);
     }
 }

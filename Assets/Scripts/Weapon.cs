@@ -144,9 +144,9 @@ public class Weapon : MonoBehaviour, ITypeDefine
         // ¿Ã∆Â∆Æ
         Effect fireFlareOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.FireFlare);
         Effect fireFlare = Managers.GetManager<ResourceManager>().Instantiate(fireFlareOrigin);
-        fireFlare.Play(_firePosition.transform.position);
         fireFlare.transform.localScale = _firePosition.transform.lossyScale;
         fireFlare.transform.rotation = _firePosition.transform.rotation;
+        fireFlare.Play(_firePosition.transform.position);
         // ---------------
 
         Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_bulletName);

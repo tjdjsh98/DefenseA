@@ -60,21 +60,23 @@ public class ElectricWeapon : Weapon
     {
         if (_currentAmmo < _maxAmmo)
         {
-            if (Managers.GetManager<CardManager>().CurrentElectricity > 0.1)
+            if (Managers.GetManager<CardManager>().CurrentElectricity > 1)
             {
-                Managers.GetManager<CardManager>().CurrentElectricity += -Time.deltaTime;
                 _electric += Time.deltaTime;
-                if (_electric >= 1)
+                if (_electric > 1)
                 {
-                    _currentAmmo += 1;
-                    _electric -= 1;
+                    Managers.GetManager<CardManager>().CurrentElectricity -= 1;
+                    if (_electric >= 1)
+                    {
+                        _currentAmmo += 1;
+                        _electric -= 1;
+                    }
+                    if (_reloadGauge)
+                    {
+                        _reloadGauge.gameObject.SetActive(true);
+                        _reloadGauge.SetRatio(_currentAmmo + _electric, _maxAmmo);
+                    }
                 }
-                if (_reloadGauge)
-                {
-                    _reloadGauge.gameObject.SetActive(true);
-                    _reloadGauge.SetRatio(_currentAmmo + _electric, _maxAmmo);
-                }
-
             }
             else
             {

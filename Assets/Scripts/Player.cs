@@ -115,7 +115,7 @@ public class Player : MonoBehaviour, IWeaponUsable
   
     private void OnCharacterDead()
     {
-        SceneManager.LoadScene("MainMenu");
+        Managers.GetManager<GameManager>().GameOver();
 
     }
     private void OnJumpKeyDown()

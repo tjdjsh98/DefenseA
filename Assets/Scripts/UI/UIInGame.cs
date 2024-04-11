@@ -275,7 +275,7 @@ public class UIInGame : UIBase
             if (skillSlotList[i].skillCoolTime == 0)
                 _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100);
             else
-                _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 - (skillSlotList[i].skillTime / skillSlotList[i].skillCoolTime)));
+                _skillMaskList[i].rectTransform.sizeDelta = new Vector2(100, 100 * (1 - (skillSlotList[i].skillElapsed / skillSlotList[i].skillCoolTime)));
             if (skillSlotList[i].card == null|| skillSlotList[i].card.cardData == null)
                 _skillNameList[i].text = string.Empty;
             else

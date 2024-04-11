@@ -12,6 +12,7 @@ public class CreatureAbility
     [SerializeField] bool _debug;
     [SerializeField] Character _creature;
     Inventory _inventory;
+    CardManager _cardManager;
 
     CreatureAI _creatureAI;
 
@@ -44,6 +45,17 @@ public class CreatureAbility
     //나이프
     int _preKnifeIncreasedPower;
 
+    //베어물린나무
+    float _bittenWoodCoefficient = 0.05f;
+    float _prebittenWoodHpRegen;
+
+    // 베어물린 돌맹이
+    int _bittenStoneCoefficient = 10;
+    int _prebittenStoneAttackPower;
+
+    // 과충전배터리
+    [SerializeField]Define.Range _overchargeBatteryRange;
+
     #endregion
     public void Init(CreatureAI creatureAI)
     {
@@ -52,8 +64,35 @@ public class CreatureAbility
         _creatureAI.Character.AttackHandler += OnAttack;
         _creatureAI.Character.DamagedHandler += OnDamage;
         _inventory = Managers.GetManager<GameManager>().Inventory;
-
+        _cardManager = Managers.GetManager<CardManager>();
+        _cardManager.ElectricChargedHandler += OnElectricCharged;
         RegistSkill();
+    }
+
+    private void OnElectricCharged(int value)
+    {
+        // 과충전배터리
+        {
+            int count = _inventory.GetItemCount(ItemName.과충전배터리);
+
+            if (count > 0)
+            {
+                if (value > _cardManager.MaxElectricity)
+                {
+                    Util.RangeCastAll2D(_creature.gameObject, _overchargeBatteryRange, Define.CharacterMask, (hit) =>
+                    {
+                        Character character = hit.collider.GetComponent<Character>();
+
+                        if (character && character.CharacterType == Define.CharacterType.Enemy)
+                        {
+                            _creature.Attack(character, value - _cardManager.MaxElectricity, 0, Vector3.zero, hit.point);
+                        }
+                        return false;
+                    });
+                }
+            }
+
+        }
     }
 
     public void OnDrawGizmosSelected()
@@ -63,6 +102,8 @@ public class CreatureAbility
         if (_debugAttackRangeIndex < 0 || _attackRangeList.Count <= _debugAttackRangeIndex) return;
 
         Util.DrawRangeOnGizmos(_creature.gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
+
+        Util.DrawRangeOnGizmos(_creature.gameObject, _overchargeBatteryRange,Color.red);
     }
 
     public void AbilityUpdate()
@@ -83,7 +124,7 @@ public class CreatureAbility
             Card card = manager.GetCard(CardName.충전);
             if (card != null)
             {
-                Managers.GetManager<CardManager>().CurrentElectricity += card.Property;
+                Managers.GetManager<CardManager>().CurrentElectricity += (int)card.Property;
             }
         }
         if (target == null || target.IsDead)
@@ -173,6 +214,11 @@ public class CreatureAbility
             _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).Property;
             regen += _preSurvivalIntinctValue;
         }
+        // 아이템 : 베어물린 나무
+        regen -= _prebittenWoodHpRegen;
+        _prebittenWoodHpRegen = _inventory.GetItemCount(ItemName.베어물린나무) * _bittenWoodCoefficient * _cardManager.Predation;
+        if (_prebittenWoodHpRegen > 2) _prebittenWoodHpRegen = 2;
+        regen += _prebittenWoodHpRegen; 
 
         return regen;
     }
@@ -197,9 +243,13 @@ public class CreatureAbility
 
         // 아이템 : 나이프
         attackPower -= _preKnifeIncreasedPower;
-        _preKnifeIncreasedPower = (int)(Managers.GetManager<CardManager>().Predation / 10) * _inventory.GetItemCount(ItemName.나이프);
+        _preKnifeIncreasedPower =Mathf.Clamp((int)(_cardManager.Predation / 5),0,8) * _inventory.GetItemCount(ItemName.나이프);
         attackPower += _preKnifeIncreasedPower;
 
+        // 아이템 : 베어물린 돌맹이
+        attackPower -= _prebittenStoneAttackPower;
+        _prebittenStoneAttackPower = (int)(_inventory.GetItemCount(ItemName.베어물린돌맹이)  * (int)_cardManager.Predation/ _bittenStoneCoefficient);
+        attackPower += _prebittenStoneAttackPower;
         return attackPower;
     }
     #region 스킬관련
@@ -225,11 +275,11 @@ public class CreatureAbility
     void PlayShockwave(SkillSlot slot)
     {
         if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
 
         _creatureAI.StartCoroutine(CorShockwaveAttack(slot));
 
-        slot.skillTime = 0;
+        slot.skillElapsed = 0;
     }
 
     IEnumerator CorShockwaveAttack(SkillSlot slot, float later = 0, int num = 0)
@@ -272,7 +322,7 @@ public class CreatureAbility
     void PlayStempGround(SkillSlot slot)
     {
         if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
 
         List<RaycastHit2D> hits = Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[0]);
         Effect effectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.StempGround);
@@ -290,13 +340,13 @@ public class CreatureAbility
                 }
             }
         }
-        slot.skillTime = 0;
+        slot.skillElapsed = 0;
     }
 
     void PlayRoar(SkillSlot slot)
     {
         if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
 
         _isProhibitSkill = true;
         slot.isActive = true;
@@ -342,7 +392,7 @@ public class CreatureAbility
         _creature.IsEnableTurn = true;
         _isProhibitSkill = false;
         slot.isActive = false;
-        slot.skillTime = 0;
+        slot.skillElapsed = 0;
     }
     public void Roar()
     {
@@ -371,7 +421,7 @@ public class CreatureAbility
     void PlayElectricRelease(SkillSlot slot)
     {
         if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
 
         slot.isActive = true;
 
@@ -392,7 +442,7 @@ public class CreatureAbility
         }
 
         slot.isActive = false;
-        slot.skillTime = 0;
+        slot.skillElapsed = 0;
     }
 
 

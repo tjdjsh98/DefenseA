@@ -79,7 +79,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                 rank = 3;
             }
 
-            List<ItemData> itemList = Managers.GetManager<GameManager>().RankItemDataList[rank];
+            List<ItemData> itemList = Managers.GetManager<GameManager>().RankItemDataList[rank].ToList();
             if (itemList.Count == 0)
             {
                 datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.딸기케이크));
@@ -90,8 +90,11 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                 if (i == 0)
                 {
                     ItemData weaponData = itemList.Where(data => { return data.ItemType == ItemType.Weapon; }).ToList().GetRandom();
-                    if(weaponData != null)
+                    if (weaponData != null)
+                    {
                         datas.Add(weaponData);
+                        itemList.Remove(weaponData);
+                    }
                     else
                         datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.딸기케이크));
                 }
@@ -99,9 +102,12 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                 else
                 {
 
-                    ItemData weaponData = itemList.Where(data => { return data.ItemType != ItemType.Weapon; }).ToList().GetRandom();
-                    if (weaponData != null)
-                        datas.Add(weaponData);
+                    ItemData itemData = itemList.Where(data => { return data.ItemType != ItemType.Weapon; }).ToList().GetRandom();
+                    if (itemData != null)
+                    {
+                        datas.Add(itemData);
+                        itemList.Remove(itemData);
+                    }
                     else
                         datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.딸기케이크));
                 }
@@ -150,6 +156,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                 Managers.GetManager<GameManager>().Inventory.RemoveItem(ItemName.아르라제코인);
             }
 
+            gameManager.RankItemDataList[item.shopItemData.Rank].Remove(item.shopItemData);
             Refresh();
         }
     }

@@ -2,6 +2,7 @@ using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class CreatureAI : MonoBehaviour
@@ -52,7 +53,7 @@ public class CreatureAI : MonoBehaviour
 
     public bool IsStopAI { set; get; }
     Character _closeEnemy;
-    Coroutine _followPlayerCoroutine;
+    Coroutine _aiCoroutine;
    
 
     [SerializeField] float _throwPower;
@@ -84,9 +85,10 @@ public class CreatureAI : MonoBehaviour
     void OnDamaged(Character attacker, int damage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         _closeEnemy = null;
-        if (_followPlayerCoroutine != null)
+        if (_aiCoroutine != null)
         {
-            StopCoroutine(_followPlayerCoroutine);
+            StopCoroutine(_aiCoroutine);
+            _aiCoroutine = null;
         }
 
     }
@@ -138,11 +140,9 @@ public class CreatureAI : MonoBehaviour
     }
     void DefaultAI()
     {
-        if (_closeEnemy) return;
-        if (_followPlayerCoroutine != null) return;
+        if (_aiCoroutine != null) return;
         if (_character.IsAttack) return;
         if (IsStopAI) return;
-
 
         if (_player == null)
         {
@@ -163,7 +163,7 @@ public class CreatureAI : MonoBehaviour
                 FollowPlayer();
 
            
-                StartCoroutine(CorPlayNormalAttack());
+            _aiCoroutine = StartCoroutine(CorPlayNormalAttack());
         }
     }
     IEnumerator CorPlayNormalAttack()
@@ -175,13 +175,13 @@ public class CreatureAI : MonoBehaviour
             attackRange.size = new Vector3(attackRange.size.x / 4, attackRange.size.y, 0);
             while (true)
             {
-                if (_closeEnemy == null || _character.IsAttack || _character.IsStun) break;
+                if (_closeEnemy == null || _character.IsAttack || _character.IsStun || _closeEnemy.IsDead) break;
                 _character.Move(_closeEnemy.transform.position - transform.position);
 
                 if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (hit) =>
                 {
                     Character character = hit.collider.GetComponent<Character>();
-                    if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                    if (character != null&&!character.IsDead && character.CharacterType == Define.CharacterType.Enemy)
                     {
                         return true;
                     }
@@ -190,7 +190,7 @@ public class CreatureAI : MonoBehaviour
                 }).Count > 0) break;
                 yield return null;
             }
-            if (_closeEnemy != null && !_character.IsAttack && !_character.IsStun)
+            if (_closeEnemy != null && !_character.IsAttack && !_character.IsStun && !_closeEnemy.IsDead)
             {
                 _character.Move(Vector2.zero);
                 _character.TurnBody(_closeEnemy.transform.position - transform.position);
@@ -208,6 +208,7 @@ public class CreatureAI : MonoBehaviour
             }
         }
 
+        _aiCoroutine = null;
         _normalAttackTime = 0;
         _closeEnemy = null;
     }
@@ -215,19 +216,20 @@ public class CreatureAI : MonoBehaviour
     {
         if (_character.IsAttack) return;
 
-        _followPlayerCoroutine = StartCoroutine(CorFollowPlayer());
+        _aiCoroutine = StartCoroutine(CorFollowPlayer());
     }
 
     IEnumerator CorFollowPlayer()
     {
         while (true)
         {
-            if (_player.IsFire || _character.IsAttack) break;
+            if ( _character.IsAttack) break;
             Vector3 distacne = _player.transform.position - transform.position;
-            if (Mathf.Abs(distacne.y) < 3 && Mathf.Abs(distacne.x) > _girlToCreatureDistance)
+            if (Mathf.Abs(distacne.x) > _girlToCreatureDistance)
             {
                 _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -1 : 1))/ _girlToCreatureDistance);
                 _closeEnemy = GetCloseEnemy();
+                if (_closeEnemy && _player.IsFire) break;
                 if (_closeEnemy != null)
                 {
                     if ((_closeEnemy.transform.position.x > _player.transform.position.x && _closeEnemy.transform.position.x < transform.position.x)||
@@ -245,7 +247,7 @@ public class CreatureAI : MonoBehaviour
             yield return null;
         }
 
-        _followPlayerCoroutine = null;
+        _aiCoroutine = null;
     }
 
     public void Transform()
@@ -300,12 +302,12 @@ public class CreatureAI : MonoBehaviour
     {
         Character close = null;
 
-        Util.RangeCastAll2D(gameObject, _normalAttackDetectRange, Define.CharacterMask, (hit) =>
+        Util.RangeCastAll2D(_player.gameObject, _normalAttackDetectRange, Define.CharacterMask, (hit) =>
         {
             if (hit.collider != null)
             {
                 Character character = hit.collider.GetComponent<Character>();
-                if (character == null || character.CharacterType != Define.CharacterType.Enemy || character.IsEnableFly) return false;
+                if (character == null||character.IsDead || character.CharacterType != Define.CharacterType.Enemy || character.IsEnableFly) return false;
                 if (close == null || (close.transform.position - transform.position).magnitude > (character.transform.position - transform.position).magnitude)
                     close = character;
             }

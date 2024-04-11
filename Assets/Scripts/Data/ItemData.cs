@@ -10,7 +10,7 @@ public class ItemData : ScriptableObject, ITypeDefine
     [field: SerializeField] public Sprite Image { set; get; }
     [field:SerializeField][field:TextArea] public string Description { set; get; }
     [field: SerializeField] public int Rank { set; get; }
-    public int Price => Rank == 0 ? 30 : Rank == 1 ? 100 : Rank == 2 ? 200 : Rank == 3 ? 500 : 1000;
+    public int Price => Rank == 0 ? 30 : Rank == 1 ? 80 : Rank == 2 ? 150 : Rank == 3 ? 300 : 500;
     public int GetEnumToInt()
     {
         return (int)ItemName;
@@ -21,7 +21,6 @@ public enum ItemType
     None = -1,      
     Ability,
     StatusUp,
-    CreatureWeapon,
     Weapon,
     END
 }
@@ -43,36 +42,24 @@ public enum ItemName
     네번째손,
     어둠구체의4번째파편,
     검붉은나무파편,
-    낮게보는페이지,
-    높게보는페이지,
-    어두울전구,
     손트리,
     뜯어진얼굴가죽,
     피뢰침,
     구름솜사탕,
     어둠구체의1번째파편,
-    니트로글리세린,
-    깜짝박스,
-    손전등,
     망각석,
     강렬한별빛,
-    이쁜가게전단지,
     까마귀깃털,
     눈동자구슬,
     검은유리창파편,
     바늘과가죽,
     문들어진어금니,
-    닿아가는고서,
-    전봇대,
     망각의서,
     포크,
     나이프,
-    살점상자,
     알사탕,
     초콜릿,
     아르라제코인,
-    빛나는상자,
-    유리건틀릿,
     피묻은뼈목걸이,
     눈알케이크,
     닿아야하는석상,
@@ -89,5 +76,14 @@ public enum ItemName
     에너지바,
     부서진약지,
     곁눈증표,
+    과충전배터리,
+    두부통조림,
+    바나나스테이크,
+    김치파스타,
+    민트초코,
+    베어물린나무,
+    베어물린돌맹이,
+    검은액체,
+    검은가루,
     END
 }

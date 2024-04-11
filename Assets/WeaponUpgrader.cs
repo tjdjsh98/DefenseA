@@ -7,7 +7,7 @@ public class WeaponUpgrader : MonoBehaviour
     int _weaponIndex;
     public Weapon Weapon { get; set; }
 
-    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * (Weapon.UpgradeCount+1); } }
+    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * (int)Mathf.Pow((Weapon.UpgradeCount+1),2); } }
 
     int _upgradePrice = 30;
 

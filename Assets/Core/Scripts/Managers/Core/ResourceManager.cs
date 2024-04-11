@@ -130,7 +130,7 @@ public class ResourceManager : ManagerBase
 
         if (origin == null)
         {
-            Debug.LogWarning($"{origin}에 해당하는 리소스가 없습니다.");
+            Debug.LogWarning($"{origin}에 해당하는 리소스가 없습니다."); 
             return null;
         }
         Poolable pool = null;
@@ -289,5 +289,17 @@ public class ResourceManager : ManagerBase
                 Object.Destroy(gameObject);
             }
         }
+    }
+
+    public override void Destroy()
+    {
+        foreach(var itemList in _pool.Values)
+        {
+            foreach (var item in itemList)
+            {
+                Destroy(item.gameObject);
+            }
+        }
+        Destroy(_poolFolder);  
     }
 }

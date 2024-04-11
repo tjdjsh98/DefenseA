@@ -62,13 +62,23 @@ MonoBehaviour:
     enemyName: -1
     startTime: 150
     endTime: 300
-    enemyPreset: {fileID: 3835410314699287608, guid: 4246aaf2e7756c34f9e946138c2a4d7e, type: 3}
+    enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
   distanceWave:
   - genTime: 0
     multiply: 1
     genLocalPosition: {x: 100, y: 0, z: 0}
     enemyName: 5
     distance: 400
+  - genTime: 0
+    multiply: 1
+    genLocalPosition: {x: 100, y: 0, z: 0}
+    enemyName: 9
+    distance: 200
+  - genTime: 0
+    multiply: 1
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 15
+    distance: 200
   mentalWave:
   - genTime: 20
     multiply: 1
@@ -80,10 +90,8 @@ MonoBehaviour:
   shopItemDataList: []
   randomEvent:
   - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
-  - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
-  - {fileID: 690228596632971187, guid: 4be8ea9763a18de4f98eb042555a0d76, type: 3}
   - {fileID: 6381985295212827144, guid: d330fccc1b3ff5f44b219c6c46f9de8b, type: 3}
-  randomEventInterval: 150
+  randomEventInterval: 100
   initMutifly: 1
   multiflyInterval: 60
-  addMultifly: 0.2
+  addMultifly: 0.1

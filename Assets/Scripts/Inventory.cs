@@ -374,6 +374,7 @@ public class Inventory
             girl.Hp += statusUpItemData.RecoverGirlHpAmount;
             girl.SetSpeed(girl.Speed + statusUpItemData.IncreasingGirlSpeed);
             Player.GirlAbility.IncreasedAttackPowerPercentage += statusUpItemData.IncreasingGirlAttackPowerPercentage;
+            Player.GirlAbility.IncreasedAttackSpeedPercentage += statusUpItemData.IncreasingGirlAttackSpeedPercentage;
             girl.IncreasedHpRegeneration += statusUpItemData.IncreasingGirlHpRegeneration;
         }
 
@@ -400,6 +401,7 @@ public class Inventory
             girl.AddMaxHp(-statusUpItemData.IncreasingGirlMaxHp);
             girl.SetSpeed(girl.Speed - statusUpItemData.IncreasingGirlSpeed);
             Player.GirlAbility.IncreasedAttackPowerPercentage -= statusUpItemData.IncreasingGirlAttackPowerPercentage;
+            Player.GirlAbility.IncreasedAttackSpeedPercentage -= statusUpItemData.IncreasingGirlAttackSpeedPercentage;
             girl.IncreasedHpRegeneration -= statusUpItemData.IncreasingGirlHpRegeneration;
         }
 

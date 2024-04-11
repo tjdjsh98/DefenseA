@@ -53,6 +53,8 @@ public class EnemyAI : MonoBehaviour
     List<GameObject> _bodyAttackList = new List<GameObject>();
     Coroutine _bodyAttackCoroutine;
 
+    [Header("드랍 아이템")]
+    [SerializeField] float _dropPercentage;
 
     protected virtual void Awake()
     {
@@ -105,6 +107,8 @@ public class EnemyAI : MonoBehaviour
     }
     void Update()
     {
+        if (_character.IsDead) return;
+
         CheckTargetInAttackRange();
         Move();
         PlayAttack();
@@ -144,7 +148,14 @@ public class EnemyAI : MonoBehaviour
     {
         Managers.GetManager<GameManager>().Money += 1;
         Managers.GetManager<GameManager>().HuntingCount += 1;
-
+        if (Random.Range(0, 100) < _dropPercentage)
+        {
+            Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
+        }
+        if (_detectTargetCoroutine != null)
+            StopCoroutine(_detectTargetCoroutine);
+        if (_bodyAttackCoroutine != null)
+            StopCoroutine(_bodyAttackCoroutine);
     }
 
     protected virtual void Move()
@@ -302,7 +313,11 @@ public class EnemyAI : MonoBehaviour
 
             _character.Attack(character, _character.AttackPower, 1, Vector3.zero, hit.point);
 
-            Managers.GetManager<EffectManager>().InstantiateHitEffect(hit.point, hit.centroid - hit.point);
+            Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Hit3);
+
+            effect.transform.position = (character.GetCenter() + (transform.position + _attackRange.center))/2;
+            effect.transform.rotation = Quaternion.Euler(character.GetCenter() - (transform.position + _attackRange.center));
+            effect.Play(hit.point);
 
         }
         _target = null;

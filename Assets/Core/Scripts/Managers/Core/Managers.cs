@@ -123,10 +123,6 @@ public class Managers : MonoBehaviour
                 manager = Util.FindOrCreate("UIManager").GetOrAddComponent<UIManager>();
                 manager.transform.parent = _instance.gameObject.transform;
                 break;
-            case Define.ContentManagers.Effect:
-                manager = Util.FindOrCreate("EffectManager").GetOrAddComponent<EffectManager>();
-                manager.transform.parent = _instance.gameObject.transform;
-                break;
             case Define.ContentManagers.Text:
                 manager = Util.FindOrCreate("TextManager").GetOrAddComponent<TextManager>();
                 manager.transform.parent = _instance.gameObject.transform;
@@ -144,6 +140,21 @@ public class Managers : MonoBehaviour
             manager.transform.parent = _instance.transform;
             _contentManagers.Add(managerName, manager);
         }
+    }
+
+    public static void Destroy()
+    {
+        foreach (var content in _contentManagers.Values)
+        {
+            content.Destroy();
+        }
+
+        foreach (var core in _coreManagers.Values)
+        {
+            core.Destroy();
+        }
+
+        Destroy(_instance.gameObject);
     }
 
     private void OnApplicationQuit()

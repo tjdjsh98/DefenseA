@@ -23,7 +23,6 @@ public static class Define
         None = -1,
         Game,
         UI,
-        Effect,
         Text,
         Save,
         Ability,
@@ -57,6 +56,8 @@ public static class Define
         Spore,
         Thrower,
         UniqueSlime,
+        StandingSlime,
+        Blob,
         END,
     }
 

@@ -1,6 +1,7 @@
 using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net;
 using TreeEditor;
 using UnityEngine;
 
@@ -15,14 +16,11 @@ public class Boar : MonoBehaviour
     int _sequence;
     float _sequenceTime;
 
-
-    bool _isStartDash;
-
     float _preSpeed;
     [SerializeField] float _dashSpeed = 20;
 
     [SerializeField] float _dashCoolTime = 5;
-    float _dashCoolTimeElased = 0;
+    float _dashCoolTimeElapsed = 0;
 
     [SerializeField] float _dashDelayTime = 2;
     float _dashTime;
@@ -32,6 +30,8 @@ public class Boar : MonoBehaviour
     [SerializeField] GameObject[] _injectionPositions;
 
     int _shellingCount;
+
+    List<GameObject> _dashAttackList = new List<GameObject>();
 
     private void Awake()
     {
@@ -93,52 +93,59 @@ public class Boar : MonoBehaviour
     {
         if (_sequence == 10)
         {
-            if (_dashCoolTime > _dashCoolTimeElased)
+            if (_enemyAI.Target != null && _enemyAI.IsTargetInRange)
             {
-                _dashCoolTimeElased += Time.deltaTime;
-                return;
-            }
-            if (_enemyAI.Target != null && !_isStartDash)
-            {
-                _character.IsAttack = true;
-                _preSpeed = _character.Speed;
-                _character.SetSpeed(_dashSpeed);
-                _isStartDash = true;
+                _sequence++;
                 _dashDirection = _enemyAI.Target.transform.position - transform.position;
-                _character.IsSuperArmer = true;
             }
-
-            if (_isStartDash)
+        }
+        else if (_sequence == 11)
+        {
+            if (_dashCoolTime > _dashCoolTimeElapsed)
             {
-                _dashTime += Time.deltaTime;
-                if (_dashTime > _dashDelayTime)
+                _dashCoolTimeElapsed += Time.deltaTime;
+            }
+            else
+            {
+                _dashCoolTimeElapsed = 0;
+                _sequence++;
+            }
+        }
+        else if (_sequence == 12)
+        {
+            _character.IsAttack = true;
+            _preSpeed = _character.Speed;
+            _character.SetSpeed(_dashSpeed);
+            _character.IsSuperArmer = true;
+            _sequence++;
+            _character.SetVelocity(new Vector2(_dashSpeed * transform.lossyScale.x, 0));
+        }
+        else if (_sequence == 13)
+        {
+            _dashTime += Time.deltaTime;
+            _character.Move(_dashDirection);
+            Util.RangeCastAll2D(gameObject, _enemyAI.AttackRange, Define.CharacterMask,
+                (hit) =>
                 {
-                    _character.Move(_dashDirection);
-                    Util.RangeCastAll2D(gameObject, _enemyAI.AttackRange, Define.CharacterMask,
-                        (hit) =>
-                        {
-                            Character character = hit.collider.GetComponent<Character>();
-                            if (character != null && _character.CharacterType != character.CharacterType)
-                            {
-                                _character.Attack(character, _character.AttackPower, 100, new Vector3(_dashDirection.x > 0 ? 1 : -1, 1, 0), hit.point, 0.5f);
-                                _dashTime = _dashDelayTime + _dashDuration;
-                                _character.Move(Vector3.zero);
-                                _character.Damage(_character, 0, 50, new Vector3(_dashDirection.x > 0 ? 1 : 1, -1, 0), hit.point);
-                            }
-                            return false;
-                        });
-                }
+                    if (_dashAttackList.Contains(hit.collider.gameObject)) return false;
+                    _dashAttackList.Add(hit.collider.gameObject);
+                    Character character = hit.collider.GetComponent<Character>();
+                    if (character != null&&!character.IsDead && _character.CharacterType != character.CharacterType)
+                    {
+                        _character.Attack(character, _character.AttackPower, 100, new Vector3(_dashDirection.x > 0 ? 1 : -1, 1, 0), hit.point, 0.5f);
+                    }
+                    return false;
+                });
 
-                if (_dashTime >= _dashDelayTime + _dashDuration)
-                {
-                    _character.SetSpeed(_preSpeed);
-                    _dashTime = 0;
-                    _isStartDash = false;
-                    _dashCoolTimeElased = 0;
-                    _character.IsAttack = false;
-                    _character.IsSuperArmer = false;
-                    _sequence = 0;
-                }
+        if (_dashTime >= _dashDuration)
+            {
+                _character.SetSpeed(_preSpeed);
+                _dashTime = 0;
+                _dashCoolTimeElapsed = 0;
+                _character.IsAttack = false;
+                _character.IsSuperArmer = false;
+                _sequence = 0;
+                _dashAttackList.Clear();
             }
         }
     }

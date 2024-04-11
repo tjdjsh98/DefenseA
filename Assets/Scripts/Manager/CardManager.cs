@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class CardManager : ManagerBase
@@ -40,12 +41,18 @@ public class CardManager : ManagerBase
     public int BlackSphereAttackPower { set; get; }
 
     // 전기 관련 능력
-    float _maxElectricity = 0;
-    public float MaxElectricity { get { return _maxElectricity; } }
-    float _currentElectricity;
-    public float CurrentElectricity { get { return _currentElectricity; } set { _currentElectricity = Mathf.Clamp(value, 0, _maxElectricity); } }
+    int _maxElectricity = 0;
+    public int MaxElectricity { get { return _maxElectricity; } }
+    int _currentElectricity;
+    public int CurrentElectricity { get { return _currentElectricity; } 
+        set {
+            ElectricChargedHandler?.Invoke(value);
+            _currentElectricity = Mathf.Clamp(value, 0, _maxElectricity); } }
     public float ChargeElectricty { get; set; }
+    float _chargedElectricity;
     public bool IsUnlockOverCharge { set; get; } = false;
+    public Action<int> ElectricChargedHandler;
+
 
     // 포식 관련 능력
     int _maxPredation = 0;
@@ -207,6 +214,7 @@ public class CardManager : ManagerBase
     {
         _skillDictionary.Add(CardName.일제사격, PlayVolleyFire);
         _skillDictionary.Add(CardName.미끼, PlayBait);
+        _skillDictionary.Add(CardName.식사, Dining);
     }
 
     void UseSkill(SkillSlot skillSlot)
@@ -222,7 +230,7 @@ public class CardManager : ManagerBase
     void PlayVolleyFire(SkillSlot slot)
     {
         if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
         if (_blackSphereList.Count <= 0) return;
 
         Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
@@ -233,16 +241,27 @@ public class CardManager : ManagerBase
             _blackSphereList.RemoveAt(i);
             blackSphere.ChangeAttackMode(mousePosition,BlackSphereAttackPower, GetIsHaveAbility(CardName.폭발성구체), i*0.1f);
         }
-        slot.skillTime = 0;
+        slot.skillElapsed = 0;
     }
 
     void PlayBait(SkillSlot slot)
     {
-        Debug.Log(slot.card.cardData.PropertyList[slot.card.rank - 1]);
         if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillTime) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
 
         StartCoroutine(CorPlayBait(slot));
+    }
+    void Dining(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
+
+
+        Girl.Hp += Predation;
+        Creature.Hp += Predation;
+        Predation -= Predation;
+
+        slot.skillElapsed = 0;
     }
 
     IEnumerator CorPlayBait(SkillSlot slot)
@@ -283,7 +302,7 @@ public class CardManager : ManagerBase
         yield return new WaitForSeconds(1f);
 
         slot.isActive = false;
-        slot.skillTime = 0;
+        slot.skillElapsed = 0;
     }
 
     void HandleCommonAbility()
@@ -291,12 +310,19 @@ public class CardManager : ManagerBase
         // 전기충전
         if (MaxElectricity != 0)
         {
-            float maxElectricity = MaxElectricity;
+            int maxElectricity = MaxElectricity;
             maxElectricity *= IsUnlockOverCharge ? 2 : 1;
-            if (CurrentElectricity + ChargeElectricty * Time.deltaTime > maxElectricity)
-                CurrentElectricity = maxElectricity;
-            else
-                CurrentElectricity += ChargeElectricty * Time.deltaTime;
+
+            _chargedElectricity += ChargeElectricty * Time.deltaTime;
+
+            int chargeAmount = 0;
+            if (_chargedElectricity > 1)
+            {
+                chargeAmount = (int)_chargedElectricity;
+                _chargedElectricity -= chargeAmount;
+            }
+
+            CurrentElectricity += chargeAmount;
         }
 
         if (GetIsHaveAbility(CardName.검은구체))
@@ -381,10 +407,10 @@ public class CardManager : ManagerBase
                 case CardName.미세전력:
                     if (rank > 0)
                     {
-                        _maxElectricity -= card.cardData.PropertyList[rank - 1];
+                        _maxElectricity -= (int)card.cardData.PropertyList[rank - 1];
                         ChargeElectricty -= (int)card.cardData.Property2List[rank - 1];
                     }
-                    _maxElectricity += value;
+                    _maxElectricity += (int)value;
                     ChargeElectricty += value2;
                     break;
                 case CardName.식욕:
@@ -432,10 +458,10 @@ public class CardManager : ManagerBase
                     case CardName.미세전력:
                         if (rank > 0)
                         {
-                            _maxElectricity += card.cardData.PropertyList[rank - 1];
+                            _maxElectricity += (int)card.cardData.PropertyList[rank - 1];
                             ChargeElectricty += card.cardData.Property2List[rank - 1];
                         }
-                        _maxElectricity -= value;
+                        _maxElectricity -= (int)value;
                         ChargeElectricty -= value2 ;
                         break;
                     case CardName.식욕:
@@ -481,7 +507,7 @@ public class CardManager : ManagerBase
         if (index < 0 || _skillSlotList.Count <= index) return;
 
         _skillSlotList[index].card = card;
-        _skillSlotList[index].skillTime = 0;
+        _skillSlotList[index].skillElapsed = 0;
         _skillSlotList[index].isActive = false;
 
     }
@@ -496,7 +522,7 @@ public class CardManager : ManagerBase
                 if (_skillSlotList[i].card == card)
                 {
                     _skillSlotList[i].card= null;
-                    _skillSlotList[i].skillTime = 0;
+                    _skillSlotList[i].skillElapsed = 0;
                     _skillSlotList[i].isActive = false;
                     break;
                 }
@@ -513,13 +539,13 @@ public class CardManager : ManagerBase
             if (skill.card == null || skill.card.cardData == null) continue;
             if (skill.isActive) return;
 
-            if (skill.skillTime < skill.skillCoolTime)
+            if (skill.skillElapsed < skill.skillCoolTime)
             {
-                skill.skillTime += Time.deltaTime;
+                skill.skillElapsed += Time.deltaTime;
             }
             else
             {
-                skill.skillTime = skill.skillCoolTime;
+                skill.skillElapsed = skill.skillCoolTime;
             }
         }
     }
@@ -531,7 +557,7 @@ public class CardManager : ManagerBase
             if (_skillSlotList[i].card == null) continue;
             if (_skillSlotList[i].card.cardData.CardName == cardName)
             {
-                _skillSlotList[i].skillTime = 0;
+                _skillSlotList[i].skillElapsed = 0;
                 return;
             }
         }
@@ -549,6 +575,10 @@ public class CardManager : ManagerBase
     public void UseSkill2() { UseSkill(1); }
     public void UseSkill3() { UseSkill(2); }
     public void UseSkill4() { UseSkill(3); }
+
+    public override void Destroy()
+    {
+    }
 }
 
 [System.Serializable]
@@ -571,7 +601,7 @@ public class SkillSlot
             return 99999;
         }
     } 
-    public float skillTime;
+    public float skillElapsed;
     public bool isActive;
 }
 

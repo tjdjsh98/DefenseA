@@ -76,11 +76,11 @@ public class UIUpgrade : UIBase
 
     public void Reroll()
     {
+        _weaponUpgrader.Refresh();
         if (_upgradePriceTextMesh)
         {
             _upgradePriceTextMesh.text = _weaponUpgrader.UpgradePrice.ToString();   
         }
-        _weaponUpgrader.Refresh();
         _fromWeaponUI.Refresh(_weaponUpgrader.Weapon);
         StartCoroutine(_fromWeaponUI.CorFillGauge(_weaponUpgrader.Weapon));
 

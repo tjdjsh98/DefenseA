@@ -71,7 +71,7 @@ public class HelperEditor : EditorWindow
         "\n    [field: SerializeField] public Sprite Image {{ set; get; }}" +
         "\n    [field:SerializeField][field:TextArea] public string Description {{ set; get; }}" +
         "\n    [field: SerializeField] public int Rank {{ set; get; }}" +
-        "\n    public int Price => Rank == 0 ? 10 : Rank == 1 ? 30 : Rank == 2 ? 100 : Rank == 3 ? 200 : 500;" +
+        "\n    public int Price => Rank == 0 ? 30 : Rank == 1 ? 80 : Rank == 2 ? 150 : Rank == 3 ? 300 : 500;" +
         "\n    public int GetEnumToInt()" +
         "\n    {{" +
         "\n        return (int)ItemName;" +
@@ -274,8 +274,11 @@ public class HelperEditor : EditorWindow
 
         for (int i = 1; i < lines.Length; i++)
         {
+
             Debug.Log(lines[i]);
             string[] words = lines[i].Split(',');
+
+            if (words[0].Equals(string.Empty)) continue;
 
             ItemType itemType = GetItemType(words[1]);
 
