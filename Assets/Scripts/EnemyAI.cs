@@ -24,12 +24,16 @@ public class EnemyAI : MonoBehaviour
     public Character Target=>_target;
     Coroutine _detectTargetCoroutine;
 
+    [Header("파츠")]
+    [SerializeField] MonoBehaviour _movePart;
+    IMoveAI _moveAI;
+
     [Header("행동 제약")]
     [field:SerializeField]public bool IsEnableBodyAttack = true;
     [field:SerializeField]public bool IsStopDetectTarget { get; set; }      // 적이 감지 되었을 떄 움직임을 멈춤
     public float MoveRate { get; set; } = 1;     //움직임 배율 => 달리기 , 걷기에 사용
     [SerializeField] protected bool _noAttack;                              // 체크되면 일반 공격하지 않음
-
+    [field:SerializeField] public bool IsStopMoveAI { get; set; }
     // 공격과 공격사이의 딜레이
     [Header("공격 조건")]
     [SerializeField] protected float _attackDelay = 1;
@@ -62,6 +66,8 @@ public class EnemyAI : MonoBehaviour
         _rigidbody = _character.GetComponent<Rigidbody2D>();
         _bodySize = _character.GetSize();
         _character.CharacterDeadHandler += OnCharacterDead;
+        if (_movePart)
+            _moveAI = _movePart as IMoveAI;
 
         if (transform.Find("AttackRange"))
         {
@@ -152,6 +158,7 @@ public class EnemyAI : MonoBehaviour
         {
             Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet").transform.position = transform.position;
         }
+
         if (_detectTargetCoroutine != null)
             StopCoroutine(_detectTargetCoroutine);
         if (_bodyAttackCoroutine != null)
@@ -160,13 +167,17 @@ public class EnemyAI : MonoBehaviour
 
     protected virtual void Move()
     {
+        if (IsStopMoveAI) return;
         if (_isTargetInRange) return;
         if (_character.IsAttack) return;
         if (_character.IsStun) return;
         if (IsStopDetectTarget && _target != null) return;
-
-     
-
+        if (_moveAI != null)
+        {
+            _moveAI.MoveAI();
+            return;
+        }
+    
         if (_target == null)
         {
             Character girl = Managers.GetManager<GameManager>().Girl;
@@ -262,7 +273,7 @@ public class EnemyAI : MonoBehaviour
                 _character.IsEnableTurn = false;
                 _character.IsAttack = true;
                 _character.TurnBody(_target.transform.position - transform.position);
-                _character.AnimatorSetTrigger("Attack");
+                _character.SetAnimatorTrigger("Attack");
                 _attackElapsed = 0;
             }
             // 공격 모션이 따로 없을 때

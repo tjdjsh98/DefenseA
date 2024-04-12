@@ -80,7 +80,7 @@ public class ThrowParabola : MonoBehaviour
 
                                 if (_target != null)
                                 {
-                                    _character.AnimatorSetBool("Attack", true);
+                                    _character.SetAnimatorBool("Attack", true);
                                     _fireTime = 0;
                                     _character.IsAttack = true;
                                     _fireDirection = new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized;
@@ -114,7 +114,7 @@ public class ThrowParabola : MonoBehaviour
                     _step = 2;
                     _target = null;
                     _fireTime = 0;
-                    _character.AnimatorSetBool("Attack", false);
+                    _character.SetAnimatorBool("Attack", false);
                 }
             }
 

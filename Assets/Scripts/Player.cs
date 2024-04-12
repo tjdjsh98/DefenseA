@@ -254,7 +254,7 @@ public class Player : MonoBehaviour, IWeaponUsable
                 _character.IsEnableTurn = false;
                 _character.IsEnableMove = false;
                 _character.AddForce(Vector2.right * 120 * (isRight ? 1 : -1));
-                _character.AnimatorSetBool("Sliding", _isSliding);
+                _character.SetAnimatorBool("Sliding", _isSliding);
                 _slidingTime = 0;
             }
         }
@@ -272,7 +272,7 @@ public class Player : MonoBehaviour, IWeaponUsable
                 _character.IsInvincibility = false;
                 _character.IsEnableMove = true;
                 _character.IsEnableTurn = true;
-                _character.AnimatorSetBool("Sliding", _isSliding);
+                _character.SetAnimatorBool("Sliding", _isSliding);
             }
         }
 

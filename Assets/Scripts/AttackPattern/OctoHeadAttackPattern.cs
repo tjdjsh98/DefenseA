@@ -62,7 +62,7 @@ public class OctoHeadAttackPattern : MonoBehaviour
                 {
                     _character.IsEnableMove = false;
                     _character.IsEnableTurn = false;
-                    _character.AnimatorSetTrigger("Attack1Ready");
+                    _character.SetAnimatorTrigger("Attack1Ready");
                     GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/AttackPattern/TentacleAttackPattern");
                     AttackPattern tentacle = go.GetComponent<AttackPattern>();
                     tentacle.transform.position = position.Value;
@@ -78,7 +78,7 @@ public class OctoHeadAttackPattern : MonoBehaviour
             if (_attack1Delay < _attackTime)
             {
                 _sequence = 3;
-                _character.AnimatorSetTrigger("Attack1");
+                _character.SetAnimatorTrigger("Attack1");
                
             }
         }
@@ -100,7 +100,7 @@ public class OctoHeadAttackPattern : MonoBehaviour
     {
         if (_sequence == 11)
         {
-            _character.AnimatorSetTrigger("Summon");
+            _character.SetAnimatorTrigger("Summon");
             _attackTime = 0;
             _sequence = 12;
         }

@@ -196,7 +196,7 @@ public class CreatureAI : MonoBehaviour
                 _character.TurnBody(_closeEnemy.transform.position - transform.position);
 
                 _character.SetAnimationSpeed(AttackSpeed);
-                _character.AnimatorSetTrigger("NormalAttack");
+                _character.SetAnimatorTrigger("NormalAttack");
                 _character.IsAttack = true;
                 _character.IsEnableMove = false;
                 _character.IsEnableTurn = false;

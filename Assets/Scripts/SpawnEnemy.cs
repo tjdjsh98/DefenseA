@@ -52,13 +52,13 @@ public class SpawnEnemy : MonoBehaviour
             if (_spawnReadyTime == 0)
             {
                 _character.IsEnableMove = false;
-                _character.AnimatorSetTrigger("Ready");
+                _character.SetAnimatorTrigger("Ready");
             }
 
             _spawnReadyTime += Time.deltaTime;
             if (_spawnReadyTime > _spawnPlayTime)
             {
-                _character.AnimatorSetTrigger("Play");
+                _character.SetAnimatorTrigger("Play");
                 _rigidbody.AddForce((transform.position- _target.transform.position).normalized * 100,ForceMode2D.Impulse);
 
                 EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)_spawnEnemyList.GetRandom());

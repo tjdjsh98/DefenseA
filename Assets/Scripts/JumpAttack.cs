@@ -81,7 +81,7 @@ public class JumpAttack : MonoBehaviour
                             _jumpReadyTime = 0;
                             _isReadyJump = true;
                             _character.IsEnableMove = false;
-                            _character.AnimatorSetTrigger("Ready");
+                            _character.SetAnimatorTrigger("Ready");
                             break;
                         }
                         yield return null;
@@ -97,7 +97,7 @@ public class JumpAttack : MonoBehaviour
                 }
                 else
                 {
-                    _character.AnimatorSetTrigger("Jump");
+                    _character.SetAnimatorTrigger("Jump");
                     _isReadyJump = false;
                     _isJumpAttack = true;
                     _character.IsAttack = true;

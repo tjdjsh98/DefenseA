@@ -374,7 +374,7 @@ public class CreatureAbility
         
 
         }
-        _creature.AnimatorSetBool("Roar", true);
+        _creature.SetAnimatorBool("Roar", true);
 
         yield return new WaitForSeconds(0.2f);
         Roar();
@@ -384,7 +384,7 @@ public class CreatureAbility
         _creature.IsEnableTurn = false;
 
         yield return new WaitForSeconds(1);
-        _creature.AnimatorSetBool("Roar", false);
+        _creature.SetAnimatorBool("Roar", false);
 
         _creature.IsAttack = false;
         _creatureAI.IsStopAI = false;
@@ -430,7 +430,7 @@ public class CreatureAbility
     IEnumerator CorPlayElectricRelease(SkillSlot slot)
     {
 
-        _creature.AnimatorSetTrigger("Roar");
+        _creature.SetAnimatorTrigger("Roar");
 
         _creature.IsAttack = true;
         _creature.IsEnableMove = false;

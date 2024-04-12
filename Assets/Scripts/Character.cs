@@ -2,7 +2,9 @@ using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using UnityEditor.Build;
 using UnityEngine;
+using UnityEngine.Rendering.PostProcessing;
 
 public class Character : MonoBehaviour,IHp
 {
@@ -70,6 +72,7 @@ public class Character : MonoBehaviour,IHp
     public bool IsDead { set; get; }
     bool _isKnockBack;
     bool _isContactGround = false;
+    public bool IsIgnoreBreak { set; get; }
     [field:SerializeField]public bool IsSuperArmer { get; set; }
 
     public bool IsFaceRight => transform.lossyScale.x > 0;
@@ -201,6 +204,12 @@ public class Character : MonoBehaviour,IHp
         if (IsTurnBodyAlongVelocity)
         {
             TurnBody(_moveDirection);
+        }
+
+        if (IsIgnoreBreak)
+        {
+            _moveDirection = Vector3.zero;
+            return;
         }
 
         // °¡¼Ó
@@ -496,7 +505,9 @@ public class Character : MonoBehaviour,IHp
     }
     public void Jump(Vector3 direction, float power)
     {
-        _rigidBody.AddForce(direction * power, ForceMode2D.Impulse);
+        if (!_isContactGround) return;
+        
+        _rigidBody.AddForce(direction*power,ForceMode2D.Impulse);
 
         _isContactGround = false;
         _isJump = true;
@@ -513,22 +524,28 @@ public class Character : MonoBehaviour,IHp
         {
             _isContactGround = true;
             _isJump = false;
-            AnimatorSetBool("IsContactGround", _isContactGround);
+            SetAnimatorBool("IsContactGround", _isContactGround);
         }
         else
         {
             _isContactGround = false;
-            AnimatorSetBool("IsContactGround", _isContactGround);
+            SetAnimatorBool("IsContactGround", _isContactGround);
         }
 
     }
 
-    public void AnimatorSetBool(string name, bool value)
+    public void SetAnimatorBool(string name, bool value)
     {
-        if(_animator)
+        if (_animator)
             _animator.SetBool(name, value);
     }
-    public void AnimatorSetTrigger(string name)
+
+    public void SetAnimatorInt(string name, int value)
+    {
+        if(_animator)
+            _animator.SetInteger(name, value);
+    }
+    public void SetAnimatorTrigger(string name)
     {
         if (_animator)
             _animator.SetTrigger(name);
