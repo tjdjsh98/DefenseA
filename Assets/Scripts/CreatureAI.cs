@@ -105,20 +105,20 @@ public class CreatureAI : MonoBehaviour
     {
         Revive();
         if (_character.IsDead) return;
-        if (_isSoulForm)
-        {
-            Player player = Managers.GetManager<GameManager>().Player;
+        //if (_isSoulForm)
+        //{
+        //    Player player = Managers.GetManager<GameManager>().Player;
 
-            _character.TurnBody(player.transform.position - transform.position);
-            Vector3 offset = new Vector3(-3, 5, 0);
-            offset.y += Mathf.Sin(Time.time * 0.5f + gameObject.GetInstanceID());
-            if (player.transform.localScale.x < 0)
-                offset.x = -offset.x;
+        //    _character.TurnBody(player.transform.position - transform.position);
+        //    Vector3 offset = new Vector3(-3, 5, 0);
+        //    offset.y += Mathf.Sin(Time.time * 0.5f + gameObject.GetInstanceID());
+        //    if (player.transform.localScale.x < 0)
+        //        offset.x = -offset.x;
 
-            transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.01f);
+        //    transform.position = Vector3.Lerp(transform.position, player.transform.position + offset, 0.01f);
 
-            return;
-        }
+        //    return;
+        //}
 
         DefaultAI();
         _creatureAbility.AbilityUpdate();

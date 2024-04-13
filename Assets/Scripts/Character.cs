@@ -11,6 +11,7 @@ public class Character : MonoBehaviour,IHp
     Rigidbody2D _rigidBody;
     BoxCollider2D _boxCollider;
     CapsuleCollider2D _capsuleCollider;
+    CircleCollider2D _circleCollider;
     Animator _animator;
 
     #region 캐릭터능력치
@@ -112,6 +113,7 @@ public class Character : MonoBehaviour,IHp
         _animator = GetComponent<Animator>();
         _boxCollider = GetComponent<BoxCollider2D>(); 
         _capsuleCollider = GetComponent<CapsuleCollider2D>();
+        _circleCollider = GetComponent<CircleCollider2D>();
 
         _hp = _maxHp;
         if (_animator)
@@ -635,9 +637,9 @@ public class Character : MonoBehaviour,IHp
             _boxCollider = GetComponent<BoxCollider2D>();
         Define.Range size = new Define.Range()
         {
-            center = _boxCollider ? _boxCollider.offset : _capsuleCollider ? _capsuleCollider.offset : Vector3.zero,
-            size = _boxCollider ? _boxCollider.size : _capsuleCollider ? _capsuleCollider.size : Vector3.zero,
-            figureType = _boxCollider ? Define.FigureType.Box : _capsuleCollider ? Define.FigureType.Circle : Define.FigureType.Box
+            center = _boxCollider ? _boxCollider.offset : _capsuleCollider ? _capsuleCollider.offset:_circleCollider?_circleCollider.offset : Vector3.zero,
+            size = _boxCollider ? _boxCollider.size : _capsuleCollider ? _capsuleCollider.size : _circleCollider ? new Vector3(_circleCollider.radius,0,0) : Vector3.zero,
+            figureType = _boxCollider ? Define.FigureType.Box : _capsuleCollider ? Define.FigureType.Circle : _circleCollider ? Define.FigureType.Circle : Define.FigureType.Box
         };
 
         return size;

@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 7385429772454187601}
   - component: {fileID: 3927619139887317043}
   - component: {fileID: 1915835440912298901}
+  - component: {fileID: 37986138021619198}
   m_Layer: 6
   m_Name: Slime
   m_TagString: Untagged
@@ -199,9 +200,11 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _target: {fileID: 0}
+  _movePart: {fileID: 0}
   IsEnableBodyAttack: 1
   <IsStopDetectTarget>k__BackingField: 0
   _noAttack: 0
+  <IsStopMoveAI>k__BackingField: 0
   _attackDelay: 1
   _isHaveAnimation: 0
   _bodyAttackKnockBackPower: 100
@@ -228,6 +231,21 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &37986138021619198
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3791020047488867769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4405f43e746bc554a9bd958131b4ef98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _parts:
+  - {fileID: 2922013058434992235, guid: fbf17bec157f4304f93f6dcac35819cb, type: 3}
+  - {fileID: 518243624535665655, guid: 817dc9b532460b6418eb90f4206c3821, type: 3}
 --- !u!1 &4883603207270368146
 GameObject:
   m_ObjectHideFlags: 0

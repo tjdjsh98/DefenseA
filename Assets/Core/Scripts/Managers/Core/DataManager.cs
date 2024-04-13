@@ -69,7 +69,7 @@ public class DataManager : ManagerBase
 
     }
 
-    public override void Destroy()
+    public override void ManagerDestroy()
     {
 
     }

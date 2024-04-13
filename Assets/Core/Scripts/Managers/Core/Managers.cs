@@ -146,12 +146,12 @@ public class Managers : MonoBehaviour
     {
         foreach (var content in _contentManagers.Values)
         {
-            content.Destroy();
+            content.ManagerDestroy();
         }
 
         foreach (var core in _coreManagers.Values)
         {
-            core.Destroy();
+            core.ManagerDestroy();
         }
 
         Destroy(_instance.gameObject);

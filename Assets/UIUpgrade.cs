@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
@@ -7,20 +8,15 @@ public class UIUpgrade : UIBase
 {
     WeaponUpgrader _weaponUpgrader;
 
-    [SerializeField] GameObject _fromWeaponFolder;
-    WeaponUI _fromWeaponUI = new WeaponUI();
+    [SerializeField] GameObject _weaponFolder;
+    WeaponUI _weaponUI = new WeaponUI();
 
-    [SerializeField] GameObject _toWeaponFolder;
-    WeaponUI _toWeaponUI = new WeaponUI();
 
     [SerializeField] TextMeshProUGUI _upgradePriceTextMesh;
 
-    [SerializeField] TextMeshProUGUI _upgradeButtonText;
-
     public override void Init()
     {
-        _fromWeaponUI.InitWeaponUI(_fromWeaponFolder);
-        _toWeaponUI.InitWeaponUI(_toWeaponFolder);
+        _weaponUI.InitWeaponUI(_weaponFolder);
 
         gameObject.SetActive(false);
     }
@@ -36,8 +32,8 @@ public class UIUpgrade : UIBase
         Time.timeScale = .0f;
         gameObject.SetActive(true);
 
-        Reroll();
-
+        _weaponUpgrader.Open();
+        Refresh();
     }
 
     public override void Open(bool except = false)
@@ -51,7 +47,8 @@ public class UIUpgrade : UIBase
         Time.timeScale = .0f;
         gameObject.SetActive(true);
 
-        Reroll();
+        _weaponUpgrader.Open();
+        Refresh();
 
     }
     public override void Close(bool except = false)
@@ -73,26 +70,51 @@ public class UIUpgrade : UIBase
 
         Close();
     }
-
-    public void Reroll()
+    
+    public void SelectWeapon(int index)
     {
-        _weaponUpgrader.Refresh();
+        _weaponUpgrader.SelectWeapon(index);
+        Refresh();
+    }
+    public void IncreaseAttackPower()
+    {
+        _weaponUpgrader.IncreaseAttackPower();
+        Refresh();
+    }
+    public void IncreaseKncokBackPower()
+    {
+        _weaponUpgrader.IncreaseKncokBackPower();
+        Refresh();
+    }
+    public void IncreasePenerstratingPower()
+    {
+        _weaponUpgrader.IncreasePenerstratingPower();
+        Refresh();
+    }
+    public void IncreaseAttackSpeed()
+    {
+        _weaponUpgrader.IncreaseAttackSpeed();
+        Refresh();
+
+    }
+    public void IncreaseReloadSpeed()
+    {
+        _weaponUpgrader.IncreaseReloadSpeed();
+        Refresh();
+    }
+
+    void Refresh()
+    {
         if (_upgradePriceTextMesh)
         {
-            _upgradePriceTextMesh.text = _weaponUpgrader.UpgradePrice.ToString();   
+            _upgradePriceTextMesh.text = _weaponUpgrader.UpgradePrice.ToString();
         }
-        _fromWeaponUI.Refresh(_weaponUpgrader.Weapon);
-        StartCoroutine(_fromWeaponUI.CorFillGauge(_weaponUpgrader.Weapon));
+        _weaponUI.Refresh(_weaponUpgrader.Weapon);
+        StartCoroutine(_weaponUI.CorFillGauge(_weaponUpgrader.Weapon));
 
-        _toWeaponUI.Refresh(_weaponUpgrader.Weapon);
-        StartCoroutine(_toWeaponUI.CorFillGauge(_weaponUpgrader));
-
-
-        if (Managers.GetManager<GameManager>().Money < _weaponUpgrader.UpgradePrice)
-            _upgradeButtonText.text = "금액 부족";
-        else
-            _upgradeButtonText.text = "업그레이드";
+        _upgradePriceTextMesh.text = _weaponUpgrader.UpgradePrice.ToString();
     }
+
 }
 
 public class WeaponUI
@@ -139,72 +161,110 @@ public class WeaponUI
         if (weapon != null)
         {
             _weaponName.text = weapon.WeaponName.ToString();
-
             _weaponDescription.text = weapon.WeaponDescription;
-
             _weaponFolder.gameObject.SetActive(true);
+        }
+        else
+        {
+            _weaponName.text = string.Empty;
+            _weaponDescription.text = string.Empty;
         }
     }
     public IEnumerator CorFillGauge(WeaponUpgrader weaponUpgrader)
     {
         float duration = 30;
         Weapon weapon = weaponUpgrader.Weapon;
-        if (weaponUpgrader.IncreasingAttackPowerPercentage != 0)
-            _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage + weaponUpgrader.IncreasingAttackPowerPercentage) /100f}";
-        else
-            _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage) / 100f}";
-
-        if (weaponUpgrader.IncreasingKnockBackPowerPercentage != 0)
-            _knockBackPowersValueText.text = $"{weapon.OriginalKnockBackPower} + {weapon.OriginalKnockBackPower *(weapon.IncreasedKnockbackPowerPercentage + weaponUpgrader.IncreasingKnockBackPowerPercentage) / 100f}";
-        else
-            _knockBackPowersValueText.text = $"{weapon.KnockBackPower}  + {weapon.OriginalKnockBackPower *(weapon.IncreasedKnockbackPowerPercentage)/ 100f}";
-
-        if (weaponUpgrader.IncreasingPenerstratingPower != 0)
-            _penerstratingPowerValueText.text = $"{weapon.OriginalPenerstratingPower} + {weapon.IncreasedPenerstratingPower+ weaponUpgrader.IncreasingPenerstratingPower}";
-        else
-            _penerstratingPowerValueText.text = $"{weapon.OriginalPenerstratingPower} + {weapon.IncreasedPenerstratingPower }";
-
-        if (weaponUpgrader.IncreasingAttackSpeedPercentage != 0)
-            _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage + weaponUpgrader.IncreasingAttackSpeedPercentage) / 100f}";
-        else
-            _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage) / 100f}";
-
-        if (weaponUpgrader.DecreasingReloadTimePercentage != 0)
-            _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage+ weaponUpgrader.DecreasingReloadTimePercentage) / 100f}";
-        else
-            _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
-
-        for (int i = 0; i <= duration; i++)
+        if (weapon)
         {
-            _attackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.AttackPower + weaponUpgrader.IncreasingAttackPowerPercentage / 100f * weapon.OriginalAttackPower ) / 10f, i/(duration));
-            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.KnockBackPower+ weaponUpgrader.IncreasingKnockBackPowerPercentage / 100f * weapon.OriginalKnockBackPower) / 100f, i / (duration));
-            _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, (weapon.PenerstratingPower+ weaponUpgrader.IncreasingPenerstratingPower) /10f, 1f / (duration - i));
-            _attackSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.AttackSpeed + weapon.OriginalAttackSpeed * weaponUpgrader.IncreasingAttackSpeedPercentage / 100f) /10f, i / (duration));
-            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f/(weapon.ReloadTime + weapon.OriginalReloadTime * weaponUpgrader.DecreasingReloadTimePercentage / 100f) , i / (duration));
+            if (weaponUpgrader.IncreasingAttackPowerPercentage != 0)
+                _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage + weaponUpgrader.IncreasingAttackPowerPercentage) / 100f}";
+            else
+                _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage) / 100f}";
 
-            yield return null;
+            if (weaponUpgrader.IncreasingKnockBackPowerPercentage != 0)
+                _knockBackPowersValueText.text = $"{weapon.OriginalKnockBackPower} + {weapon.OriginalKnockBackPower * (weapon.IncreasedKnockbackPowerPercentage + weaponUpgrader.IncreasingKnockBackPowerPercentage) / 100f}";
+            else
+                _knockBackPowersValueText.text = $"{weapon.KnockBackPower}  + {weapon.OriginalKnockBackPower * (weapon.IncreasedKnockbackPowerPercentage) / 100f}";
+
+            if (weaponUpgrader.IncreasingPenerstratingPower != 0)
+                _penerstratingPowerValueText.text = $"{weapon.OriginalPenerstratingPower} + {weapon.IncreasedPenerstratingPower + weaponUpgrader.IncreasingPenerstratingPower}";
+            else
+                _penerstratingPowerValueText.text = $"{weapon.OriginalPenerstratingPower} + {weapon.IncreasedPenerstratingPower}";
+
+            if (weaponUpgrader.IncreasingAttackSpeedPercentage != 0)
+                _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage + weaponUpgrader.IncreasingAttackSpeedPercentage) / 100f}";
+            else
+                _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage) / 100f}";
+
+            if (weaponUpgrader.DecreasingReloadTimePercentage != 0)
+                _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage + weaponUpgrader.DecreasingReloadTimePercentage) / 100f}";
+            else
+                _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
+
+            for (int i = 0; i <= duration; i++)
+            {
+                _attackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.AttackPower + weaponUpgrader.IncreasingAttackPowerPercentage / 100f * weapon.OriginalAttackPower) / 10f, i / (duration));
+                _knockBackPowerFill.fillAmount = Mathf.Lerp(0, (weapon.KnockBackPower + weaponUpgrader.IncreasingKnockBackPowerPercentage / 100f * weapon.OriginalKnockBackPower) / 100f, i / (duration));
+                _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, (weapon.PenerstratingPower + weaponUpgrader.IncreasingPenerstratingPower) / 10f, 1f / (duration - i));
+                _attackSpeedFill.fillAmount = Mathf.Lerp(0, (weapon.AttackSpeed + weapon.OriginalAttackSpeed * weaponUpgrader.IncreasingAttackSpeedPercentage / 100f) / 10f, i / (duration));
+                _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f / (weapon.ReloadTime + weapon.OriginalReloadTime * weaponUpgrader.DecreasingReloadTimePercentage / 100f), i / (duration));
+
+                yield return null;
+            }
+        }
+        else
+        {
+            _attackPowerValueText.text = string.Empty;
+            _knockBackPowersValueText.text = string.Empty;
+            _penerstratingPowerValueText.text = string.Empty;
+            _attackSpeedValueText.text = string.Empty;
+            _reloadTimeValueText.text = string.Empty;
+            _attackPowerFill.fillAmount = 0;
+            _knockBackPowerFill.fillAmount = 0;
+            _penerstratingPowerFill.fillAmount = 0;
+            _attackSpeedFill.fillAmount = 0;
+            _reloadSpeedFill.fillAmount = 0;
+
         }
     }
     public IEnumerator CorFillGauge(Weapon weapon)
     {
         float duration = 30;
-        _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage) / 100f}";
-
-        _knockBackPowersValueText.text = $"{weapon.KnockBackPower}  + {weapon.OriginalKnockBackPower * (weapon.IncreasedKnockbackPowerPercentage) / 100f}";
-
-        _penerstratingPowerValueText.text = $"{weapon.OriginalPenerstratingPower} + {weapon.IncreasedPenerstratingPower}";
-
-        _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage) / 100f}";
-
-        _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
-
-        for (int i = 0; i <= duration; i++)
+        if (weapon)
         {
-            _attackPowerFill.fillAmount = Mathf.Lerp(0, weapon.AttackPower /10f, i / (duration));
-            _knockBackPowerFill.fillAmount = Mathf.Lerp(0, weapon.KnockBackPower / 100f, i / (duration));
-            _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, weapon.PenerstratingPower /10f, i / (duration));
-            _attackSpeedFill.fillAmount = Mathf.Lerp(0, weapon.AttackSpeed / 10f, i / (duration));
-            _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f /weapon.ReloadTime, i / (duration));
+            _attackPowerValueText.text = $"{weapon.OriginalAttackPower} + {weapon.OriginalAttackPower * (weapon.IncreasedAttackPowerPercentage) / 100f}";
+
+            _knockBackPowersValueText.text = $"{weapon.KnockBackPower}  + {weapon.OriginalKnockBackPower * (weapon.IncreasedKnockbackPowerPercentage) / 100f}";
+
+            _penerstratingPowerValueText.text = $"{weapon.OriginalPenerstratingPower} + {weapon.IncreasedPenerstratingPower}";
+
+            _attackSpeedValueText.text = $"{weapon.OriginalAttackSpeed} + {weapon.OriginalAttackSpeed * (weapon.IncreasedAttackSpeedPercentage) / 100f}";
+
+            _reloadTimeValueText.text = $"{weapon.OriginalReloadTime} - {weapon.OriginalReloadTime * (weapon.DecreasedReloadTimePercentage) / 100f}";
+
+            for (int i = 0; i <= duration; i++)
+            {
+                _attackPowerFill.fillAmount = Mathf.Lerp(0, weapon.AttackPower / 10f, i / (duration));
+                _knockBackPowerFill.fillAmount = Mathf.Lerp(0, weapon.KnockBackPower / 100f, i / (duration));
+                _penerstratingPowerFill.fillAmount = Mathf.Lerp(0, weapon.PenerstratingPower / 10f, i / (duration));
+                _attackSpeedFill.fillAmount = Mathf.Lerp(0, weapon.AttackSpeed / 10f, i / (duration));
+                _reloadSpeedFill.fillAmount = Mathf.Lerp(0, 0.1f / weapon.ReloadTime, i / (duration));
+
+                yield return null;
+            }
+        }
+        else
+        {
+            _attackPowerValueText.text = string.Empty;
+            _knockBackPowersValueText.text = string.Empty;
+            _penerstratingPowerValueText.text = string.Empty;
+            _attackSpeedValueText.text = string.Empty;
+            _reloadTimeValueText.text = string.Empty;
+            _attackPowerFill.fillAmount = 0;
+            _knockBackPowerFill.fillAmount = 0;
+            _penerstratingPowerFill.fillAmount = 0;
+            _attackSpeedFill.fillAmount = 0;
+            _reloadSpeedFill.fillAmount = 0;
 
             yield return null;
         }

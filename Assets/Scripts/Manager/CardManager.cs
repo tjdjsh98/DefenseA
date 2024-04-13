@@ -576,7 +576,7 @@ public class CardManager : ManagerBase
     public void UseSkill3() { UseSkill(2); }
     public void UseSkill4() { UseSkill(3); }
 
-    public override void Destroy()
+    public override void ManagerDestroy()
     {
     }
 }

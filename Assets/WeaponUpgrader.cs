@@ -7,8 +7,8 @@ public class WeaponUpgrader : MonoBehaviour
     int _weaponIndex;
     public Weapon Weapon { get; set; }
 
-    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * (int)Mathf.Pow((Weapon.UpgradeCount+1),2); } }
-
+    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * Weapon.UpgradeCount; } }
+    public int TotalPrice { private set; get; }
     int _upgradePrice = 30;
 
     public int IncreasingAttackPowerPercentage { get; set; }
@@ -35,41 +35,72 @@ public class WeaponUpgrader : MonoBehaviour
 
         weapon.UpgradeCount++;
 
+        IncreasingAttackPowerPercentage = 0;
+        IncreasingAttackSpeedPercentage = 0;
+        IncreasingKnockBackPowerPercentage = 0;
+        IncreasingPenerstratingPower = 0;
+        DecreasingReloadTimePercentage = 0;
     }
 
-    public void Refresh()
+    public void Open()
     {
         if (_player == null)
             _player = Managers.GetManager<GameManager>().Player;
 
-        _weaponIndex = Random.Range(0, 3);
-
-        Weapon = _player.WeaponSwaper.GetWeapon(_weaponIndex);
+        SelectWeapon(_weaponIndex);
 
         if (Weapon == null)
         {
-            for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 3; i++)
             {
-                _weaponIndex++;
-                if (_weaponIndex >= 3)
+                Weapon = _player.WeaponSwaper.GetWeapon(i);
+                if (Weapon != null)
                 {
-                    _weaponIndex = 0;
+                    SelectWeapon(i);
+                    return;
                 }
-                Weapon = _player.WeaponSwaper.GetWeapon(_weaponIndex);
-                if (Weapon != null) break;
             }
         }
 
-        if (Random.Range(0, 2) == 0)
-            IncreasingAttackPowerPercentage = 50;
-        if (Random.Range(0, 2) == 0)
-            IncreasingKnockBackPowerPercentage = Random.Range(20, 30);
-        if (Random.Range(0, 5) == 0)
-            IncreasingPenerstratingPower = Random.Range(0, 2);
-        if (Random.Range(0, 2) == 0)
-            IncreasingAttackSpeedPercentage = Random.Range(0, 20);
-        if (Random.Range(0, 2) == 0)
-            DecreasingReloadTimePercentage = Random.Range(0, 20);
 
+    }
+    public void SelectWeapon(int index)
+    {
+        if (_player == null)
+            _player = Managers.GetManager<GameManager>().Player;
+
+        if (_player == null) return;
+
+        
+        Weapon = _player.WeaponSwaper.GetWeapon(index);
+
+        if (Weapon == null) return;
+
+        _weaponIndex = index;
+    }
+
+    public void IncreaseAttackPower()
+    {
+        IncreasingAttackPowerPercentage = 20;
+        UpgradeWeapon();
+    }
+    public void IncreaseKncokBackPower()
+    {
+        IncreasingKnockBackPowerPercentage = 20;
+        UpgradeWeapon();
+    }
+    public void IncreasePenerstratingPower()
+    {
+        IncreasingPenerstratingPower = 1;
+        UpgradeWeapon();
+    }
+    public void IncreaseAttackSpeed()
+    {
+        IncreasingAttackSpeedPercentage = 20;
+
+    }
+    public void IncreaseReloadSpeed()
+    {
+        DecreasingReloadTimePercentage = 20;
     }
 }

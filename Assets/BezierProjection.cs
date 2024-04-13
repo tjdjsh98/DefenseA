@@ -11,20 +11,31 @@ public class BezierProjection : Projectile
     {
         if (_isAttack)
         {
-            if (_injectTime < 5)
+            _injectTime += Time.deltaTime;
+            if (_injectTime < 5 && !_isTouchGround)
             {
-                _injectTime += Time.deltaTime;
                 transform.position = BezierCurve(_positions, _injectTime / 5);
+                RotateBody();
+                CheckCollision();
             }
-            else
+            else if (_injectTime > 5)
             {
                 Managers.GetManager<ResourceManager>().Destroy(gameObject);
                 _isAttack = false;
+                
             }
-            base.Update();
         }
     }
 
+    protected override void RotateBody()
+    {
+        if (_injectTime < 3)
+        {
+            float angle = Mathf.Atan2((_prePostion - transform.position).y, (_prePostion - transform.position).x);
+            transform.rotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
+            _boxSize.angle = angle * Mathf.Rad2Deg;
+        }
+    }
     Vector3 BezierCurve(Vector3[] vectors , float ratio)
     {
         for (int count = 0; count < vectors.Length -1; count++)
@@ -49,5 +60,6 @@ public class BezierProjection : Projectile
         _isAttack = true;
         _attacker = attacker;
         _injectTime = 0;
+        _isTouchGround= false;
     }
 }

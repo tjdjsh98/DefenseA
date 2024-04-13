@@ -1,12 +1,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Projectile : MonoBehaviour,ITypeDefine
+public class Projectile : MonoBehaviour, ITypeDefine
 {
     [field: SerializeField] Define.ProjectileName ProjectileName { set; get; }
     protected Rigidbody2D _rigid;
     protected TrailRenderer _trailRenderer;
 
+    [SerializeField] protected bool _isCheckBox;
+    [SerializeField] protected Define.Range _boxSize;
 
     protected float _knockbackPower;
     protected float _speed;
@@ -18,7 +20,8 @@ public class Projectile : MonoBehaviour,ITypeDefine
     protected Character _attacker;
 
     protected bool _isAttack;
-    protected  Define.CharacterType _enableAttackCharacterType;
+    protected bool _isTouchGround;
+    protected Define.CharacterType _enableAttackCharacterType;
 
 
     protected Vector3 _prePostion;
@@ -29,10 +32,15 @@ public class Projectile : MonoBehaviour,ITypeDefine
     {
         _rigid = GetComponent<Rigidbody2D>();
         _trailRenderer = GetComponent<TrailRenderer>();
-        
+
     }
 
-    public virtual void Init(float knockbackPower, float speed, int damage,Define.CharacterType enableAttackCharacterType,int penetratingPower= 0,float stunTime = 0f)
+    private void OnDrawGizmosSelected()
+    {
+        Util.DrawRangeOnGizmos(gameObject,_boxSize,Color.red);
+    }
+
+    public virtual void Init(float knockbackPower, float speed, int damage, Define.CharacterType enableAttackCharacterType, int penetratingPower = 0, float stunTime = 0f)
     {
         _trailRenderer.enabled = true;
         _trailRenderer.Clear();
@@ -49,29 +57,51 @@ public class Projectile : MonoBehaviour,ITypeDefine
 
     protected virtual void Update()
     {
-        CheckCollision();
-        if((Camera.main.transform.position - transform.position).magnitude > 100)
+        if (_isTouchGround||(Camera.main.transform.position - transform.position).magnitude > 100)
         {
             Managers.GetManager<ResourceManager>().Destroy(gameObject);
             _isAttack = false;
         }
+        else
+        {
+            RotateBody();
+            CheckCollision();
+        }
     }
 
+    protected virtual void RotateBody()
+    {
+        float angle = Mathf.Atan2((_prePostion - transform.position).y, (_prePostion - transform.position).x);
+        transform.rotation = Quaternion.Euler(0, 0, angle * Mathf.Rad2Deg);
+        _boxSize.angle = angle * Mathf.Rad2Deg;
+    }
     protected virtual void CheckCollision()
     {
         if (!_isAttack) return;
-        if(transform.position == _prePostion) return;
+        if (transform.position == _prePostion) return;
 
         Vector3 direction = (transform.position - _prePostion);
 
-        RaycastHit2D[] hits = Physics2D.CircleCastAll(_prePostion, 0.5f, direction.normalized, direction.magnitude, LayerMask.GetMask("Character"));
+        RaycastHit2D[] hits = null;
+        if (!_isCheckBox)
+        {
+            hits = Physics2D.CircleCastAll(_prePostion, 0.5f, direction.normalized, direction.magnitude, LayerMask.GetMask("Character") | LayerMask.GetMask("Ground"));
+        }
+        else
+        {
+            hits = Util.RangeCastAll2D(gameObject, _boxSize, Define.CharacterMask | LayerMask.GetMask("Ground")).ToArray();
+        }
 
         _prePostion = transform.position;
 
         foreach (var hit in hits)
         {
             if (_attackCharacterList.Contains(hit.collider.gameObject)) continue;
-
+            if (hit.collider.gameObject.layer == LayerMask.NameToLayer("Ground"))
+            {
+                _isTouchGround = true;
+                return;
+            }
             _attackCharacterList.Add(hit.collider.gameObject);
 
             IHp hpComponent = hit.collider.GetComponent<IHp>();
@@ -89,7 +119,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
                     {
 
                         _direction = _direction.normalized;
-                        _attacker.Attack(characterPart? characterPart:character, _damage, _knockbackPower, _direction, hit.point, _stunTime);
+                        _attacker.Attack(characterPart ? characterPart : character, _damage, _knockbackPower, _direction, hit.point, _stunTime);
                         Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit3);
                         Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
                         hitEffect.SetProperty("Direction", direction);
@@ -109,23 +139,24 @@ public class Projectile : MonoBehaviour,ITypeDefine
         }
     }
 
-  
+
 
     // 중력을 안 받는 투사체에 사용
     public virtual void Fire(Character attacker, Vector3 direction)
     {
-        direction.z = 0;    
+        direction.z = 0;
         _attacker = attacker;
 
         Vector3 dir = direction.normalized + attacker.MySpeed.normalized;
-        _rigid.velocity = (Vector2)direction.normalized * (_speed + (attacker.MySpeed.magnitude ));
+        _rigid.velocity = (Vector2)direction.normalized * (_speed + (attacker.MySpeed.magnitude));
 
         _direction = direction.normalized;
         _prePostion = transform.position;
         _isAttack = true;
+        _isTouchGround= false;
     }
     // 중력에 영향을 받는 투사체에 사용
-    public virtual void Fire(Character attacker,float power, Vector3 direction)
+    public virtual void Fire(Character attacker, float power, Vector3 direction)
     {
         direction.z = 0;
         _attacker = attacker;
@@ -136,6 +167,7 @@ public class Projectile : MonoBehaviour,ITypeDefine
         _direction = direction.normalized;
         _prePostion = transform.position;
         _isAttack = true;
+        _isTouchGround= false;
     }
     public int GetEnumToInt()
     {

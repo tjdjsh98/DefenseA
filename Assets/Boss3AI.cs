@@ -347,7 +347,6 @@ public class Boss3AI : MonoBehaviour
         float elapsedTime = 0;
         while (true)
         {
-            Debug.Log("A");
             elapsedTime += Time.deltaTime;
             if (time < elapsedTime)
             {

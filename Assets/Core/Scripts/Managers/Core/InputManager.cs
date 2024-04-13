@@ -167,7 +167,7 @@ public class InputManager : ManagerBase
         }
     }
 
-    public override void Destroy()
+    public override void ManagerDestroy()
     {
     }
 }

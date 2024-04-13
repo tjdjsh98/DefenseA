@@ -291,7 +291,7 @@ public class ResourceManager : ManagerBase
         }
     }
 
-    public override void Destroy()
+    public override void ManagerDestroy()
     {
         foreach(var itemList in _pool.Values)
         {

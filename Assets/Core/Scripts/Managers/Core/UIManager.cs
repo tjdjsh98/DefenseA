@@ -73,7 +73,7 @@ public class UIManager : ManagerBase
         }
     }
 
-    public override void Destroy()
+    public override void ManagerDestroy()
     {
         Destroy(_uiFolder.gameObject);
     }

@@ -143,6 +143,7 @@ public static class Define
         Attach,
         Bullet,
         Bezier,
+        BoarBone,
         END
     }
 

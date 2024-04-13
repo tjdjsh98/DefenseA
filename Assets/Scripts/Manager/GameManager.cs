@@ -559,7 +559,7 @@ public class GameManager : ManagerBase
         SceneManager.LoadScene("MainMenu");
     }
 
-    public override void Destroy()
+    public override void ManagerDestroy()
     {
         Destroy(_girl.gameObject);
         Destroy(_creature.gameObject);

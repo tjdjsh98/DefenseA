@@ -15,6 +15,7 @@ GameObject:
   - component: {fileID: 4413086375596073726}
   - component: {fileID: 2113099806782836820}
   - component: {fileID: -1096205499464472584}
+  - component: {fileID: 2351230389746160340}
   m_Layer: 6
   m_Name: Bat
   m_TagString: Untagged
@@ -184,14 +185,16 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _target: {fileID: 0}
+  _movePart: {fileID: 0}
   IsEnableBodyAttack: 1
+  <IsStopDetectTarget>k__BackingField: 0
   _noAttack: 0
+  <IsStopMoveAI>k__BackingField: 0
   _attackDelay: 2
-  <IsAutoMove>k__BackingField: 1
   _isHaveAnimation: 0
-  _itemDropPercentage: 1
   _bodyAttackKnockBackPower: 50
   _bodyAttackCoolTime: 1
+  _dropPercentage: 0
   _flyHeight: 15
   _flyRange: 3
   _flyAttackSpeed: 20
@@ -209,6 +212,21 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _enemyName: 2
   <IsGroup>k__BackingField: 0
+--- !u!114 &2351230389746160340
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1338747963396321650}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4405f43e746bc554a9bd958131b4ef98, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _parts:
+  - {fileID: 841087229164556090, guid: dd1f612207ce792469448c50fb4293ef, type: 3}
+  - {fileID: 8822552613754991863, guid: 89b0028d2a9087f4f80373e0e567c40f, type: 3}
 --- !u!1 &5966991373612841047
 GameObject:
   m_ObjectHideFlags: 0

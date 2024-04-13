@@ -24,7 +24,7 @@ public class Boar : MonoBehaviour
 
     [SerializeField] float _dashDelayTime = 2;
     float _dashTime;
-    float _dashDuration = 2;
+    float _dashDuration = 1;
     Vector3 _dashDirection;
 
     [SerializeField] GameObject[] _injectionPositions;
@@ -35,10 +35,8 @@ public class Boar : MonoBehaviour
 
     private void Awake()
     {
-        
         _character = GetComponent<Character>();
         _enemyAI = GetComponent<EnemyAI>();
-        
     }
 
     private void Update()
@@ -175,7 +173,7 @@ public class Boar : MonoBehaviour
                 position[3] = transform.position + Vector3.right * transform.lossyScale.x * 5* _shellingCount;
                 position[2] = position[3] + new Vector3(Random.Range(10,15) * -transform.lossyScale.x, Random.Range(5, 7), 0) ;
 
-                BezierProjection bezierProjection = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bezier) as BezierProjection;
+                BezierProjection bezierProjection = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.BoarBone) as BezierProjection;
                 bezierProjection.transform.position = position[0];
                 bezierProjection.Init(10, 10, _character.AttackPower, Define.CharacterType.Player, 0, 0);
                 bezierProjection.SetPositions(position);

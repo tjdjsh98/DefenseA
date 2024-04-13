@@ -6,5 +6,5 @@ public abstract class ManagerBase : MonoBehaviour
 {
     public abstract void Init();
     public abstract void ManagerUpdate();
-    public abstract void Destroy();
+    public abstract void ManagerDestroy();
 }
