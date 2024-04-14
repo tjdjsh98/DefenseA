@@ -23,11 +23,17 @@ public class CreatureAbility
     /*
     * 0 = 땅구르기 공격
     * 1 = 울부짓기
+    * 2 = 전기방출
     */
     [SerializeField] int _debugAttackRangeIndex;
     [SerializeField] List<Define.Range> _attackRangeList = new List<Define.Range>();
     Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
     bool _isProhibitSkill;
+
+    public List<GameObject> _electricReleaseTickEnemyList = new List<GameObject>();
+    float _electricReleaseDuration = 3;
+    GameObject _electricReleaseTempEffect;
+
 
     //생존본능
     [SerializeField] Define.Range _survivalIntinctRange;
@@ -66,6 +72,7 @@ public class CreatureAbility
         _inventory = Managers.GetManager<GameManager>().Inventory;
         _cardManager = Managers.GetManager<CardManager>();
         _cardManager.ElectricChargedHandler += OnElectricCharged;
+        _electricReleaseTempEffect = _creature.transform.Find("ElectricRelease").gameObject;
         RegistSkill();
     }
 
@@ -108,7 +115,7 @@ public class CreatureAbility
 
     public void AbilityUpdate()
     {
-        SurvivalInstinct();
+        //SurvivalInstinct();
 
         _creatureAI.Character.AttackPower = GetAttackPower();
         _creatureAI.Character.IncreasedHpRegeneration = GetHpRegeneration();
@@ -119,14 +126,7 @@ public class CreatureAbility
     {
         CardManager manager = Managers.GetManager<CardManager>();
 
-        if (GetIsHaveAbility(CardName.충전))
-        {
-            Card card = manager.GetCard(CardName.충전);
-            if (card != null)
-            {
-                Managers.GetManager<CardManager>().CurrentElectricity += (int)card.Property;
-            }
-        }
+        
         if (target == null || target.IsDead)
         {
             Managers.GetManager<CardManager>().Predation += Managers.GetManager<CardManager>().HuntingPredation;
@@ -163,23 +163,20 @@ public class CreatureAbility
     }
     void SurvivalInstinct()
     {
-        if (GetIsHaveAbility(CardName.생존본능))
+        _survivalIntinctElapsed += Time.deltaTime;
+        //  2초마다 갱신
+        if (_survivalIntinctElapsed > 2)
         {
-            _survivalIntinctElapsed += Time.deltaTime;
-            //  2초마다 갱신
-            if (_survivalIntinctElapsed > 2)
-            {
-                _survivalIntinctElapsed = 0;
-                List<RaycastHit2D> hits = Util.RangeCastAll2D(_creatureAI.gameObject, _survivalIntinctRange, LayerMask.GetMask("Character"));
+            _survivalIntinctElapsed = 0;
+            List<RaycastHit2D> hits = Util.RangeCastAll2D(_creatureAI.gameObject, _survivalIntinctRange, LayerMask.GetMask("Character"));
 
-                _survivalIntinctCount = 0;
-                foreach (var hit in hits)
+            _survivalIntinctCount = 0;
+            foreach (var hit in hits)
+            {
+                Character character = hit.collider.GetComponent<Character>();
+                if (character && character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    Character character = hit.collider.GetComponent<Character>();
-                    if (character && character.CharacterType == Define.CharacterType.Enemy)
-                    {
-                        _survivalIntinctCount++;
-                    }
+                    _survivalIntinctCount++;
                 }
             }
         }
@@ -208,12 +205,14 @@ public class CreatureAbility
     {
         float regen = 0;
         regen = _creature.IncreasedHpRegeneration;
-        if (GetIsHaveAbility(CardName.생존본능))
-        {
-            regen -= _preSurvivalIntinctValue;
-            _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).Property;
-            regen += _preSurvivalIntinctValue;
-        }
+
+        // 잠시 폐기
+        //if (GetIsHaveAbility(CardName.생존본능))
+        //{
+        //    regen -= _preSurvivalIntinctValue;
+        //    _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).Property;
+        //    regen += _preSurvivalIntinctValue;
+        //}
         // 아이템 : 베어물린 나무
         regen -= _prebittenWoodHpRegen;
         _prebittenWoodHpRegen = _inventory.GetItemCount(ItemName.베어물린나무) * _bittenWoodCoefficient * _cardManager.Predation;
@@ -422,30 +421,68 @@ public class CreatureAbility
     {
         if (slot.isActive) return;
         if (slot.skillCoolTime > slot.skillElapsed) return;
+        if (_cardManager.CurrentElectricity < 50) return;
 
+
+        _cardManager.CurrentElectricity -= 50;
         slot.isActive = true;
 
         _creatureAI.StartCoroutine(CorPlayElectricRelease(slot));
     }
     IEnumerator CorPlayElectricRelease(SkillSlot slot)
     {
+        _creatureAI.ResetAI();
 
-        _creature.SetAnimatorTrigger("Roar");
-
+        _isProhibitSkill = true;
         _creature.IsAttack = true;
         _creature.IsEnableMove = false;
         _creature.IsEnableTurn = false;
 
-        while (_creature.IsAttack)
+        _creature.SetAnimatorBool("ElectricRelease",true);
+
+        float elapsedTime = 0;
+        _electricReleaseTempEffect.gameObject.SetActive(true);
+        _electricReleaseTempEffect.transform.localPosition = _attackRangeList[2].center;
+        _electricReleaseTempEffect.transform.localScale = _attackRangeList[2].size;
+
+        while(elapsedTime < _electricReleaseDuration)
         {
+            Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[2], Define.CharacterMask, (hit) =>
+            {
+                if (_electricReleaseTickEnemyList.Contains(hit.collider.gameObject)) return false;
+
+                _electricReleaseTickEnemyList.Add(hit.collider.gameObject);
+                _creatureAI.StartCoroutine(CorRemoveElectricReleaseTickEnemy(hit.collider.gameObject, 0.2f));
+                Character character = hit.collider.GetComponent<Character>();
+
+                if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                {
+                    _creature.Attack(character, 1, 30, Vector3.right * _creature.transform.localScale.x, hit.point, 0.2f);
+                }
+                return false;
+            });
+            elapsedTime += Time.deltaTime;
             yield return null;
         }
+        _electricReleaseTempEffect.gameObject.SetActive(false);
+
+        _creature.SetAnimatorBool("ElectricRelease", false);
+
+        _isProhibitSkill = false;
+        _creature.IsAttack = false;
+        _creature.IsEnableMove = true;
+        _creature.IsEnableTurn = true;
 
         slot.isActive = false;
         slot.skillElapsed = 0;
     }
 
+    IEnumerator CorRemoveElectricReleaseTickEnemy(GameObject go,float time)
+    {
+        yield return new WaitForSeconds(time);
+        _electricReleaseTickEnemyList.Remove(go);
 
+    }
 
     // 미사용 스킬
     /*

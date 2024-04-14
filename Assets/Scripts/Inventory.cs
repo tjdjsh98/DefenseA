@@ -266,6 +266,9 @@ public class Inventory
                 case ItemName.보조배터리:
                     CardManager.ChargeElectricty += 0.1f;
                     break;
+                case ItemName.작은송곳니:
+                    CardManager.HuntingPredation += 1;
+                    break;
                 case ItemName.네번째손:
                     Player.GirlAbility.IncreasedReloadSpeedPercentage += 20;
                     break;
@@ -311,6 +314,9 @@ public class Inventory
                     break;
                 case ItemName.보조배터리:
                     CardManager.ChargeElectricty -= 0.1f;
+                    break;
+                case ItemName.작은송곳니:
+                    CardManager.HuntingPredation -= 1;
                     break;
                 case ItemName.네번째손:
                     Player.GirlAbility.IncreasedReloadSpeedPercentage -= 20;

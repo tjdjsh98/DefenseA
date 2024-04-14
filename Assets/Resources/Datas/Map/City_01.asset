@@ -16,53 +16,60 @@ MonoBehaviour:
   timeWave:
   - genTime: 5
     multiply: 1
-    genLocalPosition: {x: 120, y: 0, z: 0}
+    genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: 0
     startTime: 0
     endTime: 150
     enemyPreset: {fileID: 0}
   - genTime: 5
     multiply: 1
-    genLocalPosition: {x: 120, y: 0, z: 0}
+    genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: 2
     startTime: 0
     endTime: 150
     enemyPreset: {fileID: 0}
   - genTime: 10
     multiply: 1
-    genLocalPosition: {x: 120, y: 0, z: 0}
+    genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: -1
     startTime: 0
     endTime: 150
     enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
   - genTime: 4.5
     multiply: 1
-    genLocalPosition: {x: 120, y: 0, z: 0}
+    genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: 0
     startTime: 150
     endTime: 300
     enemyPreset: {fileID: 0}
   - genTime: 4.5
     multiply: 1
-    genLocalPosition: {x: 120, y: 0, z: 0}
+    genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: 2
     startTime: 150
     endTime: 300
     enemyPreset: {fileID: 0}
   - genTime: 15
     multiply: 1
-    genLocalPosition: {x: 120, y: 0, z: 0}
+    genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: -1
     startTime: 143
     endTime: 315
     enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
   - genTime: 15
     multiply: 1
-    genLocalPosition: {x: -120, y: 0, z: 0}
+    genLocalPosition: {x: -80, y: 0, z: 0}
     enemyName: -1
     startTime: 150
     endTime: 300
     enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
+  - genTime: 3
+    multiply: 1
+    genLocalPosition: {x: 80, y: 0, z: 0}
+    enemyName: -1
+    startTime: 300
+    endTime: 99999
+    enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
   distanceWave:
   - genTime: 0
     multiply: 1
@@ -76,9 +83,14 @@ MonoBehaviour:
     distance: 200
   - genTime: 0
     multiply: 1
-    genLocalPosition: {x: 60, y: 0, z: 0}
-    enemyName: 15
-    distance: 200
+    genLocalPosition: {x: 100, y: 0, z: 0}
+    enemyName: 9
+    distance: 600
+  - genTime: 0
+    multiply: 1
+    genLocalPosition: {x: 100, y: 0, z: 0}
+    enemyName: 5
+    distance: 800
   mentalWave:
   - genTime: 20
     multiply: 1

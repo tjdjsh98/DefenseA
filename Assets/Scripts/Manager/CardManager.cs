@@ -34,14 +34,14 @@ public class CardManager : ManagerBase
     // 검은구체 관련 변수
     List<BlackSphere> _blackSphereList = new List<BlackSphere>();
     public List<BlackSphere> BlackSphereList => _blackSphereList;
-    public int MaxBlackSphereCount { set; get; } = 0;
+    public int MaxBlackSphereCount { set; get; } = 10;
     public Action<BlackSphere> BlackSphereAddedHandler;             // 갯수가 초과 되면 null로 실행됨
     float _blackSphereCoolTime = 0;
     float _blackSphereTime;
     public int BlackSphereAttackPower { set; get; }
 
     // 전기 관련 능력
-    int _maxElectricity = 0;
+    int _maxElectricity = 50;
     public int MaxElectricity { get { return _maxElectricity; } }
     int _currentElectricity;
     public int CurrentElectricity { get { return _currentElectricity; } 
@@ -55,7 +55,7 @@ public class CardManager : ManagerBase
 
 
     // 포식 관련 능력
-    int _maxPredation = 0;
+    int _maxPredation = 20;
     public int MaxPredation => _maxPredation;
 
     int _predation;
@@ -239,7 +239,6 @@ public class CardManager : ManagerBase
         {
             BlackSphere blackSphere = _blackSphereList[i];
             _blackSphereList.RemoveAt(i);
-            blackSphere.ChangeAttackMode(mousePosition,BlackSphereAttackPower, GetIsHaveAbility(CardName.폭발성구체), i*0.1f);
         }
         slot.skillElapsed = 0;
     }
@@ -273,7 +272,7 @@ public class CardManager : ManagerBase
         List<BlackSphere> useBlackSpheres = new List<BlackSphere>();
         if (top.HasValue)
         {
-            int count = (((int)slot.card.cardData.PropertyList[slot.card.rank - 1] > _blackSphereList.Count) ?  _blackSphereList.Count: (int)slot.card.cardData.PropertyList[slot.card.rank - 1]);
+            int count = (((int)slot.card.Property > _blackSphereList.Count) ?  _blackSphereList.Count: (int)slot.card.Property);
 
             for (int i = 0; i < count; i++)
             {
@@ -323,20 +322,6 @@ public class CardManager : ManagerBase
             }
 
             CurrentElectricity += chargeAmount;
-        }
-
-        if (GetIsHaveAbility(CardName.검은구체))
-        {
-            if (_blackSphereTime < _blackSphereCoolTime)
-            {
-                _blackSphereTime += Time.deltaTime;
-
-            }
-            else
-            {
-                AddBlackSphere(Player.transform.position);
-                _blackSphereTime = 0;
-            }
         }
 
     }
@@ -390,38 +375,13 @@ public class CardManager : ManagerBase
 
             switch (card.cardData.CardName)
             {
-                case CardName.검은구체:
-                    if (rank > 0)
-                    {
-                        _blackSphereCoolTime -= card.cardData.PropertyList[rank - 1];
-                        MaxBlackSphereCount -= (int)card.cardData.Property2List[rank - 1];
-                    }
-                    _blackSphereCoolTime += value;
-                    MaxBlackSphereCount += (int)value2;
-                    break;
+             
                 case CardName.일제사격:
                     if (rank > 0)
                         BlackSphereAttackPower -= (int)card.cardData.PropertyList[rank - 1];
                     BlackSphereAttackPower += (int)value;
                     break;
-                case CardName.미세전력:
-                    if (rank > 0)
-                    {
-                        _maxElectricity -= (int)card.cardData.PropertyList[rank - 1];
-                        ChargeElectricty -= (int)card.cardData.Property2List[rank - 1];
-                    }
-                    _maxElectricity += (int)value;
-                    ChargeElectricty += value2;
-                    break;
-                case CardName.식욕:
-                    if (rank > 0)
-                    {
-                        _maxPredation -= (int)card.cardData.PropertyList[rank - 1];
-                        HuntingPredation -= (int)card.cardData.Property2List[rank - 1];
-                    }
-                    _maxPredation += (int)value;
-                    HuntingPredation += (int)value2;
-                    break;
+               
             }
         }
     }
@@ -441,37 +401,11 @@ public class CardManager : ManagerBase
 
                 switch (card.cardData.CardName)
                 {
-                    case CardName.검은구체:
-                        if (rank > 0)
-                        {
-                            _blackSphereCoolTime += card.cardData.PropertyList[rank - 1];
-                            MaxBlackSphereCount += (int)card.cardData.Property2List[rank - 1];
-                        }
-                        _blackSphereCoolTime -= value;
-                        MaxBlackSphereCount -= (int)value2;
-                        break;
+
                     case CardName.일제사격:
                         if (rank > 0)
                             BlackSphereAttackPower += (int)card.cardData.PropertyList[rank - 1];
                         BlackSphereAttackPower -= (int)value;
-                        break;
-                    case CardName.미세전력:
-                        if (rank > 0)
-                        {
-                            _maxElectricity += (int)card.cardData.PropertyList[rank - 1];
-                            ChargeElectricty += card.cardData.Property2List[rank - 1];
-                        }
-                        _maxElectricity -= (int)value;
-                        ChargeElectricty -= value2 ;
-                        break;
-                    case CardName.식욕:
-                        if (rank > 0)
-                        {
-                            _maxPredation += (int)card.cardData.PropertyList[rank - 1];
-                            HuntingPredation += (int)card.cardData.Property2List[rank - 1];
-                        }
-                        _maxPredation -= (int)value;
-                        HuntingPredation -= (int)value2;
                         break;
                 }
             }
@@ -564,6 +498,7 @@ public class CardManager : ManagerBase
     }
     void UseSkill(int index)
     {
+        Debug.Log(index);
         if (_skillSlotList[index].card == null|| _skillSlotList[index].card.cardData == null) return;
 
         Player.GirlAbility.UseSkill(_skillSlotList[index]);

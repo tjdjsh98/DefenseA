@@ -38,12 +38,7 @@ public class Shotgun : Weapon
             Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
             float damage = AttackPower;
 
-            // 플레이어 사용자가 플레이어라면
-            if (user is Player player)
-            {
-                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).Property;
-            }
+          
             Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bullet);
             projectile.transform.position = _firePosition.transform.position;
 

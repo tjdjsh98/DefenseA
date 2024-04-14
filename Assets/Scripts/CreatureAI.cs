@@ -47,7 +47,6 @@ public class CreatureAI : MonoBehaviour
 
 
     // 일반공격 변수
-    float _normalAttackTime = 0;
     float _normalAttackCoolTime => 3f/Util.CalcPercentage(CreatureAbility.GetIncreasedAttackSpeedPercentage());
     public float DecreasedNormalAttackCoolTimePercentage { set; get; }
 
@@ -209,7 +208,17 @@ public class CreatureAI : MonoBehaviour
         }
 
         _aiCoroutine = null;
-        _normalAttackTime = 0;
+        _closeEnemy = null;
+    }
+
+    // AI 행동을 초기화
+    public void ResetAI()
+    {
+        _character.SetAnimatorTrigger("Reset");
+        _character.IsAttack = false;
+        _character.IsEnableMove = true;
+        _character.IsEnableTurn = true;
+        _aiCoroutine = null;
         _closeEnemy = null;
     }
     void FollowPlayer()
@@ -226,8 +235,8 @@ public class CreatureAI : MonoBehaviour
             if ( _character.IsAttack) break;
             Vector3 distacne = _player.transform.position - transform.position;
             if (Mathf.Abs(distacne.x) > _girlToCreatureDistance)
-            {
-                _character.Move(Vector3.right * (distacne.x + (distacne.x > 0 ? -1 : 1))/ _girlToCreatureDistance);
+            { 
+                _character.Move(Vector3.right * (distacne.x + ((distacne.x > 0 ? -1 : 1) * (_girlToCreatureDistance))));
                 _closeEnemy = GetCloseEnemy();
                 if (_closeEnemy && _player.IsFire) break;
                 if (_closeEnemy != null)

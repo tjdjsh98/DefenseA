@@ -3,12 +3,9 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Security;
-using Unity.VisualScripting;
-using UnityEditor.UIElements;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
 using Random = UnityEngine.Random;
 
 public class GameManager : ManagerBase
@@ -303,7 +300,7 @@ public class GameManager : ManagerBase
 
                 }
             }
-            distance += Random.Range(25, 40);
+            distance += Random.Range(50, 60);
         }
         distance = 3.5f;
         while (distance < _mapData.mapSize)
@@ -381,7 +378,7 @@ public class GameManager : ManagerBase
 
                 if (timeWaveData.enemyName == Define.EnemyName.None)
                 {
-                    Vector3? topPosition = GetGroundTop(_cameraController.transform.position + timeWaveData.genLocalPosition);
+                    Vector3? topPosition = GetGroundTop(CameraController.transform.position + timeWaveData.genLocalPosition);
                     if (topPosition.HasValue)
                     {
                         GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(timeWaveData.enemyPreset);
@@ -390,7 +387,7 @@ public class GameManager : ManagerBase
                         {
                             // 각 개체 체력 설정
                             Character character = preset.transform.GetChild(i).GetComponent<Character>();
-                            character.SetHp(Mathf.RoundToInt(character.MaxHp * (_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly)));
+                            character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
                         }
                     }
                 }
@@ -401,16 +398,16 @@ public class GameManager : ManagerBase
                     if (enemy)
                     {
                         // 위치 설정
-                        Vector3? topPosition = GetGroundTop(_cameraController.transform.position + timeWaveData.genLocalPosition);
+                        Vector3? topPosition = GetGroundTop(CameraController.transform.position + timeWaveData.genLocalPosition);
                         if (topPosition.HasValue)
                         {
                             Character enemyCharacter = enemy.GetComponent<Character>();
 
                             // 체력 설정
                             if (enemy.IsGroup)
-                                enemy.GetComponent<EnemyGroup>().SetHp(_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly);
+                                enemy.GetComponent<EnemyGroup>().SetHp(1 + PanicLevel * _mapData.addMultifly);
                             else
-                                enemyCharacter.SetHp(Mathf.RoundToInt(enemyCharacter.MaxHp * (_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly)));
+                                enemyCharacter.SetHp(Mathf.RoundToInt(enemyCharacter.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
 
 
                             enemyCharacter.transform.position = topPosition.Value;

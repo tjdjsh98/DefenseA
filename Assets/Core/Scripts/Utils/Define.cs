@@ -58,6 +58,7 @@ public static class Define
         UniqueSlime,
         StandingSlime,
         Blob,
+        SporeEgg,
         END,
     }
 

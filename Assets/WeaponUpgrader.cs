@@ -1,3 +1,4 @@
+using MoreMountains.Feedbacks;
 using UnityEngine;
 
 public class WeaponUpgrader : MonoBehaviour
@@ -7,7 +8,7 @@ public class WeaponUpgrader : MonoBehaviour
     int _weaponIndex;
     public Weapon Weapon { get; set; }
 
-    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * Weapon.UpgradeCount; } }
+    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * (Weapon.UpgradeCount+1); } }
     public int TotalPrice { private set; get; }
     int _upgradePrice = 30;
 
@@ -18,14 +19,14 @@ public class WeaponUpgrader : MonoBehaviour
     public float DecreasingReloadTimePercentage { get; set; }
 
 
-    public void UpgradeWeapon()
+    public bool UpgradeWeapon()
     {
-        if (Managers.GetManager<GameManager>().Money < UpgradePrice) return;
+        if (Managers.GetManager<GameManager>().Money < UpgradePrice) return false;
 
 
         Weapon weapon = _player.WeaponSwaper.GetWeapon(_weaponIndex);
 
-        if (weapon == null) return;
+        if (weapon == null) return false;
 
         weapon.IncreasedAttackPowerPercentage += IncreasingAttackPowerPercentage;
         weapon.IncreasedAttackSpeedPercentage += IncreasingAttackSpeedPercentage;
@@ -40,6 +41,8 @@ public class WeaponUpgrader : MonoBehaviour
         IncreasingKnockBackPowerPercentage = 0;
         IncreasingPenerstratingPower = 0;
         DecreasingReloadTimePercentage = 0;
+
+        return true;
     }
 
     public void Open()
@@ -79,28 +82,29 @@ public class WeaponUpgrader : MonoBehaviour
         _weaponIndex = index;
     }
 
-    public void IncreaseAttackPower()
+    public bool IncreaseAttackPower()
     {
         IncreasingAttackPowerPercentage = 20;
-        UpgradeWeapon();
+        return UpgradeWeapon();
     }
-    public void IncreaseKncokBackPower()
+    public bool IncreaseKncokBackPower()
     {
         IncreasingKnockBackPowerPercentage = 20;
-        UpgradeWeapon();
+        return UpgradeWeapon();
     }
-    public void IncreasePenerstratingPower()
+    public bool IncreasePenerstratingPower()
     {
         IncreasingPenerstratingPower = 1;
-        UpgradeWeapon();
+        return UpgradeWeapon();
     }
-    public void IncreaseAttackSpeed()
+    public bool IncreaseAttackSpeed()
     {
         IncreasingAttackSpeedPercentage = 20;
-
+        return UpgradeWeapon();
     }
-    public void IncreaseReloadSpeed()
+    public bool IncreaseReloadSpeed()
     {
         DecreasingReloadTimePercentage = 20;
+        return UpgradeWeapon();
     }
 }

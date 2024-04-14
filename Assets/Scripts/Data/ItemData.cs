@@ -10,7 +10,7 @@ public class ItemData : ScriptableObject, ITypeDefine
     [field: SerializeField] public Sprite Image { set; get; }
     [field:SerializeField][field:TextArea] public string Description { set; get; }
     [field: SerializeField] public int Rank { set; get; }
-    public int Price => Rank == 0 ? 30 : Rank == 1 ? 80 : Rank == 2 ? 150 : Rank == 3 ? 300 : 500;
+    public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 100 : Rank == 3 ? 200 : 400;
     public int GetEnumToInt()
     {
         return (int)ItemName;
@@ -85,5 +85,6 @@ public enum ItemName
     베어물린돌맹이,
     검은액체,
     검은가루,
+    작은송곳니,
     END
 }

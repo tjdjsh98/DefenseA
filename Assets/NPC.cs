@@ -7,6 +7,8 @@ public class NPC : MonoBehaviour,IInteractable
     Player _player;
     Player Player { get { if (_player == null) _player = Managers.GetManager<GameManager>().Player; return _player; } }
 
+    [SerializeField] Object _arg;
+
     [SerializeField] bool _isDisposable;
     bool _isEndUse;
 
@@ -82,6 +84,15 @@ public class NPC : MonoBehaviour,IInteractable
         OpenDialog();
         _isEndUse = true;
         HideBubble();
+    }
+    public void MoveLevel()
+    {
+        MapData mapData = _arg as MapData;
+        if (mapData)
+        {
+            Managers.GetManager<GameManager>().LoadScene(mapData);
+            CloseDialog();
+        }
     }
 
     // ,를 이용하여 구분하여 사용

@@ -2,6 +2,7 @@ using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.TextCore.Text;
 
@@ -124,7 +125,18 @@ public class OctoHeadAttackPattern : MonoBehaviour
             }
         }
     }
-
+    public void RandomSpawn()
+    {
+        switch (Random.Range(0, 2))
+        {
+            case 0:
+                SummonSpore();
+                break;
+            case 1:
+                SummonSlime();
+                break;
+        }
+    }
     public void SummonSpore()
     {
         EnemyNameDefine enemyName = Managers.GetManager<ResourceManager>().Instantiate<EnemyNameDefine>((int)Define.EnemyName.Spore);
@@ -138,6 +150,34 @@ public class OctoHeadAttackPattern : MonoBehaviour
 
             }
         }
+    }
 
+    public void SummonSlime()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            EnemyNameDefine enemyName = Managers.GetManager<ResourceManager>().Instantiate<EnemyNameDefine>((int)Define.EnemyName.Slime);
+            if (enemyName != null)
+            {
+                Character enemy = enemyName.GetComponent<Character>();
+                if (enemy != null)
+                {
+                    enemy.transform.position = transform.position;
+                    StartCoroutine(CorThrowEnemy(enemy, 50 *(i+1)));
+                }
+            }
+        }
+    }
+
+    IEnumerator CorThrowEnemy(Character enemy,float power)
+    {
+        enemy.IsIgnoreBreak = true;
+        enemy.AddForce(transform.localScale * power);
+        while (!enemy.IsContactGround)
+        {
+            yield return null;
+        }
+
+        enemy.IsIgnoreBreak = false;
     }
 }

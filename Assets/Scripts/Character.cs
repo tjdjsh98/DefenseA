@@ -223,26 +223,33 @@ public class Character : MonoBehaviour,IHp
             float maxYSpeed = _speed * _moveDirection.y;
 
             Vector2 currentSpeed = _rigidBody.velocity;
-        
+
             if (IsEnableFly || _isContactGround)
             {
-                if((_moveDirection.x > 0 && currentSpeed.x + ((_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) > maxXSpeed) ||
-                    (_moveDirection.x < 0 && currentSpeed.x + ((_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) < maxXSpeed))
+                if (_moveDirection.x != 0)
                 {
-                    currentSpeed.x = maxXSpeed;
+                    if ((_moveDirection.x > 0 && currentSpeed.x + ((_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) > maxXSpeed) ||
+                        (_moveDirection.x < 0 && currentSpeed.x + ((_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime) < maxXSpeed))
+                    {
+                        currentSpeed.x = maxXSpeed;
+                    }
+                    else
+                        currentSpeed.x += (_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime;
                 }
-                else
-                    currentSpeed.x += (_moveDirection.x > 0 ? 1 : -1) * (_isContactGround ? _groundAccelePower : _airAccelePower) * Time.deltaTime;
+                
             }
             if (IsEnableFly)
             {
-                if (Mathf.Abs(currentSpeed.y + (_moveDirection.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime) > Mathf.Abs(maxYSpeed))
+                if (_moveDirection.y != 0)
                 {
-                    currentSpeed.y =  maxYSpeed;
-                }
-                else
-                {
-                    currentSpeed.y += (_moveDirection.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
+                    if (Mathf.Abs(currentSpeed.y + (_moveDirection.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime) > Mathf.Abs(maxYSpeed))
+                    {
+                        currentSpeed.y = maxYSpeed;
+                    }
+                    else
+                    {
+                        currentSpeed.y += (_moveDirection.y > 0 ? 1 : -1) * _airAccelePower * Time.deltaTime;
+                    }
                 }
             }
             _rigidBody.velocity = currentSpeed;
@@ -390,22 +397,8 @@ public class Character : MonoBehaviour,IHp
 
         if (_hp <= 0)
         {
-            _rigidBody.velocity = Vector3.zero;
-            IsDead = true;
-            CharacterDeadHandler?.Invoke();
-
-            if (!_isEnableRevive)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                if(_boxCollider)
-                    _boxCollider.enabled = false;
-                if(_capsuleCollider)
-                    _capsuleCollider.enabled = false;
-                _rigidBody.isKinematic = true;
-            }
+            Dead();
+          
         }
 
    
@@ -446,22 +439,7 @@ public class Character : MonoBehaviour,IHp
 
         if (_hp <= 0)
         {
-            _rigidBody.velocity = Vector3.zero;
-            IsDead = true;
-            CharacterDeadHandler?.Invoke();
-
-            if (!_isEnableRevive)
-            {
-                Destroy(gameObject);
-            }
-            else
-            {
-                if (_boxCollider)
-                    _boxCollider.enabled = false;
-                if (_capsuleCollider)
-                    _capsuleCollider.enabled = false;
-                _rigidBody.isKinematic = true;
-            }
+            Dead();
         }
 
 
@@ -469,6 +447,25 @@ public class Character : MonoBehaviour,IHp
         return damage;
     }
 
+    public void Dead()
+    {
+        _rigidBody.velocity = Vector3.zero;
+        IsDead = true;
+        CharacterDeadHandler?.Invoke();
+
+        if (!_isEnableRevive)
+        {
+            Destroy(gameObject);
+        }
+        else
+        {
+            if (_boxCollider)
+                _boxCollider.enabled = false;
+            if (_capsuleCollider)
+                _capsuleCollider.enabled = false;
+            _rigidBody.isKinematic = true;
+        }
+    }
     // 상대방으로 공격하는 함수
     public int Attack(IHp target, int damage, float power, Vector3 direction,Vector3 attackPoint, float stunTime = 0.1f)
     {
@@ -584,6 +581,7 @@ public class Character : MonoBehaviour,IHp
 
     public void ChangeEnableFly(bool isFly)
     {
+        _rigidBody.gravityScale = isFly?0: 3;
         _isEnableFly = isFly;
     }
     public Vector3 GetCenter()

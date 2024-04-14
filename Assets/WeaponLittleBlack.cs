@@ -38,13 +38,6 @@ public class WeaponLittleBlack : Weapon
             projectile.transform.position = _firePosition.transform.position;
             float damage = AttackPower ;
 
-            // 플레이어 사용자가 플레이어라면
-            if (user is Player player)
-            {
-                if (player.GirlAbility.GetIsHaveAbility(CardName.라스트샷) && _currentAmmo == 0)
-                    damage = AttackPower * Managers.GetManager<CardManager>().GetCard(CardName.라스트샷).Property;
-            }
-
             projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(user.Character, direction.normalized);
 

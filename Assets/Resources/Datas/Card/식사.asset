@@ -12,19 +12,19 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
   m_Name: "\uC2DD\uC0AC"
   m_EditorClassIdentifier: 
-  <CardName>k__BackingField: 6
+  <CardName>k__BackingField: 2
   <CardSelectionType>k__BackingField: 0
   <CardDescription>k__BackingField: "\uD3EC\uC2DD\uC744 20 \uC18C\uBAA8\uD558\uACE0
-    \uC18C\uB140\uC758 \uB2E4\uC74C \uACF5\uACA9 \uB300\uC0C1\uC740 \uC989\uC0AC\uD569\uB2C8\uB2E4."
-  <IsStartCard>k__BackingField: 0
+    \uC18C\uB140\uC640 \uAD34\uBB3C\uC758 \uCCB4\uB825\uC744 {0}% \uD68C\uBCF5\uD569\uB2C8\uB2E4."
+  <IsStartCard>k__BackingField: 1
   <IsActiveAbility>k__BackingField: 1
   <coolTimeList>k__BackingField:
-  - 5
-  <PriorCards>k__BackingField:
-  - priorCardName: 4
-    priorUpgradeCount: 0
-  <MaxUpgradeCount>k__BackingField: 0
+  - 20
+  <PriorCards>k__BackingField: []
+  <MaxUpgradeCount>k__BackingField: 2
   <PropertyList>k__BackingField:
-  - 0
+  - 10
+  - 20
+  - 50
   <Property2List>k__BackingField:
   - 0

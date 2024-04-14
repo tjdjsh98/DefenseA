@@ -117,7 +117,7 @@ public class UIInGame : UIBase
 
     private void ShowElectricity()
     {
-        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.미세전력))
+        if (Managers.GetManager<CardManager>().MaxElectricity > 0)
         {
             _electricity.gameObject.SetActive(true);
             float max = Managers.GetManager<CardManager>().MaxElectricity;
@@ -132,7 +132,7 @@ public class UIInGame : UIBase
     }
     private void ShowPredation()
     {
-        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.식욕))
+        if (Managers.GetManager<CardManager>().MaxPredation > 0)
         {
             _predation.gameObject.SetActive(true);
             float max = Managers.GetManager<CardManager>().MaxPredation;
@@ -399,9 +399,10 @@ public class UIInGame : UIBase
         float alpha = 0;
         Color color = new Color(1, 1, 1, alpha);
         _levelName.color = color;
+        _levelName.gameObject.SetActive(true);
         if (_levelName)
         {
-            _levelName.text = $"패닉 { Managers.GetManager<GameManager>().PanicLevel}단계";
+            _levelName.text = $"패닉 { Managers.GetManager<GameManager>().PanicLevel}단계\n 적 능력치 증가";
             while (alpha < 1)
             {
                 color = new Color(1, 1, 1, alpha);
@@ -424,6 +425,8 @@ public class UIInGame : UIBase
                 yield return null;
             }
         }
+
+        _levelName.gameObject.SetActive(false);
     }
 
 

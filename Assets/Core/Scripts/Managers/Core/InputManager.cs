@@ -42,6 +42,8 @@ public class InputManager : ManagerBase
 
     public Action RightArrowPressedHandler;
     public Action LeftArrowPressedHandler;
+    public Action UpArrowPressedHandler;
+    public Action DownArrowPressedHandler;
 
     public override void Init()
     {
@@ -84,7 +86,11 @@ public class InputManager : ManagerBase
         if (Input.GetKeyDown(KeyCode.Alpha3))
             Num3KeyDownHandler?.Invoke();
 
-        if(Input.GetKey(KeyCode.D))
+        if (Input.GetKey(KeyCode.W))
+            UpArrowPressedHandler?.Invoke();
+        if (Input.GetKey(KeyCode.S))
+            DownArrowPressedHandler?.Invoke();
+        if (Input.GetKey(KeyCode.D))
             RightArrowPressedHandler?.Invoke();
         if (Input.GetKey(KeyCode.A))
             LeftArrowPressedHandler?.Invoke();

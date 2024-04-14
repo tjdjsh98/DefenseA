@@ -104,6 +104,7 @@ public class Player : MonoBehaviour, IWeaponUsable
         Managers.GetManager<InputManager>().Num3KeyDownHandler += () => _weaponSwaper.SelectWeapon(2);
         Managers.GetManager<InputManager>().JumpKeyDownHandler += OnJumpKeyDown;
 
+        _isFire = false;
 
     }
     private void OnDrawGizmos()
@@ -200,6 +201,7 @@ public class Player : MonoBehaviour, IWeaponUsable
         // 달리기 -> 총 전환 시 약간의 텀
         _runToFireElaspedTime += Time.deltaTime;
         _isRun = false;
+
 
     }
 
@@ -441,8 +443,11 @@ public class Player : MonoBehaviour, IWeaponUsable
     private void HandleMove()
     {
         if (_isRiding) return;
+
         Managers.GetManager<InputManager>().RightArrowPressedHandler += OnRightArrowPressed;
         Managers.GetManager<InputManager>().LeftArrowPressedHandler += OnLeftArrowPressed;
+        Managers.GetManager<InputManager>().UpArrowPressedHandler += OnUpArrowPressed;
+        Managers.GetManager<InputManager>().DownArrowPressedHandler += OnDownArrowPressed;
 
     }
 
@@ -492,6 +497,55 @@ public class Player : MonoBehaviour, IWeaponUsable
             _runToFireElaspedTime = 0;
         }
         _character.Move(Vector2.left * run);
+    }
+    void OnUpArrowPressed()
+    {
+        if (!_character.IsEnableFly) return;
+        if (_character.IsAttack)
+        {
+            _isRun = false;
+            return;
+        }
+
+        float run = 1f;
+        _character.IsTurnBodyAlongVelocity = true;
+        _isRun = true;
+        if (_isFire || Input.GetKey(KeyCode.LeftControl))
+        {
+            run = 0.4f;
+            _isRun = false;
+            _character.IsTurnBodyAlongVelocity = false;
+        }
+        else
+        {
+            _runToFireElaspedTime = 0;
+        }
+        _character.Move(Vector2.up * run);
+    }
+    void OnDownArrowPressed()
+    {
+        if (!_character.IsEnableFly) return;
+
+        if (_character.IsAttack)
+        {
+            _isRun = false;
+            return;
+        }
+
+        float run = 1f;
+        _character.IsTurnBodyAlongVelocity = true;
+        _isRun = true;
+        if (_isFire || Input.GetKey(KeyCode.LeftControl))
+        {
+            run = 0.4f;
+            _isRun = false;
+            _character.IsTurnBodyAlongVelocity = false;
+        }
+        else
+        {
+            _runToFireElaspedTime = 0;
+        }
+        _character.Move(Vector2.down * run);
     }
 
     void UseWeapon()

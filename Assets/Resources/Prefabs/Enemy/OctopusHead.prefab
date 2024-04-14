@@ -221,9 +221,11 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _target: {fileID: 0}
+  _movePart: {fileID: 0}
   IsEnableBodyAttack: 1
   <IsStopDetectTarget>k__BackingField: 1
-  _noAttack: 0
+  _noAttack: 1
+  <IsStopMoveAI>k__BackingField: 0
   _attackDelay: 1
   _isHaveAnimation: 0
   _bodyAttackKnockBackPower: 50
