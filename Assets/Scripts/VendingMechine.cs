@@ -57,29 +57,33 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     public void RestockShopItems()
     {
         List<ItemData> datas = new List<ItemData>();
-       
-        for(int i = 0; i < 5; i++)
+        List<ItemData> itemList = null;
+        List<ItemData> itemList0 = Managers.GetManager<GameManager>().RankItemDataList[0].ToList();
+        List<ItemData> itemList1 = Managers.GetManager<GameManager>().RankItemDataList[1].ToList();
+        List<ItemData> itemList2 = Managers.GetManager<GameManager>().RankItemDataList[2].ToList();
+        List<ItemData> itemList3 = Managers.GetManager<GameManager>().RankItemDataList[3].ToList();
+
+        for (int i = 0; i < 5; i++)
         {
             int rank = 0;
             float randomValue = Random.Range(0, 100);
             if (randomValue < rank0Probability)
             {
-                rank = 0;
+                itemList = itemList0;
             }
             else if (randomValue < rank0Probability + rank1Probability)
             {
-                rank = 1;
+                itemList = itemList1;
             }
             else if (randomValue < rank0Probability + rank1Probability + rank2Probability)
             {
-                rank = 2;
+                itemList = itemList2;
             }
             else
             {
-                rank = 3;
+                itemList = itemList3;
             }
 
-            List<ItemData> itemList = Managers.GetManager<GameManager>().RankItemDataList[rank].ToList();
             if (itemList.Count == 0)
             {
                 datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.µş±âÄÉÀÌÅ©));

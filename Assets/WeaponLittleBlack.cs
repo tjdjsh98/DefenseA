@@ -13,8 +13,6 @@ public class WeaponLittleBlack : Weapon
     }
     public override void FireBullet(IWeaponUsable user)
     {
-        _currentAmmo--;
-
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
@@ -44,6 +42,14 @@ public class WeaponLittleBlack : Weapon
 
             user?.Rebound(_rebound);
         }
+        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.À¯·ÉÅºÈ¯) > 0)
+        {
+            if (Random.Range(0, 100) < 10)
+            {
+                _currentAmmo++;
+            }
+        }
+        _currentAmmo--;
     }
 
     public override void Reload(IWeaponUsable user)

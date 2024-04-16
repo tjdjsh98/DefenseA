@@ -10,7 +10,7 @@ public class ItemData : ScriptableObject, ITypeDefine
     [field: SerializeField] public Sprite Image { set; get; }
     [field:SerializeField][field:TextArea] public string Description { set; get; }
     [field: SerializeField] public int Rank { set; get; }
-    public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 100 : Rank == 3 ? 200 : 400;
+    public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 80 : Rank == 3 ? 150 : 300;
     public int GetEnumToInt()
     {
         return (int)ItemName;
@@ -29,7 +29,6 @@ public enum ItemName
 {
     None = -1,    
     일반능력카드,
-    상급능력카드,
     골라콜라,
     핫세븐,
     푸카라스웨트,
@@ -50,7 +49,7 @@ public enum ItemName
     망각석,
     강렬한별빛,
     까마귀깃털,
-    눈동자구슬,
+    검은눈동자구슬,
     검은유리창파편,
     바늘과가죽,
     문들어진어금니,
@@ -86,5 +85,11 @@ public enum ItemName
     검은액체,
     검은가루,
     작은송곳니,
+    딱딱이,
+    어둠구체의3번째파편,
+    마지막탄환,
+    보이지않는손,
+    유령탄환,
+    짐승의눈,
     END
 }

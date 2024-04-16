@@ -137,7 +137,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 5
+  _maxHp: 10
   _hp: 0
   _speed: 5
   _standing: 0
@@ -196,8 +196,8 @@ MonoBehaviour:
   _bodyAttackKnockBackPower: 50
   _bodyAttackCoolTime: 1
   _dropPercentage: 0
-  _flyHeight: 15
-  _flyRange: 3
+  _flyHeight: 20
+  _flyRange: 5
   _flyAttackSpeed: 20
 --- !u!114 &-1096205499464472584
 MonoBehaviour:

@@ -378,7 +378,12 @@ public class GameManager : ManagerBase
 
                 if (timeWaveData.enemyName == Define.EnemyName.None)
                 {
-                    Vector3? topPosition = GetGroundTop(CameraController.transform.position + timeWaveData.genLocalPosition);
+                    Vector3 genLocalPosition = timeWaveData.genLocalPosition;
+                    if (Mathf.Abs(_farDistance - _girl.transform.position.x) > 50)
+                    {
+                        genLocalPosition.x = -timeWaveData.genLocalPosition.x;
+                    }
+                    Vector3? topPosition = GetGroundTop(CameraController.transform.position + genLocalPosition);
                     if (topPosition.HasValue)
                     {
                         GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(timeWaveData.enemyPreset);
@@ -465,7 +470,7 @@ public class GameManager : ManagerBase
         foreach (var wave in _mentalWaveList)
         {
             MentalWaveData mentalWaveData = wave.waveData as MentalWaveData;
-            if (mentalWaveData.genMentalLevelOrMore > PanicLevel)
+            if (mentalWaveData.genMentalLevelMore > PanicLevel || mentalWaveData.genMentalLevelLess < PanicLevel)
                 continue;
 
             if (wave.elapsedTime < wave.waveData.genTime)
@@ -476,29 +481,52 @@ public class GameManager : ManagerBase
             {
                 wave.elapsedTime = 0;
 
-                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)wave.waveData.enemyName);
-                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                if (!enemy.IsGroup)
+                if (wave.waveData.enemyName == Define.EnemyName.None)
                 {
-                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+
+                    Vector3 genLocalPosition = mentalWaveData.genLocalPosition;
+                    if (Mathf.Abs(_farDistance - _girl.transform.position.x) > 50)
+                    {
+                        genLocalPosition.x = -mentalWaveData.genLocalPosition.x;
+                    }
+                    Vector3? topPosition = GetGroundTop(CameraController.transform.position + genLocalPosition);
                     if (topPosition.HasValue)
                     {
-                        Character character = enemy.GetComponent<Character>();
-                        enemy.transform.position = topPosition.Value;
-                        character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.multiply));
+                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(mentalWaveData.enemyPreset);
+                        preset.transform.position = topPosition.Value;
+                        for (int i = 0; i < preset.transform.childCount; i++)
+                        {
+                            // 각 개체 체력 설정
+                            Character character = preset.transform.GetChild(i).GetComponent<Character>();
+                            character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
+                        }
                     }
                 }
                 else
                 {
-                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
-                    if (topPosition.HasValue)
+                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)wave.waveData.enemyName);
+                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+                    if (!enemy.IsGroup)
                     {
-                        EnemyGroup group = enemy.GetComponent<EnemyGroup>();
-                        group.transform.position = topPosition.Value;
-                        group.SetHp(mentalWaveData.multiply);
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+                        if (topPosition.HasValue)
+                        {
+                            Character character = enemy.GetComponent<Character>();
+                            enemy.transform.position = topPosition.Value;
+                            character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.multiply));
+                        }
+                    }
+                    else
+                    {
+                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
+                        if (topPosition.HasValue)
+                        {
+                            EnemyGroup group = enemy.GetComponent<EnemyGroup>();
+                            group.transform.position = topPosition.Value;
+                            group.SetHp(mentalWaveData.multiply);
+                        }
                     }
                 }
-
             }
         }
     }
@@ -532,6 +560,8 @@ public class GameManager : ManagerBase
     {
         IsLoadEnd = false;
 
+        _stop = true;
+
         Managers.GetManager<UIManager>().GetUI<UIInGame>().LoadSceneFadeOut();
         yield return new WaitForSeconds(2);
         _girl.transform.position = GetGroundTop(new Vector3(-40, 0, 0)).Value;
@@ -541,6 +571,7 @@ public class GameManager : ManagerBase
         _mapData = mapData;
         LoadMapData();
         LoadNewSceneHandler?.Invoke(mapData);
+        _stop = false;
     }
     public Vector3 GetRightOutScreenPosition()
     {

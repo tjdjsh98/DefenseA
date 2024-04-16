@@ -13,40 +13,45 @@ MonoBehaviour:
   m_Name: City_02
   m_EditorClassIdentifier: 
   sceneName: City_02
-  mentalDownTime: 180
   timeWave:
-  - startTime: 0
+  - genTime: 4
+    multiply: 0
+    genLocalPosition: {x: 0, y: 0, z: 0}
+    enemyName: 0
+    startTime: 0
     endTime: 999999
-    genTime: 4
-    elapsedTime: 0
-    distace: 0
+    enemyPreset: {fileID: 0}
+  - genTime: 10
+    multiply: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 0000000002000000
-    hpMultiply: 1
-  - startTime: 30
+    enemyName: 0
+    startTime: 30
     endTime: 99999
-    genTime: 10
-    elapsedTime: 0
-    distace: 0
+    enemyPreset: {fileID: 0}
+  - genTime: 2
+    multiply: 0
     genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 01000000
-    hpMultiply: 1.2
-  - startTime: 60
+    enemyName: 0
+    startTime: 60
     endTime: 100
-    genTime: 2
-    elapsedTime: 0
-    distace: 0
-    genLocalPosition: {x: 0, y: 0, z: 0}
-    enemyList: 02000000
-    hpMultiply: 0.3
+    enemyPreset: {fileID: 0}
   distanceWave:
-  - startTime: 0
-    endTime: 0
-    genTime: 0
-    elapsedTime: 0
-    distace: 50
-    genLocalPosition: {x: 30, y: 0, z: 0}
-    enemyList: 07000000
-    hpMultiply: 2
+  - genTime: 0
+    multiply: 1
+    genLocalPosition: {x: 80, y: 0, z: 0}
+    enemyName: 9
+    distance: 400
+  - genTime: 0
+    multiply: 1
+    genLocalPosition: {x: 80, y: 0, z: 0}
+    enemyName: 5
+    distance: 800
+  mentalWave: []
   mapSize: 100
   nextMapData: {fileID: 11400000, guid: 200b06cc3a8f48b408124f6cf9059571, type: 2}
+  shopItemDataList: []
+  randomEvent: []
+  randomEventInterval: 200
+  initMutifly: 0
+  multiflyInterval: 0
+  addMultifly: 0

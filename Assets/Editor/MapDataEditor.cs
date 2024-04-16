@@ -175,7 +175,7 @@ public class MapDataEditor : Editor
         {
             if (timeWaveProperty.arraySize > 0)
             {
-                int height = timeWaveProperty.arraySize * 70 > 500 ? 500 : timeWaveProperty.arraySize * 70;
+                int height = timeWaveProperty.arraySize * 120 > 500 ? 500 : timeWaveProperty.arraySize * 120;
 
                 timeScrollPos = EditorGUILayout.BeginScrollView(timeScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
@@ -274,7 +274,7 @@ public class MapDataEditor : Editor
         {
             if (mentalWaveProperty.arraySize > 0)
             {
-                int height = mentalWaveProperty.arraySize * 70 > 500 ? 500 : mentalWaveProperty.arraySize * 70;
+                int height = mentalWaveProperty.arraySize * 120 > 500 ? 500 : mentalWaveProperty.arraySize * 120;
                 mentalScrollPos = EditorGUILayout.BeginScrollView(mentalScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
                 for (int i = 0; i < mentalWaveProperty.arraySize; i++)
@@ -285,12 +285,11 @@ public class MapDataEditor : Editor
                         {
                             GUILayout.Label("생성적");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("생성주기");
+                            GUILayout.Label("생성적프리셋");
                             GUILayout.FlexibleSpace();
                             GUILayout.Label("배율");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("정신력");
-                            GUILayout.FlexibleSpace();
+                            
                         }
                         EditorGUILayout.EndHorizontal();
 
@@ -300,16 +299,38 @@ public class MapDataEditor : Editor
                             enemy.intValue = (int)(Define.EnemyName)EditorGUILayout.EnumPopup((Define.EnemyName)enemy.intValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty genTime = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
-                            genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
+                            SerializedProperty preset = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyPreset");
+                            preset.objectReferenceValue = EditorGUILayout.ObjectField(preset.objectReferenceValue, typeof(GameObject), true) as GameObject;
                             GUILayout.FlexibleSpace();
 
                             SerializedProperty multiply = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
                             multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
                             GUILayout.FlexibleSpace();
+                        }
+                        EditorGUILayout.EndHorizontal();
 
-                            SerializedProperty genMentalLevelOrMore = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genMentalLevelOrMore");
-                            genMentalLevelOrMore.intValue = EditorGUILayout.IntField(genMentalLevelOrMore.intValue);
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            GUILayout.Label("생성주기");
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("정신력이상");
+                            GUILayout.FlexibleSpace();
+                            GUILayout.Label("정신력이하");
+                            GUILayout.FlexibleSpace();
+                        }
+                        EditorGUILayout.EndHorizontal();
+
+                        EditorGUILayout.BeginHorizontal();
+                        {
+                            SerializedProperty genTime = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
+                            genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
+                            GUILayout.FlexibleSpace();
+
+                            SerializedProperty genMentalLevelMore = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genMentalLevelMore");
+                            genMentalLevelMore.intValue = EditorGUILayout.IntField(genMentalLevelMore.intValue);
+                            GUILayout.FlexibleSpace();
+                            SerializedProperty genMentalLevelLess = mentalWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genMentalLevelLess");
+                            genMentalLevelLess.intValue = EditorGUILayout.IntField(genMentalLevelLess.intValue);
                             GUILayout.FlexibleSpace();
 
                         }

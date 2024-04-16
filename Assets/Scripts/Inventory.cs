@@ -51,6 +51,7 @@ public class Inventory
             return _creature;
         }
     }
+    Dictionary<ItemName, int> _itemCount = new Dictionary<ItemName, int>(); 
     [SerializeField] List<ItemSlot> _slotList = new List<ItemSlot>();
     [SerializeField] List<ItemHistory> _itemHistroyList = new List<ItemHistory>();
 
@@ -69,7 +70,7 @@ public class Inventory
 
     // 탁한 잎
     public int CloudyLeafActiveCount = 0;
-    public float _cloudyLeafDuration = 7;
+    public float _cloudyLeafDuration = 10;
     public float _cloudyLeafTime = 0;
 
     public void InventoryUpdate()
@@ -86,10 +87,13 @@ public class Inventory
 
         _darkSphereForthFragmentTime += Time.deltaTime;
 
-        if(_darkSphereForthFragmentTime > 30)
+        if(_darkSphereForthFragmentTime > 15)
         {
-            _darkSphereForthFragmentTime = 0;
-            CardManager.AddBlackSphere(Player.Character.GetCenter());
+            for (int i = 0; i < GetItemCount(ItemName.어둠구체의4번째파편); i++)
+            {
+                _darkSphereForthFragmentTime = 0;
+                CardManager.AddBlackSphere(Player.Character.GetCenter());
+            }
         }
     }
     private void HandleLightingRod()
@@ -176,6 +180,9 @@ public class Inventory
             itemSlot.Count++;
             _itemHistroyList.Add(new ItemHistory(itemData, true));
             ApplyAddItem(itemData);
+            if(!_itemCount.ContainsKey(itemData.ItemName))
+                _itemCount.Add(itemData.ItemName, 0);
+            _itemCount[itemData.ItemName]++;
         }
     }
     // 갯수가 없을 때 삭제를 취소하고 false를 반환한다.
@@ -197,6 +204,11 @@ public class Inventory
             
             _itemHistroyList.Add(new ItemHistory(itemData, false));
             ApplyRemoveItem(itemData);
+
+            if (!_itemCount.ContainsKey(itemData.ItemName))
+                _itemCount.Add(itemData.ItemName, 0);
+            if (_itemCount[itemData.ItemName] > 0)
+                _itemCount[itemData.ItemName]--;
         }
         if (itemSlot.Count == 0)
             _slotList.Remove(itemSlot);
@@ -261,10 +273,10 @@ public class Inventory
             switch (itemData.ItemName)
             {
                 case ItemName.건전지:
-                    CardManager.ChargeElectricty += 0.05f;
+                    CardManager.ChargeElectricty += 0.2f;
                     break;
                 case ItemName.보조배터리:
-                    CardManager.ChargeElectricty += 0.1f;
+                    CardManager.ChargeElectricty += 0.5f;
                     break;
                 case ItemName.작은송곳니:
                     CardManager.HuntingPredation += 1;
@@ -274,6 +286,9 @@ public class Inventory
                     break;
                 case ItemName.어둠구체의4번째파편:
                     _IsActiveDarkSphereForthFragment = true;
+                    break;
+                case ItemName.손트리:
+                    Managers.GetManager<GameManager>().MentalAccelerationPercentage += 20;
                     break;
                 case ItemName.피뢰침:
                     _lightingRodActiveTime = Random.Range(2, 4);
@@ -294,6 +309,12 @@ public class Inventory
                 case ItemName.눈알케이크:
                     Managers.GetManager<GameManager>().MentalAccelerationPercentage += 100f;
                     break;
+                case ItemName.부서진약지:
+                    Managers.GetManager<GameManager>().MentalAccelerationPercentage += 20f;
+                    break;
+                case ItemName.짐승의눈:
+                    CardManager.MaxPredation += 20;
+                    break;
             }
             if (itemData is StatusUpItemData data)
             {
@@ -310,10 +331,10 @@ public class Inventory
             switch (itemData.ItemName)
             {
                 case ItemName.건전지:
-                    CardManager.ChargeElectricty -= 0.05f;
+                    CardManager.ChargeElectricty -= 0.2f;
                     break;
                 case ItemName.보조배터리:
-                    CardManager.ChargeElectricty -= 0.1f;
+                    CardManager.ChargeElectricty -= 0.5f;
                     break;
                 case ItemName.작은송곳니:
                     CardManager.HuntingPredation -= 1;
@@ -324,6 +345,9 @@ public class Inventory
                 case ItemName.어둠구체의4번째파편:
                     if(GetItemCount(itemData) <=0)
                         _IsActiveDarkSphereForthFragment = false;
+                    break;
+                case ItemName.손트리:
+                    Managers.GetManager<GameManager>().MentalAccelerationPercentage -= 20;
                     break;
                 case ItemName.피뢰침:
                     if (GetItemCount(itemData) <= 0)
@@ -339,6 +363,9 @@ public class Inventory
                 case ItemName.눈알케이크:
                     Managers.GetManager<GameManager>().MentalAccelerationPercentage -= 100f;
                     break;
+                case ItemName.짐승의눈:
+                    _cardManager.MaxPredation -= 20;
+                    break;
             }
             if (itemData is StatusUpItemData data)
             {
@@ -349,25 +376,13 @@ public class Inventory
 
     public int GetItemCount(ItemData itemData)
     {
-        foreach (var slot in _slotList)
-        {
-            if (slot.ItemData == itemData)
-            {
-                return slot.Count; 
-            }
-        }
-        return 0;
+        if (!_itemCount.ContainsKey(itemData.ItemName)) return 0;
+        return _itemCount[itemData.ItemName];
     }
     public int GetItemCount(ItemName itemName)
     {
-        foreach (var slot in _slotList)
-        {
-            if (slot.ItemData.ItemName.Equals(itemName))
-            {
-                return slot.Count;
-            }
-        }
-        return 0;
+        if (!_itemCount.ContainsKey(itemName)) return 0;
+        return _itemCount[itemName];
     }
     public void ApplyStatus(StatusUpItemData statusUpItemData)
     {

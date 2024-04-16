@@ -1,3 +1,4 @@
+using JetBrains.Annotations;
 using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections.Generic;
@@ -113,7 +114,13 @@ public class Player : MonoBehaviour, IWeaponUsable
 
         Util.DrawRangeOnGizmos(gameObject, _meleeAttackRange, Color.red);
     }
-  
+
+    private void OnApplicationPause(bool pause)
+    {
+        if(pause)
+            _isFire = false;
+    }
+
     private void OnCharacterDead()
     {
         Managers.GetManager<GameManager>().GameOver();

@@ -9,7 +9,6 @@ public class WeaponBlack : Weapon
 
     public override void FireBullet(IWeaponUsable user)
     {
-        _currentAmmo--;
 
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
@@ -43,6 +42,15 @@ public class WeaponBlack : Weapon
             user?.Rebound(_rebound);
             _currentAmmo = 0;
         }
+
+        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.À¯·ÉÅºÈ¯) > 0)
+        {
+            if (Random.Range(0, 100) < 10)
+            {
+                _currentAmmo++;
+            }
+        }
+        _currentAmmo--;
     }
     public override void CompleteReload(bool isHideGauge = false)
     {

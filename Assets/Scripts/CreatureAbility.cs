@@ -1,5 +1,3 @@
-using MoreMountains.Feedbacks;
-using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -96,7 +94,7 @@ public class CreatureAbility
                         }
                         return false;
                     });
-                }
+                }   
             }
 
         }
@@ -122,19 +120,30 @@ public class CreatureAbility
     }
 
     
-    void OnAttack(Character target, int damage)
+    void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
 
         
         if (target == null || target.IsDead)
         {
-            Managers.GetManager<CardManager>().Predation += Managers.GetManager<CardManager>().HuntingPredation;
-
+            Managers.GetManager<CardManager>().Predation += (Managers.GetManager<CardManager>().HuntingPredation + _inventory.GetItemCount(ItemName.문들어진송곳니));
+            
             int count = _inventory.GetItemCount(ItemName.바늘과가죽);
             if (count >0 )
             {
-                _needleAndLeatherIncreasedPower += 0.1f * count;
+                _needleAndLeatherIncreasedPower += 0.01f * count;
+            }
+        }
+
+        if(_inventory.GetItemCount(ItemName.문들어진어금니) > 0)
+        {
+            if (totalDamage > 0)
+            {
+                if(Random.Range(0,100) < 50)
+                {
+                    _cardManager.Predation += _inventory.GetItemCount(ItemName.문들어진어금니);
+                }
             }
         }
     }
@@ -142,6 +151,14 @@ public class CreatureAbility
     void OnDamage(Character attacker, int damage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
+
+        if(_inventory.GetItemCount(ItemName.검은세포) > 0 )
+        {
+            if (Random.Range(0, 100) < _inventory.GetItemCount(ItemName.검은세포) *5)
+            {
+                _cardManager.AddBlackSphere(_creature.GetCenter());
+            }
+        }
       
     }
     public void ApplyCardAbility(Card card)
@@ -242,7 +259,7 @@ public class CreatureAbility
 
         // 아이템 : 나이프
         attackPower -= _preKnifeIncreasedPower;
-        _preKnifeIncreasedPower =Mathf.Clamp((int)(_cardManager.Predation / 5),0,8) * _inventory.GetItemCount(ItemName.나이프);
+        _preKnifeIncreasedPower = (int)(_cardManager.Predation / 20) * _inventory.GetItemCount(ItemName.나이프) ;
         attackPower += _preKnifeIncreasedPower;
 
         // 아이템 : 베어물린 돌맹이

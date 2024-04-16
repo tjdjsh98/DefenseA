@@ -132,7 +132,7 @@ SortingGroup:
   m_Enabled: 1
   m_SortingLayerID: 2088086217
   m_SortingLayer: 1
-  m_SortingOrder: 1
+  m_SortingOrder: 10
   m_SortAtRoot: 0
 --- !u!1 &4401257994910153440
 GameObject:
@@ -405,8 +405,8 @@ MonoBehaviour:
   m_ShadowVolumeIntensityEnabled: 0
   m_ShadowVolumeIntensity: 0.75
   m_LocalBounds:
-    m_Center: {x: -0.31550002, y: 3.50145, z: 0}
-    m_Extent: {x: 2.694, y: 2.59935, z: 0}
+    m_Center: {x: -0.51610005, y: 3.45505, z: 0}
+    m_Extent: {x: 2.9646, y: 2.88515, z: 0}
   m_PointLightInnerAngle: 360
   m_PointLightOuterAngle: 360
   m_PointLightInnerRadius: 0
@@ -417,10 +417,12 @@ MonoBehaviour:
   m_ShapeLightFalloffSize: 1.5
   m_ShapeLightFalloffOffset: {x: 0, y: 0}
   m_ShapePath:
-  - {x: -1.4882793, y: 2.4648361, z: 0}
+  - {x: 0.42770123, y: 2.0703692, z: 0}
   - {x: 0.87849045, y: 2.4017553, z: 0}
-  - {x: 0.87849045, y: 4.5582514, z: 0}
-  - {x: -1.5093079, y: 4.600305, z: 0}
+  - {x: 0.94893074, y: 4.6146035, z: 0}
+  - {x: -1.4952197, y: 4.5862174, z: 0}
+  - {x: -1.9801067, y: 4.8414097, z: 0}
+  - {x: -1.9519305, y: 2.094232, z: 0}
 --- !u!1 &5670177329638124991
 GameObject:
   m_ObjectHideFlags: 0

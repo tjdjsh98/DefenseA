@@ -37,9 +37,9 @@ public class Bomb1 : MonoBehaviour
         _spriteRenderer =  transform.Find("Model").GetComponent<SpriteRenderer>();
     }
 
-    private void OnAttack(Character arg1, int arg2)
+    private void OnAttack(Character target, int totalDamage,float power, Vector3 direction, Vector3 point, float stunTime)
     {
-                _sequence = 0;
+        _sequence = 0;
         Managers.GetManager<ResourceManager>().Destroy(gameObject);
     }
 

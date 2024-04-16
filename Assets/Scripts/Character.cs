@@ -92,8 +92,8 @@ public class Character : MonoBehaviour,IHp
 
     // 핸들러
     public Action CharacterDeadHandler;
-    public Action<Character,int> AttackHandler; // 공격한 적, 데미지
-    public Action<Character,int> AddtionalAttackHandler; // 공격한 적, 데미지
+    public Action<Character, int, float, Vector3, Vector3, float> AttackHandler; // 공격한 적, 데미지
+    public Action<Character, int, float, Vector3, Vector3, float> AddtionalAttackHandler; // 공격한 적, 데미지
     public Action<Character, int, float, Vector3,Vector3, float> DamagedHandler { set; get; }
     public Action<Character, int, float, Vector3,Vector3, float> AddtionalDamagedHandler { set; get; }
 
@@ -472,7 +472,7 @@ public class Character : MonoBehaviour,IHp
         if (target == null) return 0;
 
         int resultDamage = target.Damage(this,damage, power, direction,attackPoint, stunTime);
-        AttackHandler?.Invoke(target as Character,resultDamage);
+        AttackHandler?.Invoke(target as Character,resultDamage,power,direction,attackPoint,stunTime);
 
         return resultDamage;
     }
@@ -483,7 +483,7 @@ public class Character : MonoBehaviour,IHp
         if (target == null) return 0;
 
         int resultDamage = target.AddtionalDamage(this, damage, power, direction, attackPoint, stunTime);
-        AddtionalAttackHandler?.Invoke(target as Character, resultDamage);
+        AddtionalAttackHandler?.Invoke(target as Character, resultDamage, power, direction, attackPoint, stunTime);
 
         return resultDamage;
     }

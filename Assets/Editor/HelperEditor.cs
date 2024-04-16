@@ -71,7 +71,7 @@ public class HelperEditor : EditorWindow
         "\n    [field: SerializeField] public Sprite Image {{ set; get; }}" +
         "\n    [field:SerializeField][field:TextArea] public string Description {{ set; get; }}" +
         "\n    [field: SerializeField] public int Rank {{ set; get; }}" +
-        "\n    public int Price => Rank == 0 ? 30 : Rank == 1 ? 80 : Rank == 2 ? 150 : Rank == 3 ? 300 : 500;" +
+        "\n    public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 80 : Rank == 3 ? 150 : 300;" +
         "\n    public int GetEnumToInt()" +
         "\n    {{" +
         "\n        return (int)ItemName;" +

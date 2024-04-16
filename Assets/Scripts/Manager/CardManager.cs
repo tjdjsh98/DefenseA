@@ -1,10 +1,8 @@
-
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using Unity.VisualScripting;
-using UnityEditor.Rendering;
+using System.Runtime.InteropServices.WindowsRuntime;
 using UnityEngine;
 
 public class CardManager : ManagerBase
@@ -55,8 +53,8 @@ public class CardManager : ManagerBase
 
 
     // 포식 관련 능력
-    int _maxPredation = 20;
-    public int MaxPredation => _maxPredation;
+    int _maxPredation = 40;
+    public int MaxPredation { set { _maxPredation = value; } get { return _maxPredation; } }
 
     int _predation;
     public int Predation { get { return _predation; }set { _predation = Mathf.Clamp(value, 0, _maxPredation); } }
@@ -239,6 +237,7 @@ public class CardManager : ManagerBase
         {
             BlackSphere blackSphere = _blackSphereList[i];
             _blackSphereList.RemoveAt(i);
+            blackSphere.ChangeAttackMode(mousePosition, BlackSphereAttackPower,false,i*0.1f);
         }
         slot.skillElapsed = 0;
     }

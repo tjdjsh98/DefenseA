@@ -2,6 +2,7 @@ using DuloGames.UI.Tweens;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Net.NetworkInformation;
 using System.Text.RegularExpressions;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -20,15 +21,6 @@ public class GirlAbility
     // 스킬
     Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
-    #region 카드 능력
-    // 자동장전
-    List<float> _autoReloadElaspedTimeList = new List<float>();
-
-  
-    //빠른재장전
-    Weapon _preWeapon;
-    int _preAmmoCount;
-    #endregion
 
     #region 아이템 능력
 
@@ -36,8 +28,10 @@ public class GirlAbility
     float _preBlackShardsOfGlassHpRegen;
     float _blackShardsOfGlassCoefficient = 2f;
     // 탁한 잎
-    float _cludyLeafIncreaseAttackPowerPercentage = 20f;
-    
+    float _cludyLeafIncreaseAttackPowerPercentage = 40f;
+    // 보이지 않는 손
+    List<float> _invisbleHandElaspedTimeList = new List<float>();
+
     #endregion
 
     public void Init(Player player)
@@ -51,7 +45,7 @@ public class GirlAbility
     }
     public void AbilityUpdate()
     {
-        AutoReload();
+        InvisibleHand();
         //FastReload();
         _player.Character.IncreasedHpRegeneration = GetHpRegeneration();
     }
@@ -126,56 +120,71 @@ public class GirlAbility
     }
     #endregion
 
-    void OnAttack(Character target, int dmg)
+    void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
+
+        if (_inventory.GetItemCount(ItemName.어둠구체의3번째파편) > 0)
+        {
+            if (Random.Range(0, 100) < _inventory.GetItemCount(ItemName.어둠구체의3번째파편))
+            {
+                _cardManager.AddBlackSphere(point);
+            }
+
+        }
 
         // 타겟이 죽는다면 
         if (target == null || target.IsDead)
         {
             Managers.GetManager<CardManager>().Predation += Managers.GetManager<CardManager>().HuntingPredation;
+            if (_inventory.GetItemCount(ItemName.검은눈동자구슬) > 0)
+            {
+                if (Random.Range(0, 100) < _inventory.GetItemCount(ItemName.검은눈동자구슬) * 5)
+                {
+                    _cardManager.AddBlackSphere(point);
+                }
+            }
         }
     }
 
-    void OnAddtionalAttack(Character target, int dmg)
+    void OnAddtionalAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
 
     }
 
-    // 잠시 폐기 아이템으로 
-    private void AutoReload()
+    private void InvisibleHand()
     {
-        //if (GetIsHaveAbility(CardName.자동장전))
-        //{
+        if (_inventory.GetItemCount(ItemName.보이지않는손) > 0)
+        {
 
-        //    for (int i = 0; i < _player.WeaponSwaper.GetWeaponCount(); i++)
-        //    {
-        //        if (_autoReloadElaspedTimeList.Count <= i)
-        //            _autoReloadElaspedTimeList.Add(0);
-        //        if (_player.WeaponSwaper.WeaponIndex == i)
-        //        {
-        //            _autoReloadElaspedTimeList[i] = 0;
-        //            continue;
-        //        }
+            for (int i = 0; i < _player.WeaponSwaper.GetWeaponCount(); i++)
+            {
+                if (_invisbleHandElaspedTimeList.Count <= i)
+                    _invisbleHandElaspedTimeList.Add(0);
+                if (_player.WeaponSwaper.WeaponIndex == i)
+                {
+                    _invisbleHandElaspedTimeList[i] = 0;
+                    continue;
+                }
 
-        //        Weapon weapon = _player.WeaponSwaper.GetWeapon(i);
-        //        if (weapon == null) continue;
+                Weapon weapon = _player.WeaponSwaper.GetWeapon(i);
+                if (weapon == null) continue;
 
-        //        if (weapon.CurrentAmmo < weapon.MaxAmmo)
-        //        {
-        //            if (_autoReloadElaspedTimeList[i] > weapon.ReloadTime*2)
-        //            {
-        //                Managers.GetManager<TextManager>().ShowText(_player.transform.position + Vector3.up * 5,$"{weapon.WeaponName.ToString()} 장전완료" , 10, Color.green);
-        //                weapon.CompleteReload(false);
-        //                _autoReloadElaspedTimeList[i] = 0;
-        //            }
-        //            else
-        //            {
-        //                _autoReloadElaspedTimeList[i] += Time.deltaTime;
-        //            }
-        //        }
-        //    }
-        //}
+                if (weapon.CurrentAmmo < weapon.MaxAmmo)
+                {
+                    if (_invisbleHandElaspedTimeList[i] > weapon.ReloadTime * 2)
+                    {
+                        Managers.GetManager<TextManager>().ShowText(_player.transform.position + Vector3.up * 5, $"{weapon.WeaponName.ToString()} 장전완료", 10, Color.green);
+                        weapon.CompleteReload(false);
+                        _invisbleHandElaspedTimeList[i] = 0;
+                    }
+                    else
+                    {
+                        _invisbleHandElaspedTimeList[i] += Time.deltaTime;
+                    }
+                }
+            }
+        }
     }
     public bool GetIsHaveAbility(CardName cardName)
     {
@@ -230,7 +239,7 @@ public class GirlAbility
         //}
 
         // 아이템 : 포크
-        percentage += (int)Mathf.Clamp((Managers.GetManager<CardManager>().Predation/5),0,40)*5* _inventory.GetItemCount(ItemName.포크);
+        percentage += (int)(Managers.GetManager<CardManager>().Predation/20)*10* _inventory.GetItemCount(ItemName.포크);
 
         // 아이템 : 탁한 잎
         percentage += _inventory.CloudyLeafActiveCount * _cludyLeafIncreaseAttackPowerPercentage;
@@ -238,6 +247,14 @@ public class GirlAbility
         // 아이템 : 검은 액체
         percentage += Mathf.Clamp(_cardManager.BlackSphereList.Count * 2,0,20) * _inventory.GetItemCount(ItemName.검은액체);
 
+        // 아이템 : 마지막탄환
+        if(_player.WeaponSwaper.CurrentWeapon != null)
+        {
+            if (_player.WeaponSwaper.CurrentWeapon.CurrentAmmo == 1)
+            {
+                percentage += _inventory.GetItemCount(ItemName.마지막탄환) * 100f;
+            }
+        }
 
         return percentage;
     }

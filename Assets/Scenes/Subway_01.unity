@@ -1739,9 +1739,21 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4167099609236846396, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
+      propertyPath: m_VolumeLayerMask.m_Bits
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4648237583364501814, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
       propertyPath: m_Name
       value: '[Camera]-----------'
+      objectReference: {fileID: 0}
+    - target: {fileID: 4696884016832904647, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
+      propertyPath: m_CullingMask.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
+    - target: {fileID: 7403112808804371208, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
+      propertyPath: _backgroundLayerList.Array.size
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

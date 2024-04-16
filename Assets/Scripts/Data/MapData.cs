@@ -36,14 +36,13 @@ public class WaveData
 
     public Vector3 genLocalPosition;
     public Define.EnemyName enemyName;
+    public GameObject enemyPreset;
 }
 [System.Serializable]
 public class TimeWaveData : WaveData
 {
     public int startTime;
     public int endTime;
-
-    public GameObject enemyPreset;
 }
 [System.Serializable]
 public class DistanceWaveData : WaveData
@@ -54,5 +53,6 @@ public class DistanceWaveData : WaveData
 [System.Serializable]
 public class MentalWaveData : WaveData
 {
-    public int genMentalLevelOrMore;
+    public int genMentalLevelMore;
+    public int genMentalLevelLess;
 }

@@ -130,7 +130,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public virtual void FireBullet(IWeaponUsable user)
     {
-        _currentAmmo--;
+       
 
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
@@ -149,6 +149,8 @@ public class Weapon : MonoBehaviour, ITypeDefine
         fireFlare.Play(_firePosition.transform.position);
         // ---------------
 
+        Managers.GetManager<GameManager>().CameraController.ShakeCamera(0.2f, 0.1f);
+
         Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_bulletName);
         if (projectile != null)
         {
@@ -161,6 +163,14 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
             user?.Rebound(_rebound);
         }
+        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.À¯·ÉÅºÈ¯) > 0)
+        {
+            if (Random.Range(0, 100) < 10)
+            {
+                _currentAmmo++;
+            }
+        }
+        _currentAmmo--;
     }
     protected virtual void Update()
     {
