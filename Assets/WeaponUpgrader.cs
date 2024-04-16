@@ -23,7 +23,7 @@ public class WeaponUpgrader : MonoBehaviour
     {
         if (Managers.GetManager<GameManager>().Money < UpgradePrice) return false;
 
-
+        Managers.GetManager<GameManager>().Money -= UpgradePrice;
         Weapon weapon = _player.WeaponSwaper.GetWeapon(_weaponIndex);
 
         if (weapon == null) return false;

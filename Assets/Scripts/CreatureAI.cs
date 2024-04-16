@@ -72,7 +72,7 @@ public class CreatureAI : MonoBehaviour
         Managers.GetManager<GameManager>().CreatureAI = this;
         _character.CharacterDeadHandler += OnCharacterDead;
         _character.DamagedHandler += OnDamaged;
-
+        _character.IncreasedHpRegeneration += 0.5f;
     }
 
     private void OnCharacterDead()
