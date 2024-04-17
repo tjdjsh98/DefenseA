@@ -421,14 +421,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 986a2d61ad9c9fa4597b78bb6964d361, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _arg: {fileID: 0}
+  _isDisposable: 0
   _bubble: {fileID: 1892731643381384019}
   _dialogs:
-  - dialog: "\uAC15\uD654 \uD544\uC694?(20\uCF54\uC2A4\uD2B8)"
+  - dialog: "\uBB34\uAE30\uB97C \uAC15\uD654\uD560\uAEC0\uAC00\uC694?"
     selectionDialogs:
-    - dialog: "\uD544\uC694\uD568"
+    - dialog: "\uAC15\uD654\uD55C\uB2E4."
       unityEvent:
         m_PersistentCalls:
           m_Calls:
+          - m_Target: {fileID: 6827060754506292146}
+            m_TargetAssemblyTypeName: NPC, Assembly-CSharp
+            m_MethodName: CloseDialog
+            m_Mode: 1
+            m_Arguments:
+              m_ObjectArgument: {fileID: 0}
+              m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+              m_IntArgument: 0
+              m_FloatArgument: 0
+              m_StringArgument: 
+              m_BoolArgument: 0
+            m_CallState: 2
           - m_Target: {fileID: 6827060754506292146}
             m_TargetAssemblyTypeName: TestNPC, Assembly-CSharp
             m_MethodName: OpenUpgradeUI
@@ -441,7 +455,7 @@ MonoBehaviour:
               m_StringArgument: 
               m_BoolArgument: 0
             m_CallState: 2
-    - dialog: "\u3134\u3134"
+    - dialog: "\uD544\uC694\uC5C6\uB2E4."
       unityEvent:
         m_PersistentCalls:
           m_Calls:
@@ -458,6 +472,17 @@ MonoBehaviour:
               m_BoolArgument: 0
             m_CallState: 2
     isEndDialog: 0
+  ItemDataProperties:
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
+  - {fileID: 0}
 --- !u!114 &-2508197584001560034
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -470,8 +495,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 27ac2d4f7e4317c4a842d5860d701c83, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  IsEndUpgrede: 0
-  <UpgradePrice>k__BackingField: 30
 --- !u!1 &6868097263266808071
 GameObject:
   m_ObjectHideFlags: 0

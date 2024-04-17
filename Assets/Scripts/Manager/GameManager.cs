@@ -1,11 +1,12 @@
-using MoreMountains.Feedbacks;
+using DuloGames.UI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Security;
 using UnityEngine;
 using UnityEngine.Playables;
+using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
+using UnityEngine.TextCore.Text;
 using Random = UnityEngine.Random;
 
 public class GameManager : ManagerBase
@@ -36,7 +37,7 @@ public class GameManager : ManagerBase
     [SerializeField] bool _stop;
     [SerializeField] MapData _mapData;
     public string LevelName=>_mapData != null ? _mapData.name : "";
-    public float MapSize => _mapData.mapSize;
+    public float MapSize => IsStartBeyondDead?1000000: _mapData.mapSize;
     float _farDistance;
 
     public bool IsLoadEnd { set; get; }
@@ -108,8 +109,11 @@ public class GameManager : ManagerBase
 
 
     [field: SerializeField] public Inventory Inventory { set; get; }
-   
 
+    SpriteRenderer _dark;
+    SpriteRenderer _darkGround;
+
+    public bool IsStartBeyondDead { set; get; }
     public override void Init()
     {
         Inventory = new Inventory();
@@ -209,38 +213,38 @@ public class GameManager : ManagerBase
                 }
             }
 
-            // 이벤트 배치
-            float distance = 0;
-            if (_mapData.randomEvent.Count > 0)
-            {
-                // 상점 일정 거리마다 배치
-                while (distance < _mapData.mapSize)
-                {
-                    distance += 150;
-                    Vector3? position = GetGroundTop(new Vector3(distance, 0));
-                    if (position.HasValue)
-                    {
-                        GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent[0]);
-                        go.transform.position = position.Value;
-                    }
-                }
-                distance = 0;
+            //// 이벤트 배치
+            //float distance = 0;
+            //if (_mapData.randomEvent.Count > 0)
+            //{
+            //    // 상점 일정 거리마다 배치
+            //    while (distance < _mapData.mapSize)
+            //    {
+            //        distance += 150;
+            //        Vector3? position = GetGroundTop(new Vector3(distance, 0));
+            //        if (position.HasValue)
+            //        {
+            //            GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent[0]);
+            //            go.transform.position = position.Value;
+            //        }
+            //    }
+            //    distance = 0;
 
-                while (distance < _mapData.mapSize)
-                {
-                    distance += Random.Range( _mapData.randomEventInterval-20, _mapData.randomEventInterval + 20);
-                    Vector3? position = GetGroundTop(new Vector3(distance, 0));
-                    if (position.HasValue)
-                    {
-                        if (_mapData.randomEvent.Count > 1)
-                        {
-                            GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent[Random.Range(1, _mapData.randomEvent.Count)]);
-                            go.transform.position = position.Value;
-                        }
-                    }
-                }
+            //    while (distance < _mapData.mapSize)
+            //    {
+            //        distance += Random.Range( _mapData.randomEventInterval-20, _mapData.randomEventInterval + 20);
+            //        Vector3? position = GetGroundTop(new Vector3(distance, 0));
+            //        if (position.HasValue)
+            //        {
+            //            if (_mapData.randomEvent.Count > 1)
+            //            {
+            //                GameObject go = Managers.GetManager<ResourceManager>().Instantiate(_mapData.randomEvent[Random.Range(1, _mapData.randomEvent.Count)]);
+            //                go.transform.position = position.Value;
+            //            }
+            //        }
+            //    }
 
-            }
+            //}
         }
 
         if (!_isSkip)
@@ -344,6 +348,8 @@ public class GameManager : ManagerBase
             Character enemyCharacter = enemy.GetComponent<Character>();
             enemyCharacter.SetHp(_dummyHp);
             _summonDummy = false;
+
+            _enemySpawnList.Add(enemy.gameObject);
         }
         if (_destroyDummy)
         {
@@ -394,6 +400,7 @@ public class GameManager : ManagerBase
                             Character character = preset.transform.GetChild(i).GetComponent<Character>();
                             character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
                         }
+                        _enemySpawnList.Add(preset);
                     }
                 }
                 else
@@ -421,6 +428,7 @@ public class GameManager : ManagerBase
                             if (enemy)
                                 _enemySpawnList.Add(enemy.gameObject);
                         }
+                        _enemySpawnList.Add(enemy.gameObject);
                     }
                 }
             }
@@ -438,28 +446,9 @@ public class GameManager : ManagerBase
             if (distanceWaveData.distance <= _farDistance)
             {
                 EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)distanceWaveData.enemyName);
-                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                if (!enemy.IsGroup)
-                {
-                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
-                    if (topPosition.HasValue)
-                    {
-                        Character character = enemy.GetComponent<Character>();
-                        enemy.transform.position = topPosition.Value;
-                        character.SetHp(Mathf.RoundToInt(character.Hp * distanceWaveData.multiply));
-                        Boss = character;
-                    }
-                }
-                else
-                {
-                    Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + distanceWaveData.genLocalPosition).Value;
-                    if (topPosition.HasValue)
-                    {
-                        EnemyGroup group = enemy.GetComponent<EnemyGroup>();
-                        group.transform.position = topPosition.Value;
-                        group.SetHp(distanceWaveData.multiply);
-                    }
-                }
+
+                GenerateCharacter(enemyOrigin.gameObject, _cameraController.transform.position + distanceWaveData.genLocalPosition);
+               
                 _distanceWaveList.Remove(wave);
                 return;
             }
@@ -489,49 +478,19 @@ public class GameManager : ManagerBase
                     {
                         genLocalPosition.x = -mentalWaveData.genLocalPosition.x;
                     }
-                    Vector3? topPosition = GetGroundTop(CameraController.transform.position + genLocalPosition);
-                    if (topPosition.HasValue)
-                    {
-                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(mentalWaveData.enemyPreset);
-                        preset.transform.position = topPosition.Value;
-                        for (int i = 0; i < preset.transform.childCount; i++)
-                        {
-                            // 각 개체 체력 설정
-                            Character character = preset.transform.GetChild(i).GetComponent<Character>();
-                            character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
-                        }
-                    }
+                    GenerateCharacter(mentalWaveData.enemyPreset, CameraController.transform.position + genLocalPosition, true);
                 }
                 else
                 {
                     EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)wave.waveData.enemyName);
-                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
-                    if (!enemy.IsGroup)
-                    {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
-                        if (topPosition.HasValue)
-                        {
-                            Character character = enemy.GetComponent<Character>();
-                            enemy.transform.position = topPosition.Value;
-                            character.SetHp(Mathf.RoundToInt(character.Hp * mentalWaveData.multiply));
-                        }
-                    }
-                    else
-                    {
-                        Vector3? topPosition = GetGroundTop(new Vector3(_farDistance, 0) + mentalWaveData.genLocalPosition).Value;
-                        if (topPosition.HasValue)
-                        {
-                            EnemyGroup group = enemy.GetComponent<EnemyGroup>();
-                            group.transform.position = topPosition.Value;
-                            group.SetHp(mentalWaveData.multiply);
-                        }
-                    }
+
+                    GenerateCharacter(enemyOrigin.gameObject, CameraController.transform.position + mentalWaveData.genLocalPosition, true);
                 }
             }
         }
+
     }
   
-
     public Vector3? GetGroundTop(Vector3 position)
     {
         position.y = 50;
@@ -542,6 +501,38 @@ public class GameManager : ManagerBase
         return hit.point;
     }
 
+    public void GenerateCharacter(GameObject go, Vector3 position,bool isTopGround = false)
+    {
+        if (isTopGround)
+        {
+            Vector3? topPosition = GetGroundTop(position);
+            if(topPosition.HasValue)
+                position = topPosition.Value;
+        }
+
+        GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate(go);
+        {
+            Character character = enemy.GetComponent<Character>();
+            enemy.transform.position = position;
+            if (character)
+            {
+                character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
+                character.AttackPower = Mathf.RoundToInt(character.AttackPower * (1 + PanicLevel * _mapData.addMultifly));
+            }
+        }
+        {
+            Character[] characters = enemy.GetComponentsInChildren<Character>();
+            foreach (var character in characters)
+            {
+                if (character)
+                {
+                    character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
+                    character.AttackPower = Mathf.RoundToInt(character.AttackPower * (1 + PanicLevel * _mapData.addMultifly));
+                }
+            }
+        }
+        _enemySpawnList.Add(enemy);
+    }
     int count = 0;
     public void LoadScene(MapData mapData)
     {
@@ -592,4 +583,92 @@ public class GameManager : ManagerBase
         Destroy(_girl.gameObject);
         Destroy(_creature.gameObject);
     }
+
+    public void LoadBeyondDeath()
+    {
+        _stop = true;
+        StartCoroutine(CorPlayBeyondDeath());
+    }
+
+    IEnumerator CorPlayBeyondDeath()
+    {
+        if (_dark == null) 
+            _dark = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Dark").gameObject.GetComponent<SpriteRenderer>();
+
+        float time = 0;
+
+        GroundGroup groundGroup = GameObject.Find("Grounds").GetComponent<GroundGroup>();
+
+        SortingGroup girlGroup = _girl.GetComponent<SortingGroup>();
+        SortingGroup creatureGroup = _creature.GetComponent<SortingGroup>();
+       
+        string preSortingLayerName = girlGroup.sortingLayerName;
+        int preSortingOrder = girlGroup.sortingOrder;
+
+        string creaturePreSortingLayerName = creatureGroup.sortingLayerName;
+        int creaturePreSortingOrder = creatureGroup.sortingOrder;
+
+        girlGroup.sortingLayerName = "Character";
+        girlGroup.sortingOrder = 1003;
+        creatureGroup.sortingLayerName = "Character";
+        creatureGroup.sortingOrder = 1002;
+
+        
+        while (time < 3)
+        {
+            time += Time.deltaTime;
+            _dark.color = new Color(0, 0, 0, time / 3);
+            groundGroup.SetColor(new Color((3-time) / 3, (3 - time) / 3, (3 - time) / 3));
+            yield return null;
+        }
+        IsStartBeyondDead = true;
+
+        foreach (var enemy in _enemySpawnList)
+        {
+            Managers.GetManager<ResourceManager>().Destroy(enemy);
+        }
+        _enemySpawnList.Clear();
+        Vector3 deadPosition = _girl.transform.position;
+
+        Player.PlayRevive();
+
+        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/VendingMechine");
+        go.transform.position = _girl.transform.position + Vector3.right * 70;
+        go.GetComponent<SortingGroup>().sortingLayerName = "Character";
+        go.GetComponent<SortingGroup>().sortingOrder = 1001;
+
+        while (_girl.transform.position.x - deadPosition.x < 140)
+        {
+            yield return new WaitForSeconds(1);
+        }
+
+        LoadMapData();
+
+        Managers.GetManager<ResourceManager>().Destroy(go);
+
+        float distance = - _girl.transform.position.x;
+        _girl.transform.position = new Vector3(0, _girl.transform.position.y);
+
+        _creature.transform.position += Vector3.right * distance;
+        _cameraController.transform.position += Vector3.right * distance;
+        time = 0;
+        _farDistance = 0;
+        IsStartBeyondDead = false;
+        while (time < 3)
+        {
+            time += Time.deltaTime;
+            _dark.color = new Color(0, 0, 0, (3-time) / 3);
+            groundGroup.SetColor(new Color(time / 3, time / 3, time / 3));
+
+            yield return null;
+        }
+        girlGroup.sortingLayerName = preSortingLayerName;
+        girlGroup.sortingOrder = preSortingOrder;
+
+        creatureGroup.sortingLayerName = creaturePreSortingLayerName;
+        creatureGroup.sortingOrder = creaturePreSortingOrder;
+
+        _stop = false;
+    }
+
 }

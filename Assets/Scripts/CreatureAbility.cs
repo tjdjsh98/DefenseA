@@ -1,6 +1,8 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -274,7 +276,10 @@ public class CreatureAbility
         _skillDictionary.Add(CardName.¿ïºÎÂ¢±â, PlayRoar);
         _skillDictionary.Add(CardName.¼îÅ©¿þÀÌºê, PlayShockwave);
         _skillDictionary.Add(CardName.Àü±â¹æÃâ, PlayElectricRelease);
+        _skillDictionary.Add(CardName.²ø¾î´ç±è, PlayAttraction);
     }
+
+
 
     public void UseSkill(SkillSlot slot)
     {
@@ -286,6 +291,45 @@ public class CreatureAbility
         {
             func?.Invoke(slot);
         }
+    }
+
+    void PlayAttraction(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
+
+        slot.isActive = true;
+        _creatureAI.StartCoroutine(CorAttraction(slot));
+    }
+
+    IEnumerator CorAttraction(SkillSlot slot)
+    {
+        _creature.IncreasedDamageReducePercentage += 80;
+        _creature.SetStanding(100);
+        float time = 0;
+        Define.Range range = new Define.Range() { center = Vector3.zero, size = Vector3.one * 50, figureType = Define.FigureType.Box };
+        while (time < slot.card.Property) 
+        {
+            time += Time.deltaTime;
+            Util.RangeCastAll2D(_creature.gameObject, range, Define.CharacterMask, (hit) =>
+            {
+               Character character = hit.collider.GetComponent<Character>();
+
+                if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                {
+                    character.AddForce((_creature.transform.position- character.transform.position));               
+                }
+                return false;
+            });
+
+            yield return null;
+        }
+
+        _creature.IncreasedDamageReducePercentage -= 80;
+
+        slot.isActive = false;
+        slot.skillElapsed = 0;
+        _creature.SetStanding(0);
     }
 
     void PlayShockwave(SkillSlot slot)

@@ -80,7 +80,6 @@ public class GirlAbility
     #region 스킬 관련
     void RegistSkill()
     {
-        _skillDictionary.Add(CardName.부유, PlayFloating);
     }
 
     public void UseSkill(SkillSlot skillSlot)
@@ -93,31 +92,7 @@ public class GirlAbility
         }
     }
 
-    void PlayFloating(SkillSlot slot)
-    {
-        if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillElapsed) return;
-
-        slot.isActive = true;
-        _player.StartCoroutine(CorFloating(slot));
-    }
-
-    IEnumerator CorFloating(SkillSlot slot)
-    {
-        float elasedTime = 0;
-
-        _player.Character.ChangeEnableFly(true);
-        while (elasedTime < 3)
-        {
-            elasedTime += Time.deltaTime;
-            yield return null;
-        }
-
-        _player.Character.ChangeEnableFly(false);
-
-        slot.isActive = false;
-        slot.skillElapsed = 0;
-    }
+    
     #endregion
 
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)

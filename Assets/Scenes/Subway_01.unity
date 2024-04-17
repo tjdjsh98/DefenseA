@@ -346,6 +346,18 @@ Transform:
   m_Children: []
   m_Father: {fileID: 6282021556989328459}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &113286771
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1465182379}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 91523affa98e41e4887076d24f679f0e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &164125461
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -1126,7 +1138,7 @@ MonoBehaviour:
   _stop: 0
   _mapData: {fileID: 11400000, guid: bb3dd5ab25612dc4f998799811722f0e, type: 2}
   MentalAccelerationPercentage: 0
-  _isSkip: 0
+  _isSkip: 1
   _playableDirector: {fileID: 1210361353}
   _enteracneTimeline: {fileID: 11400000, guid: 6787141088082784b9c881817533cd54, type: 2}
   _subObjects: []
@@ -1926,6 +1938,11 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+--- !u!1 &1465182379 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1154607802258164071, guid: 6ce0c11fd20b4474cb4ab136575ff4b5, type: 3}
+  m_PrefabInstance: {fileID: 6282021556989328458}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1622215455
 GameObject:
   m_ObjectHideFlags: 0
@@ -1937,7 +1954,7 @@ GameObject:
   - component: {fileID: 1622215456}
   - component: {fileID: 1622215457}
   m_Layer: 0
-  m_Name: GameObject (1)
+  m_Name: Light
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -2467,7 +2484,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1154607802258164071, guid: 6ce0c11fd20b4474cb4ab136575ff4b5, type: 3}
       propertyPath: m_Name
-      value: SubwayGrounds
+      value: Grounds
       objectReference: {fileID: 0}
     - target: {fileID: 2232669560940383075, guid: 6ce0c11fd20b4474cb4ab136575ff4b5, type: 3}
       propertyPath: m_Size.y
@@ -3013,7 +3030,10 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 7114662751820038050, guid: 6ce0c11fd20b4474cb4ab136575ff4b5, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2007523195}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1154607802258164071, guid: 6ce0c11fd20b4474cb4ab136575ff4b5, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 113286771}
   m_SourcePrefab: {fileID: 100100000, guid: 6ce0c11fd20b4474cb4ab136575ff4b5, type: 3}
 --- !u!4 &6282021556989328459 stripped
 Transform:

@@ -123,9 +123,11 @@ public class Player : MonoBehaviour, IWeaponUsable
 
     private void OnCharacterDead()
     {
-        Managers.GetManager<GameManager>().GameOver();
-
+        _character.SetAnimatorTrigger("Dead");
+        Managers.GetManager<GameManager>().LoadBeyondDeath();
     }
+
+    
     private void OnJumpKeyDown()
     {
         if(_isSliding) return;
@@ -156,7 +158,8 @@ public class Player : MonoBehaviour, IWeaponUsable
     public void Update()
     {
         if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
-       
+        if (_character == null || _character.IsDead) return;
+
         if (_bounce)
         {
             _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
@@ -620,6 +623,11 @@ public class Player : MonoBehaviour, IWeaponUsable
 
 
         return data;
+    }
+
+    public void PlayRevive()
+    {
+        _character.SetAnimatorTrigger("Revive");
     }
     public float GetIncreasedAttackSpeedPercentage()
     {

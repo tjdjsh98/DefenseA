@@ -210,9 +210,7 @@ public class CardManager : ManagerBase
 
     void RegistSkill()
     {
-        _skillDictionary.Add(CardName.일제사격, PlayVolleyFire);
-        _skillDictionary.Add(CardName.미끼, PlayBait);
-        _skillDictionary.Add(CardName.식사, Dining);
+        _skillDictionary.Add(CardName.비상식량, PlayEmergencyFood);
     }
 
     void UseSkill(SkillSlot skillSlot)
@@ -224,6 +222,17 @@ public class CardManager : ManagerBase
             func?.Invoke(skillSlot);
         }
     }
+
+    void PlayEmergencyFood(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
+
+
+        slot.skillElapsed = 0;
+        Girl.Hp += (Girl.MaxHp - Girl.Hp);
+    }
+
 
     void PlayVolleyFire(SkillSlot slot)
     {
@@ -375,11 +384,11 @@ public class CardManager : ManagerBase
             switch (card.cardData.CardName)
             {
              
-                case CardName.일제사격:
-                    if (rank > 0)
-                        BlackSphereAttackPower -= (int)card.cardData.PropertyList[rank - 1];
-                    BlackSphereAttackPower += (int)value;
-                    break;
+                //case CardName.일제사격:
+                //    if (rank > 0)
+                //        BlackSphereAttackPower -= (int)card.cardData.PropertyList[rank - 1];
+                //    BlackSphereAttackPower += (int)value;
+                //    break;
                
             }
         }
@@ -401,11 +410,11 @@ public class CardManager : ManagerBase
                 switch (card.cardData.CardName)
                 {
 
-                    case CardName.일제사격:
-                        if (rank > 0)
-                            BlackSphereAttackPower += (int)card.cardData.PropertyList[rank - 1];
-                        BlackSphereAttackPower -= (int)value;
-                        break;
+                    //case CardName.일제사격:
+                    //    if (rank > 0)
+                    //        BlackSphereAttackPower += (int)card.cardData.PropertyList[rank - 1];
+                    //    BlackSphereAttackPower -= (int)value;
+                    //    break;
                 }
             }
         
@@ -440,7 +449,7 @@ public class CardManager : ManagerBase
         if (index < 0 || _skillSlotList.Count <= index) return;
 
         _skillSlotList[index].card = card;
-        _skillSlotList[index].skillElapsed = 0;
+        _skillSlotList[index].skillElapsed = _skillSlotList[index].skillCoolTime;
         _skillSlotList[index].isActive = false;
 
     }

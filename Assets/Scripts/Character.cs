@@ -45,7 +45,7 @@ public class Character : MonoBehaviour,IHp
     [SerializeField] float _speed;
     public float Speed => _speed;
     [SerializeField] float _standing;
-    public float Standing => _standing;
+    public float Standing;
 
     #endregion
     [field:SerializeField]public int AttackPower { set; get; }
@@ -92,6 +92,7 @@ public class Character : MonoBehaviour,IHp
 
     // 핸들러
     public Action CharacterDeadHandler;
+    public Action CharacterReviveHandler;
     public Action<Character, int, float, Vector3, Vector3, float> AttackHandler; // 공격한 적, 데미지
     public Action<Character, int, float, Vector3, Vector3, float> AddtionalAttackHandler; // 공격한 적, 데미지
     public Action<Character, int, float, Vector3,Vector3, float> DamagedHandler { set; get; }
@@ -370,8 +371,7 @@ public class Character : MonoBehaviour,IHp
 
         Character attackerCharacter = attacker as Character;
         direction = direction.normalized;
-        damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
-            Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
+        damage = Mathf.RoundToInt(damage *(1 - (IncreasedDamageReducePercentage>100? 100: IncreasedDamageReducePercentage) / 100));
 
         if(damage != 0)
             Managers.GetManager<TextManager>().ShowText(damagePoint, damage.ToString(), 10, Color.red);
@@ -413,8 +413,8 @@ public class Character : MonoBehaviour,IHp
 
         Character attackerCharacter = attacker as Character;
         direction = direction.normalized;
-        damage = IncreasedDamageReducePercentage > 0 ? Mathf.RoundToInt(damage / (1 + IncreasedDamageReducePercentage / 100)) :
-            Mathf.RoundToInt(damage * (1 - IncreasedDamageReducePercentage / 100));
+        damage = Mathf.RoundToInt(damage * (1 - (IncreasedDamageReducePercentage > 100 ? 100 : IncreasedDamageReducePercentage) / 100));
+
 
         if (damage != 0)
             Managers.GetManager<TextManager>().ShowText(damagePoint, damage.ToString(), 10, Color.red);
@@ -659,5 +659,7 @@ public class Character : MonoBehaviour,IHp
         if (_capsuleCollider)
             _capsuleCollider.enabled = true;
         _rigidBody.isKinematic = false;
+
+        CharacterReviveHandler?.Invoke();
     }
 }
