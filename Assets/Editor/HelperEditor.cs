@@ -282,7 +282,7 @@ public class HelperEditor : EditorWindow
 
             ItemType itemType = GetItemType(words[1]);
 
-            if (itemType == ItemType.StatusUp || itemType == ItemType.Ability)
+            if (itemType == ItemType.StatusUp )
             {
                 StatusUpItemData data = ScriptableObject.CreateInstance<StatusUpItemData>();
                 data.name = words[0];
@@ -302,7 +302,9 @@ public class HelperEditor : EditorWindow
                 data.IncreasingCreatureAttackPower = ParseInt(words[13]);
                 data.IncreasingCreatureAttackSpeedPercentage = ParseFloat(words[14]);
                 data.IncreasingCreatureSpeed = ParseFloat(words[15]);
-                data.RecoverMentalAmount = ParseFloat(words[16]);
+                data.AccelMentalDownPercentage = ParseFloat(words[16]);
+                data.IncreasingReloadSpeedPercentage = ParseFloat(words[19]);
+                data.ReviveTimeDown = ParseFloat(words[20]);
 
                 AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
                 AssetDatabase.SaveAssets();

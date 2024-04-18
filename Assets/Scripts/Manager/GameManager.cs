@@ -1,4 +1,5 @@
 using DuloGames.UI;
+using Lofelt.NiceVibrations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -127,7 +128,7 @@ public class GameManager : ManagerBase
     public override void ManagerUpdate()
     {
         Debuging();
-        Mental -= Time.deltaTime * Util.CalcPercentage(MentalAccelerationPercentage);
+        Mental -= Time.deltaTime * (1 + (MentalAccelerationPercentage/100f));
         _totalTime += Time.deltaTime;
         _stageTime += Time.deltaTime;
         if (Mental <= 0)
@@ -533,6 +534,10 @@ public class GameManager : ManagerBase
         }
         _enemySpawnList.Add(enemy);
     }
+    public GameObject GetRandomEnemy()
+    {
+        return _enemySpawnList.GetRandom();
+    }
     int count = 0;
     public void LoadScene(MapData mapData)
     {
@@ -632,10 +637,55 @@ public class GameManager : ManagerBase
 
         Player.PlayRevive();
 
-        GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/VendingMechine");
-        go.transform.position = _girl.transform.position + Vector3.right * 70;
-        go.GetComponent<SortingGroup>().sortingLayerName = "Character";
-        go.GetComponent<SortingGroup>().sortingOrder = 1001;
+        yield return new WaitForSeconds(1f);
+        UICardSelection uiCardSelection = Managers.GetManager<UIManager>().GetUI<UICardSelection>();
+        uiCardSelection.OpenNpcSelection();
+
+        while (uiCardSelection.isActiveAndEnabled)
+        {
+            yield return new WaitForSeconds(0.3f);
+        }
+
+        List<GameObject> npcList = new List<GameObject>();
+        
+
+        Card card = Managers.GetManager<CardManager>().GetCard(CardName.자판기강화);
+        {
+            GameObject go = null;
+            if (card.rank < 0)
+            {
+                go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/VendingMechineLv0");
+            }
+            else
+            {
+                int lv = card.rank + 1;
+                go = Managers.GetManager<ResourceManager>().Instantiate($"Prefabs/Event/VendingMechineLv{lv}");
+            }
+
+
+            go.transform.position = _girl.transform.position + Vector3.right * 70;
+            go.GetComponent<SortingGroup>().sortingLayerName = "Character";
+            go.GetComponent<SortingGroup>().sortingOrder = 1001;
+            npcList.Add(go);
+        }
+        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.무기강화NPC))
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/강화NPC");
+            go.transform.position = _girl.transform.position + Vector3.right * 80;
+            go.GetComponent<SortingGroup>().sortingLayerName = "Character";
+            go.GetComponent<SortingGroup>().sortingOrder = 1001;
+            npcList.Add(go);
+        }
+
+        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.괴수나무))
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/크리쳐강화NPC");
+            go.transform.position = _girl.transform.position + Vector3.right * 90;
+            go.GetComponent<SortingGroup>().sortingLayerName = "Character";
+            go.GetComponent<SortingGroup>().sortingOrder = 1001;
+            npcList.Add(go);
+        }
+     
 
         while (_girl.transform.position.x - deadPosition.x < 140)
         {
@@ -644,7 +694,8 @@ public class GameManager : ManagerBase
 
         LoadMapData();
 
-        Managers.GetManager<ResourceManager>().Destroy(go);
+        foreach(var go in npcList) 
+            Managers.GetManager<ResourceManager>().Destroy(go);
 
         float distance = - _girl.transform.position.x;
         _girl.transform.position = new Vector3(0, _girl.transform.position.y);

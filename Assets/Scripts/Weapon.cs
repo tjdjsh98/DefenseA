@@ -58,10 +58,10 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public bool IsAllReloadAmmo => _isAllReloadAmmo;
     [SerializeField] protected float _attackSpeed;
     public float OriginalAttackSpeed => _attackSpeed;
-    public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100) * (1+ _user.GetIncreasedAttackSpeedPercentage()/100));
+    public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100) * Util.CalcPercentage(_user.GetIncreasedAttackSpeedPercentage()));
     [SerializeField] protected float _reloadTime;
     public float OriginalReloadTime => _reloadTime;
-    public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100) /(1 + _user.GetIncreasedReloadSpeedPercentage()/100));
+    public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100) /(Util.CalcPercentage(_user.GetIncreasedReloadSpeedPercentage())));
 
 
     // 추가 능력치
@@ -130,8 +130,6 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
     public virtual void FireBullet(IWeaponUsable user)
     {
-       
-
         if (_audioCoroutine != null)
             StopCoroutine(_audioCoroutine);
         _audioCoroutine = StartCoroutine(CorPlayAudio());
@@ -157,9 +155,31 @@ public class Weapon : MonoBehaviour, ITypeDefine
             projectile.transform.position = _firePosition.transform.position;
             float damage = AttackPower;
 
-            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.눈동자구슬) > 0)
+            {
+                if(Random.Range(0,100) < 10)
+                {
+                    damage += Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.눈동자구슬);
+                }
+            }
+
+
+            int penerstartingPower = PenerstratingPower;
+
+            // 총을 쏘는 것이 플레이어라면 해당 스킬을 발동시킨다.
+            if (user is Player player)
+            {
+                if (player.GirlAbility.IsActiveCanine)
+                {
+                    penerstartingPower = 9999;
+                    player.GirlAbility.EndCanine();
+                }
+            }
+
+            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, penerstartingPower, StunTime);
             projectile.Fire(user.Character, direction.normalized);
 
+            
 
             user?.Rebound(_rebound);
         }

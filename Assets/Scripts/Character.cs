@@ -130,12 +130,9 @@ public class Character : MonoBehaviour,IHp
 
     private void Update()
     {
-        if (Hp > 0)
-        {
-            IsDead = false;
-        }
+        HandleMove();
         if (IsDead) return;
-        if(Managers.GetManager<GameManager>().IsPlayTimeline) return;
+        if (Managers.GetManager<GameManager>().IsPlayTimeline) return;
 
         _recoverHpAmount += Time.deltaTime * IncreasedHpRegeneration;
         if ((_recoverHpTime += Time.deltaTime) > 1)
@@ -169,7 +166,6 @@ public class Character : MonoBehaviour,IHp
             }
         }
         CheckGround();
-        HandleMove();
     }
     private void FixedUpdate()
     {
@@ -367,7 +363,7 @@ public class Character : MonoBehaviour,IHp
     // 최종적으로 가한 데미지를 반환합니다.
     public int Damage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0f)
     {
-        if (IsInvincibility || _isDamagedInvincibility) return 0;
+        if (IsInvincibility || _isDamagedInvincibility || IsDead) return 0;
 
         Character attackerCharacter = attacker as Character;
         direction = direction.normalized;
@@ -409,7 +405,7 @@ public class Character : MonoBehaviour,IHp
     // 추가적으로 받는 공격 효과를 처리합니다.
     public int AddtionalDamage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0f)
     {
-        if (IsInvincibility) return 0;
+        if (IsInvincibility || _isDamagedInvincibility || IsDead) return 0;
 
         Character attackerCharacter = attacker as Character;
         direction = direction.normalized;
@@ -449,21 +445,12 @@ public class Character : MonoBehaviour,IHp
 
     public void Dead()
     {
-        _rigidBody.velocity = Vector3.zero;
         IsDead = true;
         CharacterDeadHandler?.Invoke();
 
         if (!_isEnableRevive)
         {
             Destroy(gameObject);
-        }
-        else
-        {
-            if (_boxCollider)
-                _boxCollider.enabled = false;
-            if (_capsuleCollider)
-                _capsuleCollider.enabled = false;
-            _rigidBody.isKinematic = true;
         }
     }
     // 상대방으로 공격하는 함수
@@ -654,12 +641,7 @@ public class Character : MonoBehaviour,IHp
     {
         _hp = _maxHp;
         IsDead = false;
-        if (_boxCollider)
-            _boxCollider.enabled = true;
-        if (_capsuleCollider)
-            _capsuleCollider.enabled = true;
-        _rigidBody.isKinematic = false;
-
+       
         CharacterReviveHandler?.Invoke();
     }
 }

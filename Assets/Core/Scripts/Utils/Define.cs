@@ -109,7 +109,7 @@ public static class Define
     public enum WeaponName
     {
         None = -1,
-        AK47,
+        AssaultRifle,
         Mk2,
         DoubleBarreledShotgun,
         PolicePistal,

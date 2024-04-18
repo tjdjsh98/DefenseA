@@ -19,7 +19,10 @@ public class StatusUpItemData : ItemData
 
     [field: SerializeField] public float IncreasingGirlSpeed { set; get; }
     [field: SerializeField] public float IncreasingCreatureSpeed { set; get; }
-    [field: SerializeField] public float RecoverMentalAmount { set; get; }
+    [field: SerializeField] public float AccelMentalDownPercentage { set; get; }
+    [field: SerializeField] public float IncreasingReloadSpeedPercentage { set; get; }
+    [field: SerializeField] public float ReviveTimeDown{ set; get; }
+
 
     
 }

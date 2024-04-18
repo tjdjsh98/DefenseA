@@ -108,43 +108,12 @@ public class UIInGame : UIBase
         HandleBar();
         ShowMap();
         ShowSkill();
-        ShowElectricity();
-        ShowPredation();
         ShowBoss();
         //ShowAbility();
         // IndicateWall();
     }
 
-    private void ShowElectricity()
-    {
-        if (Managers.GetManager<CardManager>().MaxElectricity > 0)
-        {
-            _electricity.gameObject.SetActive(true);
-            float max = Managers.GetManager<CardManager>().MaxElectricity;
-            float current = Managers.GetManager<CardManager>().CurrentElectricity;
-            _electrictyFill.fillAmount = current / max;
-            _electrictyText.text = $"{(int)current}";
-        }
-        else
-        {
-            _electricity.gameObject.SetActive(false);
-        }
-    }
-    private void ShowPredation()
-    {
-        if (Managers.GetManager<CardManager>().MaxPredation > 0)
-        {
-            _predation.gameObject.SetActive(true);
-            float max = Managers.GetManager<CardManager>().MaxPredation;
-            float current = Managers.GetManager<CardManager>().Predation;
-            _predationFill.fillAmount = current / max;
-            _predationText.text = $"{(int)current}";
-        }
-        else
-        {
-            _predation.gameObject.SetActive(false);
-        }
-    }
+    
     void RefreshWeapon()
     {
         WeaponSwaper weaponSwaper = _player.WeaponSwaper;

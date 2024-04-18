@@ -41,12 +41,15 @@ public class CreatureAbility
     [SerializeField] int _survivalIntinctCount;
     [SerializeField] float _survivalIntinctElapsed;
 
-    
+    //오버클럭
+    bool _isActiveOverclocking = false;
+    SkillSlot _overclockingSlot;
 
     #region 아이템
     //바늘과 가죽
-    int _preNeedleAndLeatherIncreasedPower;
-    float _needleAndLeatherIncreasedPower;
+    int _needleAndLeatherHuntingCount = 0;
+    int _needleAndLeatherIncreaseMaxHp = 0;
+    
 
     //나이프
     int _preKnifeIncreasedPower;
@@ -59,9 +62,10 @@ public class CreatureAbility
     int _bittenStoneCoefficient = 10;
     int _prebittenStoneAttackPower;
 
-    // 과충전배터리
-    [SerializeField]Define.Range _overchargeBatteryRange;
-
+    // 뜯겨진배터리
+    [SerializeField]Define.Range _brokenBatteryRange;
+    float _brokenBatteryCoolTime = 10;
+    float _brokenBatteryElaspedTime = 10;
     #endregion
     public void Init(CreatureAI creatureAI)
     {
@@ -69,37 +73,18 @@ public class CreatureAbility
         _creature = _creatureAI.GetComponent<Character>();
         _creatureAI.Character.AttackHandler += OnAttack;
         _creatureAI.Character.DamagedHandler += OnDamage;
+        Managers.GetManager<GameManager>().Girl.CharacterDeadHandler += OnGirlDead;
         _inventory = Managers.GetManager<GameManager>().Inventory;
         _cardManager = Managers.GetManager<CardManager>();
-        _cardManager.ElectricChargedHandler += OnElectricCharged;
         _electricReleaseTempEffect = _creature.transform.Find("ElectricRelease").gameObject;
         RegistSkill();
     }
 
-    private void OnElectricCharged(int value)
+    private void OnGirlDead()
     {
-        // 과충전배터리
-        {
-            int count = _inventory.GetItemCount(ItemName.과충전배터리);
-
-            if (count > 0)
-            {
-                if (value > _cardManager.MaxElectricity)
-                {
-                    Util.RangeCastAll2D(_creature.gameObject, _overchargeBatteryRange, Define.CharacterMask, (hit) =>
-                    {
-                        Character character = hit.collider.GetComponent<Character>();
-
-                        if (character && character.CharacterType == Define.CharacterType.Enemy)
-                        {
-                            _creature.Attack(character, value - _cardManager.MaxElectricity, 0, Vector3.zero, hit.point);
-                        }
-                        return false;
-                    });
-                }   
-            }
-
-        }
+        _creature.AddMaxHp(-_needleAndLeatherIncreaseMaxHp);
+        _needleAndLeatherHuntingCount = 0;
+        _needleAndLeatherIncreaseMaxHp = 0;
     }
 
     public void OnDrawGizmosSelected()
@@ -110,7 +95,7 @@ public class CreatureAbility
 
         Util.DrawRangeOnGizmos(_creature.gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
 
-        Util.DrawRangeOnGizmos(_creature.gameObject, _overchargeBatteryRange,Color.red);
+        Util.DrawRangeOnGizmos(_creature.gameObject, _brokenBatteryRange,Color.red);
     }
 
     public void AbilityUpdate()
@@ -119,9 +104,10 @@ public class CreatureAbility
 
         _creatureAI.Character.AttackPower = GetAttackPower();
         _creatureAI.Character.IncreasedHpRegeneration = GetHpRegeneration();
+
+        UpdateBrokenBattery();
     }
 
-    
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
@@ -129,22 +115,15 @@ public class CreatureAbility
         
         if (target == null || target.IsDead)
         {
-            Managers.GetManager<CardManager>().Predation += (Managers.GetManager<CardManager>().HuntingPredation + _inventory.GetItemCount(ItemName.문들어진송곳니));
-            
             int count = _inventory.GetItemCount(ItemName.바늘과가죽);
             if (count >0 )
             {
-                _needleAndLeatherIncreasedPower += 0.01f * count;
-            }
-        }
-
-        if(_inventory.GetItemCount(ItemName.문들어진어금니) > 0)
-        {
-            if (totalDamage > 0)
-            {
-                if(Random.Range(0,100) < 50)
+                _needleAndLeatherHuntingCount++;
+                if (_needleAndLeatherHuntingCount > 10)
                 {
-                    _cardManager.Predation += _inventory.GetItemCount(ItemName.문들어진어금니);
+                    _creature.AddMaxHp(count);
+                    _needleAndLeatherHuntingCount= 0;
+                    _needleAndLeatherIncreaseMaxHp += count;
                 }
             }
         }
@@ -154,14 +133,15 @@ public class CreatureAbility
     {
         CardManager manager = Managers.GetManager<CardManager>();
 
-        if(_inventory.GetItemCount(ItemName.검은세포) > 0 )
+        if (_inventory.GetItemCount(ItemName.검은액체) > 0 )
         {
-            if (Random.Range(0, 100) < _inventory.GetItemCount(ItemName.검은세포) *5)
+            if (Random.Range(0, 100) < 20)
             {
-                _cardManager.AddBlackSphere(_creature.GetCenter());
+                Debug.Log(_creature.Hp);
+                _creature.Hp += 5 * _inventory.GetItemCount(ItemName.검은액체);
+                Debug.Log(_creature.Hp);
             }
         }
-      
     }
     public void ApplyCardAbility(Card card)
     {
@@ -206,8 +186,12 @@ public class CreatureAbility
         percentage += IncreasedAttackPowerPercentage;
         CardManager cardManager = Managers.GetManager<CardManager>();
 
-       
-
+        // 오버클럭
+        if (_isActiveOverclocking)
+        {
+            Debug.Log(_overclockingSlot.card.Property);
+            percentage += _overclockingSlot.card.Property;
+        }
         return percentage;
     }
     public float GetIncreasedAttackSpeedPercentage()
@@ -216,27 +200,50 @@ public class CreatureAbility
         percentage += IncreasedAttackSpeedPercentage;
         CardManager cardManager = Managers.GetManager<CardManager>();
 
+        // 오버클럭
+        if(_isActiveOverclocking)
+        {
+            percentage += _overclockingSlot.card.Property;
+        }
  
+        // 아이템: 과충전배터리
+        if (_inventory.GetItemCount(ItemName.과충전배터리) > 0)
+        {
+            percentage += _inventory.GetItemCount(ItemName.피뢰침) * 5;
+            percentage += _inventory.GetItemCount(ItemName.부서진건전지) * 5;
+        }
 
         return percentage;
+    }
+
+    void UpdateBrokenBattery()
+    {
+        if (_inventory.GetItemCount(ItemName.부서진건전지) > 0)
+        {
+            if (_brokenBatteryCoolTime < _brokenBatteryElaspedTime)
+            {
+                _brokenBatteryElaspedTime = 0;
+                Util.RangeCastAll2D(_creature.gameObject, _brokenBatteryRange, Define.CharacterMask,
+                    (hit) =>
+                    {
+                        Character character = hit.collider.GetComponent<Character>();
+                        if (character != null && character.CharacterType == Define.CharacterType.Enemy)
+                        {
+                            _creature.Attack(character, 1, 0, Vector3.zero, hit.point, 0.5f);
+                        }
+                        return false;
+                    });
+            }
+            else
+            {
+                _brokenBatteryElaspedTime += Time.deltaTime;
+            }
+        }
     }
     public float GetHpRegeneration()
     {
         float regen = 0;
         regen = _creature.IncreasedHpRegeneration;
-
-        // 잠시 폐기
-        //if (GetIsHaveAbility(CardName.생존본능))
-        //{
-        //    regen -= _preSurvivalIntinctValue;
-        //    _preSurvivalIntinctValue = _survivalIntinctCount * Managers.GetManager<CardManager>().GetCard(CardName.생존본능).Property;
-        //    regen += _preSurvivalIntinctValue;
-        //}
-        // 아이템 : 베어물린 나무
-        regen -= _prebittenWoodHpRegen;
-        _prebittenWoodHpRegen = _inventory.GetItemCount(ItemName.베어물린나무) * _bittenWoodCoefficient * _cardManager.Predation;
-        if (_prebittenWoodHpRegen > 2) _prebittenWoodHpRegen = 2;
-        regen += _prebittenWoodHpRegen; 
 
         return regen;
     }
@@ -244,30 +251,7 @@ public class CreatureAbility
     {
         int attackPower = 0;
         attackPower = _creature.AttackPower;
-
-        // 아이템 : 바늘과 가죽
-        if (_inventory.GetItemCount(ItemName.바늘과가죽) > 0)
-        {
-            attackPower -= _preNeedleAndLeatherIncreasedPower;
-            _preNeedleAndLeatherIncreasedPower = Mathf.FloorToInt(_needleAndLeatherIncreasedPower); ;
-            attackPower += _preNeedleAndLeatherIncreasedPower;
-        }
-        else
-        {
-            attackPower -= _preNeedleAndLeatherIncreasedPower;
-            _needleAndLeatherIncreasedPower = 0;
-            _preNeedleAndLeatherIncreasedPower = 0;
-        }
-
-        // 아이템 : 나이프
-        attackPower -= _preKnifeIncreasedPower;
-        _preKnifeIncreasedPower = (int)(_cardManager.Predation / 20) * _inventory.GetItemCount(ItemName.나이프) ;
-        attackPower += _preKnifeIncreasedPower;
-
-        // 아이템 : 베어물린 돌맹이
-        attackPower -= _prebittenStoneAttackPower;
-        _prebittenStoneAttackPower = (int)(_inventory.GetItemCount(ItemName.베어물린돌맹이)  * (int)_cardManager.Predation/ _bittenStoneCoefficient);
-        attackPower += _prebittenStoneAttackPower;
+   
         return attackPower;
     }
     #region 스킬관련
@@ -277,9 +261,8 @@ public class CreatureAbility
         _skillDictionary.Add(CardName.쇼크웨이브, PlayShockwave);
         _skillDictionary.Add(CardName.전기방출, PlayElectricRelease);
         _skillDictionary.Add(CardName.끌어당김, PlayAttraction);
+        _skillDictionary.Add(CardName.오버클럭, PlayOverclocking);
     }
-
-
 
     public void UseSkill(SkillSlot slot)
     {
@@ -377,8 +360,28 @@ public class CreatureAbility
         Camera.main.GetComponent<CameraController>().StopShockwave(num);
     }
 
+    void PlayOverclocking(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
 
+        _creatureAI.StartCoroutine(CorOverclokcing(slot));
+    }
 
+    IEnumerator CorOverclokcing(SkillSlot slot)
+    {
+        slot.isActive = true;
+        _isActiveOverclocking = true;
+        _overclockingSlot = slot;
+
+        yield return new WaitForSeconds(10);
+
+        _isActiveOverclocking = false;
+        _overclockingSlot = null;
+        slot.isActive = false;
+        slot.skillElapsed = 0;
+
+    }
     void PlayStempGround(SkillSlot slot)
     {
         if (slot.isActive) return;
@@ -482,10 +485,7 @@ public class CreatureAbility
     {
         if (slot.isActive) return;
         if (slot.skillCoolTime > slot.skillElapsed) return;
-        if (_cardManager.CurrentElectricity < 50) return;
-
-
-        _cardManager.CurrentElectricity -= 50;
+        
         slot.isActive = true;
 
         _creatureAI.StartCoroutine(CorPlayElectricRelease(slot));

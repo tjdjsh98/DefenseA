@@ -12,12 +12,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fece2be9257aeab45a6b14d73efe4950, type: 3}
   m_Name: "\uAC80\uC740\uC720\uB9AC\uCC3D\uD30C\uD3B8"
   m_EditorClassIdentifier: 
-  <ItemName>k__BackingField: 22
-  <ItemType>k__BackingField: 1
+  <ItemName>k__BackingField: 13
+  <ItemType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 0}
-  <Description>k__BackingField: "\uAC80\uC740 \uAD6C\uCCB4\uC758 \uAC1C\uC218 x 2%
-    \uB9CC\uD07C \uC18C\uB140\uC758 \uACF5\uACA9\uC18D\uB3C4\uAC00 \uC99D\uAC00\uD569\uB2C8\uB2E4.(\uCD5C\uB300
-    40%)"
+  <Description>k__BackingField: "\uCD5C\uB300 \uD0C4\uCC3D \uC218\uC5D0 \uBE44\uB840\uD558\uC5EC
+    \uC18C\uB140\uC758 \uACF5\uACA9\uB825\uC774 \uC99D\uAC00\uD569\uB2C8\uB2E4."
   <Rank>k__BackingField: 1
   <IncreasingGirlMaxHp>k__BackingField: 0
   <IncreasingCreatureMaxHp>k__BackingField: 0
@@ -31,4 +30,6 @@ MonoBehaviour:
   <RecoverCreatureHpAmount>k__BackingField: 0
   <IncreasingGirlSpeed>k__BackingField: 0
   <IncreasingCreatureSpeed>k__BackingField: 0
-  <RecoverMentalAmount>k__BackingField: 0
+  <AccelMentalDownPercentage>k__BackingField: 0
+  <IncreasingReloadSpeedPercentage>k__BackingField: 0
+  <ReviveTimeDown>k__BackingField: 0

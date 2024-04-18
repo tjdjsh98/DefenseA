@@ -5,7 +5,9 @@ using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
+using Unity.VisualScripting.Antlr3.Runtime;
 using UnityEditor;
+using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
@@ -120,6 +122,64 @@ public class UICardSelection : UIBase
         StartCoroutine(CorOpenCards());
     }
 
+    public void OpenSkillCardSelection()
+    {
+        Time.timeScale = 0;
+        _cardSelectionList.Clear();
+
+
+        _cashDatas = Managers.GetManager<CardManager>().GetRemainCardSelection().Where(data =>
+        {
+            return data.cardData.IsActiveAbility;
+        }).ToList();
+
+
+
+        for (int i = 0; i < _cardCount; i++)
+        {
+            if (_cashDatas.Count > 0)
+            {
+                int random = Random.Range(0, _cashDatas.Count);
+                _cardSelectionList.Add(_cashDatas[random]);
+                _cashDatas.RemoveAt(random);
+            }
+        }
+        Refresh();
+
+
+        Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
+
+        gameObject.SetActive(true);
+        StartCoroutine(CorOpenCards());
+    }
+    public void OpenNpcSelection()
+    {
+        Time.timeScale = 0;
+        _cardSelectionList.Clear();
+
+
+        _cashDatas = Managers.GetManager<CardManager>().GetRemainCardSelection().Where(data =>
+        {
+            return !data.cardData.IsActiveAbility;
+        }).ToList();
+            
+        for (int i = 0; i < _cardCount; i++)
+        {
+            if (_cashDatas.Count > 0)
+            {
+                int random = Random.Range(0, _cashDatas.Count);
+                _cardSelectionList.Add(_cashDatas[random]);
+                _cashDatas.RemoveAt(random);
+            }
+        }
+        Refresh();
+
+
+        Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
+
+        gameObject.SetActive(true);
+        StartCoroutine(CorOpenCards());
+    }
     public override void Close(bool except = false)
     {
         Time.timeScale = 1;

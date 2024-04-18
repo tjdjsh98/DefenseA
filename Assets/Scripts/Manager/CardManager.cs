@@ -29,37 +29,7 @@ public class CardManager : ManagerBase
     public List<SkillSlot> SkillSlotList => _skillSlotList;
     Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
-    // 검은구체 관련 변수
-    List<BlackSphere> _blackSphereList = new List<BlackSphere>();
-    public List<BlackSphere> BlackSphereList => _blackSphereList;
-    public int MaxBlackSphereCount { set; get; } = 10;
-    public Action<BlackSphere> BlackSphereAddedHandler;             // 갯수가 초과 되면 null로 실행됨
-    float _blackSphereCoolTime = 0;
-    float _blackSphereTime;
-    public int BlackSphereAttackPower { set; get; }
-
-    // 전기 관련 능력
-    int _maxElectricity = 50;
-    public int MaxElectricity { get { return _maxElectricity; } }
-    int _currentElectricity;
-    public int CurrentElectricity { get { return _currentElectricity; } 
-        set {
-            ElectricChargedHandler?.Invoke(value);
-            _currentElectricity = Mathf.Clamp(value, 0, _maxElectricity); } }
-    public float ChargeElectricty { get; set; }
-    float _chargedElectricity;
-    public bool IsUnlockOverCharge { set; get; } = false;
-    public Action<int> ElectricChargedHandler;
-
-
-    // 포식 관련 능력
-    int _maxPredation = 40;
-    public int MaxPredation { set { _maxPredation = value; } get { return _maxPredation; } }
-
-    int _predation;
-    public int Predation { get { return _predation; }set { _predation = Mathf.Clamp(value, 0, _maxPredation); } }
-
-    public int HuntingPredation { set; get; }
+   
     public override void Init()
     {
         RegistSkill();
@@ -99,12 +69,6 @@ public class CardManager : ManagerBase
         HandleSkill();
         HandleCommonAbility();
 
-        // 제거된 검은구체 제거
-        for (int i = _blackSphereList.Count - 1; i >= 0; i--)
-        {
-            if (_blackSphereList[i] == null)
-                _blackSphereList.RemoveAt(i);
-        }
     }
 
     #region 카드 관련 함수
@@ -211,6 +175,7 @@ public class CardManager : ManagerBase
     void RegistSkill()
     {
         _skillDictionary.Add(CardName.비상식량, PlayEmergencyFood);
+        _skillDictionary.Add(CardName.앞당김, PlayBringForward);
     }
 
     void UseSkill(SkillSlot skillSlot)
@@ -220,6 +185,22 @@ public class CardManager : ManagerBase
         if (_skillDictionary.TryGetValue(skillSlot.card.cardData.CardName, out var func))
         {
             func?.Invoke(skillSlot);
+        }
+    }
+
+    void PlayBringForward(SkillSlot slot) {
+
+        if (slot.isActive) return;
+        if (slot.skillCoolTime > slot.skillElapsed) return;
+
+        foreach (var skillSlot in SkillSlotList)
+        {
+            if (skillSlot.isActive) return;
+
+            if (skillSlot.skillElapsed + 10 < skillSlot.skillCoolTime)
+                skillSlot.skillElapsed += 10;
+            else
+                skillSlot.skillElapsed = skillSlot.skillCoolTime;
         }
     }
 
@@ -234,120 +215,13 @@ public class CardManager : ManagerBase
     }
 
 
-    void PlayVolleyFire(SkillSlot slot)
-    {
-        if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillElapsed) return;
-        if (_blackSphereList.Count <= 0) return;
-
-        Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
-
-        for(int i= _blackSphereList.Count-1; i >= 0; i--)
-        {
-            BlackSphere blackSphere = _blackSphereList[i];
-            _blackSphereList.RemoveAt(i);
-            blackSphere.ChangeAttackMode(mousePosition, BlackSphereAttackPower,false,i*0.1f);
-        }
-        slot.skillElapsed = 0;
-    }
-
-    void PlayBait(SkillSlot slot)
-    {
-        if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillElapsed) return;
-
-        StartCoroutine(CorPlayBait(slot));
-    }
-    void Dining(SkillSlot slot)
-    {
-        if (slot.isActive) return;
-        if (slot.skillCoolTime > slot.skillElapsed) return;
-
-
-        Girl.Hp += Predation;
-        Creature.Hp += Predation;
-        Predation -= Predation;
-
-        slot.skillElapsed = 0;
-    }
-
-    IEnumerator CorPlayBait(SkillSlot slot)
-    {
-        slot.isActive = true;
-
-        Vector3 mousePosition = Managers.GetManager<InputManager>().MouseWorldPosition;
-        Vector3? top = Managers.GetManager<GameManager>().GetGroundTop(mousePosition);
-        List<BlackSphere> useBlackSpheres = new List<BlackSphere>();
-        if (top.HasValue)
-        {
-            int count = (((int)slot.card.Property > _blackSphereList.Count) ?  _blackSphereList.Count: (int)slot.card.Property);
-
-            for (int i = 0; i < count; i++)
-            {
-                BlackSphere blackSphere = _blackSphereList[0];
-                _blackSphereList.RemoveAt(0);
-                blackSphere.MoveToDestination(top.Value + Vector3.up, 1, false);
-                yield return new WaitForSeconds(0.05f);
-                useBlackSpheres.Add(blackSphere);
-            }
-
-            yield return new WaitForSeconds(1.5f);
-
-
-            foreach (var item in useBlackSpheres)
-            {
-                item.Destroy();
-            }
-
-
-            Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.BlackWhale);
-            effect.SetAttackProperty(Girl, 10 + (count-1)* 3, 50, 0.2f, Define.CharacterType.Enemy);
-            effect.SetMultiflySize(1+ count * 0.3f);
-            effect.Play(top.Value);
-        }
-
-        yield return new WaitForSeconds(1f);
-
-        slot.isActive = false;
-        slot.skillElapsed = 0;
-    }
-
+    
     void HandleCommonAbility()
     {
-        // 전기충전
-        if (MaxElectricity != 0)
-        {
-            int maxElectricity = MaxElectricity;
-            maxElectricity *= IsUnlockOverCharge ? 2 : 1;
-
-            _chargedElectricity += ChargeElectricty * Time.deltaTime;
-
-            int chargeAmount = 0;
-            if (_chargedElectricity > 1)
-            {
-                chargeAmount = (int)_chargedElectricity;
-                _chargedElectricity -= chargeAmount;
-            }
-
-            CurrentElectricity += chargeAmount;
-        }
+      
 
     }
-    public void AddBlackSphere(Vector3 position)
-    {
-        BlackSphere blackSphere = null;
-        if (_blackSphereList.Count < MaxBlackSphereCount)
-        {
-            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/BlackSphere");
-            go.transform.position = position;
-            blackSphere = go.GetComponent<BlackSphere>();
-            blackSphere.Init(Player.Character, new Vector3(-3, 5));
-            _blackSphereList.Add(blackSphere);
-        }
-
-        BlackSphereAddedHandler?.Invoke(blackSphere);
-    }
-
+ 
     // 선택한 카드는 랭크가 올라간 상태
     public void ApplyCardAbility(Card card)
     {
@@ -506,7 +380,6 @@ public class CardManager : ManagerBase
     }
     void UseSkill(int index)
     {
-        Debug.Log(index);
         if (_skillSlotList[index].card == null|| _skillSlotList[index].card.cardData == null) return;
 
         Player.GirlAbility.UseSkill(_skillSlotList[index]);

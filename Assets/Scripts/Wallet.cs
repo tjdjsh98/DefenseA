@@ -43,7 +43,7 @@ public class Wallet : MonoBehaviour
 
     public void Interact()
     {
-        Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
+        Managers.GetManager<UIManager>().GetUI<UICardSelection>().OpenSkillCardSelection();
         Managers.GetManager<ResourceManager>().Destroy(gameObject);
     }
 }

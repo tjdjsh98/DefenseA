@@ -127,7 +127,62 @@ public static class Util
         return list;
 
     }
-    
+    public static List<RaycastHit2D> RangeCastAll2D(Vector3 point, Define.Range range, int layerMask = -1, Func<RaycastHit2D, bool> condition = null)
+    {
+        RaycastHit2D[] hits = null;
+
+        float originAngle = Mathf.Atan2(range.center.y, range.center.x);
+        Vector3 rangePosition = Vector3.zero;
+        rangePosition.x = range.center.magnitude * Mathf.Cos(range.angle * Mathf.Deg2Rad + originAngle);
+        rangePosition.y = range.center.magnitude * Mathf.Sin(range.angle * Mathf.Deg2Rad + originAngle);
+        // 레이어 마스크사용 안함
+        if (layerMask == -1)
+        {
+            if (range.figureType == Define.FigureType.Box)
+            {
+                hits = Physics2D.BoxCastAll(point + rangePosition, range.size, range.angle, Vector2.zero, 0);
+            }
+            else if (range.figureType == Define.FigureType.Circle)
+            {
+                hits = Physics2D.CircleCastAll(point + rangePosition, range.size.x, Vector2.zero);
+            }
+            else if (range.figureType == Define.FigureType.Raycast)
+            {
+                hits = Physics2D.RaycastAll(point + rangePosition, range.size);
+            }
+        }
+        // 레이어 마스크 사용
+        else
+        {
+            if (range.figureType == Define.FigureType.Box)
+            {
+                hits = Physics2D.BoxCastAll(point + rangePosition, range.size, range.angle, Vector2.zero, 0, layerMask);
+            }
+            else if (range.figureType == Define.FigureType.Circle)
+            {
+                hits = Physics2D.CircleCastAll(point + rangePosition, range.size.x, Vector2.zero, 0, layerMask);
+            }
+            else if (range.figureType == Define.FigureType.Raycast)
+            {
+
+                hits = Physics2D.RaycastAll(point + rangePosition, range.size, range.size.magnitude, layerMask);
+            }
+        }
+        if (hits == null) return null;
+
+        List<RaycastHit2D> list = new List<RaycastHit2D>();
+        for (int i = 0; i < hits.Length; i++)
+        {
+            if (condition == null || condition.Invoke(hits[i]))
+            {
+                list.Add(hits[i]);
+            }
+        }
+
+        return list;
+
+    }
+
 
     public static float Remap(float value, float inputMin, float inputMax, float outputMin, float outputMax)
     {

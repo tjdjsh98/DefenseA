@@ -55,10 +55,6 @@ public class Inventory
     [SerializeField] List<ItemSlot> _slotList = new List<ItemSlot>();
     [SerializeField] List<ItemHistory> _itemHistroyList = new List<ItemHistory>();
 
-    // 어둠구체의4번째 파편
-    bool _IsActiveDarkSphereForthFragment = false;
-    float _darkSphereForthFragmentTime = 0;
-
     // 피뢰침
     bool _isActiveLightingRod = false;
     float _lightingRodActiveTime;
@@ -75,45 +71,32 @@ public class Inventory
 
     public void InventoryUpdate()
     {
-        HandleDarkSphereForthFragment();
         HandleLightingRod();
         BloodyBoneNecklace();
         HandleCloudyLeaf();
     }
 
-    private void HandleDarkSphereForthFragment()
-    {
-        if (!_IsActiveDarkSphereForthFragment) return;
-
-        _darkSphereForthFragmentTime += Time.deltaTime;
-
-        if(_darkSphereForthFragmentTime > 15)
-        {
-            for (int i = 0; i < GetItemCount(ItemName.어둠구체의4번째파편); i++)
-            {
-                _darkSphereForthFragmentTime = 0;
-                CardManager.AddBlackSphere(Player.Character.GetCenter());
-            }
-        }
-    }
+ 
     private void HandleLightingRod()
     {
         if (!_isActiveLightingRod) return;
 
-        if(CardManager.CurrentElectricity >= 100)
+       
+        _lightingRodTime += Time.deltaTime;
+        if (_lightingRodActiveTime <= _lightingRodTime)
         {
-            _lightingRodTime += Time.deltaTime;
-            if (_lightingRodActiveTime <= _lightingRodTime)
-            {
-                CardManager.CurrentElectricity -= 100;
-                _lightingRodActiveTime = Random.Range(2, 4);
-                _lightingRodTime= 0;
+            _lightingRodActiveTime = Random.Range(30, 40);
+            _lightingRodTime= 0;
 
-                Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(Player.transform.position + Vector3.right *10);
+            GameObject go = Managers.GetManager<GameManager>().GetRandomEnemy();
+
+            if (go != null)
+            {
+                Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(go.transform.position);
                 if (position.HasValue)
                 {
                     Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Lighting);
-                    effect.SetAttackProperty(Player.Character, 50, 100,2, Define.CharacterType.Enemy);
+                    effect.SetAttackProperty(Player.Character, 50, 100, 2, Define.CharacterType.Enemy);
                     effect.Play(position.Value);
                 }
             }
@@ -122,22 +105,7 @@ public class Inventory
 
     private void BloodyBoneNecklace()
     {
-        if (!_isActiveBloodyBoneNecklace) return;
-
-        _bloodyBoneNecklaceTime += Time.deltaTime;
-        if (_bloodyBoneNecklaceTime > 5 )
-        {
-            _bloodyBoneNecklaceTime = 0;
-            if (CardManager.Predation >= 1)
-            {
-                if (Girl.Hp < Girl.MaxHp || Creature.Hp < Creature.MaxHp)
-                {
-                    CardManager.Predation -= 1;
-                    Managers.GetManager<GameManager>().Girl.Hp += 3;
-                    Managers.GetManager<GameManager>().Creature.Hp += 3;
-                }
-            }
-        }
+       
     }
 
     void HandleCloudyLeaf()
@@ -147,15 +115,6 @@ public class Inventory
         {
             CloudyLeafActiveCount = 0;
             _cloudyLeafTime = 0;
-            for(int i = 0; i < GetItemCount(ItemName.탁한잎); i++)
-            {
-                if (CardManager.BlackSphereList.Count <= 0) return;
-
-                BlackSphere blackSphere = CardManager.BlackSphereList[0];
-                CardManager.BlackSphereList.RemoveAt(0);
-                blackSphere.MoveToDestination(Girl.GetCenter(), 0.1f, true);
-                CloudyLeafActiveCount++;
-            }
         }
     }
 
@@ -241,26 +200,29 @@ public class Inventory
     }
     ItemData GetPossessRandomItem(Func<ItemData, bool> condition)
     {
-        List<ItemSlot> list = _slotList.Where(slot =>
+        if (condition != null)
         {
-            if (condition.Invoke(slot.ItemData))
-                return true;
-            return false;
-        }).ToList();
+            List<ItemSlot> list = _slotList.Where(slot =>
+            {
+                if (condition.Invoke(slot.ItemData))
+                    return true;
+                return false;
+            }).ToList();
 
-        if (list.Count <= 0) return null;
+            if (list.Count <= 0) return null;
 
-        return list.GetRandom().ItemData;
+
+            return list.GetRandom().ItemData;
+        }
+        else
+        {
+            return _slotList.GetRandom().ItemData;
+        }
 
     }
     void ApplyAddItem(ItemData itemData)
     {
-        if (itemData.ItemType == ItemType.Ability)
-        {
-            Managers.GetManager<UIManager>().GetUI<UICardSelection>().Open();
-            RemoveItem(itemData);
-        }
-        else if (itemData.ItemType == ItemType.Weapon)
+        if (itemData.ItemType == ItemType.Weapon)
         {
             WeaponItemData weaponItemData= itemData as WeaponItemData;
             if(weaponItemData != null)
@@ -272,21 +234,11 @@ public class Inventory
         {
             switch (itemData.ItemName)
             {
-                case ItemName.건전지:
-                    CardManager.ChargeElectricty += 0.2f;
-                    break;
-                case ItemName.보조배터리:
-                    CardManager.ChargeElectricty += 0.5f;
-                    break;
-                case ItemName.작은송곳니:
-                    CardManager.HuntingPredation += 1;
-                    break;
+             
                 case ItemName.네번째손:
                     Player.GirlAbility.IncreasedReloadSpeedPercentage += 20;
                     break;
-                case ItemName.어둠구체의4번째파편:
-                    _IsActiveDarkSphereForthFragment = true;
-                    break;
+              
                 case ItemName.손트리:
                     Managers.GetManager<GameManager>().MentalAccelerationPercentage += 20;
                     break;
@@ -294,27 +246,18 @@ public class Inventory
                     _lightingRodActiveTime = Random.Range(2, 4);
                     _isActiveLightingRod = true;
                     break;
-                case ItemName.어둠구체의1번째파편:
-                    CardManager.BlackSphereAttackPower += 5;
-                    break;
-                case ItemName.망각석:
-                    CardManager.RemoveRandomCard();
-                    break;
+               
                 case ItemName.망각의서:
-                    RemoveItem(GetPossessRandomItem(data => { return data.Rank >= 2; }));
+                    RemoveItem(GetPossessRandomItem((data) => { return data.ItemName != ItemName.망각의서; }));
                     break;
                 case ItemName.피묻은뼈목걸이:
                     _isActiveBloodyBoneNecklace= true;
                     break;
-                case ItemName.눈알케이크:
-                    Managers.GetManager<GameManager>().MentalAccelerationPercentage += 100f;
-                    break;
+              
                 case ItemName.부서진약지:
                     Managers.GetManager<GameManager>().MentalAccelerationPercentage += 20f;
                     break;
-                case ItemName.짐승의눈:
-                    CardManager.MaxPredation += 20;
-                    break;
+             
             }
             if (itemData is StatusUpItemData data)
             {
@@ -330,22 +273,11 @@ public class Inventory
         {
             switch (itemData.ItemName)
             {
-                case ItemName.건전지:
-                    CardManager.ChargeElectricty -= 0.2f;
-                    break;
-                case ItemName.보조배터리:
-                    CardManager.ChargeElectricty -= 0.5f;
-                    break;
-                case ItemName.작은송곳니:
-                    CardManager.HuntingPredation -= 1;
-                    break;
+              
                 case ItemName.네번째손:
                     Player.GirlAbility.IncreasedReloadSpeedPercentage -= 20;
                     break;
-                case ItemName.어둠구체의4번째파편:
-                    if(GetItemCount(itemData) <=0)
-                        _IsActiveDarkSphereForthFragment = false;
-                    break;
+             
                 case ItemName.손트리:
                     Managers.GetManager<GameManager>().MentalAccelerationPercentage -= 20;
                     break;
@@ -353,19 +285,13 @@ public class Inventory
                     if (GetItemCount(itemData) <= 0)
                         _isActiveLightingRod = false;
                     break;
-                case ItemName.어둠구체의1번째파편:
-                    CardManager.BlackSphereAttackPower -= 5;
-                    break;
+          
                 case ItemName.피묻은뼈목걸이:
                     if(GetItemCount(ItemName.피묻은뼈목걸이) <= 0)
                         _isActiveBloodyBoneNecklace = false;
                     break;
-                case ItemName.눈알케이크:
-                    Managers.GetManager<GameManager>().MentalAccelerationPercentage -= 100f;
-                    break;
-                case ItemName.짐승의눈:
-                    _cardManager.MaxPredation -= 20;
-                    break;
+            
+           
             }
             if (itemData is StatusUpItemData data)
             {
@@ -397,6 +323,8 @@ public class Inventory
             Player.GirlAbility.IncreasedAttackPowerPercentage += statusUpItemData.IncreasingGirlAttackPowerPercentage;
             Player.GirlAbility.IncreasedAttackSpeedPercentage += statusUpItemData.IncreasingGirlAttackSpeedPercentage;
             girl.IncreasedHpRegeneration += statusUpItemData.IncreasingGirlHpRegeneration;
+            Player.GirlAbility.IncreasedReloadSpeedPercentage += statusUpItemData.IncreasingReloadSpeedPercentage;
+
         }
 
         if (creature)
@@ -407,9 +335,10 @@ public class Inventory
             creature.Hp += statusUpItemData.RecoverCreatureHpAmount;
             creature.IncreasedHpRegeneration += statusUpItemData.IncreasingCreatureHpRegeneration;
             creature.SetSpeed(creature.Speed + statusUpItemData.IncreasingCreatureSpeed);
+            creatureAI.ReviveTime -= statusUpItemData.ReviveTimeDown;
         }
 
-        Managers.GetManager<GameManager>().Mental += statusUpItemData.RecoverMentalAmount;
+        Managers.GetManager<GameManager>().MentalAccelerationPercentage += statusUpItemData.AccelMentalDownPercentage;
     }
     public void RevertStatus(StatusUpItemData statusUpItemData)
     {
@@ -424,6 +353,7 @@ public class Inventory
             Player.GirlAbility.IncreasedAttackPowerPercentage -= statusUpItemData.IncreasingGirlAttackPowerPercentage;
             Player.GirlAbility.IncreasedAttackSpeedPercentage -= statusUpItemData.IncreasingGirlAttackSpeedPercentage;
             girl.IncreasedHpRegeneration -= statusUpItemData.IncreasingGirlHpRegeneration;
+            Player.GirlAbility.IncreasedReloadSpeedPercentage -= statusUpItemData.IncreasingReloadSpeedPercentage;
         }
 
         if (creature)
@@ -433,7 +363,9 @@ public class Inventory
             creatureAI.CreatureAbility.IncreasedAttackSpeedPercentage -= statusUpItemData.IncreasingCreatureAttackSpeedPercentage;
             creature.IncreasedHpRegeneration -= statusUpItemData.IncreasingCreatureHpRegeneration;
             creature.SetSpeed(creature.Speed - statusUpItemData.IncreasingCreatureSpeed);
+            creatureAI.ReviveTime += statusUpItemData.ReviveTimeDown;
         }
+        Managers.GetManager<GameManager>().MentalAccelerationPercentage -= statusUpItemData.AccelMentalDownPercentage;
     }
 }
 

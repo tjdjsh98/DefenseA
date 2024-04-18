@@ -13,9 +13,9 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     [SerializeField] GameObject _bubble;
 
 
-    float rank0Probability = 80f;
-    float rank1Probability = 15f;
-    float rank2Probability = 5f;
+    [SerializeField]float rank0Probability = 80f;
+    [SerializeField] float rank1Probability = 15f;
+    [SerializeField] float rank2Probability = 5f;
 
     private void Awake()
     {
@@ -86,7 +86,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
             if (itemList.Count == 0)
             {
-                datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.µş±âÄÉÀÌÅ©));
+                datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.ÇÖ¼¼ºì));
             }
             else
             {
@@ -100,7 +100,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                         itemList.Remove(weaponData);
                     }
                     else
-                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.µş±âÄÉÀÌÅ©));
+                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.ÇÖ¼¼ºì));
                 }
                 // ³ª¸ÓÁö´Â ¹«±â°¡ ¾Æ´Ñ °ÍÀ¸·Î
                 else
@@ -113,7 +113,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                         itemList.Remove(itemData);
                     }
                     else
-                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.µş±âÄÉÀÌÅ©));
+                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.ÇÖ¼¼ºì));
                 }
             }
         }

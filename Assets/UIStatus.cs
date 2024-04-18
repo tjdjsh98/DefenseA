@@ -119,8 +119,8 @@ public class UIStatus : UIBase
         _stringBuilder.AppendLine($"체력 : {_creature.Hp}/{_creature.MaxHp}");
         _stringBuilder.AppendLine($"공격력 : {_creature.AttackPower}");
         _stringBuilder.AppendLine($"체력재생력 : {_creature.IncreasedHpRegeneration}");
-        _stringBuilder.AppendLine($"증가공격력(%) : {_creatureAI.CreatureAbility.IncreasedAttackPowerPercentage}%");
-        _stringBuilder.AppendLine($"증가공격속도(%) : {_creatureAI.CreatureAbility.IncreasedAttackSpeedPercentage}");
+        _stringBuilder.AppendLine($"증가공격력(%) : {_creatureAI.CreatureAbility.GetIncreasedAttackPowerPercentage()}%");
+        _stringBuilder.AppendLine($"증가공격속도(%) : {_creatureAI.CreatureAbility.GetIncreasedAttackSpeedPercentage()}");
         _descriptionTextMesh.text = _stringBuilder.ToString();
 
 

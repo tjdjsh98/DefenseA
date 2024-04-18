@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fece2be9257aeab45a6b14d73efe4950, type: 3}
   m_Name: "\uBD80\uC11C\uC9C4\uC57D\uC9C0"
   m_EditorClassIdentifier: 
-  <ItemName>k__BackingField: 45
-  <ItemType>k__BackingField: 1
+  <ItemName>k__BackingField: 32
+  <ItemType>k__BackingField: 0
   <Image>k__BackingField: {fileID: 0}
-  <Description>k__BackingField: "\"\uC815\uC2E0\uB825\uC774 20% \uBE60\uB974\uAE30
-    \uAC10\uC18C\uB429\uB2C8\uB2E4.\n\uC18C\uB140\uC640 \uAD34\uBB3C\uC758 \uACF5\uACA9\uC18D\uB3C4\uB97C
-    \uC99D\uAC00\uC2DC\uD0B5\uB2C8\uB2E4.\""
+  <Description>k__BackingField: "\"\uC18C\uB140\uAC00 \uBA3C\uC800 \uC8FD\uC9C0 \uC54A\uB294
+    \uAC83\uC744 \uC57D\uC18D\uD558\uACE0 \uC18C\uB140\uC640 \uAD34\uBB3C\uC758 \uACF5\uACA9\uB825\uC774
+    \uC0C1\uC2B9\uD569\uB2C8\uB2E4.\n\uAD34\uBB3C\uC774 \uC8FD\uB294\uB2E4\uBA74
+    \uC18C\uB140\uC758 \uCD5C\uB300\uCCB4\uB825\uC774 \uC601\uAD6C\uD788 \uC808\uBC18\uC774
+    \uB429\uB2C8\uB2E4.\""
   <Rank>k__BackingField: 0
   <IncreasingGirlMaxHp>k__BackingField: 0
   <IncreasingCreatureMaxHp>k__BackingField: 0
@@ -31,4 +33,6 @@ MonoBehaviour:
   <RecoverCreatureHpAmount>k__BackingField: 0
   <IncreasingGirlSpeed>k__BackingField: 0
   <IncreasingCreatureSpeed>k__BackingField: 0
-  <RecoverMentalAmount>k__BackingField: 0
+  <AccelMentalDownPercentage>k__BackingField: 0
+  <IncreasingReloadSpeedPercentage>k__BackingField: 0
+  <ReviveTimeDown>k__BackingField: 0

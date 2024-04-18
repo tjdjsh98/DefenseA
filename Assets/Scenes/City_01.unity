@@ -525,8 +525,8 @@ MonoBehaviour:
   _summonDummy: 0
   _destroyDummy: 0
   _dummyHp: 3
-  _itemName: 0
-  _addItem: 0
+  _itemName: 11
+  _addItem: 1
   _removeItem: 0
   _timeScale: 1
   _stop: 0
@@ -4942,7 +4942,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5243349188976415764, guid: 36f739a3e31a1324aaa8ae699fa8c138, type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1000
+      value: 383.4
       objectReference: {fileID: 0}
     - target: {fileID: 5243349188976415764, guid: 36f739a3e31a1324aaa8ae699fa8c138, type: 3}
       propertyPath: m_LocalPosition.y

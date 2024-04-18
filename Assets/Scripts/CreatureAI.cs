@@ -58,7 +58,7 @@ public class CreatureAI : MonoBehaviour
     [SerializeField] float _throwPower;
 
     // ∫Œ»∞
-    public float ReviveTime { private set; get; } = 20;
+    public float ReviveTime {  set; get; } = 20;
     public float ReviveElasped { get;private set; }
 
 

@@ -1,15 +1,24 @@
-using DuloGames.UI.Tweens;
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Net.NetworkInformation;
-using System.Text.RegularExpressions;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
 public class GirlAbility 
 {
     Player _player;
+    Character _creature;
+    Character Creature
+    {
+        get
+        {
+            if (_creature == null)
+            {
+                _creature = Managers.GetManager<GameManager>().Creature;
+                _creature.CharacterDeadHandler += OnCreatureDead; 
+            }
+            return _creature;
+        }
+    }
     CardManager _cardManager;
 
     Inventory _inventory;
@@ -21,16 +30,19 @@ public class GirlAbility
     // 스킬
     Dictionary<CardName, Action<SkillSlot>> _skillDictionary = new Dictionary<CardName, Action<SkillSlot>>();
 
+    // 송곳니
+    public bool IsActiveCanine { get; set; }
+    SkillSlot _canineSlot;
 
     #region 아이템 능력
 
-    // 검은유리창파편
-    float _preBlackShardsOfGlassHpRegen;
-    float _blackShardsOfGlassCoefficient = 2f;
     // 탁한 잎
-    float _cludyLeafIncreaseAttackPowerPercentage = 40f;
+    float _cludyLeafIncreaseAttackPowerPercentage;
     // 보이지 않는 손
     List<float> _invisbleHandElaspedTimeList = new List<float>();
+
+    // 문들어진 송곳니
+    int _crumbledCanineHuntingCount = 0;
 
     #endregion
 
@@ -39,10 +51,36 @@ public class GirlAbility
         _player = player;
         _player.Character.AttackHandler += OnAttack;
         _player.Character.AddtionalAttackHandler += OnAddtionalAttack;
+        _player.Character.CharacterDeadHandler += OnPlayerDead;
+        _player.Character.DamagedHandler += OnDamaged;
         _inventory = Managers.GetManager<GameManager>().Inventory;
         _cardManager = Managers.GetManager<CardManager>();
         RegistSkill();
     }
+
+    private void OnDamaged(Character attacker, int dmg, float power, Vector3 direction, Vector3 point, float stumTime)
+    {
+        if (_inventory.GetItemCount(ItemName.피묻은뼈목걸이) > 0)
+        {
+            Creature.Hp += 10 * _inventory.GetItemCount(ItemName.피묻은뼈목걸이);
+        }
+    }
+
+    private void OnPlayerDead()
+    {
+        Managers.GetManager<GameManager>().Player.GirlAbility.IncreasedAttackPowerPercentage -= _cludyLeafIncreaseAttackPowerPercentage;
+        _cludyLeafIncreaseAttackPowerPercentage = 0;
+    }
+
+    private void OnCreatureDead()
+    {
+        if (_inventory.GetItemCount(ItemName.탁한잎) > 0)
+        {
+            Managers.GetManager<GameManager>().Player.GirlAbility.IncreasedAttackPowerPercentage += 5;
+            _cludyLeafIncreaseAttackPowerPercentage += 5;
+        }
+    }
+
     public void AbilityUpdate()
     {
         InvisibleHand();
@@ -50,36 +88,11 @@ public class GirlAbility
         _player.Character.IncreasedHpRegeneration = GetHpRegeneration();
     }
 
-    // 잠시 폐기 아이템으로 돌아옴
-    void FastReload()
-    {
-        //if (!_cardManager.GetIsHaveAbility(CardName.빠른재장전)) return;
-        //if (_player.WeaponSwaper.CurrentWeapon == null) return;
-
-        //if (_preWeapon != _player.WeaponSwaper.CurrentWeapon)
-        //{
-        //    _preWeapon = _player.WeaponSwaper.CurrentWeapon;
-        //    _preAmmoCount = _preWeapon.CurrentAmmo;
-        //    return;
-        //}
-
-        //if(_preAmmoCount > 0 && _player.WeaponSwaper.CurrentWeapon.CurrentAmmo == 0)
-        //{
-        //    if(Random.Range(0,100) < _cardManager.GetCard(CardName.빠른재장전).Property)
-        //        _player.WeaponSwaper.CurrentWeapon.CompleteFastReload(_player);
-        //}
-
-        //_preAmmoCount = _player.WeaponSwaper.CurrentWeapon.CurrentAmmo;
-
-    }
-    private void HandleCloudyLeaf()
-    {
-        
-    }
-
+    
     #region 스킬 관련
     void RegistSkill()
     {
+        _skillDictionary.Add(CardName.송곳니, PlayCanine);
     }
 
     public void UseSkill(SkillSlot skillSlot)
@@ -92,32 +105,68 @@ public class GirlAbility
         }
     }
 
-    
+    void PlayCanine(SkillSlot slot)
+    {
+        if (slot.isActive) return;
+        if (slot.skillElapsed < slot.skillCoolTime) return;
+
+        slot.isActive = true;
+        IsActiveCanine = true;
+        _canineSlot = slot;
+    }
+
+    public void EndCanine()
+    {
+        _canineSlot.isActive = false;
+        _canineSlot.skillElapsed = 0;
+        IsActiveCanine = false;
+        _canineSlot = null;
+    }
+
     #endregion
 
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
 
-        if (_inventory.GetItemCount(ItemName.어둠구체의3번째파편) > 0)
+   
+        if (_inventory.GetItemCount(ItemName.작은송곳니) > 0)
         {
-            if (Random.Range(0, 100) < _inventory.GetItemCount(ItemName.어둠구체의3번째파편))
-            {
-                _cardManager.AddBlackSphere(point);
-            }
-
+            if(Random.Range(0,100) < 5)
+                Creature.Hp += _inventory.GetItemCount(ItemName.작은송곳니);
         }
 
         // 타겟이 죽는다면 
         if (target == null || target.IsDead)
         {
-            Managers.GetManager<CardManager>().Predation += Managers.GetManager<CardManager>().HuntingPredation;
-            if (_inventory.GetItemCount(ItemName.검은눈동자구슬) > 0)
+            if (_inventory.GetItemCount(ItemName.문들어진송곳니) > 0)
             {
-                if (Random.Range(0, 100) < _inventory.GetItemCount(ItemName.검은눈동자구슬) * 5)
+                _crumbledCanineHuntingCount++;
+                if (_crumbledCanineHuntingCount > 50)
                 {
-                    _cardManager.AddBlackSphere(point);
+                    _player.Character.Hp += _inventory.GetItemCount(ItemName.문들어진송곳니);
                 }
+            }
+
+            if (_inventory.GetItemCount(ItemName.니트로글리세린) > 0)
+            {
+                if(Random.Range(0,100) < 2)
+                {
+                    Define.Range range = new Define.Range() { center = Vector3.zero,size = Vector3.one*10, angle= 0 ,figureType = Define.FigureType.Circle};
+                    Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
+                    Util.RangeCastAll2D(point, range, Define.CharacterMask, (hit) =>
+                    {
+                        Character character = hit.collider.GetComponent<Character>();
+                        if (character != null && !character.IsDead && character.CharacterType == Define.CharacterType.Enemy)
+                        {
+                            _player.Character.Attack(character, 20, 50, character.transform.position - point, hit.point, 0.3f);
+                        }
+                        return false;
+                    });
+                    effect.SetProperty("Radius", 10f);
+                    effect.Play(point);
+                }
+
             }
         }
     }
@@ -213,17 +262,15 @@ public class GirlAbility
         //    }
         //}
 
-        // 아이템 : 포크
-        percentage += (int)(Managers.GetManager<CardManager>().Predation/20)*10* _inventory.GetItemCount(ItemName.포크);
-
-        // 아이템 : 탁한 잎
-        percentage += _inventory.CloudyLeafActiveCount * _cludyLeafIncreaseAttackPowerPercentage;
-
-        // 아이템 : 검은 액체
-        percentage += Mathf.Clamp(_cardManager.BlackSphereList.Count * 2,0,20) * _inventory.GetItemCount(ItemName.검은액체);
+        //아이템 : 검은유리창파편
+        if (_player.WeaponSwaper.CurrentWeapon != null)
+        {
+            if(_inventory.GetItemCount(ItemName.검은유리창파편) > 0)
+                percentage += ((int)_player.WeaponSwaper.CurrentWeapon.MaxAmmo/10) * 5 * _inventory.GetItemCount(ItemName.검은유리창파편);
+        }
 
         // 아이템 : 마지막탄환
-        if(_player.WeaponSwaper.CurrentWeapon != null)
+        if (_player.WeaponSwaper.CurrentWeapon != null)
         {
             if (_player.WeaponSwaper.CurrentWeapon.CurrentAmmo == 1)
             {
@@ -241,19 +288,12 @@ public class GirlAbility
 
         percentage += IncreasedAttackSpeedPercentage;
 
-        // 잠시 폐기 아이템으로
-        //// 마지막 발악
-        //if (creature.IsDead)
-        //{
-        //    Card card = Managers.GetManager<CardManager>().GetCard(CardName.마지막발악);
-        //    if (card != null)
-        //    {
-        //        percentage += card.Property;
-        //    }
-        //}
-
-        // 아이템 : 검은유리창파편
-        percentage += Mathf.Clamp(_blackShardsOfGlassCoefficient * _cardManager.BlackSphereList.Count,0,40) * _inventory.GetItemCount(ItemName.검은유리창파편);
+        // 아이템: 과충전배터리
+        if (_inventory.GetItemCount(ItemName.과충전배터리) > 0)
+        {
+            percentage += _inventory.GetItemCount(ItemName.피뢰침) * 5;
+            percentage += _inventory.GetItemCount(ItemName.부서진건전지) * 5;
+        }
 
         return percentage;
     }
@@ -263,8 +303,7 @@ public class GirlAbility
 
         percentage += IncreasedReloadSpeedPercentage;
 
-        // 아이템 : 검은 가루
-        percentage += Mathf.Clamp(2* _cardManager.BlackSphereList.Count, 0, 20) * _inventory.GetItemCount(ItemName.검은가루);
+     
         return percentage;
     }
   
