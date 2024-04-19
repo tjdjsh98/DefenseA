@@ -1,10 +1,7 @@
-using MoreMountains.Feedbacks;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.Build;
 using UnityEngine;
-using UnityEngine.Rendering.PostProcessing;
 
 public class Character : MonoBehaviour,IHp
 {
@@ -45,7 +42,6 @@ public class Character : MonoBehaviour,IHp
     [SerializeField] float _speed;
     public float Speed => _speed;
     [SerializeField] float _standing;
-    public float Standing;
 
     #endregion
     [field:SerializeField]public int AttackPower { set; get; }

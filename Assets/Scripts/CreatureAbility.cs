@@ -1,8 +1,6 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -31,7 +29,6 @@ public class CreatureAbility
     bool _isProhibitSkill;
 
     public List<GameObject> _electricReleaseTickEnemyList = new List<GameObject>();
-    float _electricReleaseDuration = 3;
     GameObject _electricReleaseTempEffect;
 
 
@@ -111,15 +108,19 @@ public class CreatureAbility
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
-
         
+        for(int i =0; i < _inventory.GetItemCount(ItemName.갈라진손가락);i++)
+        {
+            _creature.AddtionalAttack(target, totalDamage, 0, Vector3.zero, point + Vector3.up*(i+1), 0);
+        }
+
         if (target == null || target.IsDead)
         {
             int count = _inventory.GetItemCount(ItemName.바늘과가죽);
             if (count >0 )
             {
                 _needleAndLeatherHuntingCount++;
-                if (_needleAndLeatherHuntingCount > 10)
+                if (_needleAndLeatherHuntingCount >=5)
                 {
                     _creature.AddMaxHp(count);
                     _needleAndLeatherHuntingCount= 0;
@@ -137,9 +138,7 @@ public class CreatureAbility
         {
             if (Random.Range(0, 100) < 20)
             {
-                Debug.Log(_creature.Hp);
-                _creature.Hp += 5 * _inventory.GetItemCount(ItemName.검은액체);
-                Debug.Log(_creature.Hp);
+                _creature.Hp += 10 * _inventory.GetItemCount(ItemName.검은액체);
             }
         }
     }
@@ -189,8 +188,13 @@ public class CreatureAbility
         // 오버클럭
         if (_isActiveOverclocking)
         {
-            Debug.Log(_overclockingSlot.card.Property);
             percentage += _overclockingSlot.card.Property;
+        }
+
+        // 아이템: 갈라진 손가락
+        if (_inventory.GetItemCount(ItemName.갈라진손가락) > 0)
+        {
+            percentage -= 50 * _inventory.GetItemCount(ItemName.갈라진손가락);
         }
         return percentage;
     }
@@ -229,7 +233,7 @@ public class CreatureAbility
                         Character character = hit.collider.GetComponent<Character>();
                         if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                         {
-                            _creature.Attack(character, 1, 0, Vector3.zero, hit.point, 0.5f);
+                            _creature.Attack(character, 10, 0, Vector3.zero, hit.point, 0.5f);
                         }
                         return false;
                     });
@@ -370,6 +374,7 @@ public class CreatureAbility
 
     IEnumerator CorOverclokcing(SkillSlot slot)
     {
+        _creature.Hp /= 2;
         slot.isActive = true;
         _isActiveOverclocking = true;
         _overclockingSlot = slot;
@@ -417,35 +422,24 @@ public class CreatureAbility
     }
     IEnumerator CorPlayRoar(SkillSlot slot)
     {
-        _creatureAI.IsStopAI = true;
-        // 괴물이 일반 공격 시 잠시 기다린다.
-        while (_creature.IsAttack)
-        {
-            yield return null;
-        }
-        _creature.IsAttack = true;
+        _creatureAI.ResetAI();
 
-        while (Mathf.Abs(_creature.MySpeed.x) > 0.1f)
-        {
-            yield return null;
-        }
+        _isProhibitSkill = true;
+        _creature.IsAttack = true;
+        _creature.IsEnableMove = false;
+        _creature.IsEnableTurn = false;
 
         Character character = _creatureAI.GetCloseEnemy();
         if (character)
         {
             _creature.TurnBody(character.transform.position - _creature.transform.position);
-        
-
         }
         _creature.SetAnimatorBool("Roar", true);
 
         yield return new WaitForSeconds(0.2f);
         Roar();
 
-        _creature.IsAttack = true;
-        _creature.IsEnableMove = false;
-        _creature.IsEnableTurn = false;
-
+    
         yield return new WaitForSeconds(1);
         _creature.SetAnimatorBool("Roar", false);
 
@@ -506,7 +500,7 @@ public class CreatureAbility
         _electricReleaseTempEffect.transform.localPosition = _attackRangeList[2].center;
         _electricReleaseTempEffect.transform.localScale = _attackRangeList[2].size;
 
-        while(elapsedTime < _electricReleaseDuration)
+        while(elapsedTime < slot.card.Property)
         {
             Util.RangeCastAll2D(_creature.gameObject, _attackRangeList[2], Define.CharacterMask, (hit) =>
             {
@@ -518,12 +512,12 @@ public class CreatureAbility
 
                 if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    _creature.Attack(character, 1, 30, Vector3.right * _creature.transform.localScale.x, hit.point, 0.2f);
+                    _creature.Attack(character, Mathf.RoundToInt(_creature.AttackPower/5f) , 20, Vector3.right * _creature.transform.localScale.x, hit.point, 0.2f);
                 }
                 return false;
             });
-            elapsedTime += Time.deltaTime;
-            yield return null;
+            elapsedTime += 0.1f;
+            yield return new WaitForSeconds(0.1f);
         }
         _electricReleaseTempEffect.gameObject.SetActive(false);
 

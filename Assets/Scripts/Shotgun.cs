@@ -28,8 +28,9 @@ public class Shotgun : Weapon
         fireFlare.transform.localScale = _firePosition.transform.lossyScale;
         fireFlare.transform.rotation = _firePosition.transform.rotation;
 
+        Managers.GetManager<GameManager>().CameraController.ShakeCamera(0.3f, 0.1f);
 
-        
+
         for (int i = 0; i < _fireCount; i++)
         {
             float bulletAngle = angle;
@@ -38,16 +39,26 @@ public class Shotgun : Weapon
             Vector3 direction = new Vector3(Mathf.Cos(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), Mathf.Sin(bulletAngle) * transform.lossyScale.x / Mathf.Abs(transform.lossyScale.x), 0);
             float damage = AttackPower;
 
-          
+            int penerstartingPower = PenerstratingPower;
+            float bulletSpeed = BulletSpeed + Random.Range(-20, 20);
+            // 총을 쏘는 것이 플레이어라면 해당 스킬을 발동시킨다.
+            if (user is Player player)
+            {
+                if (player.GirlAbility.IsActiveCanine)
+                {
+                    penerstartingPower = 9999;
+                }
+            }
+
             Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Bullet);
             projectile.transform.position = _firePosition.transform.position;
 
-            projectile.Init(KnockBackPower, BulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
+            projectile.Init(KnockBackPower, bulletSpeed, Mathf.RoundToInt(damage), Define.CharacterType.Enemy, PenerstratingPower, StunTime);
             projectile.Fire(user.Character, direction.normalized);
 
         }
         user?.Rebound(_rebound);
-        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.유령탄환) > 0)
+        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.재활용탄) > 0)
         {
             if (Random.Range(0, 100) < 10)
             {

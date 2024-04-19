@@ -202,13 +202,48 @@ public class UICardSelection : UIBase
             int cardRank = _cardSelectionList[i].rank;
 
             float value = 0;
-            if (_cardSelectionList[i].cardData.PropertyList.Count > cardRank+1)
-                value = _cardSelectionList[i].cardData.PropertyList[cardRank+1];
-            float value2 = 0;
-            if (_cardSelectionList[i].cardData.Property2List.Count > cardRank + 1)
-                value2 = _cardSelectionList[i].cardData.Property2List[cardRank + 1];
-            string cardDescription = string.Format(_cardSelectionList[i].cardData.CardDescription,value, value2);
+            if(_cardSelectionList[i].cardData.PropertyList.Count == 0)
+            {
+                value = 0;
+            }
+            else if (_cardSelectionList[i].cardData.PropertyList.Count > cardRank + 1)
+            {
+                value = _cardSelectionList[i].cardData.PropertyList[cardRank + 1];
+            }
+            else 
+            {
+                value = _cardSelectionList[i].cardData.PropertyList[_cardSelectionList[i].cardData.PropertyList.Count-1];
+            }
 
+            float value2 = 0;
+            if (_cardSelectionList[i].cardData.Property2List.Count == 0)
+            {
+                value2 = 0;
+            }
+            else if (_cardSelectionList[i].cardData.Property2List.Count > cardRank + 1)
+            {
+                value2 = _cardSelectionList[i].cardData.Property2List[cardRank + 1];
+            }
+            else
+            {
+                value2 = _cardSelectionList[i].cardData.Property2List[_cardSelectionList[i].cardData.Property2List.Count - 1];
+            }
+            float coolTime = 0;
+            if (_cardSelectionList[i].cardData.Property2List.Count == 0)
+            {
+                coolTime = 0;
+            }
+            else if (_cardSelectionList[i].cardData.coolTimeList.Count > cardRank + 1)
+            {
+                coolTime = _cardSelectionList[i].cardData.coolTimeList[cardRank + 1];
+            }
+            else
+            {
+                coolTime = _cardSelectionList[i].cardData.coolTimeList[_cardSelectionList[i].cardData.coolTimeList.Count - 1];
+            }
+            string cardDescription = $"·©Å© : {cardRank + 1}\n\n";
+            cardDescription += string.Format(_cardSelectionList[i].cardData.CardDescription,value, value2);
+            cardDescription += $"\n\nÄðÅ¸ÀÓ : {coolTime}";
             _cardDescriptionTextList[i].text = cardDescription;
         }
     }

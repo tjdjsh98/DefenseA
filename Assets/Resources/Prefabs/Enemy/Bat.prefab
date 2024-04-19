@@ -136,11 +136,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 3
+  _maxHp: 30
   _hp: 0
   _speed: 5
   _standing: 0
-  <AttackPower>k__BackingField: 2
+  Standing: 0
+  <AttackPower>k__BackingField: 20
   _jumpPower: 10
   IsNotInstantlyDie: 0
   _isEnableRevive: 0

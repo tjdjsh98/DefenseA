@@ -32,6 +32,8 @@ public class GirlAbility
 
     // 송곳니
     public bool IsActiveCanine { get; set; }
+    public float _canineElasepdTime;
+    public float _canineDurationTime = 5;
     SkillSlot _canineSlot;
 
     #region 아이템 능력
@@ -86,6 +88,19 @@ public class GirlAbility
         InvisibleHand();
         //FastReload();
         _player.Character.IncreasedHpRegeneration = GetHpRegeneration();
+
+        //스킬: 송곳니
+        if (IsActiveCanine)
+        {
+            _canineElasepdTime += Time.deltaTime;   
+            if (_canineElasepdTime > _canineDurationTime)
+            {
+                _canineElasepdTime = 0;
+                IsActiveCanine = false;
+                _canineSlot.skillElapsed = 0;
+                _canineSlot.isActive = false;
+            }
+        }
     }
 
     
@@ -115,14 +130,6 @@ public class GirlAbility
         _canineSlot = slot;
     }
 
-    public void EndCanine()
-    {
-        _canineSlot.isActive = false;
-        _canineSlot.skillElapsed = 0;
-        IsActiveCanine = false;
-        _canineSlot = null;
-    }
-
     #endregion
 
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
@@ -133,7 +140,12 @@ public class GirlAbility
         if (_inventory.GetItemCount(ItemName.작은송곳니) > 0)
         {
             if(Random.Range(0,100) < 5)
-                Creature.Hp += _inventory.GetItemCount(ItemName.작은송곳니);
+                Creature.Hp += _inventory.GetItemCount(ItemName.작은송곳니) * 10;
+        }
+        if (_inventory.GetItemCount(ItemName.눈동자구슬) > 0)
+        {
+            if (Random.Range(0, 100) < 10)
+                _player.Character.AddtionalAttack(target, totalDamage, 0, Vector3.zero, point+Vector3.up*1, 0);
         }
 
         // 타겟이 죽는다면 
@@ -142,7 +154,7 @@ public class GirlAbility
             if (_inventory.GetItemCount(ItemName.문들어진송곳니) > 0)
             {
                 _crumbledCanineHuntingCount++;
-                if (_crumbledCanineHuntingCount > 50)
+                if (_crumbledCanineHuntingCount > 5)
                 {
                     _player.Character.Hp += _inventory.GetItemCount(ItemName.문들어진송곳니);
                 }
@@ -159,7 +171,7 @@ public class GirlAbility
                         Character character = hit.collider.GetComponent<Character>();
                         if (character != null && !character.IsDead && character.CharacterType == Define.CharacterType.Enemy)
                         {
-                            _player.Character.Attack(character, 20, 50, character.transform.position - point, hit.point, 0.3f);
+                            _player.Character.Attack(character, 20, 500, character.transform.position - point, hit.point, 0.3f);
                         }
                         return false;
                     });

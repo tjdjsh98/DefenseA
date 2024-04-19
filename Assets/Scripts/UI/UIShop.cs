@@ -17,6 +17,7 @@ public class UIShop : UIBase
 
     [SerializeField] List<Sprite> _spriteList;
 
+    [SerializeField] GameObject _restockButton;
     [SerializeField] TextMeshProUGUI _restockText;
 
     [SerializeField] GameObject _itemDescription;
@@ -99,15 +100,14 @@ public class UIShop : UIBase
 
     void Refresh()
     {
-        if (Managers.GetManager<GameManager>().Money < _openShop.RestockCost)
+        if (_openShop.RestockCount < Managers.GetManager<GameManager>().EnableRestockCount)
         {
-            _restockText.text = $"<color=\"red\">재입고 불가</color>";
-        }
-        else
+            _restockButton.gameObject.SetActive(true);
+        }else
         {
-            _restockText.text = $"재입고\n{_openShop.RestockCost}";
+            _restockButton.gameObject.SetActive(false);
         }
-
+     
         for (int i = 0; i < _openShop.ShopItemList.Count; i++)
         {
             if (_openShop.ShopItemList[i].shopItemData == null)
@@ -149,11 +149,8 @@ public class UIShop : UIBase
 
     public void ReStockItems()
     {
-        if (_openShop.RestockCost > Managers.GetManager<GameManager>().Money) return;
-
-        Managers.GetManager<GameManager>().Money -= _openShop.RestockCost;
         _openShop.RestockShopItems();
-        _openShop.RestockCost = _openShop.RestockCost * 2;
+        _openShop.RestockCount++;
         Refresh();
     }
 

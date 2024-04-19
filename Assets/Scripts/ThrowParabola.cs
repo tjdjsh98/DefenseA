@@ -1,10 +1,4 @@
-using MoreMountains.FeedbacksForThirdParty;
-using MoreMountains.Tools;
 using System.Collections;
-using System.Collections.Generic;
-using System.Threading;
-using TMPro.EditorUtilities;
-using UnityEditor.Rendering;
 using UnityEngine;
 
 public class ThrowParabola : MonoBehaviour
@@ -62,7 +56,7 @@ public class ThrowParabola : MonoBehaviour
                     else
                     {
                         _fireCoolTime = 0;
-                        for (int i = 90; i >= 45; i -= 5)
+                        for (int i = 45; i <= 90; i += 5)
                         {
                             if (_target != null) break;
 
@@ -74,7 +68,7 @@ public class ThrowParabola : MonoBehaviour
                             angle *= Mathf.Deg2Rad;
 
 
-                            for (float tempPower = _power - 5; tempPower <= _power + 5; tempPower++)
+                            for (float tempPower = _power + 5; tempPower >= _power - 5; tempPower--)
                             {
                                 _target = PredictTrajectory(_firePoint.transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
 
@@ -167,6 +161,8 @@ public class ThrowParabola : MonoBehaviour
                 {
                     if (hit.collider.gameObject.tag == "Player")
                     {
+                        Character character = hit.collider.GetComponent<Character>();
+                        if (character == null || character.IsDead) continue;
                         return hit.collider.gameObject;
                     }
                 }

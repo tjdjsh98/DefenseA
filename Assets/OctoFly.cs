@@ -36,7 +36,7 @@ public class OctoFly : MonoBehaviour
             EnemyNameDefine enemyName = Managers.GetManager<ResourceManager>().Instantiate<EnemyNameDefine>((int)_enemyName);
             Character character = enemyName.GetComponent<Character>();
             character.transform.position = transform.position;
-            character.SetHp(Mathf.RoundToInt( character.MaxHp * Managers.GetManager<GameManager>().StatusMultifly));
+            character.SetHp(Mathf.RoundToInt( character.MaxHp * Managers.GetManager<GameManager>().EnemyStatusMultifly));
             character.AddForce(new Vector2(Random.Range(-1, 1), 1).normalized * 80);
         }
 

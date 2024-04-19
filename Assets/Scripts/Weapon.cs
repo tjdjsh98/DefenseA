@@ -61,7 +61,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public float AttackSpeed => (_attackSpeed * (1 + IncreasedAttackSpeedPercentage / 100) * Util.CalcPercentage(_user.GetIncreasedAttackSpeedPercentage()));
     [SerializeField] protected float _reloadTime;
     public float OriginalReloadTime => _reloadTime;
-    public float ReloadTime => (_reloadTime *(1- DecreasedReloadTimePercentage/ 100) /(Util.CalcPercentage(_user.GetIncreasedReloadSpeedPercentage())));
+    public float ReloadTime => (_reloadTime *(1- IncreasedReloadSpeedPercentage/ 100) /(Util.CalcPercentage(_user.GetIncreasedReloadSpeedPercentage())));
 
 
     // 추가 능력치
@@ -69,7 +69,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
     public float IncreasedKnockbackPowerPercentage { set; get; }
     public int IncreasedPenerstratingPower { set; get; }
     public float IncreasedAttackSpeedPercentage { set; get; }
-    public float DecreasedReloadTimePercentage { set; get; }
+    public float IncreasedReloadSpeedPercentage { set; get; }
 
 
     [SerializeField] protected GameObject _firePosition;
@@ -155,15 +155,6 @@ public class Weapon : MonoBehaviour, ITypeDefine
             projectile.transform.position = _firePosition.transform.position;
             float damage = AttackPower;
 
-            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.눈동자구슬) > 0)
-            {
-                if(Random.Range(0,100) < 10)
-                {
-                    damage += Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.눈동자구슬);
-                }
-            }
-
-
             int penerstartingPower = PenerstratingPower;
 
             // 총을 쏘는 것이 플레이어라면 해당 스킬을 발동시킨다.
@@ -172,7 +163,6 @@ public class Weapon : MonoBehaviour, ITypeDefine
                 if (player.GirlAbility.IsActiveCanine)
                 {
                     penerstartingPower = 9999;
-                    player.GirlAbility.EndCanine();
                 }
             }
 
@@ -183,7 +173,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
             user?.Rebound(_rebound);
         }
-        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.유령탄환) > 0)
+        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.재활용탄) > 0)
         {
             if (Random.Range(0, 100) < 10)
             {

@@ -57,7 +57,7 @@ public class JumpAttack : MonoBehaviour
         {
             if (!_isReadyJump && !_isJumpAttack && !_character.IsAttack)
             {
-                for (int i = 90; i >= 45; i -= 5)
+                for (int i = 45; i <= 90; i += 5)
                 {
                     if (_isReadyJump) break;
 
@@ -69,7 +69,7 @@ public class JumpAttack : MonoBehaviour
                     angle *= Mathf.Deg2Rad;
 
 
-                    for (float tempPower = _originJumpPower - 5; tempPower <= _originJumpPower + 5; tempPower += 2)
+                    for (float tempPower = _originJumpPower + 5; tempPower >= _originJumpPower - 5; tempPower -= 2)
                     {
                         _targetingPlayer = PredictTrajectory(transform.position, new Vector3(Mathf.Cos(angle), Mathf.Sin(angle)).normalized * tempPower);
 
@@ -149,6 +149,8 @@ public class JumpAttack : MonoBehaviour
                 {
                     if (hit.collider.gameObject.tag == "Player")
                     {
+                        Character character = hit.collider.GetComponent<Character>();
+                        if (character == null || character.IsDead) continue;
                         return hit.collider.gameObject;
                     }
                 }

@@ -10,6 +10,9 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
     public List<ShopItem> ShopItemList { get; set; } = new List<ShopItem>();
     public int RestockCost { get; set; } = 5;
+    public int EnableRestockCount { get; set; }
+    public int RestockCount { get; set; }
+
     [SerializeField] GameObject _bubble;
 
 
@@ -65,7 +68,6 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
         for (int i = 0; i < 5; i++)
         {
-            int rank = 0;
             float randomValue = Random.Range(0, 100);
             if (randomValue < rank0Probability)
             {
@@ -86,7 +88,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
             if (itemList.Count == 0)
             {
-                datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.핫세븐));
+                datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트));
             }
             else
             {
@@ -100,7 +102,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                         itemList.Remove(weaponData);
                     }
                     else
-                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.핫세븐));
+                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트));
                 }
                 // 나머지는 무기가 아닌 것으로
                 else
@@ -113,7 +115,7 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                         itemList.Remove(itemData);
                     }
                     else
-                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.핫세븐));
+                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트));
                 }
             }
         }
@@ -130,14 +132,11 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     {
         foreach(var item in ShopItemList)
         {
-            if(Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.아르라제코인) > 0)
-            {
-                item.Price = 0;
-            }
+            Card card = Managers.GetManager<CardManager>().GetCard(CardName.할인판매);
+            if(card != null)
+                item.Price = Mathf.RoundToInt(item.shopItemData.Price * (100 - (card.rank+1) *5)/100f);
             else
-            {
-                item.Price = item.shopItemData.Price;
-            }
+                item.Price= item.shopItemData.Price;
         }
     }
 
@@ -155,12 +154,6 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
             Managers.GetManager<GameManager>().Inventory.AddItem(item.shopItemData);
 
-            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.아르라제코인) > 0)
-            {
-                Managers.GetManager<GameManager>().Inventory.RemoveItem(ItemName.아르라제코인);
-            }
-
-            gameManager.RankItemDataList[item.shopItemData.Rank].Remove(item.shopItemData);
             Refresh();
         }
     }

@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices.WindowsRuntime;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 
 public class CardManager : ManagerBase
@@ -195,13 +197,16 @@ public class CardManager : ManagerBase
 
         foreach (var skillSlot in SkillSlotList)
         {
-            if (skillSlot.isActive) return;
+            if (skillSlot == null) continue;
+            if (skillSlot.isActive) continue;
+            if (skillSlot == slot) continue;
 
-            if (skillSlot.skillElapsed + 10 < skillSlot.skillCoolTime)
-                skillSlot.skillElapsed += 10;
+            if ((skillSlot.skillElapsed + slot.card.Property) < skillSlot.skillCoolTime)
+                skillSlot.skillElapsed += slot.card.Property;
             else
                 skillSlot.skillElapsed = skillSlot.skillCoolTime;
         }
+        slot.skillElapsed = 0;
     }
 
     void PlayEmergencyFood(SkillSlot slot)
@@ -257,7 +262,9 @@ public class CardManager : ManagerBase
 
             switch (card.cardData.CardName)
             {
-             
+                case CardName.재입고:
+                    Managers.GetManager<GameManager>().EnableRestockCount++;
+                    break;
                 //case CardName.일제사격:
                 //    if (rank > 0)
                 //        BlackSphereAttackPower -= (int)card.cardData.PropertyList[rank - 1];
@@ -283,12 +290,14 @@ public class CardManager : ManagerBase
 
                 switch (card.cardData.CardName)
                 {
-
-                    //case CardName.일제사격:
-                    //    if (rank > 0)
-                    //        BlackSphereAttackPower += (int)card.cardData.PropertyList[rank - 1];
-                    //    BlackSphereAttackPower -= (int)value;
-                    //    break;
+                    case CardName.재입고:
+                        Managers.GetManager<GameManager>().EnableRestockCount--;
+                        break;
+                        //case CardName.일제사격:
+                        //    if (rank > 0)
+                        //        BlackSphereAttackPower += (int)card.cardData.PropertyList[rank - 1];
+                        //    BlackSphereAttackPower -= (int)value;
+                        //    break;
                 }
             }
         
@@ -305,6 +314,14 @@ public class CardManager : ManagerBase
     {
         if (card == null||card.cardData == null || !card.cardData.IsActiveAbility) return;
 
+        foreach (var slot in _skillSlotList)
+        {
+            if(slot.card == card)
+            {
+                slot.card.rank++;
+                return;
+            }
+        }
 
         if (index == -1)
         {
@@ -319,6 +336,7 @@ public class CardManager : ManagerBase
             }
         }
 
+        Debug.Log(index);
 
         if (index < 0 || _skillSlotList.Count <= index) return;
 
@@ -437,8 +455,11 @@ public class Card
     {
         get
         {
-            if (cardData == null || cardData.PropertyList.Count <= rank)
+            if (cardData == null || cardData.PropertyList.Count == 0)
                 return 0;
+
+            if(cardData.PropertyList.Count <= rank)
+                return cardData.PropertyList[cardData.PropertyList.Count-1];
 
             return cardData.PropertyList[rank];
         }
@@ -447,10 +468,26 @@ public class Card
     {
         get
         {
-            if (cardData == null || cardData.Property2List.Count <= rank)
+            if (cardData == null || cardData.Property2List.Count == 0)
                 return 0;
 
+            if (cardData.Property2List.Count <= rank)
+                return cardData.Property2List[cardData.Property2List.Count - 1];
+
             return cardData.Property2List[rank];
+        }
+    }
+    public float CoolTime
+    {
+        get
+        {
+            if (cardData == null || cardData.coolTimeList.Count == 0)
+                return 9999;
+
+            if (cardData.coolTimeList.Count <= rank)
+                return cardData.coolTimeList[cardData.Property2List.Count - 1];
+
+            return cardData.coolTimeList[rank];
         }
     }
 }

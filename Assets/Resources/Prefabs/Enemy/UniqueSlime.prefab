@@ -181,11 +181,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 30
-  _hp: 30
+  _maxHp: 300
+  _hp: 300
   _speed: 5
   _standing: 0
-  <AttackPower>k__BackingField: 5
+  Standing: 0
+  <AttackPower>k__BackingField: 50
   _jumpPower: 10
   IsNotInstantlyDie: 0
   _isEnableRevive: 0
@@ -244,14 +245,16 @@ MonoBehaviour:
     angle: 0
     figureType: 0
   _target: {fileID: 0}
+  _movePart: {fileID: 0}
   IsEnableBodyAttack: 1
+  <IsStopDetectTarget>k__BackingField: 0
   _noAttack: 0
+  <IsStopMoveAI>k__BackingField: 0
   _attackDelay: 1
-  <IsAutoMove>k__BackingField: 1
   _isHaveAnimation: 0
-  _itemDropPercentage: 100
   _bodyAttackKnockBackPower: 50
   _bodyAttackCoolTime: 1
+  _dropPercentage: 0
 --- !u!95 &5303523673816249239
 Animator:
   serializedVersion: 5

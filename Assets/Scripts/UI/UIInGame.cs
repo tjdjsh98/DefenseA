@@ -109,8 +109,6 @@ public class UIInGame : UIBase
         ShowMap();
         ShowSkill();
         ShowBoss();
-        //ShowAbility();
-        // IndicateWall();
     }
 
     
@@ -249,6 +247,15 @@ public class UIInGame : UIBase
                 _skillNameList[i].text = string.Empty;
             else
                 _skillNameList[i].text = skillSlotList[i].card.cardData.CardName.ToString();
+
+            if (skillSlotList[i].isActive)
+            {
+                _skillNameList[i].color = Color.green;
+            }
+            else
+            {
+                _skillNameList[i].color = Color.white;
+            }
         }
         for (; i < _skillMaskList.Count; i++)
         {
@@ -371,7 +378,15 @@ public class UIInGame : UIBase
         _levelName.gameObject.SetActive(true);
         if (_levelName)
         {
-            _levelName.text = $"패닉 { Managers.GetManager<GameManager>().PanicLevel}단계\n 적 능력치 증가";
+            if (Managers.GetManager<GameManager>().PanicLevel == 0)
+            {
+                _levelName.text = $"패닉 {Managers.GetManager<GameManager>().PanicLevel}단계";
+            }
+            else
+            {
+                _levelName.text = $"패닉 {Managers.GetManager<GameManager>().PanicLevel}단계" +
+                    $"\n 적 능력치{(Managers.GetManager<GameManager>().EnemyStatusMultifly - 1) * 100}% 증가";
+            }
             while (alpha < 1)
             {
                 color = new Color(1, 1, 1, alpha);

@@ -1,8 +1,4 @@
-using MoreMountains.Feedbacks;
-using System.Collections;
 using System.Collections.Generic;
-using System.Net;
-using TreeEditor;
 using UnityEngine;
 
 public class Boar : MonoBehaviour

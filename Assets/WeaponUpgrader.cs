@@ -12,11 +12,17 @@ public class WeaponUpgrader : MonoBehaviour
     public int TotalPrice { private set; get; }
     int _upgradePrice = 30;
 
-    public int IncreasingAttackPowerPercentage { get; set; }
-    public float IncreasingKnockBackPowerPercentage { get; set; }
-    public int IncreasingPenerstratingPower { get; set; }
-    public float IncreasingAttackSpeedPercentage { get; set; }
-    public float DecreasingReloadTimePercentage { get; set; }
+    public int IncreasingAttackPowerPercentage { get; set; } = 20;
+    public float IncreasingKnockBackPowerPercentage { get; set; } = 30;
+    public int IncreasingPenerstratingPower { get; set; } = 1;
+    public float IncreasingAttackSpeedPercentage { get; set; } = 20;
+    public float IncreasingReloadSpeedPercentage { get; set; } = 10;
+
+    bool _isIncreaseAttackPower;
+    bool _isIncreaseKnockBackPower;
+    bool _isIncreasePenerstratingPower;
+    bool _isIncreaseAttackSpeed;
+    bool _isIncreaseReloadSpeed;
 
 
     public bool UpgradeWeapon()
@@ -28,19 +34,24 @@ public class WeaponUpgrader : MonoBehaviour
 
         if (weapon == null) return false;
 
-        weapon.IncreasedAttackPowerPercentage += IncreasingAttackPowerPercentage;
-        weapon.IncreasedAttackSpeedPercentage += IncreasingAttackSpeedPercentage;
-        weapon.IncreasedKnockbackPowerPercentage += IncreasingKnockBackPowerPercentage;
-        weapon.IncreasedPenerstratingPower += IncreasingPenerstratingPower;
-        weapon.DecreasedReloadTimePercentage += DecreasingReloadTimePercentage;
+        if(_isIncreaseAttackPower)
+            weapon.IncreasedAttackPowerPercentage += IncreasingAttackPowerPercentage;
+        if(_isIncreaseAttackSpeed)
+            weapon.IncreasedAttackSpeedPercentage += IncreasingAttackSpeedPercentage;
+        if(_isIncreaseKnockBackPower)
+            weapon.IncreasedKnockbackPowerPercentage += IncreasingKnockBackPowerPercentage;
+        if(_isIncreasePenerstratingPower)
+            weapon.IncreasedPenerstratingPower += IncreasingPenerstratingPower;
+        if(_isIncreaseReloadSpeed)
+            weapon.IncreasedReloadSpeedPercentage += IncreasingReloadSpeedPercentage;
 
         weapon.UpgradeCount++;
 
-        IncreasingAttackPowerPercentage = 0;
-        IncreasingAttackSpeedPercentage = 0;
-        IncreasingKnockBackPowerPercentage = 0;
-        IncreasingPenerstratingPower = 0;
-        DecreasingReloadTimePercentage = 0;
+        _isIncreaseAttackPower = false;
+        _isIncreaseKnockBackPower = false;
+        _isIncreasePenerstratingPower = false;
+        _isIncreaseAttackSpeed = false;
+        _isIncreaseReloadSpeed = false;
 
         return true;
     }
@@ -84,27 +95,27 @@ public class WeaponUpgrader : MonoBehaviour
 
     public bool IncreaseAttackPower()
     {
-        IncreasingAttackPowerPercentage = 20;
+        _isIncreaseAttackPower = true;
         return UpgradeWeapon();
     }
     public bool IncreaseKncokBackPower()
     {
-        IncreasingKnockBackPowerPercentage = 20;
+        _isIncreaseKnockBackPower = true;
         return UpgradeWeapon();
     }
     public bool IncreasePenerstratingPower()
     {
-        IncreasingPenerstratingPower = 1;
+        _isIncreasePenerstratingPower= true;
         return UpgradeWeapon();
     }
     public bool IncreaseAttackSpeed()
     {
-        IncreasingAttackSpeedPercentage = 20;
+        _isIncreaseAttackSpeed= true;
         return UpgradeWeapon();
     }
     public bool IncreaseReloadSpeed()
     {
-        DecreasingReloadTimePercentage = 20;
+        _isIncreaseReloadSpeed = true;
         return UpgradeWeapon();
     }
 }

@@ -1,9 +1,3 @@
-using MoreMountains.Feedbacks;
-using MoreMountains.FeedbacksForThirdParty;
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEditor.Timeline;
 using UnityEngine;
 
 public class Bomb1 : MonoBehaviour

@@ -62,10 +62,9 @@ public class SpawnEnemy : MonoBehaviour
                 _rigidbody.AddForce((transform.position- _target.transform.position).normalized * 100,ForceMode2D.Impulse);
 
                 EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)_spawnEnemyList.GetRandom());
-                EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+                GameObject enemy = Managers.GetManager<GameManager>().GenerateCharacter(enemyOrigin.gameObject, transform.position);
+
                 Character character = enemy.GetComponent<Character>();
-                if (character != null)
-                    character.MulHp(_spawnEnemyHpMultifly);
                 enemy.transform.position = transform.position;
 
                 _spawnTime = 0;

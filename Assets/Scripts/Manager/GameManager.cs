@@ -3,6 +3,7 @@ using Lofelt.NiceVibrations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Data;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Rendering;
@@ -33,6 +34,7 @@ public class GameManager : ManagerBase
     [SerializeField] bool _addItem;
     [SerializeField] bool _removeItem;
     [SerializeField] float _timeScale = 1;
+    [SerializeField] bool _addSkill;
     
     [Header("게임 진행")]
     [SerializeField] bool _stop;
@@ -45,6 +47,7 @@ public class GameManager : ManagerBase
     public Action<MapData> LoadNewSceneHandler { set; get; }
 
     public int Money { set; get; } = 0;
+    public int EnableRestockCount { set; get; }
 
     #region 멘탈, 패닉
     int _panicLevel = 0;
@@ -52,7 +55,7 @@ public class GameManager : ManagerBase
     public float MaxMental { get; } = 100;
     public float Mental { set; get; } = 100;
     public float MentalAccelerationPercentage = 0;
-
+    public int DeathCount { set; get; }
     public Character Boss { get; set; }
 
     #endregion
@@ -71,8 +74,10 @@ public class GameManager : ManagerBase
     List<Wave> _distanceWaveList = new List<Wave>();
     List<Wave> _mentalWaveList = new List<Wave>();
     float _totalTime;
+    public float TotalTime => _totalTime;
     float _stageTime;
-    public float StatusMultifly => _mapData != null ?(_mapData.initMutifly + (_stageTime / _mapData.multiflyInterval) * _mapData.addMultifly): 1;
+    // 패닉에 따른 스탯 증가량
+    public float EnemyStatusMultifly => _mapData != null ?(_mapData.initMutifly + (PanicLevel) * _mapData.addMultifly): 1;
 
     public int HuntingCount { set; get; }
 
@@ -94,6 +99,7 @@ public class GameManager : ManagerBase
         }
     }
 
+    GameObject _helpBox;
 
     public List<List<ItemData>> RankItemDataList = new List<List<ItemData>>();
 
@@ -117,30 +123,21 @@ public class GameManager : ManagerBase
     public bool IsStartBeyondDead { set; get; }
     public override void Init()
     {
+        if(GameObject.Find("HelpBox"))
+            _helpBox = GameObject.Find("HelpBox").gameObject;
         Inventory = new Inventory();
         LoadItemData();
         LoadMainCharacters();
 
         _cameraController = Camera.main.GetComponent<CameraController>();
         LoadMapData();
+        LoadObjects();
 
     }
     public override void ManagerUpdate()
     {
-        Debuging();
-        Mental -= Time.deltaTime * (1 + (MentalAccelerationPercentage/100f));
         _totalTime += Time.deltaTime;
-        _stageTime += Time.deltaTime;
-        if (Mental <= 0)
-        {
-            _panicLevel++;
-            Mental += 100;
-        }
-        if (Mental > 100)
-        {
-            _panicLevel--;
-            Mental -= 100;
-        }
+        Debuging();
 
         if (Input.GetKeyDown(KeyCode.I))
         {
@@ -153,6 +150,19 @@ public class GameManager : ManagerBase
 
         Inventory.InventoryUpdate();
         if (_stop) return;
+        Mental -= Time.deltaTime * 3f * (1 + (MentalAccelerationPercentage / 100f));
+     
+        _stageTime += Time.deltaTime;
+        if (Mental <= 0)
+        {
+            _panicLevel++;
+            Mental += 100;
+        }
+        if (Mental > 100)
+        {
+            _panicLevel--;
+            Mental -= 100;
+        }
 
         TimeWave();
         DistanceWave();
@@ -162,6 +172,14 @@ public class GameManager : ManagerBase
             _farDistance = _farDistance < Player.transform.position.x ? Player.transform.position.x : _farDistance;
 
 
+        if (Boss == null &&Player && !_girl.IsDead)
+        {
+            if (Player.transform.position.x > MapSize)
+            {
+                Managers.GetManager<UIManager>().GetUI<UIEnding>().Open();
+            }
+
+        }
     }
 
     void LoadItemData()
@@ -256,7 +274,6 @@ public class GameManager : ManagerBase
             _isPlayTimeline = true;
         }
 
-        LoadObjects();
         _stageTime = 0;
         IsLoadEnd = true;
     }
@@ -368,7 +385,11 @@ public class GameManager : ManagerBase
             Inventory.RemoveItem(Managers.GetManager<DataManager>().GetData<ItemData>((int)(_itemName)));
             _removeItem = false;
         }
-       
+        if (_addSkill)
+        {
+            Managers.GetManager<UIManager>().GetUI<UICardSelection>().OpenSkillCardSelection();
+            _addSkill = false;
+        }
     }
     void TimeWave()
     {
@@ -448,8 +469,9 @@ public class GameManager : ManagerBase
             {
                 EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)distanceWaveData.enemyName);
 
-                GenerateCharacter(enemyOrigin.gameObject, _cameraController.transform.position + distanceWaveData.genLocalPosition);
-               
+                GameObject enemy = GenerateCharacter(enemyOrigin.gameObject, _cameraController.transform.position + distanceWaveData.genLocalPosition);
+
+                Boss = enemy.GetComponent<Character>();
                 _distanceWaveList.Remove(wave);
                 return;
             }
@@ -502,7 +524,7 @@ public class GameManager : ManagerBase
         return hit.point;
     }
 
-    public void GenerateCharacter(GameObject go, Vector3 position,bool isTopGround = false)
+    public GameObject GenerateCharacter(GameObject go, Vector3 position,bool isTopGround = false)
     {
         if (isTopGround)
         {
@@ -514,11 +536,12 @@ public class GameManager : ManagerBase
         GameObject enemy = Managers.GetManager<ResourceManager>().Instantiate(go);
         {
             Character character = enemy.GetComponent<Character>();
+            position.z = 0;
             enemy.transform.position = position;
             if (character)
             {
-                character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
-                character.AttackPower = Mathf.RoundToInt(character.AttackPower * (1 + PanicLevel * _mapData.addMultifly));
+                character.SetHp(Mathf.RoundToInt(character.MaxHp * EnemyStatusMultifly));
+                character.AttackPower = Mathf.RoundToInt(character.AttackPower * EnemyStatusMultifly);
             }
         }
         {
@@ -527,12 +550,13 @@ public class GameManager : ManagerBase
             {
                 if (character)
                 {
-                    character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
-                    character.AttackPower = Mathf.RoundToInt(character.AttackPower * (1 + PanicLevel * _mapData.addMultifly));
+                    character.SetHp(Mathf.RoundToInt(character.MaxHp * EnemyStatusMultifly));
+                    character.AttackPower = Mathf.RoundToInt(character.AttackPower * EnemyStatusMultifly);
                 }
             }
         }
         _enemySpawnList.Add(enemy);
+        return enemy;
     }
     public GameObject GetRandomEnemy()
     {
@@ -597,6 +621,7 @@ public class GameManager : ManagerBase
 
     IEnumerator CorPlayBeyondDeath()
     {
+        DeathCount++;
         if (_dark == null) 
             _dark = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Dark").gameObject.GetComponent<SpriteRenderer>();
 
@@ -627,7 +652,11 @@ public class GameManager : ManagerBase
             yield return null;
         }
         IsStartBeyondDead = true;
-
+        if (_helpBox)
+        {
+            Destroy(_helpBox);
+            _helpBox = null;
+        }
         foreach (var enemy in _enemySpawnList)
         {
             Managers.GetManager<ResourceManager>().Destroy(enemy);
@@ -646,21 +675,32 @@ public class GameManager : ManagerBase
             yield return new WaitForSeconds(0.3f);
         }
 
+        Card card = Managers.GetManager<CardManager>().GetCard(CardName.노잣돈);
+        {
+            if(card != null && card.rank >= 0)  
+            {
+                Money += (card.rank + 1) * 50;
+            }
+        }
+
+
         List<GameObject> npcList = new List<GameObject>();
         
-
-        Card card = Managers.GetManager<CardManager>().GetCard(CardName.자판기강화);
+        card = Managers.GetManager<CardManager>().GetCard(CardName.자판기강화);
         {
+            
             GameObject go = null;
-            if (card.rank < 0)
+            if (card == null || card.rank < 0)
             {
                 go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/VendingMechineLv0");
             }
             else
             {
                 int lv = card.rank + 1;
+                
                 go = Managers.GetManager<ResourceManager>().Instantiate($"Prefabs/Event/VendingMechineLv{lv}");
             }
+
 
 
             go.transform.position = _girl.transform.position + Vector3.right * 70;
@@ -705,6 +745,8 @@ public class GameManager : ManagerBase
         time = 0;
         _farDistance = 0;
         IsStartBeyondDead = false;
+        _panicLevel = 0;
+        Mental = 100;
         while (time < 3)
         {
             time += Time.deltaTime;

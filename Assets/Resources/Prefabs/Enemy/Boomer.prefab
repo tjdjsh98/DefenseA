@@ -1916,10 +1916,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 30
-  _hp: 30
-  _speed: 10
-  _standing: 0
+  _maxHp: 1000
+  _hp: 1000
+  _speed: 12
+  _standing: 20
   <AttackPower>k__BackingField: 8
   _jumpPower: 10
   IsNotInstantlyDie: 0

@@ -8,12 +8,12 @@ public class CreatureUpgrader : MonoBehaviour
 
     public void IncreaseCreatureAttackPower()
     {
-        Managers.GetManager<GameManager>().Creature.AttackPower += 1;
+        Managers.GetManager<GameManager>().Creature.AttackPower += 10;
         _isFinish = true;
     }
     public void IncreaseCreatureMaxHp()
     {
-        Managers.GetManager<GameManager>().Creature.SetHp(Managers.GetManager<GameManager>().Creature.MaxHp + 10);
+        Managers.GetManager<GameManager>().Creature.SetHp(Managers.GetManager<GameManager>().Creature.MaxHp + 100);
         _isFinish = true;
     }
     public void IncreaseCreatureAttackSpeed()
@@ -23,7 +23,7 @@ public class CreatureUpgrader : MonoBehaviour
     }
     public void IncreaseCreatureHpGegeneration()
     {
-        Managers.GetManager<GameManager>().Creature.IncreasedHpRegeneration+= 0.5f;
+        Managers.GetManager<GameManager>().Creature.IncreasedHpRegeneration+= 5f;
         _isFinish = true;
     }
 }

@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Security;
-using Unity.VisualScripting.ReorderableList;
-using UnityEditor;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -60,10 +57,6 @@ public class Inventory
     float _lightingRodActiveTime;
     float _lightingRodTime;
 
-    // 피묻은뼈목걸이
-    bool _isActiveBloodyBoneNecklace = false;
-    float _bloodyBoneNecklaceTime;
-
     // 탁한 잎
     public int CloudyLeafActiveCount = 0;
     public float _cloudyLeafDuration = 10;
@@ -85,7 +78,7 @@ public class Inventory
         _lightingRodTime += Time.deltaTime;
         if (_lightingRodActiveTime <= _lightingRodTime)
         {
-            _lightingRodActiveTime = Random.Range(30, 40);
+            _lightingRodActiveTime = Random.Range(10, 20);
             _lightingRodTime= 0;
 
             GameObject go = Managers.GetManager<GameManager>().GetRandomEnemy();
@@ -235,29 +228,18 @@ public class Inventory
             switch (itemData.ItemName)
             {
              
-                case ItemName.네번째손:
-                    Player.GirlAbility.IncreasedReloadSpeedPercentage += 20;
-                    break;
-              
-                case ItemName.손트리:
-                    Managers.GetManager<GameManager>().MentalAccelerationPercentage += 20;
-                    break;
+           
                 case ItemName.피뢰침:
-                    _lightingRodActiveTime = Random.Range(2, 4);
+                    _lightingRodActiveTime = Random.Range(10, 20);
                     _isActiveLightingRod = true;
                     break;
-               
                 case ItemName.망각의서:
                     RemoveItem(GetPossessRandomItem((data) => { return data.ItemName != ItemName.망각의서; }));
                     break;
-                case ItemName.피묻은뼈목걸이:
-                    _isActiveBloodyBoneNecklace= true;
+                case ItemName.아르라제코인:
+                    Managers.GetManager<GameManager>().EnableRestockCount++;
                     break;
-              
-                case ItemName.부서진약지:
-                    Managers.GetManager<GameManager>().MentalAccelerationPercentage += 20f;
-                    break;
-             
+
             }
             if (itemData is StatusUpItemData data)
             {
@@ -273,22 +255,12 @@ public class Inventory
         {
             switch (itemData.ItemName)
             {
-              
-                case ItemName.네번째손:
-                    Player.GirlAbility.IncreasedReloadSpeedPercentage -= 20;
-                    break;
-             
-                case ItemName.손트리:
-                    Managers.GetManager<GameManager>().MentalAccelerationPercentage -= 20;
-                    break;
                 case ItemName.피뢰침:
                     if (GetItemCount(itemData) <= 0)
                         _isActiveLightingRod = false;
                     break;
-          
-                case ItemName.피묻은뼈목걸이:
-                    if(GetItemCount(ItemName.피묻은뼈목걸이) <= 0)
-                        _isActiveBloodyBoneNecklace = false;
+                case ItemName.아르라제코인:
+                    Managers.GetManager<GameManager>().EnableRestockCount--;
                     break;
             
            
@@ -309,6 +281,11 @@ public class Inventory
     {
         if (!_itemCount.ContainsKey(itemName)) return 0;
         return _itemCount[itemName];
+    }
+
+    public Dictionary<ItemName,int> GetItemList()
+    {
+        return _itemCount;
     }
     public void ApplyStatus(StatusUpItemData statusUpItemData)
     {

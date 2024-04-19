@@ -13,8 +13,8 @@ public class ThrowProjectile : MonoBehaviour
     float _fireTime;
     [SerializeField]float _fireDelay = 1f;
     [SerializeField] float _fireCoolTime = 3;
-
     [SerializeField] int _fireMaxCount = 3;
+    [SerializeField] Define.ProjectileName _projectileName;
     int _fireCount = 0;
     private void Awake()
     {
@@ -44,13 +44,13 @@ public class ThrowProjectile : MonoBehaviour
         {
             if (_fireCount < _fireMaxCount)
             {
-                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)Define.ProjectileName.Parabola);
-
+                Projectile projectile = Managers.GetManager<ResourceManager>().Instantiate<Projectile>((int)_projectileName);
                 if (projectile != null)
                 {
+                    Vector3 destionationPosition = _enemyAI.Target.GetCenter() + _enemyAI.Target.MySpeed * (_enemyAI.Target.GetCenter() - transform.position).magnitude/ _fireSpeed;
                     projectile.transform.position = transform.position;
                     projectile.Init(5,_fireSpeed, _character.AttackPower, Define.CharacterType.Player);
-                    projectile.Fire(_character, _enemyAI.Target.GetCenter() - transform.position);
+                    projectile.Fire(_character, destionationPosition -  transform.position);
                 }
                 _fireCount++;
             }

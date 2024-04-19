@@ -24,15 +24,14 @@ public class SporeEgg : MonoBehaviour
         {
             _elasepdTime += Time.deltaTime;
 
-            if(_elasepdTime> 5)
+            if(_elasepdTime>3)
             {
                 for (int i = 0; i < 3; i++)
                 {
-                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Bat);
-                    EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
+                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.WhiteBat);
+                    GameObject enemy = Managers.GetManager<GameManager>().GenerateCharacter(enemyOrigin.gameObject, transform.position);
                     if (enemy)
                     {
-                        enemy.transform.position = transform.position;
                         enemy.GetComponent<Character>().AddForce(Random.insideUnitCircle * 200);
                     }
                     

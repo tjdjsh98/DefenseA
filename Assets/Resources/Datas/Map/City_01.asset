@@ -28,35 +28,42 @@ MonoBehaviour:
     enemyPreset: {fileID: 0}
     distance: 400
   mentalWave:
-  - genTime: 8
+  - genTime: 10
     multiply: 1
     genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: -1
     enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
     genMentalLevelMore: 0
-    genMentalLevelLess: 10
-  - genTime: 20
+    genMentalLevelLess: 9999
+  - genTime: 10
     multiply: 1
     genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: -1
     enemyPreset: {fileID: 8399446367747211791, guid: d39213a551f8ed54c8e3febd3731e9d6, type: 3}
     genMentalLevelMore: 1
-    genMentalLevelLess: 999
-  - genTime: 20
+    genMentalLevelLess: 9999
+  - genTime: 10
     multiply: 1
     genLocalPosition: {x: 80, y: 0, z: 0}
     enemyName: -1
     enemyPreset: {fileID: 3835410314699287608, guid: 4246aaf2e7756c34f9e946138c2a4d7e, type: 3}
     genMentalLevelMore: 2
     genMentalLevelLess: 99999
-  - genTime: 20
+  - genTime: 10
     multiply: 1
     genLocalPosition: {x: 80, y: 0, z: 0}
-    enemyName: 17
-    enemyPreset: {fileID: 0}
-    genMentalLevelMore: 0
-    genMentalLevelLess: 0
-  mapSize: 3000
+    enemyName: -1
+    enemyPreset: {fileID: 3835410314699287608, guid: 04357de2cd35ef445b6a5ec41cc3f390, type: 3}
+    genMentalLevelMore: 3
+    genMentalLevelLess: 99999
+  - genTime: 10
+    multiply: 1
+    genLocalPosition: {x: -80, y: 0, z: 0}
+    enemyName: -1
+    enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
+    genMentalLevelMore: 4
+    genMentalLevelLess: 99999
+  mapSize: 1000
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList: []
   randomEvent:

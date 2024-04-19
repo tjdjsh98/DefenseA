@@ -1,9 +1,5 @@
-using MoreMountains.Feedbacks;
 using System.Collections;
 using System.Collections.Generic;
-using Unity.Loading;
-using UnityEditor.Rendering;
-using UnityEditor.Timeline;
 using UnityEngine;
 
 public class EnemyAI : MonoBehaviour
@@ -134,7 +130,7 @@ public class EnemyAI : MonoBehaviour
 
                 Character character = hit.collider.GetComponent<Character>();
 
-                if (character != null && character.CharacterType == Define.CharacterType.Player)
+                if (character != null && !character.IsDead && character.CharacterType == Define.CharacterType.Player)
                 {
                     _character.Attack(character, _character.AttackPower, _bodyAttackKnockBackPower, character.transform.position - transform.position, hit.point, 0.1f);
                     _bodyAttackList.Add(hit.collider.gameObject);
@@ -209,7 +205,7 @@ public class EnemyAI : MonoBehaviour
 
                         if (hit.collider.gameObject == this.gameObject) continue;
                         Character character = hit.collider.gameObject.GetComponent<Character>();
-                        if (character)
+                        if (character && !character.IsDead)
                         {
                             if (character.CharacterType == Define.CharacterType.Player)
                             {

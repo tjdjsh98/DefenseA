@@ -1,4 +1,5 @@
 using JetBrains.Annotations;
+using MoreMountains.Feedbacks;
 using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections.Generic;
@@ -21,10 +22,13 @@ public class Player : MonoBehaviour, IWeaponUsable
 
 
     [SerializeField] GameObject _frontArm;
+    [SerializeField] GameObject _backArmRoot;
+    [SerializeField] GameObject _backHand;
     [SerializeField] GameObject _backArmIK;
     [SerializeField] GameObject _head;
     [SerializeField] GameObject _body;
 
+    Vector3 _backArmInitPosition;
     public int ReduceReloadTime { set; get; } = 0;
 
     [SerializeField] float _initHeadAngle;
@@ -75,6 +79,7 @@ public class Player : MonoBehaviour, IWeaponUsable
         _weaponSwaper = GetComponent<WeaponSwaper>();
         _weaponSwaper.Init();
 
+        _backArmInitPosition = _backArmRoot.transform.localPosition;
         for (int i = 0; i < 3; i++)
         {
             if (_weaponSwaper.GetWeapon(i) != null)
@@ -165,13 +170,6 @@ public class Player : MonoBehaviour, IWeaponUsable
             _rigidbody.AddForce(Vector2.up * _power,ForceMode2D.Impulse);
             _bounce = false;
         }
-        //// 임시 공격
-
-        //if (Input.GetMouseButtonDown(1) && !_isSliding)
-        //{
-        //    _character.IsAttack = true;
-        //    _animator.SetTrigger("MeleeAttack");
-        //}
 
         _girlAbility.AbilityUpdate();
 
@@ -181,25 +179,25 @@ public class Player : MonoBehaviour, IWeaponUsable
         RotateBody();
         CheckInteractable();
 
-        // 웨일 테스트
-        if (Input.GetKeyDown(KeyCode.T))
-        {
-            Vector3? top = Managers.GetManager<GameManager>().GetGroundTop(transform.position);
-            if (top.HasValue)
-            {
-                Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.BlackWhale);
-                effect.SetAttackProperty(_character, 10, 50, 0.2f, Define.CharacterType.Enemy);
-                effect.SetMultiflySize(3);
-                effect.Play(top.Value);
-            }
-        }
+        //// 웨일 테스트
+        //if (Input.GetKeyDown(KeyCode.T))
+        //{
+        //    Vector3? top = Managers.GetManager<GameManager>().GetGroundTop(transform.position);
+        //    if (top.HasValue)
+        //    {
+        //        Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.BlackWhale);
+        //        effect.SetAttackProperty(_character, 10, 50, 0.2f, Define.CharacterType.Enemy);
+        //        effect.SetMultiflySize(3);
+        //        effect.Play(top.Value);
+        //    }
+        //}
 
         // 눈 깜빡임
         _eyeCloseElasepdTime += Time.deltaTime;
         if(_eyeCloseElasepdTime > _eyeCloseTime)
         {
             _eyeCloseElasepdTime = 0;
-            _eyeCloseTime = UnityEngine.Random.Range(6f,7f);
+            _eyeCloseTime = UnityEngine.Random.Range(3f,4f);
             _eyeClose.PlayRound(3
                 );
         }
@@ -435,6 +433,14 @@ public class Player : MonoBehaviour, IWeaponUsable
         _frontArm.transform.rotation = Quaternion.Euler(0, 0, (transform.lossyScale.x > 0 ? angle  : -angle ));
         if (_weaponSwaper.CurrentWeapon && _weaponSwaper.CurrentWeapon.HandlePosition)
         {
+            if (_weaponSwaper.WeaponIndex == 1)
+            {
+                _backArmRoot.transform.localPosition = new Vector3(0.4009054f, 0.08444482f, 0);
+            }
+            else
+            {
+                _backArmRoot.transform.localPosition = _backArmInitPosition ;
+            }
             _backArmIK.transform.position = _weaponSwaper.CurrentWeapon.HandlePosition.transform.position;
         }
         float screenWidth = Screen.width;
@@ -463,6 +469,7 @@ public class Player : MonoBehaviour, IWeaponUsable
 
     void OnRightArrowPressed()
     {
+        if (_character && _character.IsDead) return;
         if (_character.IsAttack)
         {
             _isRun = false;
@@ -487,6 +494,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     }
     void OnLeftArrowPressed()
     {
+        if (_character && _character.IsDead) return;
         if (_character.IsAttack)
         {
             _isRun = false;
@@ -510,6 +518,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     }
     void OnUpArrowPressed()
     {
+        if (_character && _character.IsDead) return;
         if (!_character.IsEnableFly) return;
         if (_character.IsAttack)
         {
@@ -534,6 +543,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     }
     void OnDownArrowPressed()
     {
+        if (_character && _character.IsDead) return;
         if (!_character.IsEnableFly) return;
 
         if (_character.IsAttack)
@@ -561,6 +571,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     void UseWeapon()
     {
         if (Time.timeScale == 0) return;
+        if (_character && _character.IsDead) return;
 
         _isFire= true;
 
@@ -573,8 +584,9 @@ public class Player : MonoBehaviour, IWeaponUsable
     void AutoUseWeapon()
     {
         if (Time.timeScale == 0) return;
+        if (_character && _character.IsDead) return;
 
-        _isFire= true;
+        _isFire = true;
 
 
         _character.TurnBody(Managers.GetManager<InputManager>().MouseWorldPosition - transform.position);
