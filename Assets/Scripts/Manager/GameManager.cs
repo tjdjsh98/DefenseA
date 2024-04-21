@@ -1,14 +1,10 @@
-using DuloGames.UI;
-using Lofelt.NiceVibrations;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Rendering;
 using UnityEngine.SceneManagement;
-using UnityEngine.TextCore.Text;
 using Random = UnityEngine.Random;
 
 public class GameManager : ManagerBase
@@ -35,6 +31,7 @@ public class GameManager : ManagerBase
     [SerializeField] bool _removeItem;
     [SerializeField] float _timeScale = 1;
     [SerializeField] bool _addSkill;
+    [SerializeField] bool _addNpcCard;
     
     [Header("게임 진행")]
     [SerializeField] bool _stop;
@@ -390,6 +387,11 @@ public class GameManager : ManagerBase
             Managers.GetManager<UIManager>().GetUI<UICardSelection>().OpenSkillCardSelection();
             _addSkill = false;
         }
+        if (_addNpcCard)
+        {
+            Managers.GetManager<UIManager>().GetUI<UICardSelection>().OpenNpcSelection();
+            _addNpcCard = false;
+        }
     }
     void TimeWave()
     {
@@ -562,6 +564,25 @@ public class GameManager : ManagerBase
     {
         return _enemySpawnList.GetRandom();
     }
+    public GameObject GetCloseEnemyFromGirl()
+    {
+        GameObject go = null;
+        float distance = 0;
+        foreach (var enemy in _enemySpawnList)
+        {
+            if (go == null)
+            {
+                go = enemy;
+                distance = (go.transform.position - Girl.transform.position).magnitude;
+            }
+            else if((go.transform.position - Girl.transform.position).magnitude > (enemy.transform.position - Girl.transform.position).magnitude)
+            {
+                go = enemy;
+                distance = (go.transform.position - Girl.transform.position).magnitude;
+            }
+        }
+        return go;
+    }
     int count = 0;
     public void LoadScene(MapData mapData)
     {
@@ -665,6 +686,9 @@ public class GameManager : ManagerBase
         Vector3 deadPosition = _girl.transform.position;
 
         Player.PlayRevive();
+        if (_creature.IsDead)
+            CreatureAI.ForceRevive();
+
 
         yield return new WaitForSeconds(1f);
         UICardSelection uiCardSelection = Managers.GetManager<UIManager>().GetUI<UICardSelection>();

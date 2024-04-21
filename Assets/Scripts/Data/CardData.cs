@@ -47,6 +47,7 @@ public enum CardName
     자판기강화,
     괴수나무,
     노잣돈,
+    도박기추가,
     재입고,
     할인판매,
     END,

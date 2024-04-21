@@ -33,7 +33,7 @@ public class GirlAbility
     // 송곳니
     public bool IsActiveCanine { get; set; }
     public float _canineElasepdTime;
-    public float _canineDurationTime = 5;
+    public float _canineDurationTime = 10;
     SkillSlot _canineSlot;
 
     #region 아이템 능력
@@ -45,6 +45,11 @@ public class GirlAbility
 
     // 문들어진 송곳니
     int _crumbledCanineHuntingCount = 0;
+
+    // 오발사 탄창
+
+    // 부서진약지
+    float _brokenRingFingerIncreaseAttackPowerPercentage = 30;
 
     #endregion
 
@@ -65,6 +70,10 @@ public class GirlAbility
         if (_inventory.GetItemCount(ItemName.피묻은뼈목걸이) > 0)
         {
             Creature.Hp += 10 * _inventory.GetItemCount(ItemName.피묻은뼈목걸이);
+        }
+        if (_inventory.GetItemCount(ItemName.부서진약지) > 0)
+        {
+            _inventory.IsActiveBrokenRingFinger = false;
         }
     }
 
@@ -178,7 +187,6 @@ public class GirlAbility
                     effect.SetProperty("Radius", 10f);
                     effect.Play(point);
                 }
-
             }
         }
     }
@@ -287,6 +295,15 @@ public class GirlAbility
             if (_player.WeaponSwaper.CurrentWeapon.CurrentAmmo == 1)
             {
                 percentage += _inventory.GetItemCount(ItemName.마지막탄환) * 100f;
+            }
+        }
+
+        // 아이템 : 부서진 약지
+        if (_inventory.GetItemCount(ItemName.부서진약지) > 0)
+        {
+            if (_inventory.IsActiveBrokenRingFinger)
+            {
+                percentage += _brokenRingFingerIncreaseAttackPowerPercentage * _inventory.GetItemCount(ItemName.부서진약지);
             }
         }
 

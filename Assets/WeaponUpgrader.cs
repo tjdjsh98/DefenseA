@@ -8,9 +8,18 @@ public class WeaponUpgrader : MonoBehaviour
     int _weaponIndex;
     public Weapon Weapon { get; set; }
 
-    [field:SerializeField] public int UpgradePrice { get { return Weapon == null ? _upgradePrice : _upgradePrice * (Weapon.UpgradeCount+1); } }
-    public int TotalPrice { private set; get; }
     int _upgradePrice = 30;
+    public int UpgradePrice { 
+        get {
+            int price = Weapon == null ? _upgradePrice : _upgradePrice * (Weapon.UpgradeCount + 1);
+            Card card = Managers.GetManager<CardManager>().GetCard(CardName.할인판매);
+            if (card != null)
+                price = Mathf.RoundToInt(price * (100 - (card.rank + 1) * 5) / 100f);
+
+            return price;
+        } 
+    }
+    public int TotalPrice { private set; get; }
 
     public int IncreasingAttackPowerPercentage { get; set; } = 20;
     public float IncreasingKnockBackPowerPercentage { get; set; } = 30;

@@ -475,7 +475,8 @@ public class Character : MonoBehaviour,IHp
 
     public void SetVelocity(Vector2 velcoity)
     {
-        _rigidBody.velocity = velcoity;
+        Vector2 vel = velcoity*((100-_standing)/100f);
+        _rigidBody.velocity = vel;
     }
     public void Jump()
     {

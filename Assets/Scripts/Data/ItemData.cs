@@ -10,6 +10,7 @@ public class ItemData : ScriptableObject, ITypeDefine
     [field: SerializeField] public Sprite Image { set; get; }
     [field:SerializeField][field:TextArea] public string Description { set; get; }
     [field: SerializeField] public int Rank { set; get; }
+    [field: SerializeField] public bool IsUnique { set; get; }
     public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 80 : Rank == 3 ? 150 : 300;
     public int GetEnumToInt()
     {
@@ -35,7 +36,7 @@ public enum ItemName
     부서진건전지,
     퀵드로우,
     문들어진송곳니,
-    오발사탄창,
+    과적재탄창,
     검붉은나무파편,
     손트리,
     피뢰침,

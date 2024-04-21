@@ -250,18 +250,25 @@ public class Weapon : MonoBehaviour, ITypeDefine
         if (_isAllReloadAmmo)
         {
             _isReload = false;
-            
-            _currentAmmo = _maxAmmo;
+
+            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.°úÀûÀçÅºÃ¢) > 0 && Random.Range(0, 100) < 10)
+                _currentAmmo = Mathf.RoundToInt(_maxAmmo * 1.5f);
+            else
+                _currentAmmo = _maxAmmo;
             _reloadElapsed = 0;
             if (_reloadGauge && isHideGauge)
                 _reloadGauge.gameObject.SetActive(false);
         }
         else
         {
-            _currentAmmo++;
+            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.°úÀûÀçÅºÃ¢) > 0 && Random.Range(0,100)<10)
+                _currentAmmo += 2;
+            else
+                _currentAmmo ++;
+
             if (_currentAmmo >= _maxAmmo)
             {
-                _currentAmmo = _maxAmmo;
+              
                 _isReload = false;
                 if (_reloadGauge && isHideGauge)
                     _reloadGauge.gameObject.SetActive(false);

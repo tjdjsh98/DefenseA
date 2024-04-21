@@ -63,6 +63,9 @@ public class CreatureAbility
     [SerializeField]Define.Range _brokenBatteryRange;
     float _brokenBatteryCoolTime = 10;
     float _brokenBatteryElaspedTime = 10;
+
+    // 아이템 : 부서진 약지
+    float _brokenRingFingerIncreaseAttackPowerPercentage = 30;
     #endregion
     public void Init(CreatureAI creatureAI)
     {
@@ -196,6 +199,16 @@ public class CreatureAbility
         {
             percentage -= 50 * _inventory.GetItemCount(ItemName.갈라진손가락);
         }
+
+        // 아이템 : 부서진 약지
+        if (_inventory.GetItemCount(ItemName.부서진약지) > 0)
+        {
+            if (_inventory.IsActiveBrokenRingFinger)
+            {
+                percentage += _brokenRingFingerIncreaseAttackPowerPercentage * _inventory.GetItemCount(ItemName.부서진약지);
+            }
+        }
+
         return percentage;
     }
     public float GetIncreasedAttackSpeedPercentage()
@@ -304,7 +317,7 @@ public class CreatureAbility
 
                 if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                 {
-                    character.AddForce((_creature.transform.position- character.transform.position));               
+                    character.SetVelocity((_creature.transform.position- character.transform.position)*3);               
                 }
                 return false;
             });

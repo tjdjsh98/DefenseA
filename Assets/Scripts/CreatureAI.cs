@@ -137,6 +137,13 @@ public class CreatureAI : MonoBehaviour
             }
         }
     }
+    public void ForceRevive()
+    {
+        _character.Revive();
+        ReviveElasped = 0;
+        _model.gameObject.SetActive(true);
+        transform.position = Managers.GetManager<GameManager>().Player.transform.position;
+    }
     void DefaultAI()
     {
         if (_aiCoroutine != null) return;
@@ -191,7 +198,7 @@ public class CreatureAI : MonoBehaviour
             }
             if (_closeEnemy != null && !_character.IsAttack && !_character.IsStun && !_closeEnemy.IsDead)
             {
-                _character.Move(Vector2.zero);
+                _character.SetVelocity(Vector3.zero);
                 _character.TurnBody(_closeEnemy.transform.position - transform.position);
 
                 _character.SetAnimationSpeed(AttackSpeed);

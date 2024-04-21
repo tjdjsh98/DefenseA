@@ -171,10 +171,11 @@ MonoBehaviour:
   _summonDummy: 0
   _destroyDummy: 0
   _dummyHp: 2222
-  _itemName: 4
+  _itemName: 11
   _addItem: 1
   _removeItem: 0
   _timeScale: 1
+  _addSkill: 1
   _stop: 0
   _mapData: {fileID: 11400000, guid: 1ddeb1cd816973642a738f9036f752be, type: 2}
   MentalAccelerationPercentage: 1
@@ -2375,6 +2376,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5565515321807729406, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
       propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 7403112808804371208, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
+      propertyPath: _backgroundLayerList.Array.size
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7403112808804371208, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}

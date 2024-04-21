@@ -45,13 +45,14 @@ public class CameraController : MonoBehaviour
         _screenSpriteRenderer = transform.Find("ScreenEffect").GetComponent<SpriteRenderer>();
         _initCameraPosition = transform.position;
         _screenSpriteRenderer.material.SetFloat(_cameraSizeID, Camera.main.orthographicSize);
-        _cameraWidth = GetCameraWidth();
-        _screenSpriteRenderer.transform.localScale = new Vector3(_cameraWidth,Camera.main.orthographicSize*2);
 
         OffEffectScreen();
     }
     private void Update()
     {
+        _cameraWidth = GetCameraWidth();
+        _screenSpriteRenderer.transform.localScale = new Vector3(_cameraWidth,Camera.main.orthographicSize*2);
+
         if(_mouseDirection.x >=1)
         {
             _mouseView.x = Mathf.Lerp(_mouseView.x, _expandsionLimit, 0.01f);

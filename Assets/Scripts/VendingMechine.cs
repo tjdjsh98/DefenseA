@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -59,7 +60,6 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     // 확률 0 : 80, 1 : 15, 2 : 5 ,3 :0
     public void RestockShopItems()
     {
-        List<ItemData> datas = new List<ItemData>();
         List<ItemData> itemList = null;
         List<ItemData> itemList0 = Managers.GetManager<GameManager>().RankItemDataList[0].ToList();
         List<ItemData> itemList1 = Managers.GetManager<GameManager>().RankItemDataList[1].ToList();
@@ -68,6 +68,10 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
         for (int i = 0; i < 5; i++)
         {
+            if (ShopItemList.Count > i && ShopItemList[i].isSaled) continue;
+
+            ItemData itemData = null;
+
             float randomValue = Random.Range(0, 100);
             if (randomValue < rank0Probability)
             {
@@ -88,41 +92,41 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
             if (itemList.Count == 0)
             {
-                datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트));
+                itemData = Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트);
             }
             else
             {
                 // 첫 칸은 무조건 무기
                 if (i == 0)
                 {
-                    ItemData weaponData = itemList.Where(data => { return data.ItemType == ItemType.Weapon; }).ToList().GetRandom();
-                    if (weaponData != null)
-                    {
-                        datas.Add(weaponData);
-                        itemList.Remove(weaponData);
-                    }
+                    itemData = itemList.Where(data => { return data.ItemType == ItemType.Weapon; }).ToList().GetRandom();
+                    if (itemData != null)
+                        itemList.Remove(itemData);
                     else
-                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트));
+                        itemData = Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트);
+
                 }
                 // 나머지는 무기가 아닌 것으로
                 else
                 {
 
-                    ItemData itemData = itemList.Where(data => { return data.ItemType != ItemType.Weapon; }).ToList().GetRandom();
+                    itemData = itemList.Where(data => { return data.ItemType != ItemType.Weapon; }).ToList().GetRandom();
                     if (itemData != null)
                     {
-                        datas.Add(itemData);
                         itemList.Remove(itemData);
+
+                        if(itemData.IsUnique)
+                            Managers.GetManager<GameManager>().RankItemDataList[itemData.Rank].Remove(itemData);
                     }
                     else
-                        datas.Add(Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트));
+                        itemData = Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트);
                 }
             }
-        }
-        ShopItemList.Clear();
-        foreach (var data in datas)
-        {
-            ShopItemList.Add(new ShopItem() { isSaled = false, shopItemData = data });
+            if (ShopItemList.Count <= i)
+            {
+                ShopItemList.Add(null);
+            }
+            ShopItemList[i] = new ShopItem() { isSaled = false, shopItemData = itemData };
         }
         Refresh();
 

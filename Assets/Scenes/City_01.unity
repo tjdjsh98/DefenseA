@@ -350,6 +350,10 @@ PrefabInstance:
       value: '[Camera]-----------'
       objectReference: {fileID: 0}
     - target: {fileID: 4696884016832904647, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
+      propertyPath: orthographic size
+      value: 20
+      objectReference: {fileID: 0}
+    - target: {fileID: 4696884016832904647, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
       propertyPath: m_CullingMask.m_Bits
       value: 4294967295
       objectReference: {fileID: 0}
@@ -525,7 +529,7 @@ MonoBehaviour:
   _summonDummy: 0
   _destroyDummy: 0
   _dummyHp: 3
-  _itemName: 11
+  _itemName: -1
   _addItem: 0
   _removeItem: 0
   _timeScale: 1
@@ -1293,7 +1297,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 53.8, y: -7.5}
+  m_AnchoredPosition: {x: 53.8, y: -15.1}
   m_SizeDelta: {x: 200, y: 50}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &564019347
@@ -1344,8 +1348,8 @@ MonoBehaviour:
   m_faceColor:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontSize: 36
-  m_fontSizeBase: 36
+  m_fontSize: 24.8
+  m_fontSizeBase: 24.8
   m_fontWeight: 400
   m_enableAutoSizing: 0
   m_fontSizeMin: 18
@@ -5063,7 +5067,7 @@ Transform:
   m_GameObject: {fileID: 2053906860}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 59.2, y: 10, z: 0}
+  m_LocalPosition: {x: 59.2, y: 5, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:

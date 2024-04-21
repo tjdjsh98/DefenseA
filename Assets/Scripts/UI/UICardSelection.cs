@@ -1,13 +1,9 @@
 using MoreMountains.Feedbacks;
-using MoreMountains.Tools;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using TMPro;
 using Unity.VisualScripting;
-using Unity.VisualScripting.Antlr3.Runtime;
-using UnityEditor;
-using UnityEditor.Rendering;
 using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.Rendering.DebugUI;
@@ -16,6 +12,7 @@ public class UICardSelection : UIBase
 {
     [SerializeField] List<GameObject> _cardList;
     [SerializeField] List<MMF_Player> _playerList;
+    [SerializeField] GameObject _rerollButton;
 
     List<Card> _cashDatas;
 
@@ -30,6 +27,10 @@ public class UICardSelection : UIBase
 
     static int _dryValueID = Shader.PropertyToID("_DryValue");
 
+    bool _isSelectingReplaceSkill;
+    int _replaceSkillCardIndex;
+    [SerializeField] TextMeshProUGUI _skillChangeText = new TextMeshProUGUI();
+    [SerializeField] List<GameObject> _skillSlotList = new List<GameObject>();
     public override void Init()
     {
         Close();
@@ -114,7 +115,12 @@ public class UICardSelection : UIBase
             }
         }
         Refresh();
-
+        if (_cashDatas.Count <= 0)
+        {
+            Close();
+            return;
+        }
+        Managers.GetManager<InputManager>().UIMouseDownHandler += OnUIMouseDown;
 
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
 
@@ -145,8 +151,13 @@ public class UICardSelection : UIBase
             }
         }
         Refresh();
+        if (_cashDatas.Count <= 0)
+        {
+            Close();
+            return;
+        }
 
-
+        Managers.GetManager<InputManager>().UIMouseDownHandler += OnUIMouseDown;
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
 
         gameObject.SetActive(true);
@@ -172,10 +183,17 @@ public class UICardSelection : UIBase
                 _cashDatas.RemoveAt(random);
             }
         }
+
+        if (_cashDatas.Count <= 0)
+        {
+            Close();
+            return;
+        }
         Refresh();
 
 
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
+        Managers.GetManager<InputManager>().UIMouseDownHandler += OnUIMouseDown;
 
         gameObject.SetActive(true);
         StartCoroutine(CorOpenCards());
@@ -184,7 +202,9 @@ public class UICardSelection : UIBase
     {
         Time.timeScale = 1;
         gameObject.SetActive(false);
+        Managers.GetManager<InputManager>().UIMouseDownHandler -= OnUIMouseDown;
         Managers.GetManager<InputManager>().UIMouseHoverHandler -= OnUIMouseHover;
+        _skillChangeText.gameObject.SetActive(false);
 
         foreach (var card in _cardList)
             card.transform.Find("Model").localScale = new Vector3(-1, 1, 1);
@@ -248,9 +268,55 @@ public class UICardSelection : UIBase
         }
     }
 
+    // 카드와 리롤 버튼을 숨깁니다.
+    void HideCards()
+    {
+        foreach(var card in _cardList)
+        {
+            card.gameObject.SetActive(false);
+        }
+        _rerollButton.SetActive(false);
+    }
+    void ShowCards()
+    {
+        foreach (var card in _cardList)
+        {
+            card.gameObject.SetActive(true);
+        }
+        _rerollButton.SetActive(true);
+    }
     public void SelectCard(int cardIndex)
     {
-        Managers.GetManager<CardManager>().AddCard(_cardSelectionList[cardIndex]);
+        if (_isSelectingReplaceSkill) return;
+
+        // 카드가 액티브 카드이고
+        // 이미 존재한 카드가 아니고
+        // 카드 슬롯이 모두 차 있다면 카드 슬롯 중 하나를 교체
+        if (_cardSelectionList[cardIndex].cardData.IsActiveAbility)
+        {
+            bool _isExist = false;
+            for (int i = 0; i < 4; i++)
+            {
+                if (Managers.GetManager<CardManager>().GetSkillSlot(i).card == _cardSelectionList[cardIndex])
+                {
+                    _isExist = true;
+                    break;
+                }
+            }
+            if (!_isExist && Managers.GetManager<CardManager>().GetSkillSlot(3).card != null)
+            {
+                _isSelectingReplaceSkill = true;
+                _skillChangeText.gameObject.SetActive(true);
+                _replaceSkillCardIndex = cardIndex;
+                HideCards();
+                return;
+            }
+        }
+        // 카드 슬롯이 비어 있다면 즉시 채운다.
+        else
+        {
+            Managers.GetManager<CardManager>().AddCard(_cardSelectionList[cardIndex]);
+        }
 
         Close();
     }
@@ -269,6 +335,31 @@ public class UICardSelection : UIBase
         Refresh();
     }
 
+    private void OnUIMouseDown(List<GameObject> list)
+    {
+        if (!_isSelectingReplaceSkill) return;
+
+        bool isReplace = false;
+        for(int i = 0; i < _skillSlotList.Count; i++)
+        {
+            if (list.Contains(_skillSlotList[i]))
+            {
+                Managers.GetManager<CardManager>().RemoveSkill(i);
+                Managers.GetManager<CardManager>().AddCard(_cardSelectionList[_replaceSkillCardIndex]);
+                isReplace = true;
+                break;
+            }
+        }
+
+        _isSelectingReplaceSkill = false;
+        _skillChangeText.gameObject.SetActive(false);
+        _replaceSkillCardIndex = -1;
+        ShowCards();
+        if (isReplace)
+        {
+            Close();
+        }
+    }
     private void OnUIMouseHover(List<GameObject> list)
     {
         foreach (GameObject go in list)

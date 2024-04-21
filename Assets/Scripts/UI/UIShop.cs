@@ -161,8 +161,13 @@ public class UIShop : UIBase
             _itemDescription.transform.position = slot.transform.position + Vector3.right * 10;
         else
             _itemDescription.transform.position = slot.transform.position - Vector3.right * 10;
+
+        string description = _openShop.ShopItemList[index].shopItemData.Description;
+        description += "\n ¿Ø¥œ≈©";
+
+
         _itemNameText.text = _openShop.ShopItemList[index].shopItemData.ItemName.ToString();
-        _itemDescriptionText.text = _openShop.ShopItemList[index].shopItemData.Description;
+        _itemDescriptionText.text = description;
     }
 
     void OnUIMouseHover(List<GameObject> list)

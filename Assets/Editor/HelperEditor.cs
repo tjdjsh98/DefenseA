@@ -71,6 +71,7 @@ public class HelperEditor : EditorWindow
         "\n    [field: SerializeField] public Sprite Image {{ set; get; }}" +
         "\n    [field:SerializeField][field:TextArea] public string Description {{ set; get; }}" +
         "\n    [field: SerializeField] public int Rank {{ set; get; }}" +
+        "\n    [field: SerializeField] public bool IsUnique {{ set; get; }}" +
         "\n    public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 80 : Rank == 3 ? 150 : 300;" +
         "\n    public int GetEnumToInt()" +
         "\n    {{" +
@@ -305,6 +306,7 @@ public class HelperEditor : EditorWindow
                 data.AccelMentalDownPercentage = ParseFloat(words[16]);
                 data.IncreasingReloadSpeedPercentage = ParseFloat(words[19]);
                 data.ReviveTimeDown = ParseFloat(words[20]);
+                data.IsUnique = ParseBoolean(words[21]);
 
                 AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
                 AssetDatabase.SaveAssets();

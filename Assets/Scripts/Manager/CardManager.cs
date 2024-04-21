@@ -73,6 +73,23 @@ public class CardManager : ManagerBase
 
     }
 
+    public void RemoveSkill(int index)
+    {
+        SkillSlot skillSlot = _skillSlotList[index];
+        if (skillSlot.card != null)
+        {
+            Card card = skillSlot.card;
+            card.rank = -1;
+            if (!_remainCardSelectionDic.ContainsKey(card.cardData.CardName))
+            {
+                _remainCardSelectionDic.Add(card.cardData.CardName, card);
+            }
+            skillSlot.card = null;
+            skillSlot.skillElapsed = 0;
+            skillSlot.isActive = false;
+        }
+    }
+
     #region 카드 관련 함수
 
     public Card GetRandomCardSelectionData()
@@ -132,6 +149,11 @@ public class CardManager : ManagerBase
             _remainCardSelectionDic.Remove(card.cardData.CardName);
         }
         ApplyCardAbility(card);
+    }
+
+    public SkillSlot GetSkillSlot(int index)
+    {
+        return _skillSlotList[index];
     }
     public void RemoveCard(Card card)
     {
@@ -336,7 +358,6 @@ public class CardManager : ManagerBase
             }
         }
 
-        Debug.Log(index);
 
         if (index < 0 || _skillSlotList.Count <= index) return;
 

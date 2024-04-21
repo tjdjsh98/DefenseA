@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using UnityEngine;
 
 public class Boar : MonoBehaviour
@@ -19,8 +20,7 @@ public class Boar : MonoBehaviour
     float _dashCoolTimeElapsed = 0;
 
     [SerializeField] float _dashDelayTime = 2;
-    float _dashTime;
-    float _dashDuration = 1;
+    Vector3 _dashStartPosition;
     Vector3 _dashDirection;
 
     [SerializeField] GameObject[] _injectionPositions;
@@ -90,6 +90,8 @@ public class Boar : MonoBehaviour
             if (_enemyAI.Target != null && _enemyAI.IsTargetInRange)
             {
                 _sequence++;
+                _character.IsEnableTurn = false;
+                _character.IsAttack = true;
                 _dashDirection = _enemyAI.Target.transform.position - transform.position;
             }
         }
@@ -107,16 +109,15 @@ public class Boar : MonoBehaviour
         }
         else if (_sequence == 12)
         {
-            _character.IsAttack = true;
             _preSpeed = _character.Speed;
             _character.SetSpeed(_dashSpeed);
             _character.IsSuperArmer = true;
+            _dashStartPosition = transform.position;
             _sequence++;
             _character.SetVelocity(new Vector2(_dashSpeed * transform.lossyScale.x, 0));
         }
         else if (_sequence == 13)
         {
-            _dashTime += Time.deltaTime;
             _character.Move(_dashDirection);
             Util.RangeCastAll2D(gameObject, _enemyAI.AttackRange, Define.CharacterMask,
                 (hit) =>
@@ -124,19 +125,19 @@ public class Boar : MonoBehaviour
                     if (_dashAttackList.Contains(hit.collider.gameObject)) return false;
                     _dashAttackList.Add(hit.collider.gameObject);
                     Character character = hit.collider.GetComponent<Character>();
-                    if (character != null&&!character.IsDead && _character.CharacterType != character.CharacterType)
+                    if (character != null && !character.IsDead && _character.CharacterType != character.CharacterType)
                     {
                         _character.Attack(character, _character.AttackPower, 100, new Vector3(_dashDirection.x > 0 ? 1 : -1, 1, 0), hit.point, 0.5f);
                     }
                     return false;
                 });
 
-        if (_dashTime >= _dashDuration)
+            if (Mathf.Abs(_dashStartPosition.x - transform.position.x) > 50)
             {
                 _character.SetSpeed(_preSpeed);
-                _dashTime = 0;
                 _dashCoolTimeElapsed = 0;
                 _character.IsAttack = false;
+                _character.IsEnableTurn = true;
                 _character.IsSuperArmer = false;
                 _sequence = 0;
                 _dashAttackList.Clear();

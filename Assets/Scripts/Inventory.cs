@@ -62,6 +62,8 @@ public class Inventory
     public float _cloudyLeafDuration = 10;
     public float _cloudyLeafTime = 0;
 
+    // 부서진 약지
+    public bool IsActiveBrokenRingFinger { get; set; }
     public void InventoryUpdate()
     {
         HandleLightingRod();
@@ -81,7 +83,7 @@ public class Inventory
             _lightingRodActiveTime = Random.Range(10, 20);
             _lightingRodTime= 0;
 
-            GameObject go = Managers.GetManager<GameManager>().GetRandomEnemy();
+            GameObject go = Managers.GetManager<GameManager>().GetCloseEnemyFromGirl();
 
             if (go != null)
             {
@@ -239,7 +241,9 @@ public class Inventory
                 case ItemName.아르라제코인:
                     Managers.GetManager<GameManager>().EnableRestockCount++;
                     break;
-
+                case ItemName.부서진약지:
+                    IsActiveBrokenRingFinger = true;
+                    break;
             }
             if (itemData is StatusUpItemData data)
             {
@@ -262,8 +266,9 @@ public class Inventory
                 case ItemName.아르라제코인:
                     Managers.GetManager<GameManager>().EnableRestockCount--;
                     break;
-            
-           
+                case ItemName.부서진약지:
+                    IsActiveBrokenRingFinger= false;
+                    break;
             }
             if (itemData is StatusUpItemData data)
             {

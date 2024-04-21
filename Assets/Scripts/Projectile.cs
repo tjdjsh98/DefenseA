@@ -57,7 +57,7 @@ public class Projectile : MonoBehaviour, ITypeDefine
 
     protected virtual void Update()
     {
-        if (_isTouchGround||(Camera.main.transform.position - transform.position).magnitude > 100)
+        if (_isTouchGround||(Camera.main.transform.position - transform.position).magnitude > Managers.GetManager<GameManager>().CameraController.GetCameraWidth()/2 + 10)
         {
             Managers.GetManager<ResourceManager>().Destroy(gameObject);
             _isAttack = false;
