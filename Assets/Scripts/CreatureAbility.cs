@@ -97,7 +97,6 @@ public class CreatureAbility
 
         Util.DrawRangeOnGizmos(_creature.gameObject, _brokenBatteryRange,Color.red);
     }
-
     public void AbilityUpdate()
     {
         //SurvivalInstinct();
@@ -106,6 +105,8 @@ public class CreatureAbility
         _creatureAI.Character.IncreasedHpRegeneration = GetHpRegeneration();
 
         UpdateBrokenBattery();
+
+       
     }
 
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)

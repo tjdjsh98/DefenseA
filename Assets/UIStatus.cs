@@ -1,3 +1,5 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using TMPro;
 using UnityEngine;
@@ -30,9 +32,14 @@ public class UIStatus : UIBase
     #region 무기 장비 변수
     GameObject _weaponFolder;
     WeaponUI _weaponUI = new WeaponUI();
-    
+
     #endregion
 
+
+    //아이템 변수
+    [SerializeField] GameObject _itemSlotFolder;
+    [SerializeField] List<GameObject> _slotList = new List<GameObject>();
+    [SerializeField] List<TextMeshProUGUI> _slotTextList = new List<TextMeshProUGUI>();
     public override void Init()
     {
         _stringBuilder = new StringBuilder();
@@ -107,6 +114,8 @@ public class UIStatus : UIBase
         _equipment2Button.onClick.AddListener(OpenSubWeaponPage);
         _equipment3Button.onClick.RemoveAllListeners();
         _equipment3Button.onClick.AddListener(OpenSpecialWeaponPage);
+
+        RefreshItems();
     }
 
     public void OpenCreaturePage()
@@ -129,6 +138,7 @@ public class UIStatus : UIBase
             _stringBuilder.AppendLine($"{card.cardData.CardName} Rank {card.rank}");
         }
         _abilityTextMesh.text = _stringBuilder.ToString();
+        RefreshItems();
     }
 
     public void OpenMainWeaponPage()
@@ -171,6 +181,37 @@ public class UIStatus : UIBase
 
                 _weaponFolder.gameObject.SetActive(true);
             }
+        }
+    }
+
+    void RefreshItems()
+    {
+        Dictionary<ItemName,int> items = Managers.GetManager<GameManager>().Inventory.GetItemList();
+
+        int index = 0;
+        foreach(var itemName in items.Keys)
+        {
+            GameObject slot = null;
+            TextMeshProUGUI text = null;
+            if (_slotList.Count <= index)
+            {
+                slot = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/UI/UI_Status_ItemSlot");
+                slot.transform.SetParent(_itemSlotFolder.transform);
+                slot.transform.localScale = Vector3.one;
+
+                _slotList.Add(slot);
+                _slotTextList.Add(slot.transform.Find("Text").GetComponent<TextMeshProUGUI>());
+            }
+            slot = _slotList[index];
+            text = _slotTextList[index];
+            text.text = $"{itemName}({items[itemName]})";
+            slot.gameObject.SetActive(true);
+            index++;
+        }
+
+        for (; _slotList.Count > index; index++)
+        {
+            _slotList[index].gameObject.SetActive(false);
         }
     }
 }

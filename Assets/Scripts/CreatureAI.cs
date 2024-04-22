@@ -119,6 +119,7 @@ public class CreatureAI : MonoBehaviour
         //    return;
         //}
 
+      
         DefaultAI();
         _creatureAbility.AbilityUpdate();
     }

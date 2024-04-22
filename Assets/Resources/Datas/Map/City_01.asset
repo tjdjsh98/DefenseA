@@ -28,14 +28,14 @@ MonoBehaviour:
     enemyPreset: {fileID: 0}
     distance: 400
   mentalWave:
-  - genTime: 10
+  - genTime: 6
     multiply: 1
     genLocalPosition: {x: 60, y: 0, z: 0}
     enemyName: -1
     enemyPreset: {fileID: 7424492276017136117, guid: c51dd8917d7c9fc4a95e9a9057f55538, type: 3}
     genMentalLevelMore: 0
     genMentalLevelLess: 0
-  - genTime: 9
+  - genTime: 5
     multiply: 1
     genLocalPosition: {x: 60, y: 0, z: 0}
     enemyName: -1

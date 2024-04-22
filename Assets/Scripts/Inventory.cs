@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.TextCore.Text;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
@@ -64,14 +65,35 @@ public class Inventory
 
     // 부서진 약지
     public bool IsActiveBrokenRingFinger { get; set; }
+
+    // 검은 세포
+    private float _blackCellElapsedTime;
+    private float _blackCellCoolTime;
+
     public void InventoryUpdate()
     {
         HandleLightingRod();
         BloodyBoneNecklace();
         HandleCloudyLeaf();
+        HandleBlackCell();
     }
 
- 
+    private void HandleBlackCell()
+    {
+        if (GetItemCount(ItemName.검은세포) > 0)
+        {
+            _blackCellElapsedTime += Time.deltaTime;
+            if (_blackCellElapsedTime > _blackCellCoolTime)
+            {
+                _blackCellElapsedTime = 0;
+                _blackCellCoolTime = Random.Range(7, 10);
+                Thorn thorn = Managers.GetManager<ResourceManager>().Instantiate<Thorn>("Prefabs/Thorn");
+                thorn.transform.position = Creature.transform.position;
+                thorn.Init(Creature);
+            }
+        }
+    }
+
     private void HandleLightingRod()
     {
         if (!_isActiveLightingRod) return;
@@ -277,6 +299,13 @@ public class Inventory
         }
     }
 
+    public void RemoveAllItem()
+    {
+        foreach (var item in _slotList)
+        {
+            RemoveItem(item.ItemData, item.Count);
+        }
+    }
     public int GetItemCount(ItemData itemData)
     {
         if (!_itemCount.ContainsKey(itemData.ItemName)) return 0;

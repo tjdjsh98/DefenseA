@@ -21,6 +21,7 @@ public class UIInGame : UIBase
     int _currentWeaponIndex = -1;
     int _currentAmmoCount;
 
+    [SerializeField] TextMeshProUGUI _timeText;
     [SerializeField] TextMeshProUGUI _moneyText;
 
     [SerializeField] Image _mapPlayer;
@@ -103,8 +104,9 @@ public class UIInGame : UIBase
 
         _moneyText.text = Managers.GetManager<GameManager>().Money.ToString();
 
-        RefreshWeapon();
+        _timeText.text = $"{(int)(180 - (Managers.GetManager<GameManager>().StageTime % 180))}";
 
+        RefreshWeapon();
         HandleBar();
         ShowMap();
         ShowSkill();

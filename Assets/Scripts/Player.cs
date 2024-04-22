@@ -129,7 +129,7 @@ public class Player : MonoBehaviour, IWeaponUsable
     private void OnCharacterDead()
     {
         _character.SetAnimatorTrigger("Dead");
-        Managers.GetManager<GameManager>().LoadBeyondDeath();
+        Managers.GetManager<GameManager>().GameEnding();
     }
 
     

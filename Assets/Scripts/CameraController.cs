@@ -111,6 +111,7 @@ public class CameraController : MonoBehaviour
 
         foreach(var layer in _backgroundLayerList)
         {
+            if (layer.layer == null) continue;
             Vector3 position = Vector3.zero;
             position.x = Mathf.Lerp(layer.width / 2 - _cameraWidth / 2 , mapSize + _cameraWidth / 2 - layer.width / 2 , (distance / mapSize));
             position.y = layer.layer.transform.position.y;

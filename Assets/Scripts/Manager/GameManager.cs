@@ -73,6 +73,7 @@ public class GameManager : ManagerBase
     float _totalTime;
     public float TotalTime => _totalTime;
     float _stageTime;
+    public float StageTime => _stageTime;
     // 패닉에 따른 스탯 증가량
     public float EnemyStatusMultifly => _mapData != null ?(_mapData.initMutifly + (PanicLevel) * _mapData.addMultifly): 1;
 
@@ -114,6 +115,8 @@ public class GameManager : ManagerBase
 
     [field: SerializeField] public Inventory Inventory { set; get; }
 
+
+    float _nextBeyondDeath = 180f;
     SpriteRenderer _dark;
     SpriteRenderer _darkGround;
 
@@ -135,6 +138,12 @@ public class GameManager : ManagerBase
     {
         _totalTime += Time.deltaTime;
         Debuging();
+
+        if (Boss ==null && _nextBeyondDeath < _stageTime)
+        {
+            _nextBeyondDeath += 180;
+            LoadBeyondDeath();
+        }
 
         if (Input.GetKeyDown(KeyCode.I))
         {
@@ -173,7 +182,7 @@ public class GameManager : ManagerBase
         {
             if (Player.transform.position.x > MapSize)
             {
-                Managers.GetManager<UIManager>().GetUI<UIEnding>().Open();
+                GameEnding();
             }
 
         }
@@ -756,12 +765,11 @@ public class GameManager : ManagerBase
             yield return new WaitForSeconds(1);
         }
 
-        LoadMapData();
 
         foreach(var go in npcList) 
             Managers.GetManager<ResourceManager>().Destroy(go);
 
-        float distance = - _girl.transform.position.x;
+        float distance = _girl.transform.position.x;
         _girl.transform.position = new Vector3(0, _girl.transform.position.y);
 
         _creature.transform.position += Vector3.right * distance;
@@ -769,8 +777,6 @@ public class GameManager : ManagerBase
         time = 0;
         _farDistance = 0;
         IsStartBeyondDead = false;
-        _panicLevel = 0;
-        Mental = 100;
         while (time < 3)
         {
             time += Time.deltaTime;
@@ -779,6 +785,7 @@ public class GameManager : ManagerBase
 
             yield return null;
         }
+        LoadMapData();
         girlGroup.sortingLayerName = preSortingLayerName;
         girlGroup.sortingOrder = preSortingOrder;
 
@@ -787,5 +794,8 @@ public class GameManager : ManagerBase
 
         _stop = false;
     }
-
+    public void GameEnding()
+    {
+        Managers.GetManager<UIManager>().GetUI<UIEnding>().Open();
+    }
 }
