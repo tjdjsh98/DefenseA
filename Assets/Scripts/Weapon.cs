@@ -173,13 +173,30 @@ public class Weapon : MonoBehaviour, ITypeDefine
 
             user?.Rebound(_rebound);
         }
-        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.ÀçÈ°¿ëÅº) > 0)
+        int addtionalAmmo = 0;
+
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.ÀçÈ°¿ëÅº))
         {
             if (Random.Range(0, 100) < 10)
             {
-                _currentAmmo++;
+                addtionalAmmo = 1;
             }
         }
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.ÀçÈ°¿ëÅº_A))
+        {
+            if (Random.Range(0, 100) < 20)
+            {
+                addtionalAmmo = 1;
+            }
+        }
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.ÀçÈ°¿ëÅº_B))
+        {
+            if (Random.Range(0, 100) < 10)
+            {
+                addtionalAmmo = 2;
+            }
+        }
+        _currentAmmo += addtionalAmmo;
         _currentAmmo--;
     }
     protected virtual void Update()
@@ -207,6 +224,15 @@ public class Weapon : MonoBehaviour, ITypeDefine
     {
         if (_maxAmmo <= _currentAmmo) return;
         if (_isReload) return;
+
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.Äüµå·Î¿ì_A))
+        {
+            if (Random.Range(0, 100) < 10)
+            {
+                CompleteReload();
+                return;
+            }
+        }
 
         _fastReloadFailed = false;
         _isReload = true;
@@ -245,30 +271,66 @@ public class Weapon : MonoBehaviour, ITypeDefine
             _fastReloadFailed = true;
         }
     }
-    public virtual void CompleteReload(bool isHideGauge = true)
+    public virtual void CompleteReload(float ammoMultifly = 1,bool isHideGauge = true)
     {
         if (_isAllReloadAmmo)
         {
             _isReload = false;
 
-            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.°úÀûÀçÅºÃ¢) > 0 && Random.Range(0, 100) < 10)
-                _currentAmmo = Mathf.RoundToInt(_maxAmmo * 1.5f);
-            else
-                _currentAmmo = _maxAmmo;
+            if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.°úÀûÀçÅºÃ¢))
+            {
+                if (Random.Range(0, 100) < 40)
+                {
+                    ammoMultifly += 0.5f;
+                }
+            }
+            else if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.°úÀûÀçÅºÃ¢_A))
+            {
+                if (Random.Range(0, 100) < 80)
+                {
+                    ammoMultifly += 0.5f;
+                }
+            }
+            else if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.°úÀûÀçÅºÃ¢_B))
+            {
+                if (Random.Range(0, 100) < 40)
+                {
+                    ammoMultifly += 1;
+                }
+            }
+            _currentAmmo = Mathf.RoundToInt(_maxAmmo * ammoMultifly);
+
             _reloadElapsed = 0;
             if (_reloadGauge && isHideGauge)
                 _reloadGauge.gameObject.SetActive(false);
         }
         else
         {
-            if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.°úÀûÀçÅºÃ¢) > 0 && Random.Range(0,100)<10)
-                _currentAmmo += 2;
-            else
-                _currentAmmo ++;
+            if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.°úÀûÀçÅºÃ¢))
+            {
+                if (Random.Range(0, 100) < 40)
+                {
+                    ammoMultifly += 0.5f;
+                }
+            }
+            else if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.°úÀûÀçÅºÃ¢_A))
+            {
+                if (Random.Range(0, 100) < 80)
+                {
+                    ammoMultifly += 0.5f;
+                }
+            }
+            else if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.°úÀûÀçÅºÃ¢_B))
+            {
+                if (Random.Range(0, 100) < 40)
+                {
+                    ammoMultifly += 1;
+                }
+            }
+            _currentAmmo = Mathf.RoundToInt(_maxAmmo * ammoMultifly);
 
             if (_currentAmmo >= _maxAmmo)
             {
-              
                 _isReload = false;
                 if (_reloadGauge && isHideGauge)
                     _reloadGauge.gameObject.SetActive(false);

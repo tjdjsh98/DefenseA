@@ -1,6 +1,8 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
+using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -17,6 +19,8 @@ public class CreatureAbility
     // 추가 능력치
     public float IncreasedAttackPowerPercentage { get; set; }
     public float IncreasedAttackSpeedPercentage { get; set; }
+
+    float _preHpRegeneration =0;
 
     /*
     * 0 = 땅구르기 공격
@@ -46,7 +50,7 @@ public class CreatureAbility
     //바늘과 가죽
     int _needleAndLeatherHuntingCount = 0;
     int _needleAndLeatherIncreaseMaxHp = 0;
-    
+
 
     //나이프
     int _preKnifeIncreasedPower;
@@ -59,25 +63,61 @@ public class CreatureAbility
     int _bittenStoneCoefficient = 10;
     int _prebittenStoneAttackPower;
 
-    // 뜯겨진배터리
-    [SerializeField]Define.Range _brokenBatteryRange;
+    // 부서진배터리
+    [SerializeField] Define.Range _brokenBatteryRange;
     float _brokenBatteryCoolTime = 10;
     float _brokenBatteryElaspedTime = 10;
 
     // 아이템 : 부서진 약지
-    float _brokenRingFingerIncreaseAttackPowerPercentage = 30;
+    float _brokenRingFingerIncreaseAttackPowerPercentage = 50;
+    float _brokenRingFingerRegenHp  = 10;
+
+    // 피뢰침_B
+    bool _lightingRod_B_Active = false;
+    public bool LightingRod_B_Active
+    {
+        set
+        {
+            _lightingRod_B_ElasepdTime = 0;
+            _lightingRod_B_Active = value;
+        }
+        get => _lightingRod_B_Active;
+    }
+    float _lightingRod_B_DurationTime = 5;
+    float _lightingRod_B_ElasepdTime;
+    float _lightingRod_B_Coefficient = 100f;
+
+    // 검은액체
+    float _blackLiquidIncreasedHp = 0;
+
+    // 프로틴
+    float _proteinTime=0;
+
     #endregion
     public void Init(CreatureAI creatureAI)
     {
         _creatureAI = creatureAI;
         _creature = _creatureAI.GetComponent<Character>();
         _creatureAI.Character.AttackHandler += OnAttack;
+        _creatureAI.Character.AddtionalAttackHandler += OnAddtionalAttack;
         _creatureAI.Character.DamagedHandler += OnDamage;
+        _creature.CharacterDeadHandler += OnCreatureDaed;
         Managers.GetManager<GameManager>().Girl.CharacterDeadHandler += OnGirlDead;
         _inventory = Managers.GetManager<GameManager>().Inventory;
         _cardManager = Managers.GetManager<CardManager>();
         _electricReleaseTempEffect = _creature.transform.Find("ElectricRelease").gameObject;
         RegistSkill();
+    }
+
+    private void OnCreatureDaed()
+    {
+        if (_inventory.GetIsHaveItem(ItemName.닿아야하는석상_A))
+        {
+            if (Random.Range(0, 100) < 30)
+            {
+                _creatureAI.ForceRevive();
+            }
+        }
     }
 
     private void OnGirlDead()
@@ -95,7 +135,7 @@ public class CreatureAbility
 
         Util.DrawRangeOnGizmos(_creature.gameObject, _attackRangeList[_debugAttackRangeIndex], Color.red);
 
-        Util.DrawRangeOnGizmos(_creature.gameObject, _brokenBatteryRange,Color.red);
+        Util.DrawRangeOnGizmos(_creature.gameObject, _brokenBatteryRange, Color.red);
     }
     public void AbilityUpdate()
     {
@@ -106,44 +146,86 @@ public class CreatureAbility
 
         UpdateBrokenBattery();
 
-       
+        //피뢰침_B
+        if (LightingRod_B_Active)
+        {
+            _lightingRod_B_ElasepdTime += Time.deltaTime;
+            if (_lightingRod_B_ElasepdTime > _lightingRod_B_DurationTime)
+            {
+                _lightingRod_B_ElasepdTime = 0;
+                LightingRod_B_Active = false;
+            }
+        }
+        // 프로틴_B
+        if (_inventory.GetIsHaveItem(ItemName.프로틴_B))
+        {
+            if((_proteinTime += Time.deltaTime) > 1)
+            {
+                _proteinTime = 0;
+                _creature.Hp += Mathf.RoundToInt((_creature.MaxHp - _creature.Hp) / 20f);
+            }
+            
+        }
     }
 
     void OnAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         CardManager manager = Managers.GetManager<CardManager>();
-        
-        for(int i =0; i < _inventory.GetItemCount(ItemName.갈라진손가락);i++)
+
+        if (_inventory.GetIsHaveItem(ItemName.갈라진손가락) || _inventory.GetIsHaveItem(ItemName.갈라진손가락_A))
         {
-            _creature.AddtionalAttack(target, totalDamage, 0, Vector3.zero, point + Vector3.up*(i+1), 0);
+            _creature.AddtionalAttack(target,totalDamage,power, direction, point + Vector3.up, stunTime);
+        }
+        if (_inventory.GetIsHaveItem(ItemName.갈라진손가락_B))
+        {
+            _creature.AddtionalAttack(target, totalDamage, power, direction, point + Vector3.up, stunTime);
+            _creature.AddtionalAttack(target, totalDamage, power, direction, point + Vector3.up*2, stunTime);
         }
 
+        // 공격한 적이 죽는다면
         if (target == null || target.IsDead)
         {
-            int count = _inventory.GetItemCount(ItemName.바늘과가죽);
-            if (count >0 )
+            if (_inventory.GetIsHaveItem(ItemName.푸카라스웨트_B))
             {
-                _needleAndLeatherHuntingCount++;
-                if (_needleAndLeatherHuntingCount >=5)
-                {
-                    _creature.AddMaxHp(count);
-                    _needleAndLeatherHuntingCount= 0;
-                    _needleAndLeatherIncreaseMaxHp += count;
-                }
+                Managers.GetManager<GameManager>().Mental += 1;
+            }
+        }
+    }
+    private void OnAddtionalAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
+    {
+
+        // 공격한 적이 죽는다면
+        if (target == null || target.IsDead)
+        {
+            if (_inventory.GetIsHaveItem(ItemName.푸카라스웨트_B))
+            {
+                Managers.GetManager<GameManager>().Mental += 1;
             }
         }
     }
 
     void OnDamage(Character attacker, int damage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
-        CardManager manager = Managers.GetManager<CardManager>();
-
-        if (_inventory.GetItemCount(ItemName.검은액체) > 0 )
+        // 검은액체
         {
-            if (Random.Range(0, 100) < 20)
+            int increasedHp = 0;
+            if (_inventory.GetIsHaveItem(ItemName.검은액체))
             {
-                _creature.Hp += 10 * _inventory.GetItemCount(ItemName.검은액체);
+                increasedHp = 3;
             }
+            if (_inventory.GetIsHaveItem(ItemName.검은액체_A))
+            {
+                increasedHp = 7;
+            }
+            if (_inventory.GetIsHaveItem(ItemName.검은액체_B))
+            {
+                increasedHp = 3;
+                if (attacker != null && !attacker.IsDead)
+                    _creature.Attack(attacker, Mathf.RoundToInt(_creature.MaxHp / 20f), 0, Vector3.zero, attacker.transform.position, 0);
+            }
+            
+            _blackLiquidIncreasedHp += increasedHp;
+            _creature.AddMaxHp(increasedHp);
         }
     }
     public void ApplyCardAbility(Card card)
@@ -195,20 +277,36 @@ public class CreatureAbility
             percentage += _overclockingSlot.card.Property;
         }
 
-        // 아이템: 갈라진 손가락
-        if (_inventory.GetItemCount(ItemName.갈라진손가락) > 0)
+        // 아이템 : 검붉은나무파편_A
+        if (_inventory.GetIsHaveItem(ItemName.검붉은나무파편_A))
         {
-            percentage -= 50 * _inventory.GetItemCount(ItemName.갈라진손가락);
+            percentage += (int)(_creature.MaxHp / 50f) * 15;
+        }
+
+        // 아이템 : 검붉은나무파편, 검붉은나무파편_B
+        else if (_inventory.GetIsHaveItem(ItemName.검붉은나무파편) || _inventory.GetIsHaveItem(ItemName.검붉은나무파편_B))
+        {
+            percentage += (int)(_creature.MaxHp / 50f) * 10;
         }
 
         // 아이템 : 부서진 약지
-        if (_inventory.GetItemCount(ItemName.부서진약지) > 0)
         {
-            if (_inventory.IsActiveBrokenRingFinger)
+            if (_inventory.GetIsHaveItem(ItemName.부서진약지) || _inventory.GetIsHaveItem(ItemName.부서진약지_B))
             {
-                percentage += _brokenRingFingerIncreaseAttackPowerPercentage * _inventory.GetItemCount(ItemName.부서진약지);
+                if (_inventory.IsActiveBrokenRingFinger)
+                {
+                    percentage += _brokenRingFingerIncreaseAttackPowerPercentage;
+                }
+            }
+            if (_inventory.GetIsHaveItem(ItemName.부서진약지_A))
+            {
+                if (_inventory.IsActiveBrokenRingFinger)
+                {
+                    percentage += _brokenRingFingerIncreaseAttackPowerPercentage * 2;
+                }
             }
         }
+
 
         return percentage;
     }
@@ -223,31 +321,46 @@ public class CreatureAbility
         {
             percentage += _overclockingSlot.card.Property;
         }
- 
+
         // 아이템: 과충전배터리
-        if (_inventory.GetItemCount(ItemName.과충전배터리) > 0)
+
+        // 아이템 : 검붉은나무파편_B
+        if (_inventory.GetIsHaveItem(ItemName.검붉은나무파편_B))
         {
-            percentage += _inventory.GetItemCount(ItemName.피뢰침) * 5;
-            percentage += _inventory.GetItemCount(ItemName.부서진건전지) * 5;
+            percentage += (int)(_creature.MaxHp / 50f) * 10;
         }
 
+        // 아이템 : 피뢰침_B
+        if (_lightingRod_B_Active)
+        {
+            percentage += _lightingRod_B_Coefficient;
+        }
         return percentage;
     }
 
     void UpdateBrokenBattery()
     {
-        if (_inventory.GetItemCount(ItemName.부서진건전지) > 0)
+        if (_inventory.GetIsHaveItem(ItemName.부서진건전지)|| _inventory.GetIsHaveItem(ItemName.부서진건전지_A)|| _inventory.GetIsHaveItem(ItemName.부서진건전지_B))
         {
             if (_brokenBatteryCoolTime < _brokenBatteryElaspedTime)
             {
                 _brokenBatteryElaspedTime = 0;
+                if (_inventory.GetIsHaveItem(ItemName.부서진건전지_B))
+                {
+                    _brokenBatteryElaspedTime = _brokenBatteryCoolTime/2;
+                }
+                float stunTime = 0.5f;
+                if (_inventory.GetIsHaveItem(ItemName.부서진건전지_A))
+                {
+                    stunTime = 1f;
+                }
                 Util.RangeCastAll2D(_creature.gameObject, _brokenBatteryRange, Define.CharacterMask,
                     (hit) =>
                     {
                         Character character = hit.collider.GetComponent<Character>();
                         if (character != null && character.CharacterType == Define.CharacterType.Enemy)
                         {
-                            _creature.Attack(character, 10, 0, Vector3.zero, hit.point, 0.5f);
+                            _creature.Attack(character, 10, 0, Vector3.zero, hit.point, stunTime);
                         }
                         return false;
                     });
@@ -262,6 +375,15 @@ public class CreatureAbility
     {
         float regen = 0;
         regen = _creature.IncreasedHpRegeneration;
+
+        regen -= _preHpRegeneration;
+        _preHpRegeneration = 0;
+
+        if (_inventory.GetIsHaveItem(ItemName.부서진약지_B) && _inventory.IsActiveBrokenRingFinger)
+        {
+            regen += _brokenRingFingerRegenHp;
+            _preHpRegeneration += _brokenRingFingerRegenHp;
+        }
 
         return regen;
     }

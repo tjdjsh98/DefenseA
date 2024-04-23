@@ -41,10 +41,10 @@ public class UIEnding : UIBase
         _clearTimeText.text = $"클리어 타임 : {(int)(clearTime/60)}분:{(int)(clearTime%60)}초";
         _deathCountText.text = $"죽은 횟수 : {Managers.GetManager<GameManager>().DeathCount.ToString()}";
 
-        foreach (var item in Managers.GetManager<GameManager>().Inventory.GetItemList())
-        {
-            _itemText.text += $"{item.Key.ToString()}({item.Value}) ";
-        }
+        //foreach (var item in Managers.GetManager<GameManager>().Inventory.GetItemList())
+        //{
+        //    _itemText.text += $"{item.Key.ToString()}({item.Value}) ";
+        //}
     }
 
     public void ExitGame()

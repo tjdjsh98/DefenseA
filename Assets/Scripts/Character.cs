@@ -55,6 +55,7 @@ public class Character : MonoBehaviour,IHp
     // 스턴 후 전 움직임 가능상태로 변경
     [field:SerializeField]public bool IsEnableTurn { set; get; } = true;
 
+    public int IgnoreDamageCount = 0;
 
     float _stunEleasped;
     float _stunTime;
@@ -346,7 +347,10 @@ public class Character : MonoBehaviour,IHp
         if(!IsDead)
             _hp += value;
     }
-
+    public void RemoveaxHp(int value)
+    {
+        _maxHp -= value;
+    }
 
     IEnumerator CorDamageInvincibility()
     {
@@ -360,6 +364,11 @@ public class Character : MonoBehaviour,IHp
     public int Damage(IHp attacker, int damage, float power, Vector3 direction, Vector3 damagePoint, float stunTime = 0f)
     {
         if (IsInvincibility || _isDamagedInvincibility || IsDead) return 0;
+        if (IgnoreDamageCount > 0)
+        {
+            IgnoreDamageCount--;
+            return 0;
+        }
 
         Character attackerCharacter = attacker as Character;
         direction = direction.normalized;

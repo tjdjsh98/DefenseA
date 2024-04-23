@@ -4,7 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class UIUpgrade : UIBase
+public class UIWeaponUpgrade : UIBase
 {
     WeaponUpgrader _weaponUpgrader;
 

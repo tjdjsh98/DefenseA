@@ -186,10 +186,10 @@ public class UIStatus : UIBase
 
     void RefreshItems()
     {
-        Dictionary<ItemName,int> items = Managers.GetManager<GameManager>().Inventory.GetItemList();
+        List<ItemInfo> itemInfoList = Managers.GetManager<GameManager>().Inventory.GetItemInfoList();
 
         int index = 0;
-        foreach(var itemName in items.Keys)
+        foreach(var info in itemInfoList) 
         {
             GameObject slot = null;
             TextMeshProUGUI text = null;
@@ -204,7 +204,7 @@ public class UIStatus : UIBase
             }
             slot = _slotList[index];
             text = _slotTextList[index];
-            text.text = $"{itemName}({items[itemName]})";
+            text.text = $"{info.ItemData.ItemName}";
             slot.gameObject.SetActive(true);
             index++;
         }

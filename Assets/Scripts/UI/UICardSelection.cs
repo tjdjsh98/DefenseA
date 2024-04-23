@@ -315,7 +315,6 @@ public class UICardSelection : UIBase
                 Managers.GetManager<CardManager>().AddCard(_cardSelectionList[cardIndex]);
             }
         }
-        // 카드 슬롯이 비어 있다면 즉시 채운다.
         else
         {
             Managers.GetManager<CardManager>().AddCard(_cardSelectionList[cardIndex]);

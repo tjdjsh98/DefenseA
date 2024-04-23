@@ -1,3 +1,4 @@
+using System;
 using System.Net.Http.Headers;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -24,6 +25,9 @@ public class Effect : MonoBehaviour, ITypeDefine
     float _knockBackPower;
     float _stunTime;
     float _multiflyAttackSIze = 1;
+    
+    public Action<Character> ContactAttackRangeHandler;
+
 
     Define.CharacterType _enableAttackCharacter;
     [SerializeField]Define.Range _attackRange;
@@ -160,7 +164,9 @@ public class Effect : MonoBehaviour, ITypeDefine
             if (character != null && (character.CharacterType & _enableAttackCharacter) != 0)
             {
                 _attacker.Attack(character, _attackPower, _knockBackPower, _attackDirection, hit.point, _stunTime);
+
             }
+            ContactAttackRangeHandler?.Invoke(character);
 
             return false;
         });

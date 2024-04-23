@@ -1,3 +1,4 @@
+using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -116,7 +117,8 @@ public class GameManager : ManagerBase
     [field: SerializeField] public Inventory Inventory { set; get; }
 
 
-    float _nextBeyondDeath = 180f;
+    float _nextBeyondDeath = 120f;
+    public float NextBeyondDeath => _nextBeyondDeath;
     SpriteRenderer _dark;
     SpriteRenderer _darkGround;
 
@@ -139,9 +141,8 @@ public class GameManager : ManagerBase
         _totalTime += Time.deltaTime;
         Debuging();
 
-        if (Boss ==null && _nextBeyondDeath < _stageTime)
+        if (_nextBeyondDeath < _stageTime)
         {
-            _nextBeyondDeath += 180;
             LoadBeyondDeath();
         }
 
@@ -156,7 +157,7 @@ public class GameManager : ManagerBase
 
         Inventory.InventoryUpdate();
         if (_stop) return;
-        Mental -= Time.deltaTime * 3f * (1 + (MentalAccelerationPercentage / 100f));
+        Mental -= Time.deltaTime * 2f * (1 + (MentalAccelerationPercentage / 100f));
      
         _stageTime += Time.deltaTime;
         if (Mental <= 0)
@@ -190,8 +191,15 @@ public class GameManager : ManagerBase
 
     void LoadItemData()
     {
-        List<ItemData> itemList = Managers.GetManager<DataManager>().GetDataList<ItemData>();
+        List<ItemData> itemList = Managers.GetManager<DataManager>().GetDataList<ItemData>(item=>
+        {
+            if (item.ItemName.ToString().Contains('_')) return false;
+            return true;
+        });
         
+        for(int i = 0; i < 4;i++)
+            RankItemDataList.Add(new List<ItemData>());
+
         foreach (var item in itemList)
         {
             int rank = item.Rank;
@@ -281,6 +289,7 @@ public class GameManager : ManagerBase
         }
 
         _stageTime = 0;
+        _nextBeyondDeath = 120f;
         IsLoadEnd = true;
     }
 
@@ -388,7 +397,7 @@ public class GameManager : ManagerBase
         }
         if(_removeItem)
         {
-            Inventory.RemoveItem(Managers.GetManager<DataManager>().GetData<ItemData>((int)(_itemName)));
+            Inventory.RemoveItem(_itemName);
             _removeItem = false;
         }
         if (_addSkill)
@@ -483,6 +492,10 @@ public class GameManager : ManagerBase
                 GameObject enemy = GenerateCharacter(enemyOrigin.gameObject, _cameraController.transform.position + distanceWaveData.genLocalPosition);
 
                 Boss = enemy.GetComponent<Character>();
+                Boss.CharacterDeadHandler += () =>
+                {
+                    _nextBeyondDeath += 120f;
+                };
                 _distanceWaveList.Remove(wave);
                 return;
             }
@@ -646,6 +659,8 @@ public class GameManager : ManagerBase
     public void LoadBeyondDeath()
     {
         _stop = true;
+        _stageTime = 0;
+        _nextBeyondDeath = 120f;
         StartCoroutine(CorPlayBeyondDeath());
     }
 
@@ -772,8 +787,8 @@ public class GameManager : ManagerBase
         float distance = _girl.transform.position.x;
         _girl.transform.position = new Vector3(0, _girl.transform.position.y);
 
-        _creature.transform.position += Vector3.right * distance;
-        _cameraController.transform.position += Vector3.right * distance;
+        _creature.transform.position -= Vector3.right * distance;
+        _cameraController.transform.position -= Vector3.right * distance;
         time = 0;
         _farDistance = 0;
         IsStartBeyondDead = false;

@@ -104,7 +104,7 @@ public class UIInGame : UIBase
 
         _moneyText.text = Managers.GetManager<GameManager>().Money.ToString();
 
-        _timeText.text = $"{(int)(180 - (Managers.GetManager<GameManager>().StageTime % 180))}";
+        _timeText.text = $"{(int)(Managers.GetManager<GameManager>().NextBeyondDeath - (Managers.GetManager<GameManager>().StageTime % Managers.GetManager<GameManager>().NextBeyondDeath))}";
 
         RefreshWeapon();
         HandleBar();

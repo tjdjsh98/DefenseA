@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Drawing;
 using System.Linq;
+using UnityEditor.Experimental.GraphView;
+using UnityEditor.Rendering;
 using UnityEngine;
-using UnityEngine.TextCore.Text;
 using Random = UnityEngine.Random;
 
 [System.Serializable]
@@ -13,21 +15,21 @@ public class Inventory
     {
         get
         {
-            if(_cardManager == null)
-                _cardManager = Managers.GetManager<CardManager>();  
+            if (_cardManager == null)
+                _cardManager = Managers.GetManager<CardManager>();
 
             return _cardManager;
         }
     }
     Player _player;
     Player Player
-    { 
-        get 
-        { 
-            if(_player == null)
-                _player= Managers.GetManager<GameManager>().Player;
-            return _player; 
-        } 
+    {
+        get
+        {
+            if (_player == null)
+                _player = Managers.GetManager<GameManager>().Player;
+            return _player;
+        }
     }
     Character _girl;
     Character Girl
@@ -49,13 +51,12 @@ public class Inventory
             return _creature;
         }
     }
-    Dictionary<ItemName, int> _itemCount = new Dictionary<ItemName, int>(); 
-    [SerializeField] List<ItemSlot> _slotList = new List<ItemSlot>();
-    [SerializeField] List<ItemHistory> _itemHistroyList = new List<ItemHistory>();
 
+    [SerializeField] List<ItemInfo> _itemInfoList = new List<ItemInfo>();
+    [SerializeField] List<ItemHistory> _itemHistroyList = new List<ItemHistory>();
+    Dictionary<ItemName, bool> _itemExistDictionary = new Dictionary<ItemName, bool>();
     // 피뢰침
-    bool _isActiveLightingRod = false;
-    float _lightingRodActiveTime;
+    float _lightingRodCoolTime;
     float _lightingRodTime;
 
     // 탁한 잎
@@ -70,6 +71,10 @@ public class Inventory
     private float _blackCellElapsedTime;
     private float _blackCellCoolTime;
 
+    // 화약
+    private float _explosionDamagePercentage;
+    float _explosionDamage = 200;
+    public int ExplosionDamage =>  Mathf.RoundToInt(_explosionDamage*(1 + _explosionDamagePercentage / 100f));
     public void InventoryUpdate()
     {
         HandleLightingRod();
@@ -80,41 +85,65 @@ public class Inventory
 
     private void HandleBlackCell()
     {
-        if (GetItemCount(ItemName.검은세포) > 0)
+        if (GetIsHaveItem(ItemName.검은세포) || GetIsHaveItem(ItemName.검은세포_A) || GetIsHaveItem(ItemName.검은세포_B))
         {
             _blackCellElapsedTime += Time.deltaTime;
             if (_blackCellElapsedTime > _blackCellCoolTime)
             {
                 _blackCellElapsedTime = 0;
-                _blackCellCoolTime = Random.Range(7, 10);
+                if (GetIsHaveItem(ItemName.검은세포_A))
+                {
+                    _blackCellCoolTime = Random.Range(7, 10);
+                }
+                else
+                {
+                    _blackCellCoolTime = Random.Range(15, 20);
+                }
+                float width = 10;
+                if (GetIsHaveItem(ItemName.검은세포_B))
+                    width = 20;
                 Thorn thorn = Managers.GetManager<ResourceManager>().Instantiate<Thorn>("Prefabs/Thorn");
                 thorn.transform.position = Creature.transform.position;
-                thorn.Init(Creature);
+                thorn.Init(Creature,width);
             }
         }
     }
 
     private void HandleLightingRod()
     {
-        if (!_isActiveLightingRod) return;
-
-       
-        _lightingRodTime += Time.deltaTime;
-        if (_lightingRodActiveTime <= _lightingRodTime)
+        if (GetIsHaveItem(ItemName.피뢰침) || GetIsHaveItem(ItemName.피뢰침_A) || GetIsHaveItem(ItemName.피뢰침_B))
         {
-            _lightingRodActiveTime = Random.Range(10, 20);
-            _lightingRodTime= 0;
-
-            GameObject go = Managers.GetManager<GameManager>().GetCloseEnemyFromGirl();
-
-            if (go != null)
+            _lightingRodTime += Time.deltaTime;
+            if (_lightingRodCoolTime <= _lightingRodTime)
             {
-                Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(go.transform.position);
-                if (position.HasValue)
+                if (GetIsHaveItem(ItemName.피뢰침_A))
+                    _lightingRodCoolTime = Random.Range(7, 10);
+                else
+                    _lightingRodCoolTime = Random.Range(15, 20);
+
+                _lightingRodTime = 0;
+
+                GameObject go = Managers.GetManager<GameManager>().GetCloseEnemyFromGirl();
+
+                if (go != null)
                 {
-                    Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Lighting);
-                    effect.SetAttackProperty(Player.Character, 50, 100, 2, Define.CharacterType.Enemy);
-                    effect.Play(position.Value);
+                    Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(go.transform.position);
+                    if (position.HasValue)
+                    {
+                        Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Lighting);
+                        effect.SetAttackProperty(Player.Character, 50, 100, 2, Define.CharacterType.Enemy);
+                        effect.Play(position.Value);
+                    }
+                }
+                else
+                {
+                    Vector3? position = Managers.GetManager<GameManager>().GetGroundTop(Random.Range(0, 2) == 0 ? Girl.transform.position : Creature.transform.position);
+                    if (position.HasValue)
+                    {
+                        Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Lighting);
+                        effect.SetAttackProperty(Player.Character, 50, 100, 2, Define.CharacterType.Enemy);
+                        effect.Play(position.Value);
+                    }
                 }
             }
         }
@@ -135,91 +164,135 @@ public class Inventory
         }
     }
 
-    public void AddItem(ItemData itemData, int count = 1)
+    public void Explosion(Character attacker,Vector3 point, float radius)
     {
-        ItemSlot itemSlot = null;
-        foreach(var slot in _slotList)
+        Define.Range range = new Define.Range() { center = Vector3.zero, size = Vector3.one * radius, angle = 0, figureType = Define.FigureType.Circle };
+        Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
+  
+        Util.RangeCastAll2D(point, range, Define.CharacterMask, (hit) =>
         {
-            if(slot.ItemData == itemData)
+            Character character = hit.collider.GetComponent<Character>();
+            if (character != null && !character.IsDead && character.CharacterType == Define.CharacterType.Enemy)
             {
-                itemSlot = slot;
-                break;
+                attacker.Attack(character, ExplosionDamage, 150, character.transform.position - point, hit.point, 0.3f);
+            }
+            return false;
+        });
+        effect.SetProperty("Radius", radius);
+        effect.Play(point);
+
+        Gunpowder(attacker, point, radius);
+    }
+
+    void Gunpowder(Character attacker, Vector3 point, float radius)
+    {
+        if (GetIsHaveItem(ItemName.화약_B))
+        {
+            for (int i = 0; i < Random.Range(3, 5); i++)
+            {
+                Vector3 random = Random.insideUnitCircle * radius / 2f;
+                Define.Range range = new Define.Range() { center = Vector3.zero, size = Vector3.one * radius/2, angle = 0, figureType = Define.FigureType.Circle };
+                Effect effect = Managers.GetManager<ResourceManager>().Instantiate<Effect>((int)Define.EffectName.Explosion);
+                Util.RangeCastAll2D(point + random, range, Define.CharacterMask, (hit) =>
+                {
+                    Character character = hit.collider.GetComponent<Character>();
+                    if (character != null && !character.IsDead && character.CharacterType == Define.CharacterType.Enemy)
+                    {
+                        attacker.Attack(character, ExplosionDamage, 50, character.transform.position - point, hit.point, 0.3f);
+                    }
+                    return false;
+                });
+                effect.SetProperty("Radius", radius/2);
+                effect.Play(point+random);
             }
         }
-        for (int i = 0; i < count; i++)
-        {
-            if (itemSlot == null)
-            {
-                itemSlot = new ItemSlot(itemData, 0);
-                _slotList.Add(itemSlot);
-            }
-            itemSlot.Count++;
-            _itemHistroyList.Add(new ItemHistory(itemData, true));
-            ApplyAddItem(itemData);
-            if(!_itemCount.ContainsKey(itemData.ItemName))
-                _itemCount.Add(itemData.ItemName, 0);
-            _itemCount[itemData.ItemName]++;
-        }
+    }
+    public void AddItem(ItemData itemData)
+    {
+        ItemInfo itemInfo = null;
+      
+        itemInfo = new ItemInfo(itemData);
+        _itemInfoList.Add(itemInfo);
+        _itemHistroyList.Add(new ItemHistory(itemInfo, true));
+
+        if (!_itemExistDictionary.ContainsKey(itemData.ItemName))
+            _itemExistDictionary.Add(itemData.ItemName, true);
+        _itemExistDictionary[itemData.ItemName] = true;
+
+        ApplyAddItem(itemInfo);
     }
     // 갯수가 없을 때 삭제를 취소하고 false를 반환한다.
-    public bool RemoveItem(ItemData itemData, int count = 1)
+    public bool RemoveItem(ItemInfo itemInfo)
     {
-        ItemSlot itemSlot = null;
-        foreach (var slot in _slotList)
+        foreach (var slot in _itemInfoList)
         {
-            if (slot.ItemData == itemData)
+            if (slot == itemInfo)
             {
-                itemSlot = slot;
+                itemInfo = slot;
                 break;
             }
         }
-        if (itemSlot == null || itemSlot.Count < count) return false;
-        for (int i = 0; i < count; i++)
-        {
-            itemSlot.Count--;
+        if (itemInfo == null) return false;
             
-            _itemHistroyList.Add(new ItemHistory(itemData, false));
-            ApplyRemoveItem(itemData);
+        _itemHistroyList.Add(new ItemHistory(itemInfo, false));
+        ApplyRemoveItem(itemInfo);
 
-            if (!_itemCount.ContainsKey(itemData.ItemName))
-                _itemCount.Add(itemData.ItemName, 0);
-            if (_itemCount[itemData.ItemName] > 0)
-                _itemCount[itemData.ItemName]--;
-        }
-        if (itemSlot.Count == 0)
-            _slotList.Remove(itemSlot);
+
+        if (_itemExistDictionary.ContainsKey(itemInfo.ItemData.ItemName))
+            _itemExistDictionary[itemInfo.ItemData.ItemName] = false;
+
+        _itemInfoList.Remove(itemInfo);
 
         return true;
     }
-    public bool RemoveItem(ItemName itemaName, int count = 1)
+    public bool RemoveItem(ItemName itemName)
     {
-        ItemSlot itemSlot = null;
-        foreach (var slot in _slotList)
+        ItemInfo itemInfo = null;
+        foreach (var slot in _itemInfoList)
         {
-            if (slot.ItemData.ItemName == itemaName)
+            if (slot.ItemData.ItemName == itemName)
             {
-                itemSlot = slot;
+                itemInfo = slot;
                 break;
             }
         }
-        if (itemSlot == null || itemSlot.Count < count) return false;
-        for (int i = 0; i < count; i++)
-        {
-            itemSlot.Count--;
+        if (itemInfo == null) return false;
 
-            _itemHistroyList.Add(new ItemHistory(itemSlot.ItemData, false));
-            ApplyRemoveItem(itemSlot.ItemData);
-        }
-        if (itemSlot.Count == 0)
-            _slotList.Remove(itemSlot);
+        _itemHistroyList.Add(new ItemHistory(itemInfo, false));
+        ApplyRemoveItem(itemInfo);
+
+
+        if (_itemExistDictionary.ContainsKey(itemInfo.ItemData.ItemName))
+            _itemExistDictionary[itemInfo.ItemData.ItemName] = false;
+
+        _itemInfoList.Remove(itemInfo);
 
         return true;
     }
+    public bool RemoveItem(int index)
+    {
+        if (_itemInfoList.Count <= index) return false;
+        ItemInfo itemInfo = _itemInfoList[index];
+        _itemInfoList.RemoveAt(index);
+        _itemHistroyList.Add(new ItemHistory(itemInfo, false));
+
+        if (_itemExistDictionary.ContainsKey(itemInfo.ItemData.ItemName))
+            _itemExistDictionary[itemInfo.ItemData.ItemName] = false;
+
+
+        return true;
+    }
+
+    public List<ItemInfo> GetItemInfoList()
+    {
+        return _itemInfoList;
+    }
+
     ItemData GetPossessRandomItem(Func<ItemData, bool> condition)
     {
         if (condition != null)
         {
-            List<ItemSlot> list = _slotList.Where(slot =>
+            List<ItemInfo> list = _itemInfoList.Where(slot =>
             {
                 if (condition.Invoke(slot.ItemData))
                     return true;
@@ -233,12 +306,13 @@ public class Inventory
         }
         else
         {
-            return _slotList.GetRandom().ItemData;
+            return _itemInfoList.GetRandom().ItemData;
         }
 
     }
-    void ApplyAddItem(ItemData itemData)
+    void ApplyAddItem(ItemInfo itemInfo)
     {
+        ItemData itemData = itemInfo.ItemData;
         if (itemData.ItemType == ItemType.Weapon)
         {
             WeaponItemData weaponItemData= itemData as WeaponItemData;
@@ -251,20 +325,37 @@ public class Inventory
         {
             switch (itemData.ItemName)
             {
-             
-           
                 case ItemName.피뢰침:
-                    _lightingRodActiveTime = Random.Range(10, 20);
-                    _isActiveLightingRod = true;
+                case ItemName.피뢰침_B:
+                    _lightingRodCoolTime = Random.Range(15, 20);
+                    break;
+                case ItemName.피뢰침_A:
+                    _lightingRodCoolTime = Random.Range(7, 10);
                     break;
                 case ItemName.망각의서:
-                    RemoveItem(GetPossessRandomItem((data) => { return data.ItemName != ItemName.망각의서; }));
                     break;
                 case ItemName.아르라제코인:
                     Managers.GetManager<GameManager>().EnableRestockCount++;
                     break;
                 case ItemName.부서진약지:
+                case ItemName.부서진약지_A:
+                case ItemName.부서진약지_B:
                     IsActiveBrokenRingFinger = true;
+                    break;
+                case ItemName.에너지바:
+                    Girl.IgnoreDamageCount += 3;
+                    break;
+                case ItemName.에너지바_A:
+                    Girl.IgnoreDamageCount += 5;
+                    break;
+                case ItemName.화약:
+                    _explosionDamagePercentage += 100f;
+                    break;
+                case ItemName.화약_A:
+                    _explosionDamagePercentage += 200f;
+                    break;
+                case ItemName.화약_B:
+                    _explosionDamagePercentage += 50f;
                     break;
             }
             if (itemData is StatusUpItemData data)
@@ -274,23 +365,31 @@ public class Inventory
         }
     }
 
-    void ApplyRemoveItem(ItemData itemData)
+    void ApplyRemoveItem(ItemInfo itemInfo)
     {
-
+        ItemData itemData = itemInfo.ItemData;
         if (itemData.ItemType == ItemType.StatusUp)
         {
             switch (itemData.ItemName)
             {
-                case ItemName.피뢰침:
-                    if (GetItemCount(itemData) <= 0)
-                        _isActiveLightingRod = false;
-                    break;
                 case ItemName.아르라제코인:
                     Managers.GetManager<GameManager>().EnableRestockCount--;
                     break;
                 case ItemName.부서진약지:
-                    IsActiveBrokenRingFinger= false;
+                case ItemName.부서진약지_A:
+                case ItemName.부서진약지_B:
+                    IsActiveBrokenRingFinger = false;
                     break;
+                case ItemName.화약:
+                    _explosionDamagePercentage -= 100f;
+                    break;
+                case ItemName.화약_A:
+                    _explosionDamagePercentage -= 200f;
+                    break;
+                case ItemName.화약_B:
+                    _explosionDamagePercentage -= 50f;
+                    break;
+
             }
             if (itemData is StatusUpItemData data)
             {
@@ -301,26 +400,19 @@ public class Inventory
 
     public void RemoveAllItem()
     {
-        foreach (var item in _slotList)
+        foreach (var item in _itemInfoList)
         {
-            RemoveItem(item.ItemData, item.Count);
+            RemoveItem(item);
         }
     }
-    public int GetItemCount(ItemData itemData)
+  
+    public bool GetIsHaveItem(ItemName itemName)
     {
-        if (!_itemCount.ContainsKey(itemData.ItemName)) return 0;
-        return _itemCount[itemData.ItemName];
-    }
-    public int GetItemCount(ItemName itemName)
-    {
-        if (!_itemCount.ContainsKey(itemName)) return 0;
-        return _itemCount[itemName];
+        if (!_itemExistDictionary.ContainsKey(itemName))
+            return false;
+        return _itemExistDictionary[itemName];
     }
 
-    public Dictionary<ItemName,int> GetItemList()
-    {
-        return _itemCount;
-    }
     public void ApplyStatus(StatusUpItemData statusUpItemData)
     {
         Character girl = Managers.GetManager<GameManager>().Girl;
@@ -347,6 +439,7 @@ public class Inventory
             creature.IncreasedHpRegeneration += statusUpItemData.IncreasingCreatureHpRegeneration;
             creature.SetSpeed(creature.Speed + statusUpItemData.IncreasingCreatureSpeed);
             creatureAI.ReviveTime -= statusUpItemData.ReviveTimeDown;
+            creatureAI.CreatureAbility.IncreasedAttackPowerPercentage += statusUpItemData.IncreasingCreatureAttackPowerPercentage;
         }
 
         Managers.GetManager<GameManager>().MentalAccelerationPercentage += statusUpItemData.AccelMentalDownPercentage;
@@ -375,31 +468,30 @@ public class Inventory
             creature.IncreasedHpRegeneration -= statusUpItemData.IncreasingCreatureHpRegeneration;
             creature.SetSpeed(creature.Speed - statusUpItemData.IncreasingCreatureSpeed);
             creatureAI.ReviveTime += statusUpItemData.ReviveTimeDown;
+            creatureAI.CreatureAbility.IncreasedAttackPowerPercentage -= statusUpItemData.IncreasingCreatureAttackPowerPercentage;
         }
         Managers.GetManager<GameManager>().MentalAccelerationPercentage -= statusUpItemData.AccelMentalDownPercentage;
     }
 }
 
 [System.Serializable]
-public class ItemSlot
+public class ItemInfo
 {
     [field:SerializeField]public ItemData ItemData { set; get; }
-    [field: SerializeField] public int Count { get; set; }
-    public ItemSlot(ItemData itemData, int count)
+    public ItemInfo(ItemData itemData)
     {
         ItemData = itemData;
-        Count = count;
     }
 }
 
 [System.Serializable]
 public struct ItemHistory
 { 
-    public ItemHistory(ItemData itemData,bool isGet)
+    public ItemHistory(ItemInfo itemInfo,bool isGet)
     {
-        this.itemData = itemData;
+        this.itemInfo = itemInfo;
         this.isGet= isGet;
     }
-    [field: SerializeField] public ItemData itemData { set; get; }
+    [field: SerializeField] public ItemInfo itemInfo { set; get; }
     [field: SerializeField] public bool isGet { set; get; }
 }

@@ -68,11 +68,11 @@ public class CreatureAI : MonoBehaviour
         _boxCollider = GetComponent<BoxCollider2D>();
         _model = transform.Find("Model").gameObject;
         _soulModel = transform.Find("SoulModel").gameObject;
-        _creatureAbility.Init(this);
         Managers.GetManager<GameManager>().CreatureAI = this;
         _character.CharacterDeadHandler += OnCharacterDead;
         _character.DamagedHandler += OnDamaged;
         _character.IncreasedHpRegeneration += 5f;
+        _creatureAbility.Init(this);
     }
 
     private void OnCharacterDead()

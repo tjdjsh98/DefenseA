@@ -5,21 +5,28 @@ public class Thorn : MonoBehaviour
 {
     Character _owner;
     [SerializeField]List<LineRenderer> _lineRendererList;
+    List<Vector3> _destinationList = new List<Vector3>();
     [SerializeField] float _width = 5;
 
     float _time;
-
+    bool _isEnd;
     List<GameObject> _hitList = new List<GameObject>();
 
-    public void Init(Character owner)
+    public void Init(Character owner,float width)
     {
         _owner = owner;
         _time = 0;
-
+        _width = width;
         float interval = _width / _lineRendererList.Count;
         for(int i =0; i < _lineRendererList.Count; i++)
         {
             _lineRendererList[i].SetPosition(0, new Vector3(-(_lineRendererList.Count-1)/2f * interval + i * interval, 0, 0));
+            if (_destinationList.Count <= i)
+            {
+                _destinationList.Add(Vector3.zero);
+            }
+
+            _destinationList[i] = new Vector3(-(_lineRendererList.Count - 1) / 2f * interval + i * interval + (i%2==0?Random.Range(1,3): Random.Range(-3, -1)), _width, 0);
 
         }
     }
@@ -28,25 +35,39 @@ public class Thorn : MonoBehaviour
     {
         if (_owner != null)
         {
-            _time += Time.deltaTime;
-            if (_time < 0.15f)
+            if (!_isEnd)
             {
+                if (_time + Time.deltaTime > 0.15f)
+                    _time = 0.15f;
+                else
+                    _time += Time.deltaTime;
+
                 float interval = _width / _lineRendererList.Count;
                 for (int i = 0; i < _lineRendererList.Count; i++)
                 {
-                    Vector3 direction = _lineRendererList[i].GetPosition(0);
-                    direction.y = _width/2 -  Mathf.Abs(direction.x);
-                    _lineRendererList[i].SetPosition(1,_lineRendererList[i].GetPosition(0) + direction.normalized * _time*100f);
+                    _lineRendererList[i].SetPosition(1, Vector3.Lerp(_lineRendererList[i].GetPosition(0), _destinationList[i], _time / 0.15f));
                     Attack(_lineRendererList[i].GetPosition(1));
                 }
+                if(_time >= 0.15f)
+                    _isEnd = true;
             }
-            if(_time > 5)
+            else
             {
-            
-                _time = 0;
-                _owner = null;
+                _time += Time.deltaTime;
+                if (_time > 3)
+                {
+                    _time = 0;
+                    _owner = null;
+                    _isEnd = false;
+                for (int i = 0; i < _lineRendererList.Count; i++)
+                    {
+                        _lineRendererList[i].SetPosition(0, Vector3.zero);
+                    _lineRendererList[i].SetPosition(1, Vector3.zero);
 
-                Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                    }
+
+                    Managers.GetManager<ResourceManager>().Destroy(gameObject);
+                }
             }
         }
     }

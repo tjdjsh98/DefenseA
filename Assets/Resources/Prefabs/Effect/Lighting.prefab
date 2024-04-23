@@ -12,6 +12,8 @@ GameObject:
   - component: {fileID: 7218309828310237903}
   - component: {fileID: 5883931943653539527}
   - component: {fileID: -1463463486211996806}
+  - component: {fileID: 131022679013042231}
+  - component: {fileID: -2069797161891631050}
   m_Layer: 0
   m_Name: Lighting
   m_TagString: Untagged
@@ -138,3 +140,30 @@ MonoBehaviour:
     size: {x: 10, y: 50, z: 0}
     angle: 0
     figureType: 0
+  _animatorTriggerName: 
+  _attackDirection: {x: 0, y: 0}
+  Start: 0
+--- !u!114 &131022679013042231
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4487479057654349646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d10bae48406cb514abf69f31e4cb1aae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &-2069797161891631050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4487479057654349646}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 975a1b1201398a74888b8194b415c2ae, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 

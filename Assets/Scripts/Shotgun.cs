@@ -58,13 +58,30 @@ public class Shotgun : Weapon
 
         }
         user?.Rebound(_rebound);
-        if (Managers.GetManager<GameManager>().Inventory.GetItemCount(ItemName.¿Á»∞øÎ≈∫) > 0)
+        int addtionalAmmo = 0;
+
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.¿Á»∞øÎ≈∫))
         {
             if (Random.Range(0, 100) < 10)
             {
-                _currentAmmo++;
+                addtionalAmmo = 1;
             }
         }
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.¿Á»∞øÎ≈∫_A))
+        {
+            if (Random.Range(0, 100) < 20)
+            {
+                addtionalAmmo = 1;
+            }
+        }
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.¿Á»∞øÎ≈∫_B))
+        {
+            if (Random.Range(0, 100) < 10)
+            {
+                addtionalAmmo = 2;
+            }
+        }
+        _currentAmmo += addtionalAmmo;
         _currentAmmo--;
     }
 }

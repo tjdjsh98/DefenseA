@@ -301,12 +301,13 @@ public class HelperEditor : EditorWindow
                 data.RecoverCreatureHpAmount = ParseInt(words[11]);
                 data.IncreasingCreatureHpRegeneration = ParseFloat(words[12]);
                 data.IncreasingCreatureAttackPower = ParseInt(words[13]);
-                data.IncreasingCreatureAttackSpeedPercentage = ParseFloat(words[14]);
-                data.IncreasingCreatureSpeed = ParseFloat(words[15]);
-                data.AccelMentalDownPercentage = ParseFloat(words[16]);
-                data.IncreasingReloadSpeedPercentage = ParseFloat(words[19]);
-                data.ReviveTimeDown = ParseFloat(words[20]);
-                data.IsUnique = ParseBoolean(words[21]);
+                data.IncreasingCreatureAttackPowerPercentage = ParseFloat(words[14]);
+                data.IncreasingCreatureAttackSpeedPercentage = ParseFloat(words[15]);
+                data.IncreasingCreatureSpeed = ParseFloat(words[16]);
+                data.AccelMentalDownPercentage = ParseFloat(words[17]);
+                data.IncreasingReloadSpeedPercentage = ParseFloat(words[20]);
+                data.ReviveTimeDown = ParseFloat(words[21]);
+                data.IsUnique = ParseBoolean(words[22]);
 
                 AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
                 AssetDatabase.SaveAssets();
@@ -319,8 +320,8 @@ public class HelperEditor : EditorWindow
                 data.ItemType = GetItemType(words[1]);
                 data.Description = words[2];
                 data.Rank = ParseInt(words[3]);
-                data.weaponPosition = GetWeaponPosition(words[17]);
-                data.weaponName = ConvertItemToWeapon(words[18]);
+                data.weaponPosition = GetWeaponPosition(words[18]);
+                data.weaponName = ConvertItemToWeapon(words[19]);
                
                 AssetDatabase.CreateAsset(data, "Assets/" + ITEM_FOLDER_DATA_PATH + data.name + ".asset");
                 AssetDatabase.SaveAssets();

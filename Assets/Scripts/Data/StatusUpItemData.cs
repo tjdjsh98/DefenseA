@@ -10,6 +10,7 @@ public class StatusUpItemData : ItemData
     [field:SerializeField]public int IncreasingCreatureMaxHp { set; get; }
     [field: SerializeField] public float IncreasingGirlAttackPowerPercentage { set; get; }
     [field: SerializeField] public int IncreasingCreatureAttackPower { set; get; }
+    [field: SerializeField] public float IncreasingCreatureAttackPowerPercentage { set; get; }
     [field: SerializeField] public float IncreasingGirlAttackSpeedPercentage { set; get; }
     [field: SerializeField] public float IncreasingCreatureAttackSpeedPercentage { set; get; }
     [field: SerializeField] public float IncreasingGirlHpRegeneration { set; get; }

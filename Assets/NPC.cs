@@ -61,7 +61,7 @@ public class NPC : MonoBehaviour,IInteractable
     {
         WeaponUpgrader weaponUpgrader = GetComponent<WeaponUpgrader>();
         if (weaponUpgrader != null)
-            Managers.GetManager<UIManager>().GetUI<UIUpgrade>().Open(weaponUpgrader);
+            Managers.GetManager<UIManager>().GetUI<UIWeaponUpgrade>().Open(weaponUpgrader);
     }
     public void OpenShopUI()
     {
