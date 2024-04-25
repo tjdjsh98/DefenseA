@@ -14,31 +14,22 @@ public class Wallet : MonoBehaviour
         }
     }
 
-    float _time = 0;
-    float _reachTime = 0;
-    private void OnEnable()
+    GameObject _model;
+
+
+    private void Awake()
     {
-        _time = 0;
-        _reachTime = 0;
+        _model = transform.Find("Model").gameObject;
     }
+
     private void Update()
     {
-        if(_time > 2) {
-            
-            if (Player != null)
-            {
-                _reachTime += Time.deltaTime;
-                if (_reachTime >= 2) _reachTime = 1.99f;
-                transform.position = Vector3.Lerp(transform.position, Player.transform.position, Time.deltaTime/(2-_reachTime));
-                if((transform.position - Player.transform.position).magnitude < 0.2f)
-                {
-                    Interact();
-                }
-            }
-        }else
+        _model.transform.eulerAngles += new Vector3(0, 0, 360) * Time.deltaTime;
+        if ((transform.position - Player.transform.position).magnitude < 0.2f)
         {
-            _time += Time.deltaTime;
+            Interact();
         }
+
     }
 
     public void Interact()

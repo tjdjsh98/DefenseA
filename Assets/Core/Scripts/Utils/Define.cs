@@ -148,6 +148,11 @@ public static class Define
         END
     }
 
+    public static int ItemRank0Price = 30;
+    public static int ItemRank1Price = 70;
+    public static int ItemRank2Price = 150;
+    public static int ItemRank3Price = 300;
+
     [System.Serializable]
     public struct Range
     {

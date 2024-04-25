@@ -115,11 +115,7 @@ public class UICardSelection : UIBase
             }
         }
         Refresh();
-        if (_cashDatas.Count <= 0)
-        {
-            Close();
-            return;
-        }
+        
         Managers.GetManager<InputManager>().UIMouseDownHandler += OnUIMouseDown;
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
 
@@ -150,11 +146,7 @@ public class UICardSelection : UIBase
             }
         }
         Refresh();
-        if (_cashDatas.Count <= 0)
-        {
-            Close();
-            return;
-        }
+      
 
         Managers.GetManager<InputManager>().UIMouseDownHandler += OnUIMouseDown;
         Managers.GetManager<InputManager>().UIMouseHoverHandler += OnUIMouseHover;
@@ -181,13 +173,13 @@ public class UICardSelection : UIBase
                 _cardSelectionList.Add(_cashDatas[random]);
                 _cashDatas.RemoveAt(random);
             }
+            else
+            {
+                _cardSelectionList.Add(null);
+            }
+        
         }
-
-        if (_cashDatas.Count <= 0)
-        {
-            Close();
-            return;
-        }
+      
         Refresh();
 
 
@@ -216,6 +208,15 @@ public class UICardSelection : UIBase
     {
         for (int i = 0; i < _cardNameTextList.Count; i++)
         {
+            if (_cardSelectionList[i] == null)
+            {
+                _cardList[i].gameObject.SetActive(false);
+                return;
+            }
+            else
+            {
+                _cardList[i].gameObject.SetActive(true);
+            }
             _cardNameTextList[i].text = _cardSelectionList[i].cardData.CardName.ToString(); 
 
             int cardRank = _cardSelectionList[i].rank;

@@ -13,20 +13,20 @@ MonoBehaviour:
   m_Name: City_01
   m_EditorClassIdentifier: 
   sceneName: City_01
-  timeWave: []
-  distanceWave:
+  distanceWave: []
+  bossWave:
   - genTime: 0
-    multiply: 1
-    genLocalPosition: {x: 60, y: 0, z: 0}
-    enemyName: 5
-    enemyPreset: {fileID: 0}
-    distance: 800
-  - genTime: 0
-    multiply: 1
+    multiply: 0
     genLocalPosition: {x: 60, y: 0, z: 0}
     enemyName: 9
     enemyPreset: {fileID: 0}
-    distance: 400
+    distance: 3
+  - genTime: 0
+    multiply: 0
+    genLocalPosition: {x: 60, y: 0, z: 0}
+    enemyName: 5
+    enemyPreset: {fileID: 0}
+    distance: 9
   mentalWave:
   - genTime: 6
     multiply: 1
@@ -84,7 +84,7 @@ MonoBehaviour:
     enemyPreset: {fileID: 3835410314699287608, guid: 04357de2cd35ef445b6a5ec41cc3f390, type: 3}
     genMentalLevelMore: 7
     genMentalLevelLess: 99999
-  mapSize: 1000
+  mapSize: 1300
   nextMapData: {fileID: 11400000, guid: 176d9fc57f0fe4b468c92c5d99d85612, type: 2}
   shopItemDataList: []
   randomEvent:

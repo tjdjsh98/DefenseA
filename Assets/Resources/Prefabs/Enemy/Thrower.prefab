@@ -863,7 +863,6 @@ MonoBehaviour:
   _hp: 100
   _speed: 10
   _standing: 0
-  Standing: 0
   <AttackPower>k__BackingField: 30
   _jumpPower: 10
   IsNotInstantlyDie: 0
@@ -872,6 +871,7 @@ MonoBehaviour:
   _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
+  IgnoreDamageCount: 0
   _groundCheckRange:
     center: {x: -0.27, y: 0, z: 0}
     size: {x: 2.3, y: 0.75, z: 0}
@@ -933,6 +933,7 @@ MonoBehaviour:
   _bodyAttackKnockBackPower: 50
   _bodyAttackCoolTime: 1
   _dropPercentage: 0
+  _dropMoney: 3
 --- !u!114 &8114616162561489678
 MonoBehaviour:
   m_ObjectHideFlags: 0

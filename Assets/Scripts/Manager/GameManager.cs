@@ -1,7 +1,7 @@
-using MoreMountains.FeedbacksForThirdParty;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Playables;
 using UnityEngine.Rendering;
@@ -13,7 +13,7 @@ public class GameManager : ManagerBase
     #region 캐릭터
     public Player Player { set; get; }
 
-    public CreatureAI CreatureAI;
+    public CreatureAI CreatureAI { set; get; }
 
     Character _girl;
     public Character Girl { get { if (Player && _girl == null) _girl = Player.GetComponent<Character>(); return _girl; } }
@@ -33,6 +33,7 @@ public class GameManager : ManagerBase
     [SerializeField] float _timeScale = 1;
     [SerializeField] bool _addSkill;
     [SerializeField] bool _addNpcCard;
+    [SerializeField] bool _immdiatelyEnterBeyondDeath;
     
     [Header("게임 진행")]
     [SerializeField] bool _stop;
@@ -68,8 +69,8 @@ public class GameManager : ManagerBase
     // 적 소환 관련 변수
     [Header("적관련변수")]
     List<GameObject> _enemySpawnList = new List<GameObject>();
-    List<Wave> _timeWaveList = new List<Wave>();
     List<Wave> _distanceWaveList = new List<Wave>();
+    List<Wave> _bossWaveList = new List<Wave>();
     List<Wave> _mentalWaveList = new List<Wave>();
     float _totalTime;
     public float TotalTime => _totalTime;
@@ -99,6 +100,7 @@ public class GameManager : ManagerBase
     }
 
     GameObject _helpBox;
+    TextMeshPro _helpText;
 
     public List<List<ItemData>> RankItemDataList = new List<List<ItemData>>();
 
@@ -117,16 +119,30 @@ public class GameManager : ManagerBase
     [field: SerializeField] public Inventory Inventory { set; get; }
 
 
-    float _nextBeyondDeath = 120f;
+    public float BeyondDeathInterval { get; set; } = 90f;
+    float _nextBeyondDeath ;
     public float NextBeyondDeath => _nextBeyondDeath;
     SpriteRenderer _dark;
     SpriteRenderer _darkGround;
 
     public bool IsStartBeyondDead { set; get; }
+
+    // 아이템 세이브
+    public int SaveItemCount { get; set; } = 1;
+    public List<ItemInfo> SaveItemList { get; set; } = new List<ItemInfo>();
+
+    // 멀리가면 보너스
+    List<GameObject> _walletList = new List<GameObject>();
+
     public override void Init()
     {
+        _nextBeyondDeath = BeyondDeathInterval;
         if(GameObject.Find("HelpBox"))
             _helpBox = GameObject.Find("HelpBox").gameObject;
+        if (_helpBox && _helpBox.transform.Find("HelpText"))
+        {
+            _helpText = _helpBox.transform.Find("HelpText").GetComponent<TextMeshPro>();
+        }
         Inventory = new Inventory();
         LoadItemData();
         LoadMainCharacters();
@@ -138,6 +154,14 @@ public class GameManager : ManagerBase
     }
     public override void ManagerUpdate()
     {
+
+        // 임시
+        if (Input.GetKeyDown(KeyCode.O))
+        {
+            Money += 500;
+            UIItemUpgrade uIStatus = Managers.GetManager<UIManager>().GetUI<UIItemUpgrade>();
+                uIStatus.Open();
+        }
         _totalTime += Time.deltaTime;
         Debuging();
 
@@ -157,7 +181,7 @@ public class GameManager : ManagerBase
 
         Inventory.InventoryUpdate();
         if (_stop) return;
-        Mental -= Time.deltaTime * 2f * (1 + (MentalAccelerationPercentage / 100f));
+        Mental -= Time.deltaTime *1.5f * (1 + (MentalAccelerationPercentage / 100f));
      
         _stageTime += Time.deltaTime;
         if (Mental <= 0)
@@ -171,8 +195,8 @@ public class GameManager : ManagerBase
             Mental -= 100;
         }
 
-        TimeWave();
         DistanceWave();
+        BossWave();
         MentalWave();
 
         if (Player)
@@ -194,6 +218,7 @@ public class GameManager : ManagerBase
         List<ItemData> itemList = Managers.GetManager<DataManager>().GetDataList<ItemData>(item=>
         {
             if (item.ItemName.ToString().Contains('_')) return false;
+
             return true;
         });
         
@@ -214,27 +239,27 @@ public class GameManager : ManagerBase
 
     void LoadMapData()
     {
-        _timeWaveList.Clear();
         _distanceWaveList.Clear();
+        _bossWaveList.Clear();
         _mentalWaveList.Clear();
 
         // 적 소환 데이터
         if (_mapData)
         {
-            foreach (var waveData in _mapData.timeWave)
-            {
-                TimeWaveData timeWaveData = waveData as TimeWaveData;
-                if (timeWaveData != null)
-                {
-                    _timeWaveList.Add(new Wave() { waveData = timeWaveData, elapsedTime = timeWaveData.genTime });
-                }
-            }
             foreach (var waveData in _mapData.distanceWave)
             {
-                DistanceWaveData distanceWaveData = waveData as DistanceWaveData;
+                DistanceWaveData timeWaveData = waveData as DistanceWaveData;
+                if (timeWaveData != null)
+                {
+                    _distanceWaveList.Add(new Wave() { waveData = timeWaveData, elapsedTime = timeWaveData.genTime });
+                }
+            }
+            foreach (var waveData in _mapData.bossWave)
+            {
+                BossWaveData distanceWaveData = waveData as BossWaveData;
                 if (distanceWaveData != null)
                 {
-                    _distanceWaveList.Add(new Wave() { waveData = distanceWaveData, elapsedTime = distanceWaveData.genTime });
+                    _bossWaveList.Add(new Wave() { waveData = distanceWaveData, elapsedTime = distanceWaveData.genTime });
                 }
             }
             foreach (var waveData in _mapData.mentalWave)
@@ -288,8 +313,25 @@ public class GameManager : ManagerBase
             _isPlayTimeline = true;
         }
 
+        for (int distance = 200; distance < _mapData.mapSize; distance += 200)
+        {
+            if (_walletList.Count <= (distance / 200) -1)
+            {
+                _walletList.Add(null);
+            }
+
+            if (_walletList[(distance / 200) - 1] == null)
+            {
+                GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Wallet");
+                go.transform.position = GetGroundTop(new Vector3(distance,0,0)).Value; 
+                _walletList.Add(go);
+            }
+
+        }
+
+        _farDistance = 0;
         _stageTime = 0;
-        _nextBeyondDeath = 120f;
+        _nextBeyondDeath = BeyondDeathInterval;
         IsLoadEnd = true;
     }
 
@@ -372,6 +414,11 @@ public class GameManager : ManagerBase
             else
                 Time.timeScale = _timeScale;
         }
+        if (_immdiatelyEnterBeyondDeath)
+        {
+            LoadBeyondDeath();
+            _immdiatelyEnterBeyondDeath = false;
+        }
         if (_summonDummy)
         {
             EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)Define.EnemyName.Slime);
@@ -411,48 +458,48 @@ public class GameManager : ManagerBase
             _addNpcCard = false;
         }
     }
-    void TimeWave()
+    void DistanceWave()
     {
         if (IsPlayTimeline) return;
-        foreach (var timeWave in _timeWaveList)
+        foreach (var distanceWave in _distanceWaveList)
         {
-            TimeWaveData timeWaveData = timeWave.waveData as TimeWaveData;
-            if (_stageTime > timeWaveData.endTime || _stageTime < timeWaveData.startTime)
+            DistanceWaveData distanceWaveData = distanceWave.waveData as DistanceWaveData;
+            if (_farDistance > distanceWaveData.endDistance || _farDistance < distanceWaveData.startDistance)
                 continue;
 
-            if (timeWave.elapsedTime > timeWave.waveData.genTime)
+            if (distanceWave.elapsedTime > distanceWave.waveData.genTime)
             {
-                timeWave.elapsedTime = 0;
+                distanceWave.elapsedTime = 0;
 
-                if (timeWaveData.enemyName == Define.EnemyName.None)
+                if (distanceWaveData.enemyName == Define.EnemyName.None)
                 {
-                    Vector3 genLocalPosition = timeWaveData.genLocalPosition;
-                    if (Mathf.Abs(_farDistance - _girl.transform.position.x) > 50)
+                    Vector3 genLocalPosition = distanceWaveData.genLocalPosition;
+                    if (Mathf.Abs(_farDistance - _girl.transform.position.x) > 100)
                     {
-                        genLocalPosition.x = -timeWaveData.genLocalPosition.x;
+                        genLocalPosition.x = -distanceWaveData.genLocalPosition.x;
                     }
                     Vector3? topPosition = GetGroundTop(CameraController.transform.position + genLocalPosition);
                     if (topPosition.HasValue)
                     {
-                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(timeWaveData.enemyPreset);
+                        GameObject preset = Managers.GetManager<ResourceManager>().Instantiate(distanceWaveData.enemyPreset);
                         preset.transform.position = topPosition.Value;
                         for(int i = 0; i < preset.transform.childCount; i++)
                         {
                             // 각 개체 체력 설정
                             Character character = preset.transform.GetChild(i).GetComponent<Character>();
-                            character.SetHp(Mathf.RoundToInt(character.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
+                            character.SetHp(Mathf.RoundToInt(character.MaxHp * EnemyStatusMultifly));
                         }
                         _enemySpawnList.Add(preset);
                     }
                 }
                 else
                 {
-                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)timeWaveData.enemyName);
+                    EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)distanceWaveData.enemyName);
                     EnemyNameDefine enemy = Managers.GetManager<ResourceManager>().Instantiate(enemyOrigin);
                     if (enemy)
                     {
                         // 위치 설정
-                        Vector3? topPosition = GetGroundTop(CameraController.transform.position + timeWaveData.genLocalPosition);
+                        Vector3? topPosition = GetGroundTop(CameraController.transform.position + distanceWaveData.genLocalPosition);
                         if (topPosition.HasValue)
                         {
                             Character enemyCharacter = enemy.GetComponent<Character>();
@@ -461,7 +508,7 @@ public class GameManager : ManagerBase
                             if (enemy.IsGroup)
                                 enemy.GetComponent<EnemyGroup>().SetHp(1 + PanicLevel * _mapData.addMultifly);
                             else
-                                enemyCharacter.SetHp(Mathf.RoundToInt(enemyCharacter.MaxHp * (1 + PanicLevel * _mapData.addMultifly)));
+                                enemyCharacter.SetHp(Mathf.RoundToInt(enemyCharacter.MaxHp * EnemyStatusMultifly));
 
 
                             enemyCharacter.transform.position = topPosition.Value;
@@ -476,27 +523,28 @@ public class GameManager : ManagerBase
             }
             else
             {
-                timeWave.elapsedTime += Time.deltaTime;
+                distanceWave.elapsedTime += Time.deltaTime;
             }
         }
     }
-    void DistanceWave()
+    void BossWave()
     {
-        foreach (var wave in _distanceWaveList)
+        foreach (var wave in _bossWaveList)
         {
-            DistanceWaveData distanceWaveData = wave.waveData as DistanceWaveData;
-            if (distanceWaveData.distance <= _farDistance)
+            BossWaveData bossWaveData = wave.waveData as BossWaveData;
+            // 멘탈 로 잠시 교체
+            if (bossWaveData.distance <= _panicLevel)
             {
-                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)distanceWaveData.enemyName);
+                EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)bossWaveData.enemyName);
 
-                GameObject enemy = GenerateCharacter(enemyOrigin.gameObject, _cameraController.transform.position + distanceWaveData.genLocalPosition);
+                GameObject enemy = GenerateCharacter(enemyOrigin.gameObject, _cameraController.transform.position + bossWaveData.genLocalPosition);
 
                 Boss = enemy.GetComponent<Character>();
                 Boss.CharacterDeadHandler += () =>
                 {
                     _nextBeyondDeath += 120f;
                 };
-                _distanceWaveList.Remove(wave);
+                _bossWaveList.Remove(wave);
                 return;
             }
         }
@@ -660,7 +708,10 @@ public class GameManager : ManagerBase
     {
         _stop = true;
         _stageTime = 0;
-        _nextBeyondDeath = 120f;
+        _nextBeyondDeath = BeyondDeathInterval;
+        _panicLevel = 0;
+        Mental = 100f;
+        MentalAccelerationPercentage += 30f;
         StartCoroutine(CorPlayBeyondDeath());
     }
 
@@ -671,8 +722,9 @@ public class GameManager : ManagerBase
             _dark = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Dark").gameObject.GetComponent<SpriteRenderer>();
 
         float time = 0;
-
-        GroundGroup groundGroup = GameObject.Find("Grounds").GetComponent<GroundGroup>();
+        GroundGroup groundGroup = null;
+        if(GameObject.Find("Grounds") != null)
+            groundGroup = GameObject.Find("Grounds").GetComponent<GroundGroup>();
 
         SortingGroup girlGroup = _girl.GetComponent<SortingGroup>();
         SortingGroup creatureGroup = _creature.GetComponent<SortingGroup>();
@@ -688,20 +740,17 @@ public class GameManager : ManagerBase
         creatureGroup.sortingLayerName = "Character";
         creatureGroup.sortingOrder = 1002;
 
-        
+
         while (time < 3)
         {
             time += Time.deltaTime;
             _dark.color = new Color(0, 0, 0, time / 3);
-            groundGroup.SetColor(new Color((3-time) / 3, (3 - time) / 3, (3 - time) / 3));
+            groundGroup?.SetColor(new Color((3-time) / 3, (3 - time) / 3, (3 - time) / 3));
+
             yield return null;
         }
         IsStartBeyondDead = true;
-        if (_helpBox)
-        {
-            Destroy(_helpBox);
-            _helpBox = null;
-        }
+        
         foreach (var enemy in _enemySpawnList)
         {
             Managers.GetManager<ResourceManager>().Destroy(enemy);
@@ -709,10 +758,21 @@ public class GameManager : ManagerBase
         _enemySpawnList.Clear();
         Vector3 deadPosition = _girl.transform.position;
 
+        // 도움창 삭제
+        if (_helpBox)
+        {
+            Destroy(_helpBox);
+            _helpBox = null;
+        }
+
         Player.PlayRevive();
         if (_creature.IsDead)
             CreatureAI.ForceRevive();
 
+        _girl.Hp += _girl.MaxHp;
+        _creature.Hp += _creature.MaxHp;
+
+        Managers.GetManager<UIManager>().GetUI<UIInGame>().ShowText("소지 중인 아이템이 모두 사라집니다.");
 
         yield return new WaitForSeconds(1f);
         UICardSelection uiCardSelection = Managers.GetManager<UIManager>().GetUI<UICardSelection>();
@@ -723,6 +783,19 @@ public class GameManager : ManagerBase
             yield return new WaitForSeconds(0.3f);
         }
 
+        // 가지고 있는 아이템 모두 삭제
+        List<ItemInfo> itemList = Inventory.GetItemInfoList(info=> 
+        { 
+            if(info.ItemData.ItemName == ItemName.아르라제코인 || info.ItemData.ItemName == ItemName.아르라제코인_A|| info.ItemData.ItemName == ItemName.아르라제코인_B) return false;
+            return !SaveItemList.Contains(info); 
+        });
+        foreach (var info in itemList)
+        {
+            Inventory.RemoveItem(info);
+        }
+
+
+        //카드 선택에 따른 효과
         Card card = Managers.GetManager<CardManager>().GetCard(CardName.노잣돈);
         {
             if(card != null && card.rank >= 0)  
@@ -773,7 +846,25 @@ public class GameManager : ManagerBase
             go.GetComponent<SortingGroup>().sortingOrder = 1001;
             npcList.Add(go);
         }
-     
+
+        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.아이템강화NPC))
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/아이템강화NPC");
+            go.transform.position = _girl.transform.position + Vector3.right * 100;
+            go.GetComponent<SortingGroup>().sortingLayerName = "Character";
+            go.GetComponent<SortingGroup>().sortingOrder = 1001;
+            npcList.Add(go);
+        }
+        if (Managers.GetManager<CardManager>().GetIsHaveAbility(CardName.아이템세이브NPC))
+        {
+            GameObject go = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/Event/인벤토리세이버NPC");
+            go.transform.position = _girl.transform.position + Vector3.right * 110;
+            go.GetComponent<SortingGroup>().sortingLayerName = "Character";
+            go.GetComponent<SortingGroup>().sortingOrder = 1001;
+            npcList.Add(go);
+        }
+
+        // 소녀 캐릭터가 일정거리 이상 나가면 게임 다시 시작
 
         while (_girl.transform.position.x - deadPosition.x < 140)
         {
@@ -781,6 +872,7 @@ public class GameManager : ManagerBase
         }
 
 
+        // NPC들은 다시 삭제
         foreach(var go in npcList) 
             Managers.GetManager<ResourceManager>().Destroy(go);
 
@@ -790,16 +882,20 @@ public class GameManager : ManagerBase
         _creature.transform.position -= Vector3.right * distance;
         _cameraController.transform.position -= Vector3.right * distance;
         time = 0;
-        _farDistance = 0;
         IsStartBeyondDead = false;
         while (time < 3)
         {
             time += Time.deltaTime;
             _dark.color = new Color(0, 0, 0, (3-time) / 3);
-            groundGroup.SetColor(new Color(time / 3, time / 3, time / 3));
+            groundGroup?.SetColor(new Color(time / 3, time / 3, time / 3));
 
             yield return null;
         }
+
+      
+        // 기존 돈 삭제
+        Money = 0;
+
         LoadMapData();
         girlGroup.sortingLayerName = preSortingLayerName;
         girlGroup.sortingOrder = preSortingOrder;

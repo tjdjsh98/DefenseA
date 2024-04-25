@@ -148,6 +148,7 @@ MonoBehaviour:
   _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
+  IgnoreDamageCount: 0
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 5, y: 0.5, z: 0}
@@ -195,6 +196,7 @@ MonoBehaviour:
   _bodyAttackKnockBackPower: 50
   _bodyAttackCoolTime: 1
   _dropPercentage: 100
+  _dropMoney: 50
 --- !u!114 &4654579628162769321
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -185,6 +185,12 @@ public class CreatureAbility
         // °ø°ÝÇÑ ÀûÀÌ Á×´Â´Ù¸é
         if (target == null || target.IsDead)
         {
+            if (_inventory.GetIsHaveItem(ItemName.¹Ù´Ã°ú°¡Á×))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.¹Ù´Ã°ú°¡Á×_A))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.¹Ù´Ã°ú°¡Á×_B))
+                _inventory.LeatherAndNeedleHuntingCount++;
             if (_inventory.GetIsHaveItem(ItemName.ÇªÄ«¶ó½º¿þÆ®_B))
             {
                 Managers.GetManager<GameManager>().Mental += 1;
@@ -197,6 +203,12 @@ public class CreatureAbility
         // °ø°ÝÇÑ ÀûÀÌ Á×´Â´Ù¸é
         if (target == null || target.IsDead)
         {
+            if (_inventory.GetIsHaveItem(ItemName.¹Ù´Ã°ú°¡Á×))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.¹Ù´Ã°ú°¡Á×_A))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.¹Ù´Ã°ú°¡Á×_B))
+                _inventory.LeatherAndNeedleHuntingCount++;
             if (_inventory.GetIsHaveItem(ItemName.ÇªÄ«¶ó½º¿þÆ®_B))
             {
                 Managers.GetManager<GameManager>().Mental += 1;

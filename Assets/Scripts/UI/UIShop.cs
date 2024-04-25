@@ -1,4 +1,5 @@
 using DuloGames.UI.Tweens;
+using System;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
@@ -20,20 +21,14 @@ public class UIShop : UIBase
     [SerializeField] GameObject _restockButton;
     [SerializeField] TextMeshProUGUI _restockText;
 
-    [SerializeField] GameObject _itemDescription;
-    TextMeshProUGUI _itemNameText;
-    TextMeshProUGUI _itemDescriptionText;
+    [SerializeField] UIItemDescription _itemDescription;
 
     IShop _openShop;
-
-    GameObject _hoverImage;
-
     public override void Init()
     {
         gameObject.SetActive(false);
 
-        _itemNameText = _itemDescription.transform.Find("ItemNameText").GetComponent<TextMeshProUGUI>();
-        _itemDescriptionText = _itemDescription.transform.Find("DescriptionText").GetComponent<TextMeshProUGUI>();
+   
 
         int index = 0;
         foreach (var slot in _slotList)
@@ -154,21 +149,6 @@ public class UIShop : UIBase
         Refresh();
     }
 
-    void RefreshDescription(int index)
-    {
-        GameObject slot = _slotList[index];
-        if (slot.transform.transform.position.x < 0)
-            _itemDescription.transform.position = slot.transform.position + Vector3.right * 10;
-        else
-            _itemDescription.transform.position = slot.transform.position - Vector3.right * 10;
-
-        string description = _openShop.ShopItemList[index].shopItemData.Description;
-        description += "\n À¯´ÏÅ©";
-
-
-        _itemNameText.text = _openShop.ShopItemList[index].shopItemData.ItemName.ToString();
-        _itemDescriptionText.text = description;
-    }
 
     void OnUIMouseHover(List<GameObject> list)
     {
@@ -179,20 +159,18 @@ public class UIShop : UIBase
             if (list.Contains(_slotFrameList[i].gameObject))
             {
                 isHover = true;
-                if (_hoverImage != _slotFrameList[i].gameObject)
-                {
-                    _itemDescription.gameObject.SetActive(true);
-                    _hoverImage = _slotFrameList[i].gameObject;
-                    RefreshDescription(i);
-                    return;
-                }
+                _itemDescription.gameObject.SetActive(true);
+                if (_slotList[i].transform.transform.position.x < 0)
+                    _itemDescription.Show(_slotList[i].transform.position + Vector3.right * 10, _openShop.ShopItemList[i].shopItemData);
+                else
+                    _itemDescription.Show(_slotList[i].transform.position - Vector3.right * 10, _openShop.ShopItemList[i].shopItemData);
+                return;
             }
         }
 
         if (!isHover)
         {
-            _itemDescription.gameObject.SetActive(false);
-            _hoverImage = null;
+            _itemDescription.Hide();
         }
     }
 }

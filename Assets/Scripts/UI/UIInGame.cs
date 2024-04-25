@@ -104,7 +104,7 @@ public class UIInGame : UIBase
 
         _moneyText.text = Managers.GetManager<GameManager>().Money.ToString();
 
-        _timeText.text = $"{(int)(Managers.GetManager<GameManager>().NextBeyondDeath - (Managers.GetManager<GameManager>().StageTime % Managers.GetManager<GameManager>().NextBeyondDeath))}";
+        _timeText.text = $"{(int)(Managers.GetManager<GameManager>().NextBeyondDeath - (Managers.GetManager<GameManager>().StageTime))}";
 
         RefreshWeapon();
         HandleBar();
@@ -114,6 +114,8 @@ public class UIInGame : UIBase
     }
 
     
+  
+
     void RefreshWeapon()
     {
         WeaponSwaper weaponSwaper = _player.WeaponSwaper;
@@ -415,7 +417,46 @@ public class UIInGame : UIBase
         _levelName.gameObject.SetActive(false);
     }
 
+    public void ShowText(string text)
+    {
+        StartCoroutine(CorShowText(text));
+    }
+    IEnumerator CorShowText(string text)
+    {
 
+        float alpha = 0;
+        Color color = new Color(1, 1, 1, alpha);
+        _levelName.color = color;
+        _levelName.gameObject.SetActive(true);
+        
+            
+        _levelName.text = text;
+        
+        while (alpha < 1)
+        {
+            color = new Color(1, 1, 1, alpha);
+            alpha += Time.deltaTime / 3;
+
+            _levelName.color = color;
+            yield return null;
+        }
+        alpha = 1;
+
+        yield return new WaitForSeconds(1);
+
+
+        while (alpha > 0)
+        {
+            color = new Color(1, 1, 1, alpha);
+            alpha -= Time.deltaTime / 3;
+
+            _levelName.color = color;
+            yield return null;
+        }
+        
+
+        _levelName.gameObject.SetActive(false);
+    }
     IEnumerator CorShowLevelName()
     {
         float alpha = 0;

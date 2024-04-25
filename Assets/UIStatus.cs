@@ -195,7 +195,7 @@ public class UIStatus : UIBase
             TextMeshProUGUI text = null;
             if (_slotList.Count <= index)
             {
-                slot = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/UI/UI_Status_ItemSlot");
+                slot = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/UI/UI_ItemSlot");
                 slot.transform.SetParent(_itemSlotFolder.transform);
                 slot.transform.localScale = Vector3.one;
 

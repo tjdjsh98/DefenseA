@@ -12,15 +12,21 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad160bc723eed74bbfbef04d3da1a0c, type: 3}
   m_Name: "\uB178\uC7A3\uB3C8"
   m_EditorClassIdentifier: 
-  <CardName>k__BackingField: 11
+  <CardName>k__BackingField: 12
   <CardSelectionType>k__BackingField: 0
   <CardDescription>k__BackingField: "\uC8FD\uC744 \uB54C \uCF54\uC778\uC744 \uCD94\uAC00\uB85C
     50 \uCF54\uC778\uC90D\uB2C8\uB2E4."
-  <IsStartCard>k__BackingField: 1
+  <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
   <coolTimeList>k__BackingField:
   - 0
-  <PriorCards>k__BackingField: []
+  <PriorCards>k__BackingField:
+  - priorCardName: 15
+    priorUpgradeCount: 0
+  - priorCardName: 16
+    priorUpgradeCount: 0
+  - priorCardName: 9
+    priorUpgradeCount: 0
   <MaxUpgradeCount>k__BackingField: 99
   <PropertyList>k__BackingField:
   - 0

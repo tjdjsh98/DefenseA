@@ -345,6 +345,10 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4436091164550753319, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
+      propertyPath: orthographic size
+      value: 20
+      objectReference: {fileID: 0}
     - target: {fileID: 4648237583364501814, guid: 99788d62d8650de4c9b977bd15c8629e, type: 3}
       propertyPath: m_Name
       value: '[Camera]-----------'
@@ -525,16 +529,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9031e8eb4629c924895377fb6d3844ed, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  CreatureAI: {fileID: 0}
   _summonDummy: 0
   _destroyDummy: 0
   _dummyHp: 3
-  _itemName: 3
+  _itemName: 43
   _addItem: 0
   _removeItem: 0
   _timeScale: 1
   _addSkill: 0
   _addNpcCard: 0
+  _immdiatelyEnterBeyondDeath: 0
   _stop: 0
   _mapData: {fileID: 11400000, guid: 14240f8f275b1494081fb12ac529681d, type: 2}
   MentalAccelerationPercentage: 0
@@ -1321,8 +1325,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: "1,2,3 : \uBB34\uAE30 \uBCC0\uACBD\nz,x,c,v : \uC2A4\uD0AC \uC0AC\uC6A9\nR
-    : \uC7AC\uC7A5\uC804\nShift : \uC2AC\uB77C\uC774\uB529\nCtrl : \uAC77\uAE30"
+  m_text: "1,2,3 : \uBB34\uAE30 \uBCC0\uACBD\nz,x,c,v : \uC2A4\uD0AC \uC0AC\uC6A9\nR,\uB9C8\uC6B0\uC2A4
+    \uC6B0 \uD074\uB9AD : \uC7AC\uC7A5\uC804\nI : \uC0C1\uD0DC\uCC3D\nShift : \uC2AC\uB77C\uC774\uB529\nCtrl
+    : \uAC77\uAE30"
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: ef9d9783318713f44815a15ca395bef4, type: 2}
   m_sharedMaterial: {fileID: -1315517462456153547, guid: ef9d9783318713f44815a15ca395bef4, type: 2}

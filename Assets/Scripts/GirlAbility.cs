@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Random = UnityEngine.Random;
@@ -306,9 +307,64 @@ public class GirlAbility
                 _inventory.Explosion(_player.Character, point, 10);
             }
         }
-            // 타겟이 죽는다면 
-            if (target == null || target.IsDead)
+        if (_inventory.GetIsHaveItem(ItemName.눈동자구슬) || _inventory.GetIsHaveItem(ItemName.눈동자구슬_A) || _inventory.GetIsHaveItem(ItemName.눈동자구슬_B))
         {
+            float probabilty = 5f;
+            if (_inventory.GetIsHaveItem(ItemName.눈동자구슬_A))
+                probabilty = 10f;
+
+            if (Random.Range(0, 100) < probabilty)
+            {
+                float radius = 3;
+                EyeBead eyeBead = Managers.GetManager<ResourceManager>().Instantiate<EyeBead>("Prefabs/EyeBead");
+                eyeBead.Play(_player.Character, target.transform.position, radius, _inventory.GetIsHaveItem(ItemName.눈동자구슬_B));
+            }
+        }
+
+        if (_inventory.GetIsHaveItem(ItemName.과충전배터리) || _inventory.GetIsHaveItem(ItemName.과충전배터리_A) || _inventory.GetIsHaveItem(ItemName.과충전배터리_B))
+        {
+            int count = 2;
+            int addtionCount = 1;
+            if (_inventory.GetIsHaveItem(ItemName.과충전배터리_A))
+                count = 4;
+
+            if (_inventory.GetIsHaveItem(ItemName.과충전배터리_B))
+                addtionCount = 3;
+
+            int elecItmeCount = 0;
+            {
+                if (_inventory.GetIsHaveItem(ItemName.부서진건전지))
+                    elecItmeCount++;
+                if (_inventory.GetIsHaveItem(ItemName.부서진건전지_A))
+                    elecItmeCount++;
+                if (_inventory.GetIsHaveItem(ItemName.부서진건전지_B))
+                    elecItmeCount++;
+                if (_inventory.GetIsHaveItem(ItemName.피뢰침))
+                    elecItmeCount++;
+                if (_inventory.GetIsHaveItem(ItemName.피뢰침_A))
+                    elecItmeCount++;
+                if (_inventory.GetIsHaveItem(ItemName.피뢰침_B))
+                    elecItmeCount++;
+            }
+            count += elecItmeCount * addtionCount;
+
+            LineRenderer lighting = Managers.GetManager<ResourceManager>().Instantiate("Prefabs/ChainLight").GetComponent<LineRenderer>();
+            lighting.positionCount = 1;
+            lighting.SetPosition(0, target.GetCenter());
+            _player.StartCoroutine(CorPlayOverchargedBattery(point,target,count,lighting));
+            
+        }
+
+        // 타겟이 죽는다면 
+        if (target == null || target.IsDead)
+        {
+            if (_inventory.GetIsHaveItem(ItemName.바늘과가죽))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.바늘과가죽_A))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.바늘과가죽_B))
+                _inventory.LeatherAndNeedleHuntingCount++;
+
             if (_inventory.GetIsHaveItem(ItemName.푸카라스웨트_B))
             {
                 Managers.GetManager<GameManager>().Mental += 1;
@@ -353,10 +409,57 @@ public class GirlAbility
         }
     }
 
+    IEnumerator CorPlayOverchargedBattery(Vector3 position,Character preTarget, int count,LineRenderer effect)
+    {
+
+        // 이펙트를 파괴하기 위해
+        int effectCount = effect.positionCount;
+
+        if (count > 0)
+        {
+            Define.Range range = new Define.Range() { center = Vector3.zero, size = Vector3.one * 8, figureType = Define.FigureType.Circle };
+
+            Character target = null;
+
+            Util.RangeCastAll2D(position, range, Define.CharacterMask, (hit) =>
+            {
+                if (target != null) return false;
+                Character enemy = hit.collider.GetComponent<Character>();
+                if (preTarget != null && preTarget == enemy) return false;
+
+                if (enemy != null && !enemy.IsDead && enemy.CharacterType == Define.CharacterType.Enemy)
+                {
+                    target = enemy;
+                }
+                return false;
+            });
+            if (target)
+            {
+                effect.positionCount++;
+                effect.SetPosition(effect.positionCount-1, target.GetCenter());
+                _player.Character.AddtionalAttack(target, 30, 0, Vector3.zero, target.GetCenter(), 1f);
+                yield return _player.StartCoroutine(CorPlayOverchargedBattery(target.GetCenter(), target, count-1,effect));
+            }
+        }
+
+        if (effectCount == 1)
+        {
+            yield return new WaitForSeconds(0.2f);
+            Managers.GetManager<ResourceManager>().Destroy(effect.gameObject);
+        }
+        yield return null;
+    }
+
     void OnAddtionalAttack(Character target, int totalDamage, float power, Vector3 direction, Vector3 point, float stunTime)
     {
         if (target == null || target.IsDead)
         {
+            if (_inventory.GetIsHaveItem(ItemName.바늘과가죽))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.바늘과가죽_A))
+                _inventory.LeatherAndNeedleHuntingCount++;
+            if (_inventory.GetIsHaveItem(ItemName.바늘과가죽_B))
+                _inventory.LeatherAndNeedleHuntingCount++;
             if (_inventory.GetIsHaveItem(ItemName.푸카라스웨트_B))
             {
                 Managers.GetManager<GameManager>().Mental += 1;

@@ -117,9 +117,7 @@ public class Projectile : MonoBehaviour, ITypeDefine
                 {
                     if (!character.IsDead && character.CharacterType == _enableAttackCharacterType)
                     {
-
-                        _direction = _direction.normalized;
-                        _attacker.Attack(characterPart ? characterPart : character, _damage, _knockbackPower, _direction, hit.point, _stunTime);
+                        _attacker.Attack(characterPart ? characterPart : character, _damage, _knockbackPower, _rigid.velocity.normalized, hit.point, _stunTime);
                         Effect hitEffectOrigin = Managers.GetManager<DataManager>().GetData<Effect>((int)Define.EffectName.Hit3);
                         Effect hitEffect = Managers.GetManager<ResourceManager>().Instantiate<Effect>(hitEffectOrigin);
                         hitEffect.SetProperty("Direction", direction);

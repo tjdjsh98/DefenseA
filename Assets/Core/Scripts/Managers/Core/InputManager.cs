@@ -21,6 +21,7 @@ public class InputManager : ManagerBase
     bool _isFinishRaycastUI = false;
 
     public Action MouseButtonDownHandler;
+    public Action MouseButton1DownHandler;
     public Action MouseButtonHoldHandler;
     public Action MouseButtonUpHandler;
     List<GameObject> _mouseRaycastGameobjects = new List<GameObject>();
@@ -68,6 +69,7 @@ public class InputManager : ManagerBase
             }
             MouseButtonDownHandler?.Invoke();
         }
+   
         if (Input.GetMouseButton(0))
         {
 
@@ -95,11 +97,11 @@ public class InputManager : ManagerBase
         if (Input.GetKey(KeyCode.A))
             LeftArrowPressedHandler?.Invoke();
 
-        if (Input.GetKeyDown(KeyCode.R))
+        if (Input.GetKeyDown(KeyCode.R) || Input.GetMouseButtonDown(1))
             ReloadKeyDownHandler?.Invoke();
-        if (Input.GetKey(KeyCode.R))
+        if (Input.GetKey(KeyCode.R) || Input.GetMouseButton(1))
             ReloadKeyHoldHandler?.Invoke();
-        if (Input.GetKeyUp(KeyCode.R))
+        if (Input.GetKeyUp(KeyCode.R) || Input.GetMouseButtonUp(1))
             ReloadKeyUpHandler?.Invoke();
 
         if (Input.GetKeyDown(KeyCode.Space))

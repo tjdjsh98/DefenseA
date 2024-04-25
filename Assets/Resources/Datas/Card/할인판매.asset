@@ -14,13 +14,20 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <CardName>k__BackingField: 14
   <CardSelectionType>k__BackingField: 0
-  <CardDescription>k__BackingField: "\"\uD310\uB9E4"
+  <CardDescription>k__BackingField: "\uD310\uB9E4\uC640 \uC5C5\uADF8\uB808\uC774\uB4DC\uD558\uB294
+    \uBE44\uC6A9\uC774 \uAC10\uC18C\uD569\uB2C8\uB2E4."
   <IsStartCard>k__BackingField: 0
   <IsActiveAbility>k__BackingField: 0
   <coolTimeList>k__BackingField:
   - 0
-  <PriorCards>k__BackingField: []
-  <MaxUpgradeCount>k__BackingField: 1
+  <PriorCards>k__BackingField:
+  - priorCardName: 15
+    priorUpgradeCount: 0
+  - priorCardName: 16
+    priorUpgradeCount: 0
+  - priorCardName: 9
+    priorUpgradeCount: 0
+  <MaxUpgradeCount>k__BackingField: 10
   <PropertyList>k__BackingField:
   - 0
   <Property2List>k__BackingField:

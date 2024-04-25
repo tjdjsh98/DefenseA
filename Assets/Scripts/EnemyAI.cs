@@ -55,6 +55,7 @@ public class EnemyAI : MonoBehaviour
 
     [Header("드랍 아이템")]
     [SerializeField] float _dropPercentage;
+    [SerializeField] int _dropMoney = 1;
 
     protected virtual void Awake()
     {
@@ -148,7 +149,7 @@ public class EnemyAI : MonoBehaviour
     }
     void OnCharacterDead()
     {
-        Managers.GetManager<GameManager>().Money += 1;
+        Managers.GetManager<GameManager>().Money += _dropMoney;
         Managers.GetManager<GameManager>().HuntingCount += 1;
         if (Random.Range(0, 100) < _dropPercentage)
         {

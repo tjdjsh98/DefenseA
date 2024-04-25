@@ -32,7 +32,7 @@ public class AttachProjectile : Projectile
 
     public override void Init(float knockbackPower, float speed, int damage, Define.CharacterType enableAttackCharacterType, int penetratingPower = 0, float stunTime = 0.1f)
     {
-        base.Init(knockbackPower,speed,damage,enableAttackCharacterType,penetratingPower);
+        base.Init(knockbackPower,speed,damage,enableAttackCharacterType,penetratingPower,stunTime);
 
         _isAttach = false;
     }

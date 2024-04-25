@@ -21,10 +21,22 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     [SerializeField] float rank1Probability = 15f;
     [SerializeField] float rank2Probability = 5f;
 
+    int _freeBuyCount = 0;
+
+
     private void Awake()
     {
         RestockShopItems();
         HideBubble();
+
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.아르라제코인))
+        {
+            _freeBuyCount = 1;
+        }
+        if (Managers.GetManager<GameManager>().Inventory.GetIsHaveItem(ItemName.아르라제코인_B))
+        {
+            _freeBuyCount = 2;
+        }
     }
 
 
@@ -65,6 +77,16 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
         List<ItemData> itemList1 = Managers.GetManager<GameManager>().RankItemDataList[1].ToList();
         List<ItemData> itemList2 = Managers.GetManager<GameManager>().RankItemDataList[2].ToList();
         List<ItemData> itemList3 = Managers.GetManager<GameManager>().RankItemDataList[3].ToList();
+
+        List<ItemInfo> itemInfos = Managers.GetManager<GameManager>().Inventory.GetItemInfoList();
+
+        foreach (var item in itemInfos)
+        {
+            itemList0.Remove(item.ItemData);
+            itemList1.Remove(item.ItemData);
+            itemList2.Remove(item.ItemData);
+            itemList3.Remove(item.ItemData);
+        }
 
         for (int i = 0; i < 5; i++)
         {
@@ -114,9 +136,6 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
                     if (itemData != null)
                     {
                         itemList.Remove(itemData);
-
-                        if(itemData.IsUnique)
-                            Managers.GetManager<GameManager>().RankItemDataList[itemData.Rank].Remove(itemData);
                     }
                     else
                         itemData = Managers.GetManager<DataManager>().GetData<ItemData>((int)ItemName.푸카라스웨트);
@@ -136,11 +155,18 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
     {
         foreach(var item in ShopItemList)
         {
-            Card card = Managers.GetManager<CardManager>().GetCard(CardName.할인판매);
-            if(card != null)
-                item.Price = Mathf.RoundToInt(item.shopItemData.Price * (100 - (card.rank+1) *5)/100f);
+            if (_freeBuyCount > 0)
+            {
+                item.Price = 0;
+            }
             else
-                item.Price= item.shopItemData.Price;
+            {
+                Card card = Managers.GetManager<CardManager>().GetCard(CardName.할인판매);
+                if (card != null)
+                    item.Price = Mathf.RoundToInt(item.shopItemData.Price * (100 - (card.rank + 1) * 5) / 100f);
+                else
+                    item.Price = item.shopItemData.Price;
+            }
         }
     }
 
@@ -158,6 +184,10 @@ public class VendingMechine : MonoBehaviour,IInteractable,IShop
 
             Managers.GetManager<GameManager>().Inventory.AddItem(item.shopItemData);
 
+            if (_freeBuyCount > 0)
+            {
+                _freeBuyCount--;
+            }
             Refresh();
         }
     }

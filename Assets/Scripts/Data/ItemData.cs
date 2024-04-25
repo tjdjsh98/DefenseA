@@ -11,7 +11,7 @@ public class ItemData : ScriptableObject, ITypeDefine
     [field:SerializeField][field:TextArea] public string Description { set; get; }
     [field: SerializeField] public int Rank { set; get; }
     [field: SerializeField] public bool IsUnique { set; get; }
-    public int Price => Rank == 0 ? 20 : Rank == 1 ? 50 : Rank == 2 ? 80 : Rank == 3 ? 150 : 300;
+    public int Price => Rank == 0 ? Define.ItemRank0Price : Rank == 1 ? Define.ItemRank1Price : Rank == 2 ? Define.ItemRank2Price : Rank == 3 ? Define.ItemRank3Price : 500;
     public int GetEnumToInt()
     {
         return (int)ItemName;

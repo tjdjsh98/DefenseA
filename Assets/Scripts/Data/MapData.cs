@@ -6,8 +6,8 @@ using UnityEngine;
 public class MapData : ScriptableObject
 {
     public string sceneName;
-    public List<TimeWaveData> timeWave;
     public List<DistanceWaveData> distanceWave;
+    public List<BossWaveData> bossWave;
     public List<MentalWaveData> mentalWave;
     public float mapSize;
     public MapData nextMapData;
@@ -39,13 +39,13 @@ public class WaveData
     public GameObject enemyPreset;
 }
 [System.Serializable]
-public class TimeWaveData : WaveData
+public class DistanceWaveData : WaveData
 {
-    public int startTime;
-    public int endTime;
+    public float startDistance;
+    public float endDistance;
 }
 [System.Serializable]
-public class DistanceWaveData : WaveData
+public class BossWaveData : WaveData
 {
     public float distance;
 }

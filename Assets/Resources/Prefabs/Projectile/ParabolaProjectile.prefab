@@ -164,6 +164,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <ProjectileName>k__BackingField: 1
+  _isCheckBox: 0
+  _boxSize:
+    center: {x: 0, y: 0, z: 0}
+    size: {x: 0, y: 0, z: 0}
+    angle: 0
+    figureType: 0
 --- !u!96 &1758643698742109537
 TrailRenderer:
   serializedVersion: 3
@@ -204,7 +210,7 @@ TrailRenderer:
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
   m_SortingLayerID: -256922147
-  m_SortingLayer: 2
+  m_SortingLayer: 3
   m_SortingOrder: 0
   m_Time: 0.1
   m_PreviewTimeScale: 1

@@ -281,4 +281,12 @@ public static class Util
     {
         return (go1.transform.position - go2.transform.position).magnitude;
     }
+
+    public static T ConvertStringToEnum<T>(string str) where T : Enum
+    {
+        T result = (T)Enum.Parse(typeof(T), str);
+
+        return result;
+    }
+
 }

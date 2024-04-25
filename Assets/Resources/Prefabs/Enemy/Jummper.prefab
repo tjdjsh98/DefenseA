@@ -327,8 +327,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _characterType: 1
-  _maxHp: 100
-  _hp: 100
+  _maxHp: 200
+  _hp: 200
   _speed: 3
   _standing: 50
   <AttackPower>k__BackingField: 30
@@ -339,6 +339,7 @@ MonoBehaviour:
   _isHaveDamageInvincibility: 0
   <IsEnableMove>k__BackingField: 1
   <IsEnableTurn>k__BackingField: 1
+  IgnoreDamageCount: 0
   _groundCheckRange:
     center: {x: 0, y: 0, z: 0}
     size: {x: 4.87, y: 0.75, z: 0}
@@ -400,6 +401,7 @@ MonoBehaviour:
   _bodyAttackKnockBackPower: 50
   _bodyAttackCoolTime: 1
   _dropPercentage: 0
+  _dropMoney: 10
 --- !u!114 &6998841815695374005
 MonoBehaviour:
   m_ObjectHideFlags: 0

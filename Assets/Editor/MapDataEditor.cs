@@ -7,8 +7,8 @@ using Codice.Client.Common;
 public class MapDataEditor : Editor
 {
     SerializedProperty sceneNameProperty;
-    SerializedProperty timeWaveProperty;
     SerializedProperty distanceWaveProperty;
+    SerializedProperty bossWaveProperty;
     SerializedProperty mentalWaveProperty;
 
     SerializedProperty mapSizeProperty;
@@ -21,19 +21,19 @@ public class MapDataEditor : Editor
     SerializedProperty mutiflyIntervalProperty;
     SerializedProperty addMutiflyProperty;
 
+    bool bossWaveFoldout;
     bool distanceWaveFoldout;
-    bool timeWaveFoldout;
     bool mentalWaveFoldout;
 
-    Vector2 timeScrollPos;
     Vector2 distanceScrollPos;
+    Vector2 bossScrollPos;
     Vector2 mentalScrollPos;
 
     public virtual void OnEnable()
     {
         sceneNameProperty = serializedObject.FindProperty("sceneName");
-        timeWaveProperty = serializedObject.FindProperty("timeWave");
         distanceWaveProperty = serializedObject.FindProperty("distanceWave");
+        bossWaveProperty = serializedObject.FindProperty("bossWave");
         mentalWaveProperty = serializedObject.FindProperty("mentalWave");
 
         mapSizeProperty = serializedObject.FindProperty("mapSize");
@@ -78,7 +78,7 @@ public class MapDataEditor : Editor
         }
         EditorGUILayout.EndHorizontal();
 
-        TimeWaveGUI();
+        BossWaveGUI();
         DistanceWaveGUI();
         MentalWaveGUI();
 
@@ -92,21 +92,21 @@ public class MapDataEditor : Editor
         serializedObject.ApplyModifiedProperties();
     }
 
-    void DistanceWaveGUI()
+    void BossWaveGUI()
     {
         
-        distanceWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(distanceWaveFoldout, new GUIContent("거리 웨이브"));
+        bossWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(bossWaveFoldout, new GUIContent("보스 웨이브"));
         GUILayout.FlexibleSpace();
            
 
-        if (distanceWaveFoldout)
+        if (bossWaveFoldout)
         {
-            if (distanceWaveProperty.arraySize > 0)
+            if (bossWaveProperty.arraySize > 0)
             {
-                int height = distanceWaveProperty.arraySize * 70 > 500 ? 500 : distanceWaveProperty.arraySize * 70;
-                distanceScrollPos = EditorGUILayout.BeginScrollView(distanceScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25),GUILayout.MinHeight(height));
+                int height = bossWaveProperty.arraySize * 70 > 500 ? 500 : bossWaveProperty.arraySize * 70;
+                bossScrollPos = EditorGUILayout.BeginScrollView(bossScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25),GUILayout.MinHeight(height));
 
-                for (int i = 0; i < distanceWaveProperty.arraySize; i++)
+                for (int i = 0; i < bossWaveProperty.arraySize; i++)
                 {
                     EditorGUILayout.BeginVertical("HelpBox");
                     {
@@ -123,21 +123,21 @@ public class MapDataEditor : Editor
 
                         EditorGUILayout.BeginHorizontal();
                         {
-                            SerializedProperty enemy = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyName");
+                            SerializedProperty enemy = bossWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyName");
                             enemy.intValue = (int)(Define.EnemyName)EditorGUILayout.EnumPopup((Define.EnemyName)enemy.intValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty multiply = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
+                            SerializedProperty multiply = bossWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
                             multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty distance = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("distance");
+                            SerializedProperty distance = bossWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("distance");
                             distance.floatValue = EditorGUILayout.FloatField(distance.floatValue);
                             GUILayout.FlexibleSpace();
                         }
                         EditorGUILayout.EndHorizontal();
 
-                        SerializedProperty property = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genLocalPosition");
+                        SerializedProperty property = bossWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genLocalPosition");
                         EditorGUILayout.PropertyField(property);
                     }
                     EditorGUILayout.EndVertical();
@@ -149,14 +149,14 @@ public class MapDataEditor : Editor
             {
                 if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
                 {
-                    distanceWaveProperty.arraySize += 1;
+                    bossWaveProperty.arraySize += 1;
                 }
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
                 {
-                    if (distanceWaveProperty.arraySize > 0)
-                        distanceWaveProperty.arraySize -= 1;
+                    if (bossWaveProperty.arraySize > 0)
+                        bossWaveProperty.arraySize -= 1;
                 }
                 GUILayout.FlexibleSpace();
             }
@@ -165,21 +165,21 @@ public class MapDataEditor : Editor
         }
         EditorGUILayout.EndFoldoutHeaderGroup();
     }
-    void TimeWaveGUI()
+    void DistanceWaveGUI()
     {
 
-        timeWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(timeWaveFoldout, new GUIContent("시간 웨이브"));
+        distanceWaveFoldout = EditorGUILayout.BeginFoldoutHeaderGroup(distanceWaveFoldout, new GUIContent("거리 웨이브"));
         GUILayout.FlexibleSpace();
 
-        if (timeWaveFoldout)
+        if (distanceWaveFoldout)
         {
-            if (timeWaveProperty.arraySize > 0)
+            if (distanceWaveProperty.arraySize > 0)
             {
-                int height = timeWaveProperty.arraySize * 120 > 500 ? 500 : timeWaveProperty.arraySize * 120;
+                int height = distanceWaveProperty.arraySize * 150 > 500 ? 500 : distanceWaveProperty.arraySize * 150;
 
-                timeScrollPos = EditorGUILayout.BeginScrollView(timeScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
+                distanceScrollPos = EditorGUILayout.BeginScrollView(distanceScrollPos, GUILayout.Width(EditorGUIUtility.currentViewWidth - 25), GUILayout.Height(height));
 
-                for (int i = 0; i < timeWaveProperty.arraySize; i++)
+                for (int i = 0; i < distanceWaveProperty.arraySize; i++)
                 {
                     EditorGUILayout.BeginVertical("HelpBox");
                     {
@@ -195,15 +195,15 @@ public class MapDataEditor : Editor
                         EditorGUILayout.EndHorizontal();
                         EditorGUILayout.BeginHorizontal();
                         {
-                            SerializedProperty enemy = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyName");
+                            SerializedProperty enemy = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyName");
                             enemy.intValue = (int)(Define.EnemyName)EditorGUILayout.EnumPopup((Define.EnemyName)enemy.intValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty preset = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyPreset");
+                            SerializedProperty preset = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("enemyPreset");
                             preset.objectReferenceValue = EditorGUILayout.ObjectField(preset.objectReferenceValue, typeof(GameObject), true) as GameObject;
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty multiply = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
+                            SerializedProperty multiply = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("multiply");
                             multiply.floatValue = EditorGUILayout.FloatField(multiply.floatValue);
                             GUILayout.FlexibleSpace();
                         }
@@ -213,9 +213,9 @@ public class MapDataEditor : Editor
                         {
                             GUILayout.Label("생성주기");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("시작");
+                            GUILayout.Label("시작거리");
                             GUILayout.FlexibleSpace();
-                            GUILayout.Label("종료");
+                            GUILayout.Label("종료거리");
                             GUILayout.FlexibleSpace();
                         }
                         EditorGUILayout.EndHorizontal();
@@ -223,22 +223,22 @@ public class MapDataEditor : Editor
                         EditorGUILayout.BeginHorizontal();
                         {
 
-                            SerializedProperty genTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
+                            SerializedProperty genTime = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genTime");
                             genTime.floatValue = EditorGUILayout.FloatField(genTime.floatValue);
                             GUILayout.FlexibleSpace();
 
 
-                            SerializedProperty startTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("startTime");
-                            startTime.intValue = EditorGUILayout.IntField(startTime.intValue);
+                            SerializedProperty startDistance = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("startDistance");
+                            startDistance.floatValue = EditorGUILayout.FloatField(startDistance.floatValue);
                             GUILayout.FlexibleSpace();
 
-                            SerializedProperty endTime = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("endTime");
-                            endTime.intValue = EditorGUILayout.IntField(endTime.intValue);
+                            SerializedProperty endDistance = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("endDistance");
+                            endDistance.floatValue = EditorGUILayout.FloatField(endDistance.floatValue);
                             GUILayout.FlexibleSpace();
                         }
                         EditorGUILayout.EndHorizontal();
 
-                        SerializedProperty property = timeWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genLocalPosition");
+                        SerializedProperty property = distanceWaveProperty.GetArrayElementAtIndex(i).FindPropertyRelative("genLocalPosition");
                         EditorGUILayout.PropertyField(property);
                     }
                     EditorGUILayout.EndVertical();
@@ -250,14 +250,14 @@ public class MapDataEditor : Editor
             {
                 if (GUILayout.Button("추가", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
                 {
-                    timeWaveProperty.arraySize += 1;
+                    distanceWaveProperty.arraySize += 1;
                 }
                 GUILayout.FlexibleSpace();
 
                 if (GUILayout.Button("제거", GUILayout.Width(EditorGUIUtility.currentViewWidth / 2)))
                 {
-                    if (timeWaveProperty.arraySize > 0)
-                        timeWaveProperty.arraySize -= 1;
+                    if (distanceWaveProperty.arraySize > 0)
+                        distanceWaveProperty.arraySize -= 1;
                 }
                 GUILayout.FlexibleSpace();
             }

@@ -26,6 +26,8 @@ public class CreatureAI : MonoBehaviour
     float _girlToCreatureDistance = 8f;
     bool _isSoulForm = false;
 
+    bool _isSwingNormalAttack;
+
     public int AttackPower
     {
         get
@@ -210,7 +212,25 @@ public class CreatureAI : MonoBehaviour
 
                 while (_character.IsAttack)
                 {
-                    yield return null;
+                    if (!_isSwingNormalAttack) {
+                        if (Util.RangeCastAll2D(gameObject, attackRange, Define.CharacterMask, (hit) =>
+                        {
+                            Character character = hit.collider.GetComponent<Character>();
+                            if (character != null && !character.IsDead && character.CharacterType == Define.CharacterType.Enemy)
+                            {
+                                return true;
+                            }
+
+
+                            return false;
+                        }).Count <= 0)
+                        {
+                            ResetAI();
+                            break;
+                        }
+                    }
+
+                    yield return new WaitForSeconds(0.1f);
                 }
             }
         }
@@ -223,11 +243,13 @@ public class CreatureAI : MonoBehaviour
     public void ResetAI()
     {
         _character.SetAnimatorTrigger("Reset");
+        _character.SetAnimationSpeed(1);
         _character.IsAttack = false;
         _character.IsEnableMove = true;
         _character.IsEnableTurn = true;
         _aiCoroutine = null;
         _closeEnemy = null;
+        _isSwingNormalAttack = false;
     }
     void FollowPlayer()
     {
@@ -293,6 +315,7 @@ public class CreatureAI : MonoBehaviour
    
     void NormalAttack()
     {
+        _isSwingNormalAttack = true;
         List<RaycastHit2D> hits = Util.RangeCastAll2D(gameObject, _normalAttackRange, LayerMask.GetMask("Character"));
 
         foreach (var hit in hits)
@@ -307,9 +330,11 @@ public class CreatureAI : MonoBehaviour
                 effect.Play(transform.position + new Vector3(1f * (transform.lossyScale.x < 0 ? -1 : 1), 3.31f,0)); 
             }
         }
+        
     }
      void FinishAttack()
     {
+        _isSwingNormalAttack = false;
         _character.IsAttack = false;
         _character.IsEnableMove = true;
         _character.IsEnableTurn = true;

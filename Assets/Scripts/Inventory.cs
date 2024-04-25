@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Drawing;
 using System.Linq;
-using UnityEditor.Experimental.GraphView;
-using UnityEditor.Rendering;
 using UnityEngine;
 using Random = UnityEngine.Random;
 
@@ -74,11 +71,19 @@ public class Inventory
     // 화약
     private float _explosionDamagePercentage;
     float _explosionDamage = 200;
-    public int ExplosionDamage =>  Mathf.RoundToInt(_explosionDamage*(1 + _explosionDamagePercentage / 100f));
+    public int ExplosionDamage => Mathf.RoundToInt(_explosionDamage * (1 + _explosionDamagePercentage / 100f));
+
+    // 작은대포
+    MiniCannon _miniCannon;
+
+    // 가죽과 바늘
+    public int LeatherAndNeedleHuntingCount { get; set; } = 0;
+    List<Character> _leatherAndNeedleCharacterList = new List<Character>();
+
     public void InventoryUpdate()
     {
         HandleLightingRod();
-        BloodyBoneNecklace();
+        HandleLeatherAndNeedle();
         HandleCloudyLeaf();
         HandleBlackCell();
     }
@@ -104,7 +109,7 @@ public class Inventory
                     width = 20;
                 Thorn thorn = Managers.GetManager<ResourceManager>().Instantiate<Thorn>("Prefabs/Thorn");
                 thorn.transform.position = Creature.transform.position;
-                thorn.Init(Creature,width);
+                thorn.Init(Creature, width);
             }
         }
     }
@@ -149,9 +154,29 @@ public class Inventory
         }
     }
 
-    private void BloodyBoneNecklace()
+    private void HandleLeatherAndNeedle()
     {
-       
+        if (GetIsHaveItem(ItemName.바늘과가죽) || GetIsHaveItem(ItemName.바늘과가죽_A) || GetIsHaveItem(ItemName.바늘과가죽_B))
+        {
+            int count = 20;
+            if (GetIsHaveItem(ItemName.바늘과가죽_A))
+                count = 10;
+
+            if (LeatherAndNeedleHuntingCount >= count)
+            {
+                Character character = null;
+                if (GetIsHaveItem(ItemName.바늘과가죽_B))
+                    character = Managers.GetManager<ResourceManager>().Instantiate<Character>("Prefabs/LeatherRaino");
+                else
+                    character = Managers.GetManager<ResourceManager>().Instantiate<Character>("Prefabs/LeatherRabbit");
+
+
+                character.transform.position = Girl.transform.position;
+                _leatherAndNeedleCharacterList.Add(character);
+                LeatherAndNeedleHuntingCount = 0;
+
+            }
+        }
     }
 
     void HandleCloudyLeaf()
@@ -206,6 +231,11 @@ public class Inventory
                 effect.Play(point+random);
             }
         }
+    }
+    public void AddItem(ItemName itemName)
+    {
+        ItemData itemData = Managers.GetManager<DataManager>().GetData<ItemData>((int)itemName);
+        AddItem(itemData);
     }
     public void AddItem(ItemData itemData)
     {
@@ -283,9 +313,17 @@ public class Inventory
         return true;
     }
 
-    public List<ItemInfo> GetItemInfoList()
+    public List<ItemInfo> GetItemInfoList(Func<ItemInfo,bool> condition = null) 
     {
-        return _itemInfoList;
+        if(condition == null) return _itemInfoList;
+        List<ItemInfo> list = new List<ItemInfo>();
+
+        foreach (ItemInfo item in _itemInfoList)
+        {
+            if(condition.Invoke(item)) list.Add(item);
+        }
+        return list;
+        
     }
 
     ItemData GetPossessRandomItem(Func<ItemData, bool> condition)
@@ -357,10 +395,32 @@ public class Inventory
                 case ItemName.화약_B:
                     _explosionDamagePercentage += 50f;
                     break;
+                case ItemName.미니대포:
+                    if (_miniCannon == null)
+                        _miniCannon = Managers.GetManager<ResourceManager>().Instantiate<MiniCannon>("Prefabs/MiniCannon");
+                    _miniCannon.IsExplosion = false;
+                    _miniCannon.FireCount = 1;
+                    _miniCannon.FireInterval = 4f;
+                    break;
+                case ItemName.미니대포_A:
+                    if (_miniCannon == null)
+                        _miniCannon = Managers.GetManager<ResourceManager>().Instantiate<MiniCannon>("Prefabs/MiniCannon");
+                    _miniCannon.IsExplosion = true;
+                    _miniCannon.ExplosionProbability = 50;
+                    _miniCannon.FireCount = 1;
+                    _miniCannon.FireInterval = 4f;
+                    break;
+                case ItemName.미니대포_B:
+                    if (_miniCannon == null)
+                        _miniCannon = Managers.GetManager<ResourceManager>().Instantiate<MiniCannon>("Prefabs/MiniCannon");
+                    _miniCannon.IsExplosion = false;
+                    _miniCannon.FireCount = 3;
+                    _miniCannon.FireInterval = 2f;
+                    break;
             }
             if (itemData is StatusUpItemData data)
             {
-                ApplyStatus(data);
+                ApplyStatus(data);  
             }
         }
     }
@@ -389,6 +449,21 @@ public class Inventory
                 case ItemName.화약_B:
                     _explosionDamagePercentage -= 50f;
                     break;
+                case ItemName.미니대포:
+                case ItemName.미니대포_A:
+                case ItemName.미니대포_B:
+                    if (_miniCannon)
+                        Managers.GetManager<ResourceManager>().Destroy(_miniCannon.gameObject);
+                    break;
+                case ItemName.바늘과가죽:
+                case ItemName.바늘과가죽_A:
+                case ItemName.바늘과가죽_B:
+                    foreach(var c in _leatherAndNeedleCharacterList)
+                    {
+                        Managers.GetManager<ResourceManager>().Destroy(c.gameObject);
+                    }
+                    _leatherAndNeedleCharacterList.Clear();
+                    break;
 
             }
             if (itemData is StatusUpItemData data)
@@ -400,9 +475,9 @@ public class Inventory
 
     public void RemoveAllItem()
     {
-        foreach (var item in _itemInfoList)
+        for(int i = _itemInfoList.Count-1; i >=0; i--)
         {
-            RemoveItem(item);
+            RemoveItem(_itemInfoList[i]);
         }
     }
   
