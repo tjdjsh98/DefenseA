@@ -53,7 +53,7 @@ public class GameManager : ManagerBase
     public int PanicLevel =>_panicLevel;
     public float MaxMental { get; } = 100;
     public float Mental { set; get; } = 100;
-    public float MentalAccelerationPercentage = 0;
+    public float MentalAccelerationPercentage = 50;
     public int DeathCount { set; get; }
     public Character Boss { get; set; }
 
@@ -119,7 +119,7 @@ public class GameManager : ManagerBase
     [field: SerializeField] public Inventory Inventory { set; get; }
 
 
-    public float BeyondDeathInterval { get; set; } = 90f;
+    public float BeyondDeathInterval { get; set; } = 70f;
     float _nextBeyondDeath ;
     public float NextBeyondDeath => _nextBeyondDeath;
     SpriteRenderer _dark;
@@ -533,7 +533,7 @@ public class GameManager : ManagerBase
         {
             BossWaveData bossWaveData = wave.waveData as BossWaveData;
             // ∏‡≈ª ∑Œ ¿·Ω√ ±≥√º
-            if (bossWaveData.distance <= _panicLevel)
+            if (bossWaveData.distance <= _farDistance)
             {
                 EnemyNameDefine enemyOrigin = Managers.GetManager<DataManager>().GetData<EnemyNameDefine>((int)bossWaveData.enemyName);
 
@@ -711,7 +711,7 @@ public class GameManager : ManagerBase
         _nextBeyondDeath = BeyondDeathInterval;
         _panicLevel = 0;
         Mental = 100f;
-        MentalAccelerationPercentage += 30f;
+        MentalAccelerationPercentage += 70f;
         StartCoroutine(CorPlayBeyondDeath());
     }
 

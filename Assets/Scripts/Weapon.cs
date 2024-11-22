@@ -327,7 +327,7 @@ public class Weapon : MonoBehaviour, ITypeDefine
                     ammoMultifly += 1;
                 }
             }
-            _currentAmmo = Mathf.RoundToInt(_maxAmmo * ammoMultifly);
+            _currentAmmo += Mathf.RoundToInt(1 * ammoMultifly);
 
             if (_currentAmmo >= _maxAmmo)
             {
